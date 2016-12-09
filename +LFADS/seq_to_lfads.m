@@ -16,17 +16,28 @@ function seq_to_lfads(seqs, outpath, outfiles, varargin)
 %
 %   varargins: trainInds, testInds, binSizeMS, inputBinSizeMS, alignment_matrix_cxf
 
-conversion_factor = 0.5;
-mkdirRecursive(outpath);
+LFADS.Utils.mkdirRecursive(outpath);
 
-rem = assignopts({'trainInds', 'testInds', 'binSizeMS', 'inputBinSizeMS', ...
-                 'conversion_factor', 'alignment_matrix_cxf', 'whichChannels'}, varargin);
-if ~exist('trainInds','var') && ~exist('testInds','var')
+p = inputParser();
+p.addParameter('trainInds', {}, @isvector);
+p.addParameter('testInds', {}, @isvector);
+p.addParameter('binSizeMs', 5, @isscalar);
+p.addParameter('inputBinSizeMS', 1, @isscalar);
+p.addParameter('conversion_factor', 0.5, @isscalar);
+p.addParameter('alignment_matrix_cxf', {}, @isvector);
+p.parse(varargin{:});
+trainInds = p.Results.trainInds;
+testInds = p.Results.testInds;
+binSizeMs = p.Results.binSizeMs;
+inputBinSizeMS = p.Results.inputBinSizeMS;
+conversion_factor = p.Results.conversion_factor;
+alignment_matrix_cxf = p.Results.alignment_matrix_cxf;
+
+% rem = assignopts({'trainInds', 'testInds', 'binSizeMS', 'inputBinSizeMS', ...
+%                  'conversion_factor', 'alignment_matrix_cxf', 'whichChannels'}, varargin);
+if isempty(trainInds) || isempty(testInds)
     error('specify trainInds and testInds');
 end
-
-if ~exist('binSizeMS','var'), binSizeMS = 5; end
-if ~exist('inputBinSizeMS','var'), inputBinSizeMS = 1; end
 
 % turn per-dataset params into cell arrays
 if ~iscell(seqs)
@@ -71,7 +82,7 @@ spikesDir = outpath;
 % place where lfads should store its networks
 % tfNetworksDir = fullfile(saveDir,'lfads','networks');
 % a cmd to call lfads with
-cmdSave = '/home/chethan/tmp/lfadscmd';
+% cmdSave = '/home/chethan/tmp/lfadscmd';
 
 % can we rebin data or is there a mismatch?
 rebin = binSizeMS / inputBinSizeMS;

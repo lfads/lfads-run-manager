@@ -1,7 +1,7 @@
 classdef RunCollection < LFADS.RunCollection
     methods
-        function rc = RunCollection(rootPath, name, datasetCollection)
-            rc = rc@LFADS.RunCollection(rootPath, name, datasetCollection);
+        function rc = RunCollection(rootPath, name, datasetCollection, runParams)
+            rc = rc@LFADS.RunCollection(rootPath, name, datasetCollection, runParams);
         end
         
         function addRun(rc, r)

@@ -169,11 +169,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             
             fprintf('Saving sequence files in %s\n', r.pathSequenceFiles);
-            mkdirRecursive(r.pathSequenceFiles);
+            LFADS.Utils.mkdirRecursive(r.pathSequenceFiles);
             
             sequenceFileNames = r.sequenceFileNames; %#ok<PROP>
             
-%             prog = ProgressBar(numel(r.datasets), 'Generating sequence files');
+%             prog = LFADS.Utils.ProgressBar(numel(r.datasets), 'Generating sequence files');
             for iDS = 1:numel(r.datasets)
                 ds = r.datasets(iDS);
 %                 prog.update(iDS, 'Generating sequence files for %s', ds.name);
@@ -191,8 +191,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % load seq files
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
             
-            prog = ProgressBar(r.nDatasets, 'Loading sequence files');
-            seq = cellvec(r.nDatasets);
+            prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading sequence files');
+            seq = cell(r.nDatasets, 1);
             for nd = 1:r.nDatasets
                 prog.update(nd);
                 tmp = load(seqFiles{nd});
@@ -216,8 +216,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
             
             % load seq files
-            seqData = cellvec(r.nDatasets);
-            prog = ProgressBar(r.nDatasets, 'Loading sequence files');
+            seqData = cell(r.nDatasets, 1);
+            prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading sequence files');
             for nd = 1:r.nDatasets
                 prog.update(nd);
                 tmp = load(seqFiles{nd});
@@ -346,7 +346,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function pms = loadPosteriorMeanSamples(r)
             info = load(fullfile(r.path, 'lfadsInputInfo.mat'));
             [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
-            pms = cellvec(r.nDatasets);
+            pms = cell(r.nDatasets, 1);
             
             for iDS = 1:r.nDatasets
                 pms{iDS} = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....

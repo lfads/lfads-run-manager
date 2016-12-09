@@ -24,10 +24,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay
     end
     
     methods
-        function rc = RunCollection(rootPath, name, datasetCollection)
+        function rc = RunCollection(rootPath, name, datasetCollection, runParams)
             rc.name = name;
             rc.rootPath = rootPath;
             rc.datasetCollection = datasetCollection;
+            rc.params = runParams;
         end
         
         function p = get.path(rc)

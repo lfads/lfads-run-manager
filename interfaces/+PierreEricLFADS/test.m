@@ -7,15 +7,14 @@ dc.filterBestSaveTagEachDate();
 
 %%
 
-rc = PierreEricLFADS.RunCollection('/data2/lfads/PierreEric/runs', 'oneVsTwo_0922_0921', dc);
-
 par = PierreEricLFADS.RunParams;
 par.spikeBinMs = 10;
 par.batchSize = 40;
 par.nTrialsKeep = 500;
 par.regularizerIncreaseSteps = 100;
 par.learningRateDecayFactor = 0.95;
-rc.params = par;
+
+rc = PierreEricLFADS.RunCollection('/data2/lfads/PierreEric/runs', 'oneVsTwo_0922_0921', dc, par);
 
 %%
 r = PierreEricLFADS.Run('two0921_0922', rc);

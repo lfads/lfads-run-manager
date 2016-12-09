@@ -31,7 +31,7 @@ classdef DatasetCollection < LFADS.DatasetCollection
             allDates = arrayfun(@(ds) ds.datenum, dc.datasets);
             [uniqueDays, ~, udAssignments] = unique(allDates);
             
-            maskKeep = falsevec(dc.nDatasets);
+            maskKeep = false(dc.nDatasets, 1);
             nTrials = arrayfun(@(ds) ds.nTrials, dc.datasets);
             for nd = 1:numel(uniqueDays)
                 thisDayDatasetInds = find(udAssignments == nd);

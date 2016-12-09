@@ -132,8 +132,8 @@ classdef Run < LFADS.Run
             end
 
             % fill up the data matrix with binned data
-            trainInds = cellvec(numel(datasetInfo));
-            validInds = cellvec(numel(datasetInfo));
+            trainInds = cell(numel(datasetInfo), 1);
+            validInds = cell(numel(datasetInfo), 1);
             for nd = 1:numel(datasetInfo)
                 [c,~,ic] = ...
                     unique({datasetInfo(nd).seq.targetDirectionName});
@@ -200,8 +200,8 @@ classdef Run < LFADS.Run
             if check_projections
 
                 projections=struct;
-                % need some colors
-                clrs = TrialDataUtilities.Color.hslmap(numel(c));
+                % need some colorsc
+                clrs = TrialDataUtilities.Data.hslmap(numel(c));
         %         clrs = cubehelix(numel(c), [0.5,-1.5,1,1], [0.2,0.8]);
                 for nd = 1:r.nDatasets
                     figure(nd); clf;

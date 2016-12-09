@@ -39,7 +39,7 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
         end
         
         function loadInfo(dc)
-            prog = ProgressBar(dc.nDatasets, 'Loading info');
+            prog = LFADS.Utils.ProgressBar(dc.nDatasets, 'Loading info');
             for i = 1:dc.nDatasets
                 prog.update(i, 'Loading info for dataset %s', dc.datasets(i).name);
                 dc.datasets(i).loadInfo();

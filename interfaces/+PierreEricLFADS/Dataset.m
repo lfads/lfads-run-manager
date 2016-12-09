@@ -14,7 +14,7 @@ classdef Dataset < LFADS.Dataset
             
             % find save tag
             match = regexp(data.dataset, 'saveTag(Group)? (?<saveTag>[\d,])', 'names');
-            ds.saveTags = str2vector(match.saveTag);
+            ds.saveTags = str2mat(match.saveTag);
             % find datestr
             match = regexp(data.dataset, '(?<datestr>\d{4}-\d{2}-\d{2})', 'names');
             ds.datenum  = datenum(match.datestr);
