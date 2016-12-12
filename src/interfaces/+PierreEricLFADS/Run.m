@@ -195,13 +195,14 @@ classdef Run < LFADS.Run
             end
 
 
-            check_projections = true;
+            check_projections = false;
             % look at the low-D projection across conditions
             if check_projections
 
                 projections=struct;
                 % need some colorsc
-                clrs = TrialDataUtilities.Data.hslmap(numel(c));
+                clrs = parula(numel(c));
+%                 clrs = TrialDataUtilities.Data.hslmap(numel(c));
         %         clrs = cubehelix(numel(c), [0.5,-1.5,1,1], [0.2,0.8]);
                 for nd = 1:r.nDatasets
                     figure(nd); clf;
@@ -238,7 +239,7 @@ classdef Run < LFADS.Run
                             s=std(projections(ncond,npc).proj)/ ...
                               sqrt(size(projections(ncond,npc).proj,1));
         %                     h=errorbar(m,s);
-                            tvec = lindelta(0, bin_size, numel(m));
+                            tvec = LFADS.Utils.lindelta(0, bin_size, numel(m));
                             TrialDataUtilities.Plotting.errorshade(tvec, m, s, clrs(ncond, :));
                             xlabel('Time bins');
                             hold on;
@@ -271,4 +272,88 @@ classdef Run < LFADS.Run
         end
     end
     
+    methods % Analysis
+        function out = predictPeakSpeedFromInitialConditions(r)
+            rng(0);
+            seqData = r.loadSequenceFiles();
+            pmData = r.loadPosteriorMeanSamples();
+
+            D = r.nDatasets;
+
+            for iD = 1:D
+                seq = seqData{iD};
+                pm = pmData{iD};
+
+                % nTrials x 1
+                peakSpeed = cat(1, seq.peakSpeed3);
+
+                % nTrials x nGenUnits
+                % ics = squeeze(pm.generator_states(:, 3, :))';
+                % use ICS instead
+                ics = pm.generator_ics';
+
+                mdl = fitrlinear(ics, peakSpeed, 'KFold', 10);
+
+                out(iD).model = mdl;
+                out(iD).cvLoss = kfoldLoss(mdl);
+                out(iD).cvPredictPeakSpeed = kfoldPredict(mdl);
+                out(iD).peakSpeed = peakSpeed;
+                out(iD).cvRho = corr(out(iD).cvPredictPeakSpeed, peakSpeed);
+            end
+        end
+        
+        function out = predictPeakSpeedFromGeneratorStatesAtTime(r, timeIndex)
+            rng(0);
+            seqData = r.loadSequenceFiles();
+            pmData = r.loadPosteriorMeanSamples();
+
+            D = r.nDatasets;
+
+            for iD = 1:D
+                seq = seqData{iD};
+                pm = pmData{iD};
+
+                % nTrials x 1
+                peakSpeed = cat(1, seq.peakSpeed3);
+
+                % nTrials x nGenUnits
+                ics = squeeze(pm.generator_states(:, timeIndex, :))';
+
+                mdl = fitrlinear(ics, peakSpeed, 'KFold', 10);
+
+                out(iD).model = mdl;
+                out(iD).cvLoss = kfoldLoss(mdl);
+                out(iD).cvPredictPeakSpeed = kfoldPredict(mdl);
+                out(iD).peakSpeed = peakSpeed;
+                out(iD).cvRho = corr(out(iD).cvPredictPeakSpeed, peakSpeed);
+            end
+        end
+        
+        function out = predictPeakSpeedFromGeneratorStatesEachTime(r)
+            rng(0);
+            seqData = r.loadSequenceFiles();
+            pmData = r.loadPosteriorMeanSamples();
+
+            D = r.nDatasets;
+
+            for iD = 1:D
+                seq = seqData{iD};
+                pm = pmData{iD};
+
+                % nTrials x 1
+                peakSpeed = cat(1, seq.peakSpeed3);
+
+                T = size(pm.generator_states, 2);
+                for t = 1:T
+                    % nTrials x nGenUnits
+                    ics = squeeze(pm.generator_states(:, t, :))';
+
+                    mdl = fitrlinear(ics, peakSpeed, 'KFold', 10);
+                    cvPredictPeakSpeed = kfoldPredict(mdl);
+                    out(iD).cvLoss(t) = kfoldLoss(mdl);
+                    out(iD).cvRho(t) = corr(cvPredictPeakSpeed, peakSpeed);
+                end
+            end
+        end
+    end
 end

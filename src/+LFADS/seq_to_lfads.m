@@ -22,14 +22,14 @@ p = inputParser();
 p.addParameter('trainInds', {}, @isvector);
 p.addParameter('testInds', {}, @isvector);
 p.addParameter('binSizeMs', 5, @isscalar);
-p.addParameter('inputBinSizeMS', 1, @isscalar);
+p.addParameter('inputBinSizeMs', 1, @isscalar);
 p.addParameter('conversion_factor', 0.5, @isscalar);
 p.addParameter('alignment_matrix_cxf', {}, @isvector);
 p.parse(varargin{:});
 trainInds = p.Results.trainInds;
 testInds = p.Results.testInds;
-binSizeMs = p.Results.binSizeMs;
-inputBinSizeMS = p.Results.inputBinSizeMS;
+binSizeMS = p.Results.binSizeMs;
+inputBinSizeMS = p.Results.inputBinSizeMs;
 conversion_factor = p.Results.conversion_factor;
 alignment_matrix_cxf = p.Results.alignment_matrix_cxf;
 
@@ -197,7 +197,7 @@ for ndset = 1:numel(seqs)
         end        
     end
 
-    debug('Each trial is %g bins\n', nTimeBins);
+    fprintf('Each trial is %g bins\n', nTimeBins);
 
     varout = {};
 
@@ -227,7 +227,7 @@ for ndset = 1:numel(seqs)
     varout{end+1} = testInds;
 
     %% export the spikes
-    debug('Saving LFADS Input in %s\n', outfile);
+    fprintf('Saving LFADS Input in %s\n', outfile);
     lfadsi_export_spikes(outfile, ytrain, ytest, varout{:})
 end
 

@@ -5,6 +5,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     properties
         name = ''
         comment = ''
+        
+        version = 2;
     end
     
     properties(SetAccess=?LFADS.RunCollection)
@@ -69,10 +71,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function names = get.lfadsInputFileNames(r)
-            names = arrayfun(@(ds) sprintf('lfads_%s_spikes.h5',  [r.nameWithParams '_' ds.name]), ...
-                r.datasets, 'UniformOutput', false);
-%             names = arrayfun(@(ds) sprintf('lfads_%s.h5',  ds.name), ...
-%                 r.datasets, 'UniformOutput', false);
+            if r.version < 2
+                names = arrayfun(@(ds) sprintf('lfads_%s_spikes.h5',  [r.nameWithParams '_' ds.name]), ...
+                    r.datasets, 'UniformOutput', false);
+            else
+                % remove redundant info from name already in the path
+                names = arrayfun(@(ds) sprintf('lfads_%s.h5',  ds.name), ...
+                    r.datasets, 'UniformOutput', false);
+            end
         end
         
         function p = get.pathLFADSInput(r)
@@ -104,8 +110,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function names = get.sequenceFileNames(r)
-            names = arrayfun(@(ds) [r.nameWithParams '_' ds.name '_seq.mat'], r.datasets, 'UniformOutput', false);
-%             names = arrayfun(@(ds) [ds.name '_seq.mat'], r.datasets, 'UniformOutput', false);
+            if r.version < 2
+                names = arrayfun(@(ds) [r.nameWithParams '_' ds.name '_seq.mat'], r.datasets, 'UniformOutput', false);
+            else
+                % simpler file names without extra redundant info already
+                % in path
+                names = arrayfun(@(ds) ['seq_' ds.name '.mat'], r.datasets, 'UniformOutput', false);
+            end
         end
         
         function n = get.nameWithParams(r)
@@ -126,10 +137,17 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function [trainList, validList] = getLFADSPosteriorSampleMeanFiles(r)
-            trainList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_train_posterior_sample',  [r.nameWithParams '_' ds.name]), ...
-                r.datasets, 'UniformOutput', false);
-            validList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_valid_posterior_sample',  [r.nameWithParams '_' ds.name]), ...
-                r.datasets, 'UniformOutput', false);
+            if r.version < 2
+                trainList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_train_posterior_sample',  [r.nameWithParams '_' ds.name]), ...
+                    r.datasets, 'UniformOutput', false);
+                validList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_valid_posterior_sample',  [r.nameWithParams '_' ds.name]), ...
+                    r.datasets, 'UniformOutput', false);
+            else
+                trainList = arrayfun(@(ds) sprintf('model_runs_%s.h5_train_posterior_sample', ds.name), ...
+                    r.datasets, 'UniformOutput', false);
+                validList = arrayfun(@(ds) sprintf('model_runs_%s.h5_valid_posterior_sample', ds.name), ...
+                    r.datasets, 'UniformOutput', false);
+            end
         end
     end
     
@@ -195,6 +213,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             seq = cell(r.nDatasets, 1);
             for nd = 1:r.nDatasets
                 prog.update(nd);
+                if ~exist(seqFiles{nd}, 'file')
+                    error('Could not located sequence file for dataset %d: %s', nd, seqFiles{nd});
+                end
                 tmp = load(seqFiles{nd});
                 seq{nd} = tmp.seq;
             end
@@ -230,8 +251,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             LFADS.seq_to_lfads(seqData, r.pathLFADSInput, r.lfadsInputFileNames, ...
                          'trainInds',trainInds, 'testInds', validInds, ...
-                         'binSizeMS', dtMS, ...
-                         'inputBinSizeMS', seqData{1}(1).params.dtMS, ...
+                         'binSizeMs', dtMS, ...
+                         'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
                          'alignment_matrix_cxf', alignmentMatrices);
                      
             fname = fullfile(r.path, 'lfadsInputInfo.mat');
@@ -250,7 +271,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             fprintf(fid, 'python $(which run_lfads.py) --data_dir=$DATADIR --data_filename_stem=lfads --lfads_save_dir=$OUTDIR --cell_clip_value=5 --factors_dim=8 --in_factors_dim=8 --ic_enc_dim=100 --ci_enc_dim=100 --gen_dim=100 --keep_prob=%g --learning_rate_decay_factor=%g --device=/gpu:0 --co_dim=4 --do_causal_controller=false --l2_gen_scale=$L2_GEN_SCALE --l2_con_scale=$L2_CON_SCALE --batch_size=%d --kl_increase_steps=%d --l2_increase_steps=%d --controller_input_lag=1 \n', ...
                 r.params.keepProb, r.params.learningRateDecayFactor, r.params.batchSize, r.params.regularizerIncreaseSteps, r.params.regularizerIncreaseSteps);
             fclose(fid);
-            chmod('uga+rx', f);
+            LFADS.Utils.chmod('uga+rx', f);
         end
         
         function cmd = buildCommandLFADSPosteriorMeanSample(r, varargin)
@@ -294,6 +315,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             params = lfadsi_read_parameters(lfdir); %#ok<*PROPLC>
 
+            % make sure these are up to date
+            params.data_dir = r.pathLFADSInput;
+            params.lfads_save_dir = r.pathLFADSOutput;
+            
             % need to remove "dataset_names" and "dataset_dims"
             params = rmfield(params, {'dataset_names', 'dataset_dims'});
             
@@ -340,7 +365,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             fid = fopen(f, 'w');
             fprintf(fid, r.buildCommandLFADSPosteriorMeanSample());
             fclose(fid);
-            chmod('uga+rx', f);
+            LFADS.Utils.chmod('uga+rx', f);
         end
             
         function pms = loadPosteriorMeanSamples(r)
@@ -349,6 +374,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             pms = cell(r.nDatasets, 1);
             
             for iDS = 1:r.nDatasets
+                if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
+                    error('LFADS Posterior Mean train file not found for dataset %d: %s', ...
+                        iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
+                end
+                if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
+                    error('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
+                        iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
+                end
                 pms{iDS} = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});

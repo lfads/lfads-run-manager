@@ -1,4 +1,4 @@
-classdef RunCollection < handle & matlab.mixin.CustomDisplay
+classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
 % Wraps a set of runs often sharing common parameter settings but utilizing
 % different sets of datasets
 
@@ -20,6 +20,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay
     
     properties(Dependent)
         nRuns
+        nDatasets
         path % unique folder within rootPath including name_paramSuffix
     end
     
@@ -56,6 +57,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay
             n = numel(rc.runs);
         end
         
+        function n = get.nDatasets(rc)
+            n = rc.datasetCollection.nDatasets;
+        end
+        
         function str = getTensorboardCommand(rc)
             runEntry = cellvec(rc.nRuns);
             for r = 1:rc.nRuns
@@ -87,6 +92,13 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay
                 end
             end
             r.runCollection = rc;
+        end
+    end
+    
+    methods
+        function rc2 = copyClearRuns(rc)
+            rc2 = copy(rc);
+            rc2.clearRuns();
         end
     end
     

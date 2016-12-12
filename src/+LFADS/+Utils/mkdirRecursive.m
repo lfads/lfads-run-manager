@@ -11,7 +11,7 @@ if exist(dirPath, 'dir')
 else
     parent = fileparts(dirPath);
     if ~isempty(parent)
-        mkdirRecursive(parent);
+        LFADS.Utils.mkdirRecursive(parent);
     end
 
     mkdir(dirPath);
