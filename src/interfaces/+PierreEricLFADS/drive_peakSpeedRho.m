@@ -78,6 +78,12 @@ r = PierreEricLFADS.Run('one_0929', rc);
 r.version = 1;
 r.selectDatasetsByName('subject_Pierre.date_2016-09-29.saveTagGroup_2_export');
 
+%% Make all sample scripts
+
+for iR = 1:rc.nRuns
+    rc.runs(iR).writeShellScriptLFADSPosteriorMeanSample
+end
+
 %% Second run collection for the single stitched dataset
 
 rcAll = rc.copyClearRuns();
@@ -140,10 +146,10 @@ ylabel('CV \rho');
 
 %% Plot scatter of best time for single days
 
-[~, bestIdx] = max(sum(singleRhoMat, 2));
-
-singleRho = singleRhoMat(bestIdx, :)';
-allRho = allRhoMat(bestIdx, :)';
+[~, bestSingleIdx] = max(sum(singleRhoMat, 2));
+[~, bestAllIdx] = max(sum(allRhoMat, 2));
+singleRho = singleRhoMat(bestSingleIdx, :)';
+allRho = allRhoMat(bestAllIdx, :)';
 
 clf;
 scatter(singleRho, allRho);
