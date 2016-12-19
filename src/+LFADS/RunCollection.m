@@ -1,37 +1,51 @@
 classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
-% Wraps a set of runs often sharing common parameter settings but utilizing
-% different sets of datasets
+    % A set of :ref:`LFADS_Run` instances sharing common parameter settings but utilizing
+    % different subsets of :ref:`LFADS_Dataset` insstances in a :ref:`LFADS_DatasetCollection`.
+    % A RunCollection is a logical grouping of otherwise independent LFADS runs, which are constrained
+    % to share a common Dataset collection and run parameters.
 
     properties
-        name = ''
-        comment = ''
-        rootPath = '';
-        
-        fileShellScriptTensorboard
-        
+        name = '' % Name of this RunCollection, determines its relative path on disk
+        comment = '' % Textual comment for convenience
+        rootPath = ''; % Root path on disk under which individual Runs will be stored
+
         datasetCollection % DatasetCollection instance
-        
+
         params % RunParams instance
     end
-    
+
     properties(SetAccess=protected)
         runs
     end
-    
+
     properties(Dependent)
         nRuns
         nDatasets
         path % unique folder within rootPath including name_paramSuffix
+        fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
     end
-    
+
     methods
         function rc = RunCollection(rootPath, name, datasetCollection, runParams)
+            %  rc = RunCollection(rootPath, name, datasetCollection, runParams)
+            %
+            % Parameters
+            % ------------
+            % rootPath : string
+            %   location on disk under which run collections will be saved
+            % name : string
+            %   unique identifier for this RunCollection, also used as subfolder within `rootPath`
+            % datasetCollection : :ref:`LFADS_DatasetCollection`
+            %   DatasetCollection to be used by runs within this RunCollection
+            % runParams : :ref:`LFADS_RunParams`
+            %   Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path
+
             rc.name = name;
             rc.rootPath = rootPath;
             rc.datasetCollection = datasetCollection;
             rc.params = runParams;
         end
-        
+
         function p = get.path(rc)
             if isempty(rc.params)
                 paramStr = '';
@@ -40,36 +54,59 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             p = fullfile(rc.rootPath, [rc.name, paramStr]);
         end
-        
+
         function f = get.fileShellScriptTensorboard(r)
             f = fullfile(r.path, 'launch_tensorboard.sh');
         end
-        
+
         function clearRuns(rc)
-            rc.runs = []; 
-        end 
-        
+            % Flush list of runs
+
+            rc.runs = [];
+        end
+
         function filterRuns(rc, mask)
+            % Apply selection mask to list of runs
+            %
+            % Parameters
+            % ------------
+            % mask : logical or indices
+            %   selection mask applied to `.runs`
             rc.runs = rc.runs(mask);
         end
-        
+
         function n = get.nRuns(rc)
             n = numel(rc.runs);
         end
-        
+
         function n = get.nDatasets(rc)
             n = rc.datasetCollection.nDatasets;
         end
-        
+
         function str = getTensorboardCommand(rc)
+            % Generates the shell command text to launch a TensorBoard displaying all runs within this collection
+            %
+            % Returns
+            % ---------
+            % cmd : string
+            %   Command which can luanch TensorBoard from command line
+
             runEntry = cellvec(rc.nRuns);
             for r = 1:rc.nRuns
                 runEntry{r} = sprintf('%s:%s', rc.runs(r).name, rc.runs(r).pathLFADSOutput);
             end
             str = sprintf('tensorboard --logdir=%s', strjoin(runEntry, ','));
-        end 
-        
+        end
+
         function f = writeTensorboardShellScript(rc)
+            % Generates the shell command text to launch a TensorBoard displaying all runs within this collection
+            % and saves it to a file inside the RunCollection's path
+            %
+            % Returns
+            % ---------
+            % file : string
+            %   Path to the shell script, will match `.fileShellScriptTensorboard`
+
             f = rc.fileShellScriptTensorboard;
             fid = fopen(f, 'w');
             fprintf(fid, rc.getTensorboardCommand());
@@ -78,6 +115,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         end
 
         function addRun(rc, r)
+            % addRun(run)
+            % Adds a :ref:`LFADS_Run` to the collection. Note that :ref:`LFADS_Run` instances are generally added to their Run Collection upon construction, so calling this method is likely unnecessary for the end user.
+            %
+            % Parameters
+            % ------------------
+            % run : :ref:`LFADS_Run`
+            %   Run to add to the collection.
+
             if isempty(rc.runs)
                 rc.runs = r;
             else
@@ -94,14 +139,20 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             r.runCollection = rc;
         end
     end
-    
+
     methods
         function rc2 = copyClearRuns(rc)
+            % Make a copy of this run collection, but without the runs inside
+            %
+            % Returns
+            % ---------
+            % rc : :ref:`LFADS_RunCollection`
+            %   Copy of RunCollection sans runs
             rc2 = copy(rc);
             rc2.clearRuns();
         end
     end
-    
+
     methods (Access = protected)
        function header = getHeader(rc)
           if ~isscalar(rc)
@@ -111,7 +162,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
              newHeader = sprintf('%s %s', className, rc.name);
              header = sprintf('%s\n  param suffix: %s\n  %d runs in %s\n', ...
                  newHeader, rc.params.generateSuffix(), rc.nRuns, rc.path);
-             
+
              for s = 1:rc.nRuns
                  header = cat(2, header, sprintf('  [%2d] %s', s, rc.runs(s).getFirstLineHeader()));
              end

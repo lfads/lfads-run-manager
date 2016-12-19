@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LFADS.RunCollection &mdash; LFADS Run Manager 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="LFADS Run Manager 0.5.1 documentation" href="index.html"/>
+        <link rel="next" title="LFADS.RunParams" href="LFADS_RunParams.html"/>
+        <link rel="prev" title="LFADS.Run" href="LFADS_Run.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> LFADS Run Manager
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Run.html">LFADS.Run</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.RunCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">LFADS Run Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>LFADS.RunCollection</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/LFADS_RunCollection.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-+LFADS">
+<span id="id1"></span><span id="lfads-runcollection"></span><h1>LFADS.RunCollection<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="+LFADS.RunCollection">
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">RunCollection</code><span class="sig-paren">(</span><em>rootPath</em>, <em>name</em>, <em>datasetCollection</em>, <em>runParams</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.Copyable</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
+<p>A set of <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances sharing common parameter settings but utilizing
+different subsets of <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> insstances in a <a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a>.
+A RunCollection is a logical grouping of otherwise independent LFADS runs, which are constrained
+to share a common Dataset collection and run parameters.</p>
+<div class="note admonition" id="+LFADS.RunCollection.RunCollection_member_group_0_+LFADS::RunCollection.RunCollection_member_group_0">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
+</div><dl class="attribute">
+<dt id="+LFADS.RunCollection.name">
+<code class="descname">name</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of this RunCollection, determines its relative path on disk</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.comment">
+<code class="descname">comment</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Textual comment for convenience</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.rootPath">
+<code class="descname">rootPath</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.rootPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.rootPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root path on disk under which individual Runs will be stored</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.datasetCollection">
+<code class="descname">datasetCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.datasetCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.datasetCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>DatasetCollection instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.params">
+<code class="descname">params</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>RunParams instance</p>
+</dd></dl>
+
+<div class="note admonition" id="+LFADS.RunCollection.RunCollection_member_group_1_+LFADS::RunCollection.RunCollection_member_group_1">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Read-only Properties</p>
+</div><dl class="attribute">
+<dt id="+LFADS.RunCollection.runs">
+<em class="property">Read-only</em><code class="descname">runs</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.runs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.runs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="note admonition" id="+LFADS.RunCollection.RunCollection_member_group_2_+LFADS::RunCollection.RunCollection_member_group_2">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Dependent Properties</p>
+</div><dl class="attribute">
+<dt id="+LFADS.RunCollection.nRuns">
+<em class="property">Dependent</em><code class="descname">nRuns</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nRuns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.nDatasets">
+<em class="property">Dependent</em><code class="descname">nDatasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nDatasets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.path">
+<em class="property">Dependent</em><code class="descname">path</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>unique folder within rootPath including name_paramSuffix</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.fileShellScriptTensorboard">
+<em class="property">Dependent</em><code class="descname">fileShellScriptTensorboard</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.fileShellScriptTensorboard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.fileShellScriptTensorboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>path the location where a shell script to launch TensorBoard for all runs will be written</p>
+</dd></dl>
+
+<div class="tip admonition" id="+LFADS.RunCollection.RunCollection_member_group_3_+LFADS::RunCollection.RunCollection_member_group_3">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.RunCollection.RunCollection">
+[<em>rc</em>] = <code class="descname">RunCollection</code><span class="sig-paren">(</span><em>rootPath</em>, <em>name</em>, <em>datasetCollection</em>, <em>runParams</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.RunCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.RunCollection" title="Permalink to this definition">¶</a></dt>
+<dd><div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>rootPath</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>location on disk under which run collections will be saved</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>unique identifier for this RunCollection, also used as subfolder within <cite>rootPath</cite></dd>
+<dt>datasetCollection</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a></span><dd>DatasetCollection to be used by runs within this RunCollection</dd>
+<dt>runParams</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a></span><dd>Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.clearRuns">
+<code class="descname">clearRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.clearRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.clearRuns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush list of runs</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.filterRuns">
+<code class="descname">filterRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.filterRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.filterRuns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply selection mask to list of runs</p>
+<div class="section" id="id2">
+<h2>Parameters<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>mask</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">logical or indices</span><dd>selection mask applied to <cite>.runs</cite></dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.getTensorboardCommand">
+[<em>str</em>] = <code class="descname">getTensorboardCommand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.getTensorboardCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.getTensorboardCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the shell command text to launch a TensorBoard displaying all runs within this collection</p>
+<div class="section" id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>cmd</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Command which can luanch TensorBoard from command line</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.writeTensorboardShellScript">
+[<em>f</em>] = <code class="descname">writeTensorboardShellScript</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.writeTensorboardShellScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.writeTensorboardShellScript" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the shell command text to launch a TensorBoard displaying all runs within this collection
+and saves it to a file inside the RunCollection&#8217;s path</p>
+<div class="section" id="id3">
+<h2>Returns<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>file</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Path to the shell script, will match <cite>.fileShellScriptTensorboard</cite></dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.addRun">
+<code class="descname">addRun</code><span class="sig-paren">(</span><em>run</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.addRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.addRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> to the collection. Note that <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances are generally added to their Run Collection upon construction, so calling this method is likely unnecessary for the end user.</p>
+<div class="section" id="id4">
+<h2>Parameters<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>run</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a></span><dd>Run to add to the collection.</dd>
+</dl>
+</div>
+</dd></dl>
+
+<div class="tip admonition" id="+LFADS.RunCollection.RunCollection_member_group_4_+LFADS::RunCollection.RunCollection_member_group_4">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.RunCollection.copyClearRuns">
+[<em>rc2</em>] = <code class="descname">copyClearRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.copyClearRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.copyClearRuns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a copy of this run collection, but without the runs inside</p>
+<div class="section" id="id5">
+<h2>Returns<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>rc</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="#lfads-runcollection"><em>LFADS.RunCollection</em></a></span><dd>Copy of RunCollection sans runs</dd>
+</dl>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="LFADS_RunParams.html" class="btn btn-neutral float-right" title="LFADS.RunParams" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="LFADS_Run.html" class="btn btn-neutral" title="LFADS.Run" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Dan O&#39;Shea, Chethan Pandarinath.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

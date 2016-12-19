@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LFADS.Run &mdash; LFADS Run Manager 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="LFADS Run Manager 0.5.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> LFADS Run Manager
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">LFADS.Run</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">LFADS Run Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>LFADS.Run</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/Run.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-+LFADS">
+<span id="id1"></span><span id="lfads-run"></span><h1>LFADS.Run<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="+LFADS.Run">
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">Run</code><a class="reference internal" href="_code/+LFADS/Run.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
+<p>Wraps a set of runs often sharing common parameter settings but utilizing
+different sets of datasets</p>
+<div class="note admonition" id="lfads-run-run-member-group-0-lfads-run-run-member-group-0">
+<p class="first admonition-title">Properties</p>
+<p class="last">&#8211;</p>
+</div>
+<dl class="attribute">
+<dt id="+LFADS.Run.version">
+<code class="descname">version</code><em class="property"> = 2</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.name">
+<code class="descname">name</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.comment">
+<code class="descname">comment</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.comment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="note admonition" id="lfads-run-run-member-group-1-lfads-run-run-member-group-1">
+<p class="first admonition-title">Read-only Properties</p>
+<p class="last">&#8211;</p>
+</div>
+<dl class="attribute">
+<dt id="+LFADS.Run.runCollection">
+<em class="property">Read-only</em><code class="descname">runCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.runCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.runCollection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.datasets">
+<em class="property">Read-only</em><code class="descname">datasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.datasets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="note admonition" id="lfads-run-run-member-group-2-lfads-run-run-member-group-2">
+<p class="first admonition-title">Dependent Properties</p>
+<p class="last">&#8211;</p>
+</div>
+<dl class="attribute">
+<dt id="+LFADS.Run.pathSequenceFiles">
+<em class="property">Dependent</em><code class="descname">pathSequenceFiles</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.pathSequenceFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.pathSequenceFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.sequenceFileNames">
+<em class="property">Dependent</em><code class="descname">sequenceFileNames</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.sequenceFileNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.sequenceFileNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.pathLFADSInput">
+<em class="property">Dependent</em><code class="descname">pathLFADSInput</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.pathLFADSInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.pathLFADSInput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.lfadsInputFileNames">
+<em class="property">Dependent</em><code class="descname">lfadsInputFileNames</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.lfadsInputFileNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.lfadsInputFileNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.pathLFADSOutput">
+<em class="property">Dependent</em><code class="descname">pathLFADSOutput</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.pathLFADSOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.pathLFADSOutput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.fileShellScriptLFADSTrain">
+<em class="property">Dependent</em><code class="descname">fileShellScriptLFADSTrain</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.fileShellScriptLFADSTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.fileShellScriptLFADSTrain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.fileShellScriptLFADSPosteriorMeanSample">
+<em class="property">Dependent</em><code class="descname">fileShellScriptLFADSPosteriorMeanSample</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.fileShellScriptLFADSPosteriorMeanSample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.fileShellScriptLFADSPosteriorMeanSample" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.nameWithParams">
+<em class="property">Dependent</em><code class="descname">nameWithParams</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.nameWithParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.nameWithParams" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.datasetCollection">
+<em class="property">Dependent</em><code class="descname">datasetCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.datasetCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.datasetCollection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.params">
+<em class="property">Dependent</em><code class="descname">params</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.nDatasets">
+<em class="property">Dependent</em><code class="descname">nDatasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.nDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.nDatasets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.path">
+<em class="property">Dependent</em><code class="descname">path</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>unique folder within rootPath including name_paramSuffix</p>
+</dd></dl>
+
+<div class="note admonition" id="lfads-run-run-member-group-3-lfads-run-run-member-group-3">
+<p class="first admonition-title">Abstract Methods</p>
+<p class="last">&#8211;</p>
+</div>
+<dl class="method">
+<dt id="+LFADS.Run.convertDatasetToSequenceStruct">
+<em class="property">Abstract</em>[<em>seq</em>] = <code class="descname">convertDatasetToSequenceStruct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.convertDatasetToSequenceStruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.convertDatasetToSequenceStruct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.prepareSequenceDataForLFADS">
+<em class="property">Abstract</em>[<em>seqData, alignmentMatrices, trainInds, validInds</em>] = <code class="descname">prepareSequenceDataForLFADS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.prepareSequenceDataForLFADS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.prepareSequenceDataForLFADS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="note admonition" id="lfads-run-run-member-group-4-lfads-run-run-member-group-4">
+<p class="first admonition-title">Methods</p>
+<p class="last">&#8211;</p>
+</div>
+<dl class="method">
+<dt id="+LFADS.Run.Run">
+[<em>r</em>] = <code class="descname">Run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.Run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.selectDatasetsByIndex">
+<code class="descname">selectDatasetsByIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.selectDatasetsByIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.selectDatasetsByIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.selectDatasetsByName">
+<code class="descname">selectDatasetsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.selectDatasetsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.selectDatasetsByName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.getLFADSPosteriorSampleMeanFiles">
+[<em>trainList, validList</em>] = <code class="descname">getLFADSPosteriorSampleMeanFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.getLFADSPosteriorSampleMeanFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.getLFADSPosteriorSampleMeanFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="note admonition" id="lfads-run-run-member-group-5-lfads-run-run-member-group-5">
+<p class="first admonition-title">Methods</p>
+<p class="last">&#8211;</p>
+</div>
+<dl class="method">
+<dt id="+LFADS.Run.getFirstLineHeader">
+[<em>h</em>] = <code class="descname">getFirstLineHeader</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.getFirstLineHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.getFirstLineHeader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="note admonition" id="lfads-run-run-member-group-7-lfads-run-run-member-group-7">
+<p class="first admonition-title">Methods</p>
+<p class="last">&#8211;</p>
+</div>
+<dl class="method">
+<dt id="+LFADS.Run.prepareForLFADS">
+<code class="descname">prepareForLFADS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.prepareForLFADS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.prepareForLFADS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.makeSequenceFiles">
+<code class="descname">makeSequenceFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.makeSequenceFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.makeSequenceFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.loadSequenceFiles">
+[<em>seq</em>] = <code class="descname">loadSequenceFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadSequenceFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadSequenceFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>load seq files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.makeLFADSInput">
+<code class="descname">makeLFADSInput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.makeLFADSInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.makeLFADSInput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.writeShellScriptLFADSTrain">
+[<em>f</em>] = <code class="descname">writeShellScriptLFADSTrain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSTrain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.buildCommandLFADSPosteriorMeanSample">
+[<em>cmd</em>] = <code class="descname">buildCommandLFADSPosteriorMeanSample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.buildCommandLFADSPosteriorMeanSample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.buildCommandLFADSPosteriorMeanSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>function lfadsi_run_posterior_mean_sample(lfdir, varargin)
+calls the python script to sample the posterior and generate parameter estimates
+arguments
+lfdir: path to the trained network</p>
+<p>varargin: overloads the parameters used to fit the model, e.g.
+(..., &#8216;checkpoint_pb_load_name&#8217;, &#8216;checkpoint_lve&#8217;,
+&#8216;batch_size&#8217;, 512, &#8216;device&#8217;, NDEVICE,
+&#8216;ps_nexamples_to_process&#8217;, num_trials_to_process)</p>
+<p>checkpoint_pb_load_name selects which file to use for
+checkpoints</p>
+<p>batch_size selects how many samples to use for computing
+posterior average</p>
+<p>device specifies which gpu to run this on</p>
+<dl class="docutils">
+<dt>defaults (overwrites hyperparams file with these):</dt>
+<dd>batch_size: 512
+checkpoint_pb_load_name: &#8216;checkpoint_lve&#8217;</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample">
+[<em>f</em>] = <code class="descname">writeShellScriptLFADSPosteriorMeanSample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSPosteriorMeanSample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.loadPosteriorMeanSamples">
+[<em>pms</em>] = <code class="descname">loadPosteriorMeanSamples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadPosteriorMeanSamples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadPosteriorMeanSamples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Dan O&#39;Shea, Chethan Pandarinath.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
