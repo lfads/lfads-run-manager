@@ -4,13 +4,13 @@ classdef Run < LFADS.Run
             % check that the param type matches
             assert(isa(runCollection.params, 'PierreEricLFADS.RunParams'), ...
                 'RunCollection params must be PierreEricLFADS.RunParams');
-            
+
             r = r@LFADS.Run(name, runCollection);
         end
-        
+
         function seq = convertDatasetToSequenceStruct(r, dataset)
             data = dataset.loadData();
-            
+
             switch r.params.align
                 case 'GoCue'
                     totalTimeToKeep = 600; %ms
@@ -22,12 +22,12 @@ classdef Run < LFADS.Run
                 otherwise
                     error('Unknown align %s', r.params.align);
             end
-            
+
             runID = [r.nameWithParams '_' dataset.name];
-            
+
             seq = [];
             for it = 1:data.nTrials
-                
+
                 % don't keep the ultra-short trials that reach target early
                 if postGoTimeToKeep > data.TargetAcquired(it)
                     continue;
@@ -36,15 +36,15 @@ classdef Run < LFADS.Run
                 if isnan(data.(r.params.align)(it))
                     error('GoCue is nan');
                 end
-                
+
                 seq(it).runID = runID; %#ok<*AGROW>
                 seq(it).trialID = data.trialId(it);
                 seq(it).saveTag = dataset.saveTags;
-                
+
                 seq(it).peakSpeed2 = data.PeakSpeed2(it);
                 seq(it).peakSpeed3 = data.PeakSpeed3(it);
                 seq(it).rt = data.RT(it);
-                
+
                 % data is aligned to target onset
                 % we'll just take time starting at target onset
                 timeIndsToKeep = data.(r.params.align)(it) + (-preGoTimeToKeep:postGoTimeToKeep-1);
@@ -56,39 +56,39 @@ classdef Run < LFADS.Run
                 if seq(it).T == 0
                     error('Issue with data in spike raster')
                 end
-                
+
                 % store down info about target name
                 seq(it).targetDirectionName = data.targetDirectionName{it};
-                
+
                 % store down some hand kinematics
                 x=horzcat(data.handKinematics{it,:});
                 [~,handKinematicsIndsToKeep] = intersect(data.handKinematics_time{it}, ...
                     timeIndsToKeep);
                 seq(it).handKinematics = x(handKinematicsIndsToKeep,:)';
             end
-            
+
             seq(1).params.dtMS = 1;
             seq(1).params.runID = runID;
             seq(1).subject = dataset.subject;
             seq(1).date = dataset.datenum;
-            
+
             nTrialsKeep = r.params.nTrialsKeep;
             if numel(seq) > nTrialsKeep
                 seq = seq(1:nTrialsKeep);
             end
         end
-        
-        function [seqData, alignMatrices, trainInds, validInds] = prepareSequenceDataForLFADS(r, seqData)
+
+        function [alignMatrices, trainInds, validInds] = prepareSequenceDataForLFADS(r, seqData)
             % tally up the total number of channels across all datasets
             num_channels = 0;
-            
+
             % split each struct by condition
             for nd = 1:r.nDatasets
                 datasetInfo(nd).seq = seqData{nd};
                 [c,~,ic] = unique({datasetInfo(nd).seq.targetDirectionName});
                 if nd==1
                     % store all the condition names
-                    conditions = c; 
+                    conditions = c;
                     % figure out what is the minimum number of trials for each
                     % day
                     for ncond = 1:numel(c)
@@ -106,7 +106,7 @@ classdef Run < LFADS.Run
                     end
 
                 end
-                % we are going to make a big array that spans all days. 
+                % we are going to make a big array that spans all days.
                 % store down the indices for this day
                 this_day_num_channels = size(datasetInfo(nd).seq(1).y,1);
                 datasetInfo(nd).this_day_inds = num_channels + (1 : this_day_num_channels);
@@ -117,7 +117,7 @@ classdef Run < LFADS.Run
             % what is the minimum number of trials over all conditions, all days
             min_trials_across_conditions = min(min_trials_per_condition);
 
-            % we are going to make a matrix that is 
+            % we are going to make a matrix that is
             %       num_channels x (time_per_trial x total_num_trials)
             bin_size = 50;
             time_per_trial = floor(size(datasetInfo(1).seq(1).y, 2) / ...
@@ -267,11 +267,10 @@ classdef Run < LFADS.Run
             %                    set(h, 'color', clrs(ncond,:));
 
             % prepare for call to seq_to_lfads
-            seqData = {datasetInfo.seq};
             alignMatrices = {datasetInfo.alignment_matrix_cxf};
         end
     end
-    
+
     methods % Analysis
         function out = predictPeakSpeedFromInitialConditions(r)
             rng(0);
@@ -301,7 +300,7 @@ classdef Run < LFADS.Run
                 out(iD).cvRho = corr(out(iD).cvPredictPeakSpeed, peakSpeed);
             end
         end
-        
+
         function out = predictPeakSpeedFromGeneratorStatesAtTime(r, timeIndex)
             rng(0);
             seqData = r.loadSequenceFiles();
@@ -328,7 +327,7 @@ classdef Run < LFADS.Run
                 out(iD).cvRho = corr(out(iD).cvPredictPeakSpeed, peakSpeed);
             end
         end
-        
+
         function out = predictPeakSpeedFromGeneratorStatesEachTime(r)
             rng(0);
             seqData = r.loadSequenceFiles();

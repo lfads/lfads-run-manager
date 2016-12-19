@@ -1,44 +1,79 @@
 classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
-% A multi-day collection of raw data processed in a common way, e.g. Pierre
-% from Eric with rehtresholded broadband
+    % A collection of multiple Datasets to be processed by LFADS as a cohesive group, either using stitching to
+    % incorporate multiple datasets simultaneously, or individually to multiple independent LFADS fits.
 
     properties
-        name = ''
-        comment = ''
-        path = ''
+        % Information about this DatasetCollection's name and location
+
+        name = '' % Name of the dataset collection, will be used to construct folder paths on disk
+        comment = '' % Textual comment for convenience
+        path = '' % path to this dataset collection's root location on disk, if applicable
     end
-    
+
     properties(SetAccess=protected)
-        datasets
+        datasets % Array of :ref:`LFADS_Dataset` instances
     end
-    
+
     properties(Dependent)
-        nDatasets
+        nDatasets % Number of datasets in this collection
     end
-    
+
     methods
-        function ds = DatasetCollection(path)
+        function ds = DatasetCollection(path, name)
+            % ds = DatasetCollection(path, [name=leaf of path])
+            % Parameters
+            % ------------------
+            % path : string
+            %   Path to root of dataset collection. Can be blank if you've overriden `loadData` and aren't loading
+            %   datasets from disk directly as `.mat` files
+            % name : string
+            %   Dataset collection name. Defaults to the leaf folder in `path`
+
             ds.path = path;
-            [~, ds.name] = fileparts(path);
+            if nargin < 2
+                [~, ds.name] = fileparts(path);
+            else
+                ds.name = name;
+            end
         end
 
         function addDataset(dc, ds)
+            % addDataset(dataset)
+            % Adds a dataset to the collection. Note that :ref:`LFADS_Dataset` instances are added to their dataset collection upon construction, so calling this method is likely unnecessary for the end user.
+            %
+            % Parameters
+            % ------------------
+            % dataset : :ref:`LFADS_Dataset`
+            %   Dataset to add to the collection.
+
             if isempty(dc.datasets)
                 dc.datasets = ds;
             else
-                dc.datasets(end+1, :) = ds;
+                % check for existing dataset and replace it
+                names = arrayfun(@(old) old.name, dc.dataset, 'UniformOutput', false);
+                [tf, idx] = ismember(ds.name, names);
+                if tf
+                    debug('Replacing existing dataset with matching name %s\n', ds.name);
+                    dc.datasets(idx) = ds;
+                else
+                    dc.datasets(end+1, :) = ds;
+                end
             end
+            ds.collection = dc;
         end
-        
+
         function clearDatasets(dc)
-            dc.datasets = []; 
-        end 
-        
+            % Flush all datasets from this collection
+            dc.datasets = [];
+        end
+
         function n = get.nDatasets(dc)
             n = numel(dc.datasets);
         end
-        
+
         function loadInfo(dc)
+            % Call `loadInfo` on each dataset in this collection
+
             prog = LFADS.Utils.ProgressBar(dc.nDatasets, 'Loading info');
             for i = 1:dc.nDatasets
                 prog.update(i, 'Loading info for dataset %s', dc.datasets(i).name);
@@ -46,30 +81,45 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
             end
             prog.finish();
         end
-        
+
         function filterDatasets(dc, mask)
+            % Retain a selected subsets of datasets, effectively doing datasets = datasets(mask)
+            %
+            % Parameters
+            % ------------------
+            % mask : logical or indices
+            %   Selection applied to `.datasets`
+
             dc.datasets = dc.datasets(mask);
         end
-        
+
         function datasets = matchDatasetsByName(dc, names)
+            % Returns the subset of datasets in this collection matching a name in names.
+            %
+            % Parameters
+            % ----------------
+            % names : string or cellstr
+            %   Name or names of datasets to find
+
             [tf, which] = ismember(names, {dc.datasets.name});
             assert(all(tf), 'Missing datasets %s', LFADS.Utils.strjoin(names(~tf), ', '));
             datasets = dc.datasets(which);
         end
 
         function t = getDatasetInfoTable(dc)
+            % Build a `table` of datasets and associated metadata within this dataset. This will call `loadInfo` and load info for datasets whose metadata has not yet been loaded.
+
             dc.loadInfo();
             rowNames = arrayfun(@(ds) ds.name, dc.datasets, 'UniformOutput', false);
             date = arrayfun(@(ds) ds.datestr, dc.datasets, 'UniformOutput', false);
             saveTags = arrayfun(@(ds) strjoin(ds.saveTags, ','), dc.datasets, 'UniformOutput', false);
             nChannels = arrayfun(@(ds) ds.nChannels, dc.datasets, 'UniformOutput', true);
             nTrials = arrayfun(@(ds) ds.nTrials, dc.datasets, 'UniformOutput', true);
-            
+
             t = table(date, saveTags, nTrials, nChannels, nChannelsHighSNR, 'RowNames', rowNames);
         end
-        
     end
-    
+
     methods (Access = protected)
        function header = getHeader(dc)
           if ~isscalar(dc)
@@ -78,7 +128,7 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
              className = matlab.mixin.CustomDisplay.getClassNameForHeader(dc);
              newHeader = sprintf('%s %s', className, dc.name);
              header = sprintf('%s\n  %d datasets in %s\n',newHeader, dc.nDatasets, dc.path);
-             
+
              for s = 1:dc.nDatasets
                  header = cat(2, header, sprintf('  %2d  %s\n', s, dc.datasets(s).name));
              end
