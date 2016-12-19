@@ -300,18 +300,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             lfdir = r.pathLFADSOutput;
            
             % set some default parameters
-            if ~exist('varargin','var'), varargin ={}; end
-            keys = varargin(1:2:end);
-
-            default_keys = {'batch_size', 'checkpoint_pb_load_name'};
-            default_values = {r.params.batchSize, 'checkpoint_lve'}; % was 512 not r.params.batchSize
-            for nkey = 1:numel(default_keys)
-                % if this key is not defined, set it to the default value
-                if ~any(strcmp(keys, default_keys{nkey}))
-                    keys{end+1} = default_keys{nkey}; %#ok<*AGROW>
-                    keys{end+1} = default_values{nkey};
-                end
-            end
+            %if ~exist('varargin','var'), varargin ={}; end
+            %keys = varargin(1:2:end);
 
             params = lfadsi_read_parameters(lfdir); %#ok<*PROPLC>
 
@@ -319,8 +309,24 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             params.data_dir = r.pathLFADSInput;
             params.lfads_save_dir = r.pathLFADSOutput;
             
+            params.batch_size = r.params.batchSize;
+            params.checkpoint_pb_load_name = 'checkpoint_lve';
+%             default_keys = {'batch_size', 'checkpoint_pb_load_name'};
+%             default_values = {r.params.batchSize, 'checkpoint_lve'}; % was 512 not r.params.batchSize
+%             for nkey = 1:numel(default_keys)
+%                 % if this key is not defined, set it to the default value
+%                 if ~any(strcmp(keys, default_keys{nkey}))
+%                     keys{end+1} = default_keys{nkey}; %#ok<*AGROW>
+%                     keys{end+1} = default_values{nkey};
+%                 end
+%             end
+            
             % need to remove "dataset_names" and "dataset_dims"
             params = rmfield(params, {'dataset_names', 'dataset_dims'});
+            
+            
+
+            
             
             use_controller = boolean(params.ci_enc_dim);
 
