@@ -212,19 +212,20 @@ to share a common Dataset collection and run parameters.</p>
 </div><dl class="method">
 <dt id="+LFADS.RunCollection.RunCollection">
 [<em>rc</em>] = <code class="descname">RunCollection</code><span class="sig-paren">(</span><em>rootPath</em>, <em>name</em>, <em>datasetCollection</em>, <em>runParams</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.RunCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.RunCollection" title="Permalink to this definition">¶</a></dt>
-<dd><div class="section" id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>rootPath</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>location on disk under which run collections will be saved</dd>
-<dt>name</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>unique identifier for this RunCollection, also used as subfolder within <cite>rootPath</cite></dd>
-<dt>datasetCollection</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a></span><dd>DatasetCollection to be used by runs within this RunCollection</dd>
-<dt>runParams</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a></span><dd>Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path</dd>
-</dl>
-</div>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rootPath</strong> (<em>string</em>) &#8211; location on disk under which run collections will be saved</li>
+<li><strong>name</strong> (<em>string</em>) &#8211; unique identifier for this RunCollection, also used as subfolder within <cite>rootPath</cite></li>
+<li><strong>datasetCollection</strong> (<a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a>) &#8211; DatasetCollection to be used by runs within this RunCollection</li>
+<li><strong>runParams</strong> (<a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a>) &#8211; Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -237,26 +238,30 @@ to share a common Dataset collection and run parameters.</p>
 <dt id="+LFADS.RunCollection.filterRuns">
 <code class="descname">filterRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.filterRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.filterRuns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply selection mask to list of runs</p>
-<div class="section" id="id2">
-<h2>Parameters<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>mask</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">logical or indices</span><dd>selection mask applied to <cite>.runs</cite></dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<em>logical or indices</em>) &#8211; selection mask applied to <cite>.runs</cite></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.RunCollection.getTensorboardCommand">
 [<em>str</em>] = <code class="descname">getTensorboardCommand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.getTensorboardCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.getTensorboardCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the shell command text to launch a TensorBoard displaying all runs within this collection</p>
-<div class="section" id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>cmd</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Command which can luanch TensorBoard from command line</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>cmd</strong> &#8211; Command which can luanch TensorBoard from command line</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -264,26 +269,30 @@ to share a common Dataset collection and run parameters.</p>
 [<em>f</em>] = <code class="descname">writeTensorboardShellScript</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.writeTensorboardShellScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.writeTensorboardShellScript" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the shell command text to launch a TensorBoard displaying all runs within this collection
 and saves it to a file inside the RunCollection&#8217;s path</p>
-<div class="section" id="id3">
-<h2>Returns<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>file</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Path to the shell script, will match <cite>.fileShellScriptTensorboard</cite></dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>file</strong> &#8211; Path to the shell script, will match <cite>.fileShellScriptTensorboard</cite></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.RunCollection.addRun">
 <code class="descname">addRun</code><span class="sig-paren">(</span><em>run</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.addRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.addRun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> to the collection. Note that <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances are generally added to their Run Collection upon construction, so calling this method is likely unnecessary for the end user.</p>
-<div class="section" id="id4">
-<h2>Parameters<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>run</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a></span><dd>Run to add to the collection.</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>run</strong> (<a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a>) &#8211; Run to add to the collection.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <div class="tip admonition" id="+LFADS.RunCollection.RunCollection_member_group_4_+LFADS::RunCollection.RunCollection_member_group_4">
@@ -292,13 +301,16 @@ and saves it to a file inside the RunCollection&#8217;s path</p>
 <dt id="+LFADS.RunCollection.copyClearRuns">
 [<em>rc2</em>] = <code class="descname">copyClearRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.copyClearRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.copyClearRuns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a copy of this run collection, but without the runs inside</p>
-<div class="section" id="id5">
-<h2>Returns<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>rc</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="#lfads-runcollection"><em>LFADS.RunCollection</em></a></span><dd>Copy of RunCollection sans runs</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>rc</strong> &#8211; Copy of RunCollection sans runs</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#lfads-runcollection"><em>LFADS.RunCollection</em></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>

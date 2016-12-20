@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
 </ul>
 
             
@@ -252,16 +253,67 @@
 118
 119
 120
-121</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
-    <span class="c">% Wraps a set of runs often sharing common parameter settings but utilizing</span>
-    <span class="c">% different sets of datasets</span>
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
+    <span class="c">% A set of :ref:`LFADS_Run` instances sharing common parameter settings but utilizing</span>
+    <span class="c">% different subsets of :ref:`LFADS_Dataset` insstances in a :ref:`LFADS_DatasetCollection`.</span>
+    <span class="c">% A RunCollection is a logical grouping of otherwise independent LFADS runs, which are constrained</span>
+    <span class="c">% to share a common Dataset collection and run parameters.</span>
 
     <span class="k">properties</span>
-<a name="RunCollection.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.name">[docs]</a>        <span class="n">name</span> <span class="p">=</span> <span class="s">&#39;&#39;</span>
-<a name="RunCollection.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.comment">[docs]</a>        <span class="n">comment</span> <span class="p">=</span> <span class="s">&#39;&#39;</span>
-<a name="RunCollection.rootPath"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.rootPath">[docs]</a>        <span class="n">rootPath</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
-
-<a name="RunCollection.fileShellScriptTensorboard"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.fileShellScriptTensorboard">[docs]</a>        <span class="n">fileShellScriptTensorboard</span>
+<a name="RunCollection.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.name">[docs]</a>        <span class="n">name</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of this RunCollection, determines its relative path on disk</span>
+<a name="RunCollection.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.comment">[docs]</a>        <span class="n">comment</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Textual comment for convenience</span>
+<a name="RunCollection.rootPath"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.rootPath">[docs]</a>        <span class="n">rootPath</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span> <span class="c">% Root path on disk under which individual Runs will be stored</span>
 
 <a name="RunCollection.datasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.datasetCollection">[docs]</a>        <span class="n">datasetCollection</span> <span class="c">% DatasetCollection instance</span>
 
@@ -276,11 +328,25 @@
 <a name="RunCollection.nRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nRuns">[docs]</a>        <span class="n">nRuns</span>
 <a name="RunCollection.nDatasets"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nDatasets">[docs]</a>        <span class="n">nDatasets</span>
 <a name="RunCollection.path"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.path">[docs]</a>        <span class="n">path</span> <span class="c">% unique folder within rootPath including name_paramSuffix</span>
+<a name="RunCollection.fileShellScriptTensorboard"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.fileShellScriptTensorboard">[docs]</a>        <span class="n">fileShellScriptTensorboard</span> <span class="c">% path the location where a shell script to launch TensorBoard for all runs will be written</span>
     <span class="k">end</span>
 
     <span class="k">methods</span>
 <a name="RunCollection.RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.RunCollection">[docs]</a><span class="k">        function</span><span class="w"> </span>rc <span class="p">=</span><span class="w"> </span><span class="nf">RunCollection</span><span class="p">(</span>rootPath, name, datasetCollection, runParams<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">rc</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
+<span class="w">            </span><span class="c">%  rc = RunCollection(rootPath, name, datasetCollection, runParams)</span>
+            <span class="c">%</span>
+            <span class="c">% Parameters</span>
+            <span class="c">% ------------</span>
+            <span class="c">% rootPath : string</span>
+            <span class="c">%   location on disk under which run collections will be saved</span>
+            <span class="c">% name : string</span>
+            <span class="c">%   unique identifier for this RunCollection, also used as subfolder within `rootPath`</span>
+            <span class="c">% datasetCollection : :ref:`LFADS_DatasetCollection`</span>
+            <span class="c">%   DatasetCollection to be used by runs within this RunCollection</span>
+            <span class="c">% runParams : :ref:`LFADS_RunParams`</span>
+            <span class="c">%   Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path</span>
+
+            <span class="n">rc</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
             <span class="n">rc</span><span class="p">.</span><span class="n">rootPath</span> <span class="p">=</span> <span class="n">rootPath</span><span class="p">;</span>
             <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span> <span class="p">=</span> <span class="n">datasetCollection</span><span class="p">;</span>
             <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">runParams</span><span class="p">;</span>
@@ -300,11 +366,19 @@
         <span class="k">end</span>
 <a name="RunCollection.clearRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.clearRuns">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">clearRuns</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="p">[];</span>
+<span class="w">            </span><span class="c">% Flush list of runs</span>
+
+            <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="p">[];</span>
         <span class="k">end</span>
 <a name="RunCollection.filterRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.filterRuns">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">filterRuns</span><span class="p">(</span>rc, mask<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
+<span class="w">            </span><span class="c">% Apply selection mask to list of runs</span>
+            <span class="c">%</span>
+            <span class="c">% Parameters</span>
+            <span class="c">% ------------</span>
+            <span class="c">% mask : logical or indices</span>
+            <span class="c">%   selection mask applied to `.runs`</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
         <span class="k">end</span>
 
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nRuns</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
@@ -316,7 +390,14 @@
         <span class="k">end</span>
 <a name="RunCollection.getTensorboardCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.getTensorboardCommand">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">getTensorboardCommand</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">runEntry</span> <span class="p">=</span> <span class="n">cellvec</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span><span class="p">);</span>
+<span class="w">            </span><span class="c">% Generates the shell command text to launch a TensorBoard displaying all runs within this collection</span>
+            <span class="c">%</span>
+            <span class="c">% Returns</span>
+            <span class="c">% ---------</span>
+            <span class="c">% cmd : string</span>
+            <span class="c">%   Command which can luanch TensorBoard from command line</span>
+
+            <span class="n">runEntry</span> <span class="p">=</span> <span class="n">cellvec</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span><span class="p">);</span>
             <span class="k">for</span> <span class="n">r</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span>
                 <span class="n">runEntry</span><span class="p">{</span><span class="n">r</span><span class="p">}</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s:%s&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">r</span><span class="p">).</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">r</span><span class="p">).</span><span class="n">pathLFADSOutput</span><span class="p">);</span>
             <span class="k">end</span>
@@ -324,7 +405,15 @@
         <span class="k">end</span>
 <a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeTensorboardShellScript</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">f</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">fileShellScriptTensorboard</span><span class="p">;</span>
+<span class="w">            </span><span class="c">% Generates the shell command text to launch a TensorBoard displaying all runs within this collection</span>
+            <span class="c">% and saves it to a file inside the RunCollection&#39;s path</span>
+            <span class="c">%</span>
+            <span class="c">% Returns</span>
+            <span class="c">% ---------</span>
+            <span class="c">% file : string</span>
+            <span class="c">%   Path to the shell script, will match `.fileShellScriptTensorboard`</span>
+
+            <span class="n">f</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">fileShellScriptTensorboard</span><span class="p">;</span>
             <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
             <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">getTensorboardCommand</span><span class="p">());</span>
             <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
@@ -332,7 +421,15 @@
         <span class="k">end</span>
 <a name="RunCollection.addRun"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.addRun">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">addRun</span><span class="p">(</span>rc, r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">)</span>
+<span class="w">            </span><span class="c">% addRun(run)</span>
+            <span class="c">% Adds a :ref:`LFADS_Run` to the collection. Note that :ref:`LFADS_Run` instances are generally added to their Run Collection upon construction, so calling this method is likely unnecessary for the end user.</span>
+            <span class="c">%</span>
+            <span class="c">% Parameters</span>
+            <span class="c">% ------------------</span>
+            <span class="c">% run : :ref:`LFADS_Run`</span>
+            <span class="c">%   Run to add to the collection.</span>
+
+            <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">)</span>
                 <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="n">r</span><span class="p">;</span>
             <span class="k">else</span>
                 <span class="c">% check for existing run and replace it</span>
@@ -351,7 +448,13 @@
 
     <span class="k">methods</span>
 <a name="RunCollection.copyClearRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.copyClearRuns">[docs]</a><span class="k">        function</span><span class="w"> </span>rc2 <span class="p">=</span><span class="w"> </span><span class="nf">copyClearRuns</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">rc2</span> <span class="p">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">rc</span><span class="p">);</span>
+<span class="w">            </span><span class="c">% Make a copy of this run collection, but without the runs inside</span>
+            <span class="c">%</span>
+            <span class="c">% Returns</span>
+            <span class="c">% ---------</span>
+            <span class="c">% rc : :ref:`LFADS_RunCollection`</span>
+            <span class="c">%   Copy of RunCollection sans runs</span>
+            <span class="n">rc2</span> <span class="p">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">rc</span><span class="p">);</span>
             <span class="n">rc2</span><span class="p">.</span><span class="n">clearRuns</span><span class="p">();</span>
         <span class="k">end</span>
     <span class="k">end</span>

@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
     'sphinx.ext.githubpages',
+    'sphinxcontrib.napoleon',
     'sphinxcontrib.matlab'
 ]
 

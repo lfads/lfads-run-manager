@@ -185,29 +185,33 @@ Information about this DatasetCollection's name and location</p></div><dl class=
 </div><dl class="method">
 <dt id="+LFADS.DatasetCollection.DatasetCollection">
 [<em>ds</em>] = <code class="descname">DatasetCollection</code><span class="sig-paren">(</span><em>path</em><span class="optional">[</span>, <em>name=leaf of path</em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/DatasetCollection.html#DatasetCollection.DatasetCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.DatasetCollection.DatasetCollection" title="Permalink to this definition">¶</a></dt>
-<dd><div class="section" id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>path</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Path to root of dataset collection. Can be blank if you&#8217;ve overriden <cite>loadData</cite> and aren&#8217;t loading
-datasets from disk directly as <cite>.mat</cite> files</dd>
-<dt>name</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Dataset collection name. Defaults to the leaf folder in <cite>path</cite></dd>
-</dl>
-</div>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; Path to root of dataset collection. Can be blank if you&#8217;ve overriden <cite>loadData</cite> and aren&#8217;t loading
+datasets from disk directly as <cite>.mat</cite> files</li>
+<li><strong>name</strong> (<em>string</em>) &#8211; Dataset collection name. Defaults to the leaf folder in <cite>path</cite></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.DatasetCollection.addDataset">
 <code class="descname">addDataset</code><span class="sig-paren">(</span><em>dataset</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/DatasetCollection.html#DatasetCollection.addDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.DatasetCollection.addDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a dataset to the collection. Note that <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> instances are added to their dataset collection upon construction, so calling this method is likely unnecessary for the end user.</p>
-<div class="section" id="id2">
-<h2>Parameters<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>dataset</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a></span><dd>Dataset to add to the collection.</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataset</strong> (<a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a>) &#8211; Dataset to add to the collection.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -226,26 +230,28 @@ datasets from disk directly as <cite>.mat</cite> files</dd>
 <dt id="+LFADS.DatasetCollection.filterDatasets">
 <code class="descname">filterDatasets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/DatasetCollection.html#DatasetCollection.filterDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.DatasetCollection.filterDatasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retain a selected subsets of datasets, effectively doing datasets = datasets(mask)</p>
-<div class="section" id="id3">
-<h2>Parameters<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>mask</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">logical or indices</span><dd>Selection applied to <cite>.datasets</cite></dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<em>logical or indices</em>) &#8211; Selection applied to <cite>.datasets</cite></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.DatasetCollection.matchDatasetsByName">
 [<em>datasets</em>] = <code class="descname">matchDatasetsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/DatasetCollection.html#DatasetCollection.matchDatasetsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.DatasetCollection.matchDatasetsByName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the subset of datasets in this collection matching a name in names.</p>
-<div class="section" id="id4">
-<h2>Parameters<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>names</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string or cellstr</span><dd>Name or names of datasets to find</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<em>string or cellstr</em>) &#8211; Name or names of datasets to find</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">

@@ -155,22 +155,24 @@ struct array where each element corresponds to a trial. You can include any meta
 that you like for future reference or analysis. At a minimum, you must include field <cite>.y</cite>. For each trial,
 <cite>.y</cite> will contain spike data as an <cite>nNeurons</cite> x <cite>nTimeBins</cite> array of spike counts. The spike binning is
 typically specified in this Run&#8217;s <cite>.params</cite>  in the field <cite>spikeBinMs</cite>.</p>
-<div class="section" id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>dataset</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a></span><dd>The <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> instance from which data were loaded</dd>
-<dt>data</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">typically struct array</span><dd>data contents of Dataset as returned by <cite>loadData</cite></dd>
-</dl>
-</div>
-<div class="section" id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>seq</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">struct Array</span><dd>sequence formatted data. A struct array where each elemnt corresponds to a specific trial.</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset</strong> (<a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a>) &#8211; The <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> instance from which data were loaded</li>
+<li><strong>data</strong> (<em>typically struct array</em>) &#8211; data contents of Dataset as returned by <cite>loadData</cite></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>seq</strong> &#8211; sequence formatted data. A struct array where each elemnt corresponds to a specific trial.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">struct Array</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -180,26 +182,23 @@ typically specified in this Run&#8217;s <cite>.params</cite>  in the field <cite
 alignment matrices which specify the initial guess at the encoder matrix that converts neural activity
 from each dataset to a common set of factors (for stitching). Specify training and validation indices
 (subsets of trials) on each day.</p>
-<div class="section" id="id2">
-<h2>Parameters<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>seqData</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><cite>nDatasets</cite> cell of struct arrays of sequence data</span><dd>Sequence data for each dataset as returned by <cite>convertDatasetToSequenceStruct</cite></dd>
-</dl>
-</div>
-<div class="section" id="id3">
-<h2>Returns<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>alignmentMatrices</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><cite>nDatasets</cite> cell of <cite>nNeurons</cite> x <cite>nFactors</cite> matrices</span><dd>For each dataset, an initial guess at the encoder matrices which maps <cite>nNeurons</cite> (for that dataset) to a
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seqData</strong> (<cite>nDatasets</cite> cell of struct arrays of sequence data) &#8211; Sequence data for each dataset as returned by <cite>convertDatasetToSequenceStruct</cite></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>alignmentMatrices</strong> (<cite>nDatasets</cite> cell of <cite>nNeurons</cite> x <cite>nFactors</cite> matrices) &#8211; For each dataset, an initial guess at the encoder matrices which maps <cite>nNeurons</cite> (for that dataset) to a
 common set of <cite>nFactors</cite> (up to you to pick this). Seeding this well helps the stitching process. Typically,
-PC regression can provide a reasonable set of guesses</dd>
-<dt>trainInds</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><cite>nDatasets</cite> cell of indices into each dataset&#8217;s trial array</span><dd>Trial indices for each datatset to use for training</dd>
-<dt>validInds</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><cite>nDatasets</cite> cell of indices into each dataset&#8217;s trial array</span><dd>Trial indices for each datatset to use for validation</dd>
-</dl>
-</div>
+PC regression can provide a reasonable set of guesses</li>
+<li><strong>trainInds</strong> (<cite>nDatasets</cite> cell of indices into each dataset&#8217;s trial array) &#8211; Trial indices for each datatset to use for training</li>
+<li><strong>validInds</strong> (<cite>nDatasets</cite> cell of indices into each dataset&#8217;s trial array) &#8211; Trial indices for each datatset to use for validation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <div class="note admonition" id="+LFADS.Run.Run_member_group_1_+LFADS::Run.Run_member_group_1">
@@ -315,56 +314,64 @@ PC regression can provide a reasonable set of guesses</dd>
 </div><dl class="method">
 <dt id="+LFADS.Run.Run">
 [<em>run</em>] = <code class="descname">Run</code><span class="sig-paren">(</span><em>name</em>, <em>runCollection</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.Run" title="Permalink to this definition">¶</a></dt>
-<dd><div class="section" id="id4">
-<h2>Parameters<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>name</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Unique name for this run within the collection</dd>
-<dt>runCollection</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier"><a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a> instance</span><dd>RunCollection to which this run should be added</dd>
-</dl>
-</div>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>string</em>) &#8211; Unique name for this run within the collection</li>
+<li><strong>runCollection</strong> (<a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a> instance) &#8211; RunCollection to which this run should be added</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.Run.selectDatasetsByIndex">
 <code class="descname">selectDatasetsByIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.selectDatasetsByIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.selectDatasetsByIndex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the datasets that this Run should use from the set of datasets in its DatasetCollection by indices</p>
-<div class="section" id="id5">
-<h2>Parameters<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>idx</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">logical mask or indices</span><dd>Selection applied to this run&#8217;s DatasetCollection&#8217;s array of datasets</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<em>logical mask or indices</em>) &#8211; Selection applied to this run&#8217;s DatasetCollection&#8217;s array of datasets</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.Run.selectDatasetsByName">
 <code class="descname">selectDatasetsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.selectDatasetsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.selectDatasetsByName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the datasets that this Run should use from the set of datasets in its DatasetCollection using name matching</p>
-<div class="section" id="id6">
-<h2>Parameters<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>names</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string or cellstr</span><dd>Name or names to search for within this run&#8217;s DatasetCollection&#8217;s array of datasets</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<em>string or cellstr</em>) &#8211; Name or names to search for within this run&#8217;s DatasetCollection&#8217;s array of datasets</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.Run.getLFADSPosteriorSampleMeanFiles">
 [<em>trainList, validList</em>] = <code class="descname">getLFADSPosteriorSampleMeanFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.getLFADSPosteriorSampleMeanFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.getLFADSPosteriorSampleMeanFiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the list of training and validation LFADS posterior mean files for loading, without path</p>
-<div class="section" id="id7">
-<h2>Returns<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>trainList</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">cellstr</span><dd>list of file names for training posterior samples</dd>
-<dt>validList</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">cellstr</span><dd>list of file names for validation posterior samples</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>trainList</strong> (<em>cellstr</em>) &#8211; list of file names for training posterior samples</li>
+<li><strong>validList</strong> (<em>cellstr</em>) &#8211; list of file names for validation posterior samples</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <div class="tip admonition" id="+LFADS.Run.Run_member_group_7_+LFADS::Run.Run_member_group_7">
@@ -386,13 +393,16 @@ Shortcut for generating and saving sequence files, LFADS input HD5 input files, 
 <dt id="+LFADS.Run.loadSequenceFiles">
 [<em>seq</em>] = <code class="descname">loadSequenceFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadSequenceFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadSequenceFiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load the sequence files from disk</p>
-<div class="section" id="id8">
-<h2>Returns<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>seqData</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">cell of struct arrays</span><dd>nDatasets cell array of sequence structures loaded from sequence files on disk</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>seqData</strong> &#8211; nDatasets cell array of sequence structures loaded from sequence files on disk</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">cell of struct arrays</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -405,26 +415,32 @@ Shortcut for generating and saving sequence files, LFADS input HD5 input files, 
 <dt id="+LFADS.Run.writeShellScriptLFADSTrain">
 [<em>file</em>] = <code class="descname">writeShellScriptLFADSTrain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSTrain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a shell script used for running the LFADS python code</p>
-<div class="section" id="id9">
-<h2>Returns<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>file</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Full path to shell script which can be used to begin or resume LFADS training</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>file</strong> &#8211; Full path to shell script which can be used to begin or resume LFADS training</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.Run.buildCommandLFADSPosteriorMeanSample">
 [<em>cmd</em>] = <code class="descname">buildCommandLFADSPosteriorMeanSample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.buildCommandLFADSPosteriorMeanSample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.buildCommandLFADSPosteriorMeanSample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the command string for LFADS posterior mean sampling</p>
-<div class="section" id="id10">
-<h2>Returns<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>cmd</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Shell command for running LFADS posterior mean sampling</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>cmd</strong> &#8211; Shell command for running LFADS posterior mean sampling</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -432,27 +448,33 @@ Shortcut for generating and saving sequence files, LFADS input HD5 input files, 
 [<em>file</em>] = <code class="descname">writeShellScriptLFADSPosteriorMeanSample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSPosteriorMeanSample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a shell script used for running the LFADS posterior mean sampling. This must be run after the LFADS
 training has been started.</p>
-<div class="section" id="id11">
-<h2>Returns<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>file</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>Full path to shell script which can be used to perform LFADS posterior mean sampling on the lowest
-validation error checkpoint</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>file</strong> &#8211; Full path to shell script which can be used to perform LFADS posterior mean sampling on the lowest
+validation error checkpoint</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.Run.loadPosteriorMeanSamples">
 [<em>pmData</em>] = <code class="descname">loadPosteriorMeanSamples</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadPosteriorMeanSamples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadPosteriorMeanSamples" title="Permalink to this definition">¶</a></dt>
 <dd><p>After the posterior mean shell script has been run, this will load the posterior mean samples from disk</p>
-<div class="section" id="id12">
-<h2>Returns<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>pmData</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">string</span><dd>nDatasets cell of posterior mean samples loaded from disk</dd>
-</dl>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>pmData</strong> &#8211; nDatasets cell of posterior mean samples loaded from disk</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
