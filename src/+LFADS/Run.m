@@ -332,7 +332,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             prog.finish();
 
             % call out to abstract dataset specific method
-            [seqData, alignmentMatrices, trainInds, validInds] = r.prepareSequenceDataForLFADS(seqData);
+            [alignmentMatrices, trainInds, validInds] = r.prepareSequenceDataForLFADS(seqData);
 
             LFADS.seq_to_lfads(seqData, r.pathLFADSInput, r.lfadsInputFileNames, ...
                          'trainInds',trainInds, 'testInds', validInds, ...

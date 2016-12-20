@@ -111,9 +111,9 @@ for ndset = 1:numel(seqs)
 %     else
 %     end
     
-    % delete old spikes
+%     delete old spikes
     if exist(outfile,'file')
-        warning(sprintf('Deleting file %s...', outfile));
+%         warning(sprintf('Deleting file %s...', outfile));
         delete(outfile);
     end
 
@@ -197,7 +197,7 @@ for ndset = 1:numel(seqs)
         end        
     end
 
-    fprintf('Each trial is %g bins\n', nTimeBins);
+%     fprintf('Each trial is %g bins\n', nTimeBins);
 
     varout = {};
 

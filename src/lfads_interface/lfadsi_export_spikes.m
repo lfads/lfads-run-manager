@@ -16,12 +16,13 @@ function lfadsi_export_spikes(outfile, ytrain, ytest, varargin)
 %         other variables you may want to pass into the python code
 %
 
-
     if exist(outfile,'file')
-        warning(sprintf('warning - deleting file %s! any key to continue, ctrl-c to cancel', outfile));
-        pause
+%         warning(sprintf('warning -  file %s! any key to continue, ctrl-c to cancel', outfile));
+%         pause
         delete(outfile);
     end
+    
+    sWarn = warning('off', 'MATLAB:imagesci:hdf5dataset:datatypeOutOfRange');
 
     %% permute to deal with matlab v python (column-major v row-major)
     ndim = numel(size(ytrain));
@@ -59,4 +60,4 @@ function lfadsi_export_spikes(outfile, ytrain, ytest, varargin)
         end
     end 
         
-
+    warning(sWarn);

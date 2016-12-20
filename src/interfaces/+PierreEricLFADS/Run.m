@@ -13,12 +13,11 @@ classdef Run < LFADS.Run
 
             switch r.params.align
                 case 'GoCue'
-                    totalTimeToKeep = 600; %ms
-                    preGoTimeToKeep = min(data.GoCue(:) - data.CenterHeld(:));
-                    postGoTimeToKeep = totalTimeToKeep - preGoTimeToKeep;
+                    preKeep = -200;
+                    postKeep = 700;
                 case 'MoveOnsetOnline'
-                    preGoTimeToKeep = 400;
-                    postGoTimeToKeep = 500;
+                    preKeep = 400;
+                    postKeep = 500;
                 otherwise
                     error('Unknown align %s', r.params.align);
             end
@@ -29,9 +28,9 @@ classdef Run < LFADS.Run
             for it = 1:data.nTrials
 
                 % don't keep the ultra-short trials that reach target early
-                if postGoTimeToKeep > data.TargetAcquired(it)
-                    continue;
-                end
+%                 if postGoTimeToKeep > data.TargetAcquired(it)
+%                     continue;
+%                 end
                 % some GoCue's are nan...
                 if isnan(data.(r.params.align)(it))
                     error('GoCue is nan');
@@ -47,7 +46,7 @@ classdef Run < LFADS.Run
 
                 % data is aligned to target onset
                 % we'll just take time starting at target onset
-                timeIndsToKeep = data.(r.params.align)(it) + (-preGoTimeToKeep:postGoTimeToKeep-1);
+                timeIndsToKeep = data.(r.params.align)(it) + (-preKeep:postKeep-1);
                 [~,spikeRasterIndsToKeep] = intersect(data.spikeRasters_time, ...
                     timeIndsToKeep);
                 seq(it).y = squeeze(data.spikeRasters(it, spikeRasterIndsToKeep, ...
