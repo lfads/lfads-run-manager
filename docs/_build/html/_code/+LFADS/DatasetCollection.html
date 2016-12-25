@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
 </ul>
 
             
@@ -270,7 +271,18 @@
 135
 136
 137
-138</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="DatasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">DatasetCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="DatasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">DatasetCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
     <span class="c">% A collection of multiple Datasets to be processed by LFADS as a cohesive group, either using stitching to</span>
     <span class="c">% incorporate multiple datasets simultaneously, or individually to multiple independent LFADS fits.</span>
 
@@ -341,6 +353,17 @@
 
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nDatasets</span><span class="p">(</span>dc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="nb">numel</span><span class="p">(</span><span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="DatasetCollection.reloadInfo"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.reloadInfo">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">reloadInfo</span><span class="p">(</span>dc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Call `reloadInfo` on each dataset in this collection</span>
+
+            <span class="n">prog</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="s">&#39;Loading info&#39;</span><span class="p">);</span>
+            <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span>
+                <span class="n">prog</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span> <span class="s">&#39;Loading info for dataset %s&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">name</span><span class="p">);</span>
+                <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">reloadInfo</span><span class="p">();</span>
+            <span class="k">end</span>
+            <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
         <span class="k">end</span>
 <a name="DatasetCollection.loadInfo"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.loadInfo">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">loadInfo</span><span class="p">(</span>dc<span class="p">)</span><span class="w"></span>

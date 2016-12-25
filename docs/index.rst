@@ -19,6 +19,7 @@ LFADS Run Manager Classes
    LFADS_Run
    LFADS_RunCollection
    LFADS_RunParams
+   LFADS_PosteriorMeans
 
 Index and Search
 -----------------

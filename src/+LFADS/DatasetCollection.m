@@ -70,6 +70,17 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
         function n = get.nDatasets(dc)
             n = numel(dc.datasets);
         end
+        
+        function reloadInfo(dc)
+            % Call `reloadInfo` on each dataset in this collection
+
+            prog = LFADS.Utils.ProgressBar(dc.nDatasets, 'Loading info');
+            for i = 1:dc.nDatasets
+                prog.update(i, 'Loading info for dataset %s', dc.datasets(i).name);
+                dc.datasets(i).reloadInfo();
+            end
+            prog.finish();
+        end
 
         function loadInfo(dc)
             % Call `loadInfo` on each dataset in this collection

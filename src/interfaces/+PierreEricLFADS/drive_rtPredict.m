@@ -56,12 +56,12 @@ r.selectDatasetsByName('subject_Pierre.date_2016-09-28.saveTagGroup_2_export');
 r = PierreEricLFADS.Run('one_0929', rc);
 r.selectDatasetsByName('subject_Pierre.date_2016-09-29.saveTagGroup_2_export');
 
-%% Second run collection for the single stitched dataset
+% Second run collection for the single stitched dataset
 
-rcAll = rc.copyClearRuns();
-
-r = PierreEricLFADS.Run('all', rcAll);
+r = PierreEricLFADS.Run('all', rc);
 r.selectDatasetsByIndex(1:rc.nDatasets);
+
+return;
 
 %% Prepare LFADS input
 
@@ -69,16 +69,48 @@ for iR = 1:rc.nRuns
     rc.runs(iR).prepareForLFADS();
 end
 
-rcAll.runs(1).prepareForLFADS();
-
-
 %% Make all sample scripts
 
 for iR = 1:rc.nRuns
     rc.runs(iR).writeShellScriptLFADSPosteriorMeanSample
 end
 
-rcAll.runs(1).prepare
+%% Make predictions for single models
+
+clear predRTSingle predRTAll
+rcAll = rc.runs(end);
+prog = ProgressBar(rc.nRuns-1,'Predicting RT from LFADS');
+for iR = 1:rc.nRuns-1
+    prog.update(iR);
+    predRTSingle(iR) = rc.runs(iR).predictRTFromLFADS();
+    drawnow;
+    predRTAll(iR) = rcAll.predictRTFromLFADS(iR);
+    drawnow
+end
+prog.finish();
+
+%%
+
+clf;
+scatter([predRTSingle.rho], [predRTAll.rho])
+hold on;
+TrialDataUtilities.Plotting.identityLine;
+
+%%
+
+fitrlinear(ics, peakSpeed, 'KFold', 10)
+
+% nTrials x nGenUnits
+ics = squeeze(pm.generator_states(:, timeIndex, :))';
+
+mdl = fitrlinear(ics, peakSpeed, 'KFold', 10);
+
+out(iD).model = mdl;
+out(iD).cvLoss = kfoldLoss(mdl);
+out(iD).cvPredictPeakSpeed = kfoldPredict(mdl);
+out(iD).peakSpeed = peakSpeed;
+out(iD).cvRho = corr(out(iD).cvPredictPeakSpeed, peakSpeed);
+
 %% predict peak speed for both single day and multi-day-stitched from generator ICS
 clear singlePred;
 for iR = 1:rc.nRuns
@@ -225,7 +257,7 @@ LFADS.compareKinematicDecodes(seq, {res_lfads_twoDay, res_neural_twoDay}, 'color
 
 %% decode using one day
 
-r = rc.runs(2);
+r = rc.runs(end);
 
 seqData = r.loadSequenceFiles();
 pmData = r.loadPosteriorMeanSamples();
@@ -240,13 +272,14 @@ LFADS.compareKinematicDecodes(seq, {res_lfads_0921, res_neural_0921}, 'colormap'
 %% grab generator state a few timesteps in as the intiial condition
 
 % nGenUnits x nTrials
-ics = squeeze(pm.generator_states(:, 3, :));
+ics = squeeze(pm.generator_states(:, 40, :));
 
 % which condition is each trial
 cnames = {'DownRight', 'Right', 'UpRight', 'Up', 'UpLeft', 'Left', 'DownLeft'};
 [~, cond] = ismember({seq.targetDirectionName}, cnames);
 
 nC = numel(cnames);
+cmap = TrialDataUtilities.Color.hslmap(nC);
 
 clf;
 % ics_tsne = tsne(ics', cond)';

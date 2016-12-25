@@ -90,6 +90,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
 </ul>
 
             
@@ -222,17 +223,29 @@ PC regression can provide a reasonable set of guesses</li>
 </dd></dl>
 
 <div class="note admonition" id="+LFADS.Run.Run_member_group_2_+LFADS::Run.Run_member_group_2">
-<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Read-only Properties</p>
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
 </div><dl class="attribute">
 <dt id="+LFADS.Run.runCollection">
-<em class="property">Read-only</em><code class="descname">runCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.runCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.runCollection" title="Permalink to this definition">¶</a></dt>
+<code class="descname">runCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.runCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.runCollection" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a> instance to which this run belongs</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="+LFADS.Run.datasets">
-<em class="property">Read-only</em><code class="descname">datasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.datasets" title="Permalink to this definition">¶</a></dt>
+<code class="descname">datasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Array of <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> instances which this particular Run will utilize</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.sequenceData">
+<code class="descname">sequenceData</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.sequenceData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.sequenceData" title="Permalink to this definition">¶</a></dt>
+<dd><p>nDatasets cell array of sequence struct data</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.posteriorMeans">
+<code class="descname">posteriorMeans</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.posteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.posteriorMeans" title="Permalink to this definition">¶</a></dt>
+<dd><p>nDatasets array of <a class="reference internal" href="LFADS_PosteriorMeans.html#lfads-posteriormeans"><em>LFADS.PosteriorMeans</em></a> when loaded</p>
 </dd></dl>
 
 <div class="note admonition" id="+LFADS.Run.Run_member_group_3_+LFADS::Run.Run_member_group_3">
@@ -390,22 +403,6 @@ Shortcut for generating and saving sequence files, LFADS input HD5 input files, 
 </dd></dl>
 
 <dl class="method">
-<dt id="+LFADS.Run.loadSequenceFiles">
-[<em>seq</em>] = <code class="descname">loadSequenceFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadSequenceFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadSequenceFiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the sequence files from disk</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>seqData</strong> &#8211; nDatasets cell array of sequence structures loaded from sequence files on disk</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">cell of struct arrays</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="+LFADS.Run.makeLFADSInput">
 <code class="descname">makeLFADSInput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.makeLFADSInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.makeLFADSInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate the LFADS input HD5 files and save them to disk</p>
@@ -462,16 +459,41 @@ validation error checkpoint</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="+LFADS.Run.loadPosteriorMeanSamples">
-[<em>pmData</em>] = <code class="descname">loadPosteriorMeanSamples</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadPosteriorMeanSamples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadPosteriorMeanSamples" title="Permalink to this definition">¶</a></dt>
-<dd><p>After the posterior mean shell script has been run, this will load the posterior mean samples from disk</p>
+<dt id="+LFADS.Run.loadSequenceData">
+[<em>seq</em>] = <code class="descname">loadSequenceData</code><span class="sig-paren">(</span><span class="optional">[</span><em>reload = True</em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadSequenceData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadSequenceData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the sequence files from disk, caches them in
+.sequenceData.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>pmData</strong> &#8211; nDatasets cell of posterior mean samples loaded from disk</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>reload</strong> (<em>bool</em>) &#8211; Reload sequence data from disk even if already found in
+.sequenceData. Default = false</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>seqData</strong> &#8211; nDatasets cell array of sequence structures loaded from sequence files on disk</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">cell of struct arrays</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.loadPosteriorMeans">
+[<em>pmData</em>] = <code class="descname">loadPosteriorMeans</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadPosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadPosteriorMeans" title="Permalink to this definition">¶</a></dt>
+<dd><p>After the posterior mean shell script has been run, this will load the posterior mean samples from disk
+and convert them into <a class="reference internal" href="LFADS_PosteriorMeans.html#lfads-posteriormeans"><em>LFADS.PosteriorMeans</em></a> instances. These will also be cached in r.posteriorMeans</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>reload</strong> (<em>bool</em>) &#8211; if false, data stored in r.posteriorMeans will be returned
+if all datasets are loaded. if true, new data will be
+loaded from disk always.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>pmData</strong> &#8211; nDatasets cell of <a class="reference internal" href="LFADS_PosteriorMeans.html#lfads-posteriormeans"><em>LFADS.PosteriorMeans</em></a> data loaded from disk</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
 </tbody>
 </table>

@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
 </ul>
 
             
@@ -621,7 +622,50 @@
 486
 487
 488
-489</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Run"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Run</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Run"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Run</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
     <span class="c">% Represents a single LFADS experiment on a specific set of datasets. Runs are grouped into :ref:`LFADS_RunCollection`</span>
     <span class="c">% instances, and all runs in a collection share the same parameter settings, which are represented by a shared</span>
     <span class="c">% :ref:`LFADS_RunParams` instance.</span>
@@ -680,9 +724,12 @@
 <a name="Run.version"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.version">[docs]</a>        <span class="n">version</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c">% Internal versioning allowing for graceful evolution of path settings</span>
     <span class="k">end</span>
 
-    <span class="k">properties</span><span class="p">(</span><span class="n">SetAccess</span><span class="p">=</span>?<span class="n">LFADS</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">)</span>
+    <span class="k">properties</span>
 <a name="Run.runCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.runCollection">[docs]</a>        <span class="n">runCollection</span> <span class="c">% :ref:`LFADS_RunCollection` instance to which this run belongs</span>
 <a name="Run.datasets"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.datasets">[docs]</a>        <span class="n">datasets</span> <span class="c">% Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize</span>
+        
+<a name="Run.sequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.sequenceData">[docs]</a>        <span class="n">sequenceData</span> <span class="c">% nDatasets cell array of sequence struct data</span>
+<a name="Run.posteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.posteriorMeans">[docs]</a>        <span class="n">posteriorMeans</span> <span class="c">% nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded</span>
     <span class="k">end</span>
 
     <span class="k">properties</span><span class="p">(</span><span class="n">Dependent</span><span class="p">)</span>
@@ -904,15 +951,32 @@
                 <span class="n">save</span><span class="p">(</span><span class="n">seqFile</span><span class="p">,</span> <span class="s">&#39;seq&#39;</span><span class="p">);</span>
             <span class="k">end</span>
         <span class="k">end</span>
-<a name="Run.loadSequenceFiles"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadSequenceFiles">[docs]</a>
-<span class="k">        function</span><span class="w"> </span>seq <span class="p">=</span><span class="w"> </span><span class="nf">loadSequenceFiles</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Load the sequence files from disk</span>
+<a name="Run.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadSequenceData">[docs]</a>
+<span class="k">        function</span><span class="w"> </span>seq <span class="p">=</span><span class="w"> </span><span class="nf">loadSequenceData</span><span class="p">(</span>r, reload<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% seq = loadSequenceData(r, [reload = True])</span>
+            <span class="c">% Load the sequence files from disk, caches them in</span>
+            <span class="c">% .sequenceData</span>
             <span class="c">%</span>
+            <span class="c">% Params</span>
+            <span class="c">% ----------</span>
+            <span class="c">% reload : false</span>
+            <span class="c">%   Reload sequence data from disk even if already found in</span>
+            <span class="c">%   .sequenceData</span>
+            <span class="c">% </span>
             <span class="c">% Returns</span>
             <span class="c">% ----------</span>
             <span class="c">% seqData : cell of struct arrays</span>
             <span class="c">%   nDatasets cell array of sequence structures loaded from sequence files on disk</span>
+            
 
+            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
+                <span class="n">reload</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+            <span class="k">end</span>
+            <span class="k">if</span> <span class="o">~</span><span class="n">reload</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span><span class="p">)</span>
+                <span class="n">seq</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span><span class="p">;</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="k">end</span>
+            
             <span class="n">seqFiles</span> <span class="p">=</span> <span class="n">cellfun</span><span class="p">(@(</span><span class="n">file</span><span class="p">)</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathSequenceFiles</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">r</span><span class="p">.</span><span class="n">sequenceFileNames</span><span class="p">,</span> <span class="s">&#39;UniformOutput&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">);</span>
 
             <span class="n">prog</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="s">&#39;Loading sequence files&#39;</span><span class="p">);</span>
@@ -925,7 +989,9 @@
                 <span class="n">tmp</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">seqFiles</span><span class="p">{</span><span class="n">nd</span><span class="p">});</span>
                 <span class="n">seq</span><span class="p">{</span><span class="n">nd</span><span class="p">}</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">.</span><span class="n">seq</span><span class="p">;</span>
             <span class="k">end</span>
-            <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
+<a name="Run.makeLFADSInput"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.makeLFADSInput">[docs]</a>            <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
+            
+            <span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span> <span class="p">=</span> <span class="n">seq</span><span class="p">;</span>
         <span class="k">end</span>
 <a name="Run.makeLFADSInput"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.makeLFADSInput">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">makeLFADSInput</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
@@ -963,7 +1029,7 @@
                          <span class="s">&#39;inputBinSizeMs&#39;</span><span class="p">,</span> <span class="n">seqData</span><span class="p">{</span><span class="mi">1</span><span class="p">}(</span><span class="mi">1</span><span class="p">).</span><span class="n">params</span><span class="p">.</span><span class="n">dtMS</span><span class="p">,</span> <span class="c">...</span>
                          <span class="s">&#39;alignment_matrix_cxf&#39;</span><span class="p">,</span> <span class="n">alignmentMatrices</span><span class="p">);</span>
 
-            <span class="n">fname</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;lfadsInputInfo.mat&#39;</span><span class="p">);</span>
+<a name="Run.writeShellScriptLFADSTrain"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSTrain">[docs]</a>            <span class="n">fname</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;lfadsInputInfo.mat&#39;</span><span class="p">);</span>
             <span class="n">params</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">;</span> <span class="c">%#ok&lt;*NASGU,PROP&gt;</span>
             <span class="n">save</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">&#39;trainInds&#39;</span><span class="p">,</span> <span class="s">&#39;validInds&#39;</span><span class="p">,</span> <span class="s">&#39;params&#39;</span><span class="p">);</span>
         <span class="k">end</span>
@@ -985,7 +1051,7 @@
             <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;DATADIR=&quot;%s&quot;\n&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSInput</span><span class="p">);</span>
             <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;OUTDIR=&quot;%s&quot;\n&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">);</span>
             <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;python $(which run_lfads.py) --data_dir=$DATADIR --data_filename_stem=lfads --lfads_save_dir=$OUTDIR --cell_clip_value=5 --factors_dim=8 --in_factors_dim=8 --ic_enc_dim=100 --ci_enc_dim=100 --gen_dim=100 --keep_prob=%g --learning_rate_decay_factor=%g --device=/gpu:0 --co_dim=4 --do_causal_controller=false --l2_gen_scale=$L2_GEN_SCALE --l2_con_scale=$L2_CON_SCALE --batch_size=%d --kl_increase_steps=%d --l2_increase_steps=%d --controller_input_lag=1 \n&#39;</span><span class="p">,</span> <span class="c">...</span>
-                <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">keepProb</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">learningRateDecayFactor</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">);</span>
+<a name="Run.buildCommandLFADSPosteriorMeanSample"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.buildCommandLFADSPosteriorMeanSample">[docs]</a>                <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">keepProb</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">learningRateDecayFactor</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">);</span>
             <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
             <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">chmod</span><span class="p">(</span><span class="s">&#39;uga+rx&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
         <span class="k">end</span>
@@ -1057,7 +1123,7 @@
             <span class="k">end</span>
 
             <span class="n">optstr</span> <span class="p">=</span> <span class="n">strcat</span><span class="p">(</span><span class="n">optstr</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39; --kind=posterior_sample&#39;</span><span class="p">));</span>
-
+<a name="Run.writeShellScriptLFADSPosteriorMeanSample"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample">[docs]</a>
             <span class="c">% put the command together</span>
             <span class="n">cmd</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s $(which run_lfads.py) %s&#39;</span><span class="p">,</span> <span class="n">execstr</span><span class="p">,</span> <span class="n">optstr</span><span class="p">);</span>
         <span class="k">end</span>
@@ -1075,38 +1141,59 @@
 
             <span class="n">f</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">fileShellScriptLFADSPosteriorMeanSample</span><span class="p">;</span>
             <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
-            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">buildCommandLFADSPosteriorMeanSample</span><span class="p">());</span>
+<a name="Run.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadPosteriorMeans">[docs]</a>            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">buildCommandLFADSPosteriorMeanSample</span><span class="p">());</span>
             <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
             <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">chmod</span><span class="p">(</span><span class="s">&#39;uga+rx&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
         <span class="k">end</span>
-<a name="Run.loadPosteriorMeanSamples"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadPosteriorMeanSamples">[docs]</a>
-<span class="k">        function</span><span class="w"> </span>pms <span class="p">=</span><span class="w"> </span><span class="nf">loadPosteriorMeanSamples</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% pmData = loadPosteriorMeanSamples(r)</span>
+<a name="Run.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadPosteriorMeans">[docs]</a>
+<span class="k">        function</span><span class="w"> </span>pms <span class="p">=</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>r, reload<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% pmData = loadPosteriorMeans(r)</span>
             <span class="c">% After the posterior mean shell script has been run, this will load the posterior mean samples from disk</span>
+            <span class="c">% and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans</span>
+            <span class="c">%</span>
+            <span class="c">% Params</span>
+            <span class="c">% ---------</span>
+            <span class="c">% reload : bool</span>
+            <span class="c">%   if false, data stored in r.posteriorMeans will be returned</span>
+            <span class="c">%   if all datasets are loaded. if true, new data will be</span>
+            <span class="c">%   loaded from disk always.</span>
             <span class="c">%</span>
             <span class="c">% Returns</span>
             <span class="c">% --------</span>
             <span class="c">% pmData : string</span>
-            <span class="c">%   nDatasets cell of posterior mean samples loaded from disk</span>
+            <span class="c">%   nDatasets cell of :ref:`LFADS_PosteriorMeans` data loaded from disk</span>
 
+            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
+                <span class="n">reload</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+            <span class="k">end</span>
+            <span class="k">if</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">all</span><span class="p">([</span><span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">.</span><span class="n">isValid</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="n">reload</span>
+                <span class="n">pms</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">;</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="k">end</span>
+                
             <span class="n">info</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;lfadsInputInfo.mat&#39;</span><span class="p">));</span>
             <span class="p">[</span><span class="n">trainList</span><span class="p">,</span> <span class="n">validList</span><span class="p">]</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">getLFADSPosteriorSampleMeanFiles</span><span class="p">();</span>
-            <span class="n">pms</span> <span class="p">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-
+            <span class="n">prog</span> <span class="p">=</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="s">&#39;Loading posterior means for each dataset&#39;</span><span class="p">);</span>
             <span class="k">for</span> <span class="n">iDS</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span>
+                <span class="n">prog</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">iDS</span><span class="p">);</span>
                 <span class="k">if</span> <span class="o">~</span><span class="n">exist</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">trainList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="s">&#39;file&#39;</span><span class="p">)</span>
-                    <span class="n">error</span><span class="p">(</span><span class="s">&#39;LFADS Posterior Mean train file not found for dataset %d: %s&#39;</span><span class="p">,</span> <span class="c">...</span>
+                    <span class="n">warning</span><span class="p">(</span><span class="s">&#39;LFADS Posterior Mean train file not found for dataset %d: %s&#39;</span><span class="p">,</span> <span class="c">...</span>
                         <span class="n">iDS</span><span class="p">,</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">trainList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}));</span>
+                    <span class="k">continue</span><span class="p">;</span>
                 <span class="k">end</span>
                 <span class="k">if</span> <span class="o">~</span><span class="n">exist</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">validList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="s">&#39;file&#39;</span><span class="p">)</span>
-                    <span class="n">error</span><span class="p">(</span><span class="s">&#39;LFADS Posterior Mean valid file not found for dataset %d: %s&#39;</span><span class="p">,</span> <span class="c">...</span>
+                    <span class="n">warning</span><span class="p">(</span><span class="s">&#39;LFADS Posterior Mean valid file not found for dataset %d: %s&#39;</span><span class="p">,</span> <span class="c">...</span>
                         <span class="n">iDS</span><span class="p">,</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">validList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}));</span>
+                    <span class="k">continue</span><span class="p">;</span>
                 <span class="k">end</span>
-                <span class="n">pms</span><span class="p">{</span><span class="n">iDS</span><span class="p">}</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">loadPosteriorMeans</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">validList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="c">....</span>
+                <span class="n">pmData</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">loadPosteriorMeans</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">validList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="c">....</span>
                     <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">trainList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="c">...</span>
                     <span class="n">info</span><span class="p">.</span><span class="n">validInds</span><span class="p">{</span><span class="n">iDS</span><span class="p">},</span> <span class="n">info</span><span class="p">.</span><span class="n">trainInds</span><span class="p">{</span><span class="n">iDS</span><span class="p">});</span>
-                <span class="n">pms</span><span class="p">{</span><span class="n">iDS</span><span class="p">}.</span><span class="n">params</span> <span class="p">=</span> <span class="n">info</span><span class="p">.</span><span class="n">params</span><span class="p">;</span>
+                <span class="n">pms</span><span class="p">(</span><span class="n">iDS</span><span class="p">)</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">PosteriorMeans</span><span class="p">(</span><span class="n">pmData</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">params</span><span class="p">);</span>
             <span class="k">end</span>
+            <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
+            
+            <span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span> <span class="p">=</span> <span class="n">pms</span><span class="p">;</span>
         <span class="k">end</span>
     <span class="k">end</span>
 <span class="k">end</span>

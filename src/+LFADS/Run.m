@@ -57,9 +57,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         version = 2; % Internal versioning allowing for graceful evolution of path settings
     end
 
-    properties(SetAccess=?LFADS.RunCollection)
+    properties
         runCollection % :ref:`LFADS_RunCollection` instance to which this run belongs
         datasets % Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize
+        
+        sequenceData % nDatasets cell array of sequence struct data
+        posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
     end
 
     properties(Dependent)
@@ -282,14 +285,27 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
 
-        function seq = loadSequenceFiles(r)
-            % Load the sequence files from disk
+        function seq = loadSequenceData(r, reload)
+            % seq = loadSequenceData([reload = True])
+            % Load the sequence files from disk, caches them in
+            % .sequenceData.
             %
-            % Returns
-            % ----------
-            % seqData : cell of struct arrays
-            %   nDatasets cell array of sequence structures loaded from sequence files on disk
+            % Args:
+            %   reload (bool) : Reload sequence data from disk even if already found in
+            %     .sequenceData. Default = false
+            %
+            % Returns:
+            %   seqData (cell of struct arrays) : nDatasets cell array of sequence structures loaded from sequence files on disk
+            
 
+            if nargin < 2
+                reload = false;
+            end
+            if ~reload && ~isempty(r.sequenceData)
+                seq = r.sequenceData;
+                return;
+            end
+            
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
 
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading sequence files');
@@ -303,6 +319,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 seq{nd} = tmp.seq;
             end
             prog.finish();
+            
+            r.sequenceData = seq;
         end
 
         function makeLFADSInput(r)
@@ -457,33 +475,54 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             LFADS.Utils.chmod('uga+rx', f);
         end
 
-        function pms = loadPosteriorMeanSamples(r)
-            % pmData = loadPosteriorMeanSamples(r)
+        function pms = loadPosteriorMeans(r, reload)
+            % pmData = loadPosteriorMeans(r)
             % After the posterior mean shell script has been run, this will load the posterior mean samples from disk
+            % and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans
+            %
+            % Parameters
+            % ------------
+            % reload : bool
+            %   if false, data stored in r.posteriorMeans will be returned
+            %   if all datasets are loaded. if true, new data will be
+            %   loaded from disk always.
             %
             % Returns
             % --------
             % pmData : string
-            %   nDatasets cell of posterior mean samples loaded from disk
+            %   nDatasets cell of :ref:`LFADS_PosteriorMeans` data loaded from disk
 
+            if nargin < 2
+                reload = false;
+            end
+            if ~isempty(r.posteriorMeans) && all([r.posteriorMeans.isValid]) && ~reload
+                pms = r.posteriorMeans;
+                return;
+            end
+                
             info = load(fullfile(r.path, 'lfadsInputInfo.mat'));
             [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
-            pms = cell(r.nDatasets, 1);
-
+            prog = ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
             for iDS = 1:r.nDatasets
+                prog.update(iDS);
                 if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
-                    error('LFADS Posterior Mean train file not found for dataset %d: %s', ...
+                    warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
                         iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
+                    continue;
                 end
                 if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
-                    error('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
+                    warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
+                    continue;
                 end
-                pms{iDS} = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
+                pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});
-                pms{iDS}.params = info.params;
+                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params);
             end
+            prog.finish();
+            
+            r.posteriorMeans = pms;
         end
     end
 end
