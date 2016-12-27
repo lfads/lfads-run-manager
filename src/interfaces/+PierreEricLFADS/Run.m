@@ -1,3 +1,4 @@
+
 classdef Run < LFADS.Run
     methods
         function r = Run(name, runCollection)
@@ -268,6 +269,52 @@ classdef Run < LFADS.Run
             % prepare for call to seq_to_lfads
             alignMatrices = {datasetInfo.alignment_matrix_cxf};
         end
+        
+        function sequenceData = modifySequenceDataPostLoading(r, sequenceData)
+            % Optionally make any changes or do any post-processing of sequence data upon loading 
+           sequenceData = r.addVelocityToSequenceData(sequenceData);
+           sequenceData = r.recomputeRTInSequenceData(sequenceData);
+           
+        end
+        
+        function sequenceData = addVelocityToSequenceData(r, sequenceData)
+            prog = ProgressBar(r.nDatasets, 'Adding Velocity to sequence data');
+            for iDS = 1:r.nDatasets
+                prog.update(iDS);
+                for i = 1:length(r.sequenceData{iDS});
+                    sequenceData{iDS}(i).handVelocity = TrialDataUtilities.Data.savitzkyGolayFilt(...
+                        r.sequenceData{iDS}(i).handKinematics, 'polynomialOrder', 2, 'differentiationOrder', 1, 'frameSize', 31, 'dim', 2, 'samplingIntervalMs', 1);
+                    sequenceData{iDS}(i).handSpeed = sqrt(sum(r.sequenceData{iDS}(i).handVelocity.^2, 1));
+                end
+            end
+            prog.finish();
+        end
+        
+        function sequenceData = recomputeRTInSequenceData(r, sequenceData, varargin)
+            
+            p = inputParser();
+            p.addParameter('threshLow', 50, @isscalar);
+            p.addParameter('threshHigh', 150, @isscalar);
+            p.parse(varargin{:});
+            
+            prog = ProgressBar(r.nDatasets, 'Adding Velocity to sequence data');
+            for iDS = 1:r.nDatasets
+                prog.update(iDS);
+                seq = sequenceData{iDS};
+                
+                speedData = arrayfun(@(x) makecol(x.handSpeed), seq, 'UniformOutput', false);
+                speedTime = arrayfun(@(x) makecol(x.hand_time), seq, 'UniformOutput', false);
+
+                [speedMat, speedTime] = TrialDataUtilities.Data.embedTimeseriesInMatrix(speedData, speedTime);
+                speedMat = squeeze(speedMat);
+
+                rt = TrialDataUtilities.Data.findThresholdCrossingsLowThenHigh(speedMat, speedTime, p.Results.threshLow, p.Results.threshHigh);
+                sequenceData{iDS} = assignIntoStructArray(seq, 'rtThresh', rt);
+            end
+            prog.finish();
+            
+        end
+        
     end
     
     methods % Analysis
@@ -368,31 +415,19 @@ classdef Run < LFADS.Run
             end
         end
         
-        function addVelocityToSequenceData(r)
-            r.loadSequenceData; 
-            prog = ProgressBar(r.nDatasets, 'Adding Velocity to sequence data');
-            for iDS = 1:r.nDatasets
-                prog.update(iDS);
-                for i = 1:length(r.sequenceData{iDS});
-                    r.sequenceData{iDS}(i).handVelocity = TrialDataUtilities.Data.savitzkyGolayFilt(...
-                        r.sequenceData{iDS}(i).handKinematics, 2, 1, 31, [], 2);
-                    r.sequenceData{iDS}(i).handSpeed = sqrt(sum(r.sequenceData{iDS}(i).handVelocity.^2, 1));
-                end
-            end
-            prog.finish();
-        end
+        
         
         function info = predictRTFromLFADS(r, datasetIndex)
             if nargin < 2
                 datasetIndex = 1;
             end
+            
             %% now examine LFADS predictions
             pmData = r.loadPosteriorMeans();
             pm = pmData(datasetIndex);
             
-            seqData = r.loadSequenceData();
-            seq = seqData{datasetIndex};
-            rt = cat(1, seq.rt);
+            seq = r.sequenceData{datasetIndex};
+            rt = cat(1, seq.rtThresh); % use recomputeRTInSequenceData data
             % nFactors x T x nTrials
             factors = pm.generator_states;
             
@@ -400,30 +435,33 @@ classdef Run < LFADS.Run
             pcaMat = TensorUtils.reshapeByConcatenatingDims(factors, {[2 3], 1});
             pcaMat = bsxfun(@rdivide, pcaMat, range(pcaMat, 1));
             
-            [coeff, score, latent] = pca(pcaMat);
+            [~, score, ~] = pca(pcaMat);
             pcaFactors = reshape(score', size(factors));
             
-            %%
-            % nTrials x T
-            LFCIS = squeeze(pcaFactors(1, :, :))';
-            if mean(LFCIS(:, 1)) > mean(LFCIS(:, end)) % flip sign to make ascending
+            lfads_time = seq(1).y_time(1:10:end);
+            LFCIS = squeeze(pcaFactors(1, :, :))'; % nTrials x T
+            if mean(LFCIS(:, 1)) > mean(LFCIS(:, end))
                 LFCIS = -LFCIS;
             end
-            thresh = 0.75 * nanmax(LFCIS(:)) + 0.25*nanmin(LFCIS(:));
-            
-            lfads_idxCross = TensorUtils.findNAlongDim(LFCIS > thresh, 2, 1, 'first');
-            
+            thresh = 0.5;
+            threshHigh = 0.7;
+            % rescale from 0 to 1
+            LFCIS = TensorUtils.rescaleIntervalToInterval(LFCIS, [mean(LFCIS(:, 1)), max(mean(LFCIS, 1))]);
+
+            [lfads_crossTime, lfads_idxCross] = TrialDataUtilities.Data.findThresholdCrossingsLowThenHigh(LFCIS', lfads_time, thresh, threshHigh);
+            lfads_crossTime = lfads_crossTime';
+            lfads_idxCross = lfads_idxCross';
+
             figUnique('LFADS Thresholded signal');
-            plot(LFCIS', 'k-');
+            plot(lfads_time, LFCIS', 'k-');
             hold on;
-            plot(lfads_idxCross, TensorUtils.selectSpecificIndicesAlongDimensionEachPosition(LFCIS, 2, lfads_idxCross), 'rx')
+            plot(lfads_crossTime, TensorUtils.selectSpecificIndicesAlongDimensionEachPosition(LFCIS, 2, lfads_idxCross), 'rx');
             
-            %%
-            mask = ~isnan(rt) & ~isnan(lfads_idxCross);
-            lfads_rho = corr(lfads_idxCross(mask), rt(mask));
-            
+            mask = ~isnan(rt) & ~isnan(lfads_crossTime);
+            lfads_rho = corr(lfads_crossTime(mask), rt(mask));
+
             figUnique('LFADS RT Prediction');
-            scatter(lfads_idxCross(mask), rt(mask))
+            scatter(lfads_crossTime(mask), rt(mask))
             lfads_rho
             
             info.rho = lfads_rho;
@@ -432,6 +470,41 @@ classdef Run < LFADS.Run
             info.lfads_idxCross = lfads_idxCross;
             info.rt = rt;
             info.pm = pm;
+        end
+        
+        function [speedRho, rtRho] = predictSpeed(r, datasetIndex)
+            pm = r.posteriorMeans(datasetIndex);
+            seq = r.sequenceData{datasetIndex};
+            
+            speedData = arrayfun(@(x) makecol(x.handSpeed), seq, 'UniformOutput', false);
+            speedTime = arrayfun(@(x) makecol(x.hand_time), seq, 'UniformOutput', false);
+
+            [speedMat, speedTime] = TrialDataUtilities.Data.embedTimeseriesInMatrix(speedData, speedTime);
+            speedMat = squeeze(speedMat);
+
+            speedMat(isnan(speedMat)) = 0;
+            downsampledSpeedMat = resample(speedMat, 1, 10);
+            
+            startIdx = 25;
+            speedTrain = downsampledSpeedMat(startIdx:end, :);
+            
+            lfadsTrain = pm.factors(:, startIdx:end, :);
+            [mdl, predY, speedRho] = LFADS_PierreExport.fitrlinear_timeseries(lfadsTrain, speedTrain, 'lag', 0);
+
+%             clf;
+%             plot(speedTrain, 'k-');
+%             hold on;
+%             plot(predY, 'r-');
+
+            speedRho
+%             speedRho = corr(speedTrain(:), predY(:))
+
+            rtPredRegression = TrialDataUtilities.Data.findThresholdCrossingsLowThenHigh(predY, 1:size(predY, 1), 50, 150);
+            rtPredRegression = rtPredRegression';
+
+            rt = cat(1, seq.rtThresh);
+            mask = ~isnan(rt) & ~isnan(rtPredRegression);
+            rtRho = corr(rt(mask), rtPredRegression(mask))
         end
     end
 end

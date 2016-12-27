@@ -78,13 +78,13 @@ end
 %% Make predictions for single models
 
 clear predRTSingle predRTAll
-rcAll = rc.runs(end);
+ra = rc.runs(end);
 prog = ProgressBar(rc.nRuns-1,'Predicting RT from LFADS');
 for iR = 1:rc.nRuns-1
     prog.update(iR);
     predRTSingle(iR) = rc.runs(iR).predictRTFromLFADS();
     drawnow;
-    predRTAll(iR) = rcAll.predictRTFromLFADS(iR);
+    predRTAll(iR) = ra.predictRTFromLFADS(iR);
     drawnow
 end
 prog.finish();

@@ -320,7 +320,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             prog.finish();
             
-            r.sequenceData = seq;
+            r.sequenceData = r.modifySequenceDataPostLoading(seq);
+        end
+        
+        function seq = modifySequenceDataPostLoading(r, seq)
+            % Optionally make any changes or do any post-processing of sequence data upon loading 
+            
         end
 
         function makeLFADSInput(r)
