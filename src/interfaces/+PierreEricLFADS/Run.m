@@ -47,10 +47,11 @@ classdef Run < LFADS.Run
                 % data is aligned to target onset
                 % we'll just take time starting at target onset
                 timeIndsToKeep = data.(r.params.align)(it) + (-preKeep:postKeep-1);
-                [~,spikeRasterIndsToKeep] = intersect(data.spikeRasters_time, ...
+                [y_time, spikeRasterIndsToKeep] = intersect(data.spikeRasters_time, ...
                     timeIndsToKeep);
                 seq(it).y = squeeze(data.spikeRasters(it, spikeRasterIndsToKeep, ...
                     :))';
+                seq(it).y_time = y_time - data.(r.params.align)(it);
                 seq(it).T = size(seq(it).y,2);
                 if seq(it).T == 0
                     error('Issue with data in spike raster')
@@ -61,8 +62,9 @@ classdef Run < LFADS.Run
                 
                 % store down some hand kinematics
                 x=horzcat(data.handKinematics{it,:});
-                [~,handKinematicsIndsToKeep] = intersect(data.handKinematics_time{it}, ...
+                [hand_time, handKinematicsIndsToKeep] = intersect(data.handKinematics_time{it}, ...
                     timeIndsToKeep);
+                seq(it).hand_time = hand_time - data.(r.params.align)(it);
                 seq(it).handKinematics = x(handKinematicsIndsToKeep,:)';
             end
             

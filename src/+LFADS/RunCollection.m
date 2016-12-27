@@ -139,24 +139,30 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             r.runCollection = rc;
         end
         
-        function loadSequenceData(rc)
+        function loadSequenceData(rc, reload)
             % Call `loadSequenceData` on each run in this collection
 
+            if nargin < 2
+                reload = false;
+            end
             prog = LFADS.Utils.ProgressBar(rc.nRuns, 'Loading sequence data');
             for i = 1:rc.nRuns
                 prog.update(i);
-                rc.runs(i).loadSequenceData();
+                rc.runs(i).loadSequenceData(reload);
             end
             prog.finish();
         end
         
-        function loadPosteriorMeans(rc)
+        function loadPosteriorMeans(rc, reload)
             % Call `loadPosteriorMeans` on each run in this collection
 
+            if nargin < 2
+                reload = false;
+            end
             prog = LFADS.Utils.ProgressBar(rc.nRuns, 'Loading posterior mean samples');
             for i = 1:rc.nRuns
                 prog.update(i);
-                rc.runs(i).loadPosteriorMeans();
+                rc.runs(i).loadPosteriorMeans(reload);
             end
             prog.finish();
         end
