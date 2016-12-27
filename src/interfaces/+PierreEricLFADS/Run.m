@@ -12,16 +12,8 @@ classdef Run < LFADS.Run
         function seq = convertDatasetToSequenceStruct(r, dataset)
             data = dataset.loadData();
             
-            switch r.params.align
-                case 'GoCue'
-                    preKeep = 200;
-                    postKeep = 700;
-                case 'MoveOnsetOnline'
-                    preKeep = 400;
-                    postKeep = 500;
-                otherwise
-                    error('Unknown align %s', r.params.align);
-            end
+            preKeep = r.params.preKeep;
+            postKeep = r.params.postKeep;
             
             runID = [r.nameWithParams '_' dataset.name];
             

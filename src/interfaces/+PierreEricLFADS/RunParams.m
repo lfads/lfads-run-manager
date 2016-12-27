@@ -1,11 +1,15 @@
 classdef RunParams < LFADS.RunParams
    properties
        align = 'MoveOnsetOnline';
+       preKeep = 400;
+       postKeep = 500; 
        nTrialsKeep = 0;
        
        % for alignement matrix
        pcsKeep = 8;
        pcTrialAvg = true;
+       
+       
    end
    
    methods
@@ -45,8 +49,26 @@ classdef RunParams < LFADS.RunParams
            else
                keepProbStr = sprintf('_keepProb%g', p.learningRateDecayFactor);
            end
+           
+           switch p.align
+                case 'GoCue'
+                    if p.preKeep ~= 200 || ppostKeep ~= 700 
+                        alignStr = sprintf('GoCue_pre%d_post%d', p.preKeep, p.postKeep);
+                    else
+                        alignStr = 'GoCue';
+                    end
+                case 'MoveOnsetOnline'
+                    if p.preKeep ~= 400 || p.postKeep ~= 500 
+                        alignStr = sprintf('MoveOnsetOnline_pre%d_post%d', p.preKeep, p.postKeep);
+                    else
+                        alignStr = 'MoveOnsetOnline';
+                    end
+                otherwise
+                    error('Unknown align %s', r.params.align);
+            end
+           
            suffix = sprintf('bin%02d_batch%03d_align%s_nTrialsKeep%s_%s%s%s%s', ...
-               p.spikeBinMs, p.batchSize, p.align, nTrialsStr, pcStr, regIncStr,learnRateStr, keepProbStr);
+               p.spikeBinMs, p.batchSize, alignStr, nTrialsStr, pcStr, regIncStr,learnRateStr, keepProbStr);
        end
    end
 end
