@@ -143,7 +143,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Call `loadSequenceData` on each run in this collection
 
             if nargin < 2
-                reload = true;
+                reload = false;
             end
             prog = LFADS.Utils.ProgressBar(rc.nRuns, 'Loading sequence data');
             for i = 1:rc.nRuns
@@ -157,7 +157,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Call `loadPosteriorMeans` on each run in this collection
 
             if nargin < 2
-                reload = true;
+                reload = false;
             end
             prog = LFADS.Utils.ProgressBar(rc.nRuns, 'Loading posterior mean samples');
             for i = 1:rc.nRuns
