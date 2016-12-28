@@ -53,7 +53,7 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
                 names = arrayfun(@(old) old.name, dc.datasets, 'UniformOutput', false);
                 [tf, idx] = ismember(ds.name, names);
                 if tf
-                    debug('Replacing existing dataset with matching name %s\n', ds.name);
+                    fprintf('Replacing existing dataset with matching name %s\n', ds.name);
                     dc.datasets(idx) = ds;
                 else
                     dc.datasets(end+1, :) = ds;
