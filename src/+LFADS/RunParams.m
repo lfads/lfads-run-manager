@@ -21,6 +21,19 @@ classdef RunParams < handle
        regularizerIncreaseSteps = 900; % Number of steps over which the regularizer costs increase
        learningRateDecayFactor = 0.98; % Decay rate of the learning rate
        keepProb = 0.95; % Dropout of units in the network
+
+       % by default, no need to create an alignment matrix
+       useAlignmentMatrix = false;
+
+       % added by CP
+       gen_dim = 100; % generator network size
+       ci_enc_dim = 128; % network size for controller input encoder
+       ic_enc_dim = 128; % network size for IC encoder
+       con_dim = 128; %controller dimensionality
+       factors_dim = 30;
+       co_dim = 4;
+       ic_dim = 64;
+       in_factors_dim = 50; % i don't beieve this is used in non-multiday 
    end
 
 
