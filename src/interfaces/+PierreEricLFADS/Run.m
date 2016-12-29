@@ -411,10 +411,19 @@ classdef Run < LFADS.Run
         
         
         
-        function info = predictRTFromLFADS(r, datasetIndex)
-            if nargin < 2
-                datasetIndex = 1;
-            end
+        function info = predictRTFromLFADS(r, varargin)
+            p = inputParser();
+            p.addOptional('datasetIndex', 1, @isscalar);
+            p.addParameter('pcIndex', 1, @isscalar);
+            p.addParameter('startTime', [], @(x) isempty(x) || isscalar(x));
+            p.addParameter('normalizedThresh', 0.5, @isscalar);
+            p.parse(varargin{:});
+            
+            datasetIndex = p.Results.datasetIndex;
+            pcIndex = p.Results.pcIndex;
+            startTime = p.Results.startTime;
+            thresh = p.Results.normalizedThresh;
+            threshHigh = thresh + 0.1; 
             
             %% now examine LFADS predictions
             pmData = r.loadPosteriorMeans();
@@ -433,12 +442,17 @@ classdef Run < LFADS.Run
             pcaFactors = reshape(score', size(factors));
             
             lfads_time = seq(1).y_time(1:10:end);
-            LFCIS = squeeze(pcaFactors(1, :, :))'; % nTrials x T
+            if ~isempty(startTime)
+                time_mask = lfads_time >= startTime;
+            else
+                time_mask = true(size(lfads_time));
+            end
+            LFCIS = squeeze(pcaFactors(pcIndex, time_mask, :))'; % nTrials x T
             if mean(LFCIS(:, 1)) > mean(LFCIS(:, end))
                 LFCIS = -LFCIS;
             end
-            thresh = 0.5;
-            threshHigh = 0.7;
+            lfads_time = lfads_time(time_mask);
+            
             % rescale from 0 to 1
             LFCIS = TensorUtils.rescaleIntervalToInterval(LFCIS, [mean(LFCIS(:, 1)), max(mean(LFCIS, 1))]);
 
@@ -450,6 +464,15 @@ classdef Run < LFADS.Run
             plot(lfads_time, LFCIS', 'k-');
             hold on;
             plot(lfads_crossTime, TensorUtils.selectSpecificIndicesAlongDimensionEachPosition(LFCIS, 2, lfads_idxCross), 'rx');
+            
+            %%
+            figUnique('LFADS Colored by RT');
+            pt(2, LFCIS, 'coloreval', rt, 'alpha', 0.5);
+            set(gca, 'Color',  [0.92 0.92 0.95]);
+            hold on;
+%             plot(lfads_crossTime, TensorUtils.selectSpecificIndicesAlongDimensionEachPosition(LFCIS, 2, lfads_idxCross), 'rx');
+            plot(lfads_idxCross, TensorUtils.selectSpecificIndicesAlongDimensionEachPosition(LFCIS, 2, lfads_idxCross), 'rx');
+            horzLine(thresh, 'Color', [0.5 0.5 0.5]);
             
             mask = ~isnan(rt) & ~isnan(lfads_crossTime);
             lfads_rho = corr(lfads_crossTime(mask), rt(mask));
@@ -479,16 +502,16 @@ classdef Run < LFADS.Run
             speedMat(isnan(speedMat)) = 0;
             downsampledSpeedMat = resample(speedMat, 1, 10);
             
-            startIdx = 25;
+            startIdx = 41;
             speedTrain = downsampledSpeedMat(startIdx:end, :);
             
             lfadsTrain = pm.factors(:, startIdx:end, :);
             [mdl, predY, speedRho] = LFADS_PierreExport.fitrlinear_timeseries(lfadsTrain, speedTrain, 'lag', 0);
 
-%             clf;
-%             plot(speedTrain, 'k-');
-%             hold on;
-%             plot(predY, 'r-');
+            clf;
+            plot(speedTrain, 'k-');
+            hold on;
+            plot(predY, 'r-');
 
             speedRho
 %             speedRho = corr(speedTrain(:), predY(:))

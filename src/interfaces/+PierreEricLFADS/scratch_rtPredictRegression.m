@@ -1,4 +1,6 @@
-load('/Users/djoshea/data/lfadsCenterOut/rtPredict20161224.mat');
+% load('/Users/djoshea/data/lfadsCenterOut/rtPredict20161224.mat');
+
+load('/Users/djoshea/data/lfadsCenterOut/rt20161227.mat')
 %%
 
 for iR = 1:rc.nRuns
@@ -8,8 +10,6 @@ end
 %%
 
 r = rc.runs(end);
-r.addVelocityToSequenceData();
-r.recomputeRTInSequenceData();
 seq = r.sequenceData{7};
 pm = r.posteriorMeans(7);
 
