@@ -215,7 +215,7 @@ for ndset = 1:numel(seqs)
     end
 
     % send out an alignment matrix if defined
-    if exist('alignment_matrix_cxf','var')
+    if exist('alignment_matrix_cxf','var') & ~isempty(alignment_matrix_cxf)
         varout{end+1} = 'alignment_matrix_cxf';
         varout{end+1} = alignment_matrix_cxf{ndset};
     end

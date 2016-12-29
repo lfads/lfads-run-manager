@@ -354,14 +354,30 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             prog.finish();
 
-            % call out to abstract dataset specific method
-            [alignmentMatrices, trainInds, validInds] = r.prepareSequenceDataForLFADS(seqData);
+            % if there are multiple datasets, we need an alignment matrix
+            if r.nDatasets > 1
+                % call out to abstract dataset specific method
+                [alignmentMatrices, trainInds, validInds] = ...
+                    r.prepareSequenceDataForLFADS(seqData);
+            else
+                allInds = 1:r.datasets(1).nTrials;
+                validInds = 1:4:r.datasets(1).nTrials;
+                trainInds = setdiff(allInds, validInds);
+            end
 
+            % arguments for the 'seq_to_lfads' call below
+            seqToLFADSArgs = {'binSizeMs', dtMS,  ...
+                              'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
+                              'trainInds',trainInds, 'testInds', validInds};
+
+            if r.nDatasets > 1
+                seqToLFADSArgs{end+1} = 'alignment_matrix_cxf';
+                seqToLFADSArgs{end+1} = alignmentMatrices;
+            end
+
+            % write the actual lfads input file
             LFADS.seq_to_lfads(seqData, r.pathLFADSInput, r.lfadsInputFileNames, ...
-                         'trainInds',trainInds, 'testInds', validInds, ...
-                         'binSizeMs', dtMS, ...
-                         'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
-                         'alignment_matrix_cxf', alignmentMatrices);
+                               seqToLFADSArgs{:});
 
             fname = fullfile(r.path, 'lfadsInputInfo.mat');
             params = r.params; %#ok<*NASGU,PROP>
