@@ -15,9 +15,11 @@ par.batchSize = 40;
 par.nTrialsKeep = Inf;
 par.regularizerIncreaseSteps = 100;
 par.learningRateDecayFactor = 0.95;
+par.preKeep = 500;
+par.postKeep = 700;
 par.align = 'GoCue';
 
-rc = PierreEricLFADS.RunCollection('/data2/lfads/PierreEric/runs', 'rtPredict_v01', dc, par);
+rc = PierreEricLFADS.RunCollection('/data2/lfads/PierreEric/runs', 'rtPredict_v02', dc, par);
 
 %% 
 r = PierreEricLFADS.Run('one_0914', rc);

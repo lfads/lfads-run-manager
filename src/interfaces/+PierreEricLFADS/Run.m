@@ -275,10 +275,10 @@ classdef Run < LFADS.Run
             prog = ProgressBar(r.nDatasets, 'Adding Velocity to sequence data');
             for iDS = 1:r.nDatasets
                 prog.update(iDS);
-                for i = 1:length(r.sequenceData{iDS});
+                for i = 1:length(sequenceData{iDS});
                     sequenceData{iDS}(i).handVelocity = TrialDataUtilities.Data.savitzkyGolayFilt(...
-                        r.sequenceData{iDS}(i).handKinematics, 'polynomialOrder', 2, 'differentiationOrder', 1, 'frameSize', 31, 'dim', 2, 'samplingIntervalMs', 1);
-                    sequenceData{iDS}(i).handSpeed = sqrt(sum(r.sequenceData{iDS}(i).handVelocity.^2, 1));
+                        sequenceData{iDS}(i).handKinematics, 'polynomialOrder', 2, 'differentiationOrder', 1, 'frameSize', 31, 'dim', 2, 'samplingIntervalMs', 1);
+                    sequenceData{iDS}(i).handSpeed = sqrt(sum(sequenceData{iDS}(i).handVelocity.^2, 1));
                 end
             end
             prog.finish();
