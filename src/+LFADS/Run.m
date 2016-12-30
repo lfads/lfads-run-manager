@@ -355,14 +355,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             prog.finish();
 
             % if there are multiple datasets, we need an alignment matrix
-            if r.nDatasets > 1
+            if r.nDatasets > 1 || r.params.useAlignmentMatrix
                 % call out to abstract dataset specific method
                 [alignmentMatrices, trainInds, validInds] = ...
                     r.prepareSequenceDataForLFADS(seqData);
             else
                 allInds = 1:r.datasets(1).nTrials;
-                validInds = 1:4:r.datasets(1).nTrials;
-                trainInds = setdiff(allInds, validInds);
+                validInds = {1:4:r.datasets(1).nTrials};
+                trainInds = {setdiff(allInds, validInds{1})};
             end
 
             % arguments for the 'seq_to_lfads' call below
@@ -523,7 +523,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 
             info = load(fullfile(r.path, 'lfadsInputInfo.mat'));
             [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
-            prog = ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
+            prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
             for iDS = 1:r.nDatasets
                 prog.update(iDS);
                 if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
@@ -536,6 +536,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
                     continue;
                 end
+
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});
