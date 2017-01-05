@@ -497,7 +497,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
 
         function pms = loadPosteriorMeans(r, reload)
-            % pmData = loadPosteriorMeans(r)
+            % pmData = loadPosteriorMeans(r, reload)
             % After the posterior mean shell script has been run, this will load the posterior mean samples from disk
             % and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans
             %
@@ -545,6 +545,36 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             prog.finish();
             
             r.posteriorMeans = pms;
+        end
+
+        function seqs = addPosteriorMeansToSeq(r)
+        % function seqs = addPosteriorMeansToSeq(r)
+        % returns a sequence that has posterior mean
+        % values integrated
+
+            if isempty(r.posteriorMeans) || ~all([r.posteriorMeans.isValid])
+                r.loadPosteriorMeans;
+            end
+
+            if isempty(r.sequenceData) || numel(r.sequenceData) == 0
+                r.sequenceData = r.loadSequenceData();
+            end
+            seqs = r.sequenceData;
+
+            % iterate over datasets
+            for iDS = 1:numel(seqs)
+                pm = r.posteriorMeans(iDS);
+
+                for ntr = 1:numel(seqs{iDS})
+                    seqs{iDS}(ntr).rates = squeeze(pm.rates(:,:,ntr));
+                    seqs{iDS}(ntr).factors = squeeze(pm.factors(:,:,ntr));
+                    seqs{iDS}(ntr).generator_states = squeeze(pm.generator_states(:,:,ntr));
+                    seqs{iDS}(ntr).controller_outputs = ...
+                        squeeze(pm.controller_outputs(:,:,ntr));
+                end
+            end
+            
+            r.sequenceData = seqs;
         end
     end
 end
