@@ -337,10 +337,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             par = r.params;
 
-            dtMS = par.spikeBinMs; % this is bin size into LFADS, want to make larger for speedy training times (was 2 orig)
-            pcs_to_keep = par.pcsKeep;
-            do_trial_averaging = par.pcTrialAvg;
-
             % load sequence data
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
 
@@ -361,16 +357,16 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     r.prepareSequenceDataForLFADS(seqData);
             else
                 allInds = 1:r.datasets(1).nTrials;
-                validInds = {1:4:r.datasets(1).nTrials};
+                validInds = {1 : r.params.trainToTestRatio :r.datasets(1).nTrials};
                 trainInds = {setdiff(allInds, validInds{1})};
             end
 
             % arguments for the 'seq_to_lfads' call below
-            seqToLFADSArgs = {'binSizeMs', dtMS,  ...
+            seqToLFADSArgs = {'binSizeMs', par.spikeBinMs,  ...
                               'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
-                              'trainInds',trainInds, 'testInds', validInds};
+                              'trainInds', trainInds, 'testInds', validInds};
 
-            if r.nDatasets > 1
+            if r.nDatasets > 1 || r.params.useAlignmentMatrix
                 seqToLFADSArgs{end+1} = 'alignment_matrix_cxf';
                 seqToLFADSArgs{end+1} = alignmentMatrices;
             end
@@ -383,9 +379,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             params = r.params; %#ok<*NASGU,PROP>
             save(fname, 'trainInds', 'validInds', 'params');
         end
-
-        function f = writeShellScriptLFADSTrain(r)
-            % file = writeShellScriptLFADSTrain()
+        
+        function f = writeShellScriptLFADSTrain(r, tmux_session_name, display, ...
+                                                cuda_visible_device)
+            % function f = writeShellScriptLFADSTrain(r, tmux_session_name, display,...
+            %                                         cuda_visible_device)
             % Write a shell script used for running the LFADS python code
             %
             % Returns
@@ -395,15 +393,50 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             f = r.fileShellScriptLFADSTrain;
             fid = fopen(f, 'w');
-            fprintf(fid, 'SESS_NAME="%s"\n', r.nameWithParams);
-            fprintf(fid, 'L2_GEN_SCALE="500"\n');
-            fprintf(fid, 'L2_CON_SCALE="500"\n');
-            fprintf(fid, 'DATADIR="%s"\n', r.pathLFADSInput);
-            fprintf(fid, 'OUTDIR="%s"\n', r.pathLFADSOutput);
-            fprintf(fid, 'python $(which run_lfads.py) --data_dir=$DATADIR --data_filename_stem=lfads --lfads_save_dir=$OUTDIR --cell_clip_value=5 --factors_dim=8 --in_factors_dim=8 --ic_enc_dim=100 --ci_enc_dim=100 --gen_dim=100 --keep_prob=%g --learning_rate_decay_factor=%g --device=/gpu:0 --co_dim=4 --do_causal_controller=false --l2_gen_scale=$L2_GEN_SCALE --l2_con_scale=$L2_CON_SCALE --batch_size=%d --kl_increase_steps=%d --l2_increase_steps=%d --controller_input_lag=1 \n', ...
-                r.params.keepProb, r.params.learningRateDecayFactor, r.params.batchSize, r.params.regularizerIncreaseSteps, r.params.regularizerIncreaseSteps);
+            outputString = r.buildLFADSTrainingCommand();
+
+            % set cuda visible devices
+            if exist('cuda_visible_device', 'var') && ~isempty(cuda_visible_device)
+                outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
+                                       cuda_visible_device, outputString);
+            end
+            % set the display variable
+            if exist('display', 'var') && ~isempty(display)
+                outputString = sprintf('DISPLAY=:%i %s', ...
+                                       display, outputString);
+            end
+
+            % if requested, tmux-ify the command
+            if exist('tmux_session_name', 'var') && ~isempty(tmux_session_name)
+                outputString = LFADS.Utils.tmuxify_string( outputString, tmux_session_name );
+            end
+            
+            fprintf(fid, outputString);
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
+        end
+
+        function runLFADSTrainingCommand(r)
+        %   function runLFADSTrainingCommand(r)
+            system( sprintf('sh %s', r.fileShellScriptLFADSTrain) );
+        end
+
+        function outputString = buildLFADSTrainingCommand(r)
+            outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
+                                '--lfads_save_dir=%s'], ...
+                                   r.pathLFADSInput, r.pathLFADSOutput);
+            
+            if r.params.useDJOparams
+                optionsString = sprintf(' --cell_clip_value=5 --factors_dim=8 --in_factors_dim=8 --ic_enc_dim=100 --ci_enc_dim=100 --gen_dim=100 --keep_prob=%g --learning_rate_decay_factor=%g --device=/gpu:0 --co_dim=4 --do_causal_controller=false --l2_gen_scale=500 --l2_con_scale=500 --batch_size=%d --kl_increase_steps=%d --l2_increase_steps=%d --controller_input_lag=1', ...
+                                        r.params.keepProb, r.params.learningRateDecayFactor, ...
+                                        r.params.batchSize, r.params.regularizerIncreaseSteps, r.params.regularizerIncreaseSteps);
+            else
+                % use the method from +LFADS/RunParams.m
+                optionsString = r.params.generateCommandLineOptionsString();
+            end
+            outputString = sprintf('%s%s', ...
+                                   outputString, ...
+                                   optionsString);
         end
 
         function cmd = buildCommandLFADSPosteriorMeanSample(r, varargin)
@@ -426,28 +459,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             params.data_dir = r.pathLFADSInput;
             params.lfads_save_dir = r.pathLFADSOutput;
 
-            params.batch_size = r.params.batchSize;
+            params.batch_size = 512; % this is the number of
+                                     % samples used to calculate
+                                     % the posterior mean
             params.checkpoint_pb_load_name = 'checkpoint_lve';
-%             default_keys = {'batch_size', 'checkpoint_pb_load_name'};
-%             default_values = {r.params.batchSize, 'checkpoint_lve'}; % was 512 not r.params.batchSize
-%             for nkey = 1:numel(default_keys)
-%                 % if this key is not defined, set it to the default value
-%                 if ~any(strcmp(keys, default_keys{nkey}))
-%                     keys{end+1} = default_keys{nkey}; %#ok<*AGROW>
-%                     keys{end+1} = default_values{nkey};
-%                 end
-%             end
-%             
+
             % need to remove "dataset_names" and "dataset_dims"
             params = rmfield(params, {'dataset_names', 'dataset_dims'});
             use_controller = boolean(params.ci_enc_dim);
-
-%             tmp = lfads_path();
-%             if ~use_controller
-%                 lfpath = fullfile(tmp.path, tmp.lfnc);
-%             else
-%                 lfpath = fullfile(tmp.path, tmp.lf);
-%             end
 
             execstr = 'python';
 
@@ -478,8 +497,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             cmd = sprintf('%s $(which run_lfads.py) %s', execstr, optstr);
         end
 
-        function f = writeShellScriptLFADSPosteriorMeanSample(r)
-            % file = writeShellScriptLFADSPosteriorMeanSample()
+        function runLFADSPosteriorMeanCommand(r)
+        %   function runLFADSPosteriorMeanCommand(r)
+            system( sprintf('sh %s', r.fileShellScriptLFADSPosteriorMeanSample) );
+        end
+
+
+        function f = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name)
+            % function file = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name)
             % Write a shell script used for running the LFADS posterior mean sampling. This must be run after the LFADS
             % training has been started.
             %
@@ -491,7 +516,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             f = r.fileShellScriptLFADSPosteriorMeanSample;
             fid = fopen(f, 'w');
-            fprintf(fid, r.buildCommandLFADSPosteriorMeanSample());
+
+            outputString = r.buildCommandLFADSPosteriorMeanSample();
+
+            % if requested, tmux-ify the command
+            if exist('tmux_session_name', 'var') && ~isempty(tmux_session_name)
+                outputString = LFADS.Utils.tmuxify_string( outputString, tmux_session_name );
+            end
+
+            fprintf(fid, outputString);
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
