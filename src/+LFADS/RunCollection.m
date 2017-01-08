@@ -58,6 +58,28 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function f = get.fileShellScriptTensorboard(r)
             f = fullfile(r.path, 'launch_tensorboard.sh');
         end
+        
+        function runs = getRunsByName(rc, names)
+            % Find runs by their names. Throws an error if any run is not
+            % found.
+            %
+            % Args:
+            %   names (string or cellstr) : single name or cell array of
+            %     names to find
+            % Returns:
+            %   runs (LFADS.Run) : matching runs
+            %   idx (uint) : list of indices into `.runs` of matching run
+            %     instances
+            %
+            
+            if ischar(names)
+                names = {names};
+            end
+            [tf, idx] = ismember(names, {rc.runs.name});
+            assert(all(tf), 'Some run names could not be found in this RunCollection');
+            
+            runs = rc.runs(idx);
+        end
 
         function clearRuns(rc)
             % Flush list of runs
