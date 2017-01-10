@@ -4,18 +4,9 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
     % instances, and all runs in a collection share the same parameter settings, which are represented by a shared
     % :ref:`LFADS_RunParams` instance.
 
-    methods(Abstract)
-        cls = getRunClassName(r);
-        % Return the name of the subclass of :ref:`LFADS_Run` to be used
-        % when generating runs
-        % 
-        % Returns:
-        %   cls : string 
-        %     Class name which subclasses from :ref:`LFADS_Run`
-        
-    end
-    
     properties
+        runClassName char = '' % Class name that will be used to create LFADS.Run instances using
+        
         name char = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
 
         comment char = '' % Textual comment for convenience
@@ -34,14 +25,17 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
     end
 
     methods
-        function r = RunSpec(name, datasetCollection, datasetIndicesOrNames)
-            % run = RunSpec(name, datasetCollection[, datasetIndicesOrNames])
+        function r = RunSpec(varargin)
+            % run = RunSpec(name, runClassName, datasetCollection[, datasetIndicesOrNames])
             %
             % Parameters
             % ------------
             % name : string
             %   Unique name for this run within the collection
             %
+            % runClassName : string
+            %   Class name that will be used to create LFADS.Run instances using
+            % 
             % datasetCollection : :ref:`LFADS_DatasetCollection` instance
             %   DatasetCollection in which this run will find its datasets
             %
@@ -49,11 +43,19 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
             %   if numeric vector, will select datasets by index in datasetCollection. If cellstr of names, will
             %   search for datasets by name within datasetCollection.
 
-            r.name = name;
-            r.datasetCollection = datasetCollection;
+            p = inputParser();
+            p.addOptional('name', '', @ischar);
+            p.addOptional('runClassName', '', @ischar);
+            p.addOptional('datasetCollection', [], @(x) isa(x, 'LFADS.DatasetCollection'));
+            p.addOptional('datasetIndicesOrNames', [], @(x) true);
+            p.parse(varargin{:});
+            
+            r.name = p.Results.name;
+            r.runClassName = p.Results.runClassName;
+            r.datasetCollection = p.Results.datasetCollection;
 
-            if nargin > 2
-                r.selectDatasets(datasetIndicesOrNames);
+            if ~isempty(p.Results.datasetIndicesOrNames)
+                r.selectDatasets(p.Results.datasetIndicesOrNames);
             end
         end
 
@@ -70,7 +72,9 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
             %   if numeric vector, will select datasets by index in datasetCollection. If cellstr of names, will
             %   search for datasets by name within datasetCollection.
             %
-            if isnumeric(datasetIndicesOrNames) || islogical(datasetIndicesOrNames)
+            if isempty(datasetIndicesOrNames)
+                r.selectDatasets([]);
+            elseif isnumeric(datasetIndicesOrNames) || islogical(datasetIndicesOrNames)
                 r.selectDatasetsByIndex(datasetIndicesOrNames);
             else
                 r.selectDatasetsByName(datasetIndicesOrNames);
@@ -102,8 +106,8 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
 
     methods(Hidden)
         function h = getFirstLineHeader(r)
-            className = matlab.mixin.CustomDisplay.getClassNameForHeader(r);
-            h = sprintf('%s %s (%d datasets)\n', className, r.name, r.nDatasets);
+            className = class(r);
+            h = sprintf('%s "%s" (%d datasets)\n', className, r.name, r.nDatasets);
         end
     end
 
@@ -112,10 +116,9 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
           if ~isscalar(r)
              header = getHeader@matlab.mixin.CustomDisplay(r);
           else
-             rc = r.runCollection;
-             header = sprintf('%s\n  %d datasets in %s\n', r.getFirstLineHeader(), r.nDatasets, rc.path);
+             header = sprintf('%s\n  %d datasets from collection %s\n', r.getFirstLineHeader(), r.nDatasets, r.datasetCollection.name);
              for s = 1:r.nDatasets
-                 header = cat(2, header, sprintf('    [%2d] %s', s, r.datasets(s).getHeader()));
+                 header = cat(2, header, sprintf('    [%2d] %s\n', s, r.datasets(s).getFirstLineHeader()));
              end
           end
        end

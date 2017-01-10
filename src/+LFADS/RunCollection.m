@@ -66,7 +66,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             rc.rootPath = p.Results.rootPath;
             rc.name = p.Results.name;
             rc.datasetCollection = p.Results.datasetCollection;
-            rc.runParams = p.Results.runParams;
+            rc.params = p.Results.runParams;
             rc.runSpecs = p.Results.runSpecs;
         end
         
@@ -82,15 +82,19 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             
             assert(isa(runSpecs, 'LFADS.RunSpec'), 'Must be LFADS.RunSpec instance(s)');
             runSpecs = LFADS.Utils.makecol(runSpecs(:));
+            
+            for i = 1:numel(runSpecs)
+                assert(isequal(runSpecs(i).datasetCollection, rc.datasetCollection), 'DatasetCollection of added RunSpecs must match RunCollection');
+            end
+            
             if isempty(rc.runSpecs)
                 rc.runSpecs = runSpecs;
             else
                 % check for existing runs by name and replace them
-                names = arrayfun(@(oldR) oldR.name, rc.runSpecs, 'UniformOutput', false);
-                [tf, idx] = ismember(r.name, names);
+                [tf, idx] = rc.ismemberRunSpecs(runSpecs);
                 if any(tf)
                     warning('Replacing existing runs with matching name');
-                    rc.runs(idx(tf)) = runSpecs(tf);
+                    rc.runSpecs(idx(tf)) = runSpecs(tf);
                 end
                 rc.runSpecs = cat(1, rc.runSpecs, runSpecs(~tf));
             end
@@ -126,13 +130,19 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             
             assert(isa(params, 'LFADS.RunParams'), 'Must be LFADS.RunParams instance(s)');
             params = LFADS.Utils.makecol(params(:));
-            if isempty(rc.runParams)
-                rc.runParams = params;
+            if isempty(rc.params)
+                rc.params = params;
             else
-                rc.runParams = cat(1, rc.runSpecs, runParams);
+                % check for existing runs by name and replace them
+                [tf, idx] = rc.ismemberParams(params);
+                if any(tf)
+                    warning('Replacing existing runs with matching name');
+                    rc.params(idx(tf)) = params(tf);
+                end
+                rc.params = cat(1, rc.params, params(~tf));
             end
             
-            if rc.version < 3 && numel(rc.runParams) > 1 
+            if rc.version < 3 && numel(rc.params) > 1 
                 error('Multiple params not supported for version < 3');
             end
                 
@@ -168,26 +178,50 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             assert(~isempty(rc.rootPath), 'rootPath is empty');
             assert(~isempty(rc.name), 'name is empty');
             
-            rc.runs = [];
-            for iS = rc.nRunSpecs:-1:1
-                spec = rc.runSpecs(iS);
-                clsFn = str2func(spec.getRunClassName());
+            if rc.nRunsTotal > 0
+                % start with existing matrix
+                matOrig = rc.runs;
                 
-                for iP = rc.nParams:-1:1
-                    % create the run
-                    rc.runs(iS, iP) = clsFn(spec.name, rc, rc.params(iP), spec.datasets);
+                for iS = rc.nRunSpecs:-1:1
+                    spec = rc.runSpecs(iS);
+                    clsFn = str2func(spec.runClassName);
+
+                    for iP = rc.nParams:-1:1
+                        % create the new run
+                        new = clsFn(spec.name, rc, rc.params(iP), spec.datasets);
+                        
+                        % check whether the old run matches, keep it if so,
+                        % so that we don't break references unless
+                        % something has changed
+                        if size(matOrig, 1) >= iS && size(matOrig, 2) >= iP
+                            orig = matOrig(iS, iP);
+                            if orig == new
+                                new = orig;
+                            end
+                        end
+                        
+                        mat(iS, iP) = new;                        
+                    end
                 end
+
+                rc.runs = mat;
+            else
+                rc.runs = [];
             end
         end
     end
         
     methods
         function p = get.path(rc)
-            if rc.version < 3
+            if rc.version >= 3
                 p = fullfile(rc.rootPath, rc.name);
             else
-                paramSuffix = rc.params(1).generateSuffix();
-                p = fullfile(rc.rootPath, [rc.name '_' paramSuffix]);
+                if isempty(rc.params)
+                    paramSuffix = '';
+                else
+                    paramSuffix = ['_' rc.params(1).generateString()];
+                end
+                p = fullfile(rc.rootPath, [rc.name paramSuffix]);
             end
         end
 
@@ -200,7 +234,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         end
 
         function n = get.nRunsTotal(rc)
-            n = numel(rc.runs);
+            n = rc.nRunSpecs * rc.nParams;
         end
         
         function n = get.nRunSpecs(rc)
@@ -211,6 +245,40 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             n = rc.datasetCollection.nDatasets;
         end
         
+        function [tf, idx] = ismemberRunSpecs(rc, runSpecSearch)
+            % Determine if any run specs that match runSpecSearch are found in .runSpecs.
+            % If runSpecSearch is string or cellstr, matches by
+            % name. If runSpecSearch is an array of RunSpec instances,
+            % finds them using isequal. If runSpecSearch is a vector of
+            % indices, selects from runSpecs directly
+            %
+            % Args:
+            %   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs
+            %
+            % Returns:
+            %   tf : logical
+            %     does each runSpec exist within .runSpecs
+            %   idx : indices
+            %     which index in .runSpecs
+            %
+            
+            if ischar(runSpecSearch)
+                runSpecSearch = {runSpecSearch};
+            end
+            if iscellstr(runSpecSearch)
+                [tf, idx] = ismember(runSpecSearch, {rc.runSpecs.name});
+                
+            elseif isa(runSpecSearch, 'LFADS.RunSpec')
+                [tf, idx] = ismember(runSpecSearch, rc.runSpecs);
+                
+            else
+                % assume is selection
+                idx = runSpecSearch;
+                tf = true(size(idx));
+            end
+            idx = LFADS.Utils.makecol(idx(:));
+        end
+           
         function [runSpecs, idx] = findRunSpecs(rc, runSpecSearch)
             % Find run specs that match runSpecSearch. Throws an error if any run is not
             % found. If runSpecSearch is string or cellstr, matches by
@@ -227,26 +295,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %     instances
             %
             
-            if ischar(runSpecSearch)
-                runSpecSearch = {runSpecSearch};
-            end
-            if iscellstr(runSpecSearch)
-                [tf, idx] = ismember(runSpecSearch, {rc.runSpecs.name});
-                assert(all(tf), 'Some run spec names could not be found in this RunCollection');
-            elseif isa(runSpecSearch, 'LFADS.RunSpec')
-                [tf, idx] = ismember(runSpecSearch, rc.runSpecs);
-                assert(all(tf), 'Some run spec instances could not be found in this RunCollection');
-            else
-                % assume is selection
-                idx = runSpecSearch;
-            end
-            idx = LFADS.Utils.makecol(idx(:));
-            runSpecs = rc.runsSpecs(idx);
+            [tf, idx] = rc.ismemberRunSpecs(runSpecSearch);
+            assert(all(tf), 'Some run spec names could not be found in this RunCollection');
+            runSpecs = rc.runSpecs(idx);
         end
         
-        function [params, idx] = findRunParams(rc, paramSearch)
-            % Find run params that match paramSearch. Throws an error if any RunParams is not
-            % found. If paramSearch is an array of RunParams instances,
+        function [tf, idx] = ismemberParams(rc, paramSearch)
+            % Determine if any run params that match paramSearch are found in .params.
+            % If paramSearch is an array of RunParams instances,
             % finds them using isequal. If paramSearch is a vector of
             % indices, selects from runParams directly
             %
@@ -261,12 +317,32 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             
             if isa(paramSearch, 'LFADS.RunParams')
                 [tf, idx] = ismember(paramSearch, rc.params);
-                assert(all(tf), 'Some run params instances could not be found in this RunCollection');
+                
             else
                 % assume is selection
                 idx = paramSearch;
+                tf = true(size(idx));
             end
             idx = LFADS.Utils.makecol(idx(:));
+        end
+        
+        function [params, idx] = findParams(rc, paramSearch)
+            % Find run params that match paramSearch. Throws an error if any RunParams is not
+            % found. If paramSearch is an array of RunParams instances,
+            % finds them using isequal. If paramSearch is a vector of
+            % indices, selects from runParams directly
+            %
+            % Args:
+            %   paramSearch : array of LFADS.RunParams or indices into .params
+            %
+            % Returns:
+            %   params : LFADS.RunParams
+            %     matching params 
+            %   idx : vector of indices into `.params` of matches
+            %
+            
+            [tf, idx] = rc.ismemberParams(paramSearch);
+            assert(all(tf), 'Some run params could not be found in this RunCollection');
             params = rc.params(idx);
         end
         
@@ -298,9 +374,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %   cmd : string
             %     Command which can luanch TensorBoard from command line
 
-            runEntry = cellvec(rc.nRuns);
-            for r = 1:rc.nRuns
-                runEntry{r} = sprintf('%s:%s', rc.runs(r).name, rc.runs(r).pathLFADSOutput);
+            runEntry = cell(rc.nRunSpecs, rc.nParams);
+            for s = 1:rc.nRunSpecs
+                for p = 1:rc.nParams
+                    runEntry{s,p} = sprintf('%s__par%d:%s', rc.runs(s,p).name, p, rc.runs(s,p).pathLFADSOutput);
+                end
             end
             str = sprintf('tensorboard --logdir=%s', strjoin(runEntry, ','));
         end
@@ -367,16 +445,18 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
           if ~isscalar(rc)
              header = getHeader@matlab.mixin.CustomDisplay(rc);
           else
-             className = matlab.mixin.CustomDisplay.getClassNameForHeader(rc);
-             header = sprintf('%s %s in %s\n', className, rc.name, rc.path);
-             header = cat(2, header, sprintf('  %d RunParams settings\n', rc.nParams));
+             className = class(rc);
+             header = sprintf('%s "%s" (%d runs total)\n  Dataset Collection "%s" (%d datasets) in %s\n', ...
+                 className, rc.name, rc.nRunsTotal, rc.datasetCollection.name, rc.nDatasets, rc.datasetCollection.path);
+             header = cat(2, header, sprintf('  Path: %s\n\n', rc.path));
+             header = cat(2, header, sprintf('  %d parameter settings\n', rc.nParams));
              for p = 1:rc.nParams
-                 header = cat(2, header, sprintf('  [%2d] %s\n', rc.params(p).getSuffix));
+                 header = cat(2, header, sprintf('  [%2d] %s\n', p, rc.params(p).getFirstLineHeader()));
              end
              
-             header = cat(2, header, sprintf('  %d runs per param setting, %d runs total\n', rc.nRunsEachParam, rc.nRunsTotal));
-             for s = 1:rc.nRunsEachParam
-                 header = cat(2, header, sprintf('  [%2d] %s', s, rc.runs(s).getFirstLineHeader()));
+             header = cat(2, header, sprintf('\n  %d run specifications\n', rc.nRunSpecs));
+             for s = 1:rc.nRunSpecs
+                 header = cat(2, header, sprintf('  [%2d] %s', s, rc.runSpecs(s).getFirstLineHeader()));
              end
           end
        end

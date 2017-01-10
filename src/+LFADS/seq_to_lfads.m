@@ -98,7 +98,10 @@ for nn = 1:numel(dirsToCreate)
     end
 end
 
+prog = LFADS.Utils.ProgressBar(numel(seqs), 'Writing LFADS Input files');
 for ndset = 1:numel(seqs)
+    prog.update(ndset);
+    
     seq = seqs{ndset};
     trainInds = allTrainInds{ndset};
     testInds = allTestInds{ndset};
@@ -227,9 +230,9 @@ for ndset = 1:numel(seqs)
     varout{end+1} = testInds;
 
     %% export the spikes
-    fprintf('Saving LFADS Input in %s\n', outfile);
     lfadsi_export_spikes(outfile, ytrain, ytest, varout{:})
 end
+prog.finish();
 
 
 % tmp = comparisonDefaults();

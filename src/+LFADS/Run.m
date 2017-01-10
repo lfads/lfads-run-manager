@@ -58,18 +58,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
 
     properties
-        runCollection LFADS.RunCollection % :ref:`LFADS_RunCollection` instance to which this run belongs
-        params LFADS.RunParams % :ref:`LFADS_RunParams` instance shared by all runs in the collection, contains parameter settings
-        datasets LFADS.Dataset % Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize
+        runCollection % :ref:`LFADS_RunCollection` instance to which this run belongs
+        params % :ref:`LFADS_RunParams` instance shared by all runs in the collection, contains parameter settings
+        datasets % Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize
         
         sequenceData cell % nDatasets cell array of sequence struct data
-        posteriorMeans LFADS.PosteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
+        posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
     end
 
     properties(Dependent)
         nDatasets % Number of datasets used by this run
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
         path % Unique folder within rootPath including paramStr/name
+        
+        paramsString % string representation of params generated using .params.generateString()
         
         pathSequenceFiles % Path on disk where sequence files will be saved
         sequenceFileNames % List of sequence file names (sans path)
@@ -86,8 +88,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
 
     methods
-        function r = Run(name, runCollection, runParams, datasets)
-            % run = Run(name, runCollection)
+        function r = Run(varargin)
+            % run = Run(name, runCollection, params, datasets)
             %
             % Run instances should not be constructed directly by the user.
             % Instead, use :ref:`LFADS_RunSpec` and add them to a
@@ -101,15 +103,35 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % runCollection : :ref:`LFADS_RunCollection` instance
             %   RunCollection to which this run should be added
             %
-            % runParams : :ref:`LFADS_RunParams` instance
+            % params : :ref:`LFADS_RunParams` instance
             %   parameters for this run
             %
             % datasets : array of :ref:`LFADS_Dataset`
-            %   
-            r.name = name;
-            r.params = runParams;
-            r.datasets = datasets;
-            r.runCollection = runCollection;
+            % 
+            
+            p = inputParser();
+            p.addOptional('name', '', @ischar);
+            p.addOptional('runCollection', [], @(x) isa(x, 'LFADS.RunCollection'));
+            p.addOptional('params', [], @(x) isa(x, 'LFADS.RunParams'));
+            p.addOptional('datasets', [], @(x) isa(x, 'LFADS.Dataset'));
+            p.parse(varargin{:});
+            
+            r.name = p.Results.name;
+            r.runCollection = p.Results.runCollection;
+            r.params = p.Results.params;
+            r.datasets = p.Results.datasets;
+        end
+           
+        function tf = eq(a, b)
+            % Overloaded == operator to enable equality if name, params,
+            % datasets, and runCollection fields all match.
+            
+            tf = false(size(a));
+            assert(isequal(size(b), size(a)), 'Sizes must match');
+            for i = 1:numel(a)
+                tf(i) = strcmp(a(i).name, b(i).name) && isequal(a(i).params, b(i).params) ...
+                    && isequal(a(i).datasets, b(i).datasets) && isequal(a(i).runCollection, b(i).runCollection);
+            end
         end
 
         function dc = get.datasetCollection(r)
@@ -125,6 +147,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             else
                 % collectionPath / paramString / name
                 p = fullfile(r.runCollection.path, r.params.generateString(), r.name);
+            end
+        end
+        
+        function str = get.paramsString(r)
+            if ~isempty(r.params)
+                str = r.params.generateString();
+            else
+                str = '';
             end
         end
 
@@ -185,15 +215,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
 
-        function n = get.nameWithParams(r)
-            if isempty(r.params)
-                paramStr = '';
-            else
-                paramStr = ['_', r.params.generateSuffix()];
-            end
-            n = [r.name, paramStr];
-        end
-
         function [trainList, validList] = getLFADSPosteriorSampleMeanFiles(r)
             % Generates the list of training and validation LFADS posterior mean files for loading, without path
             %
@@ -220,8 +241,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
     methods(Hidden)
         function h = getFirstLineHeader(r)
-            className = matlab.mixin.CustomDisplay.getClassNameForHeader(r);
-            h = sprintf('%s %s (%d datasets)\n', className, r.name, r.nDatasets);
+            className = class(r);
+            h = sprintf('%s "%s" (%d datasets)\n', className, r.name, r.nDatasets);
         end
     end
 
@@ -231,7 +252,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
              header = getHeader@matlab.mixin.CustomDisplay(r);
           else
              rc = r.runCollection;
-             header = sprintf('%s\n  %d datasets in %s\n', r.getFirstLineHeader(), r.nDatasets, rc.path);
+             header = sprintf('%s\n  Path: %s\n\n  %d datasets in "%s"\n', r.getFirstLineHeader(), r.path, r.nDatasets, r.datasetCollection.name);
              for s = 1:r.nDatasets
                  header = cat(2, header, sprintf('    [%2d] %s', s, r.datasets(s).getHeader()));
              end
@@ -246,7 +267,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             r.makeSequenceFiles();
             r.makeLFADSInput();
             f = r.writeShellScriptLFADSTrain();
-            fprintf('Shell script for training\n%s\n', f);
+            fprintf('Shell script for training "%s": \n  %s\n', r.name, f);
         end
 
         function makeSequenceFiles(r)
@@ -256,23 +277,24 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 return;
             end
 
-            fprintf('Saving sequence files in %s\n', r.pathSequenceFiles);
+%             fprintf('Saving sequence files in %s\n', r.pathSequenceFiles);
             LFADS.Utils.mkdirRecursive(r.pathSequenceFiles);
 
             sequenceFileNames = r.sequenceFileNames; %#ok<PROP>
 
-%             prog = LFADS.Utils.ProgressBar(numel(r.datasets), 'Generating sequence files');
+            prog = LFADS.Utils.ProgressBar(numel(r.datasets), 'Generating sequence files');
             for iDS = 1:numel(r.datasets)
                 ds = r.datasets(iDS);
-%                 prog.update(iDS, 'Generating sequence files for %s', ds.name);
+                prog.update(iDS, 'Generating sequence files for %s', ds.name);
 
                 % call user
                 seq = r.convertDatasetToSequenceStruct(ds);
 
                 seqFile = fullfile(r.pathSequenceFiles, sequenceFileNames{iDS}); %#ok<PROP>
-                fprintf('Saving seq file to %s\n', seqFile);
+%                 fprintf('Saving seq file to %s\n', seqFile);
                 save(seqFile, 'seq');
             end
+            prog.finish();
         end
 
         function seq = loadSequenceData(r, reload)
@@ -313,7 +335,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             r.sequenceData = r.modifySequenceDataPostLoading(seq);
         end
         
-        function seq = modifySequenceDataPostLoading(r, seq)
+        function seq = modifySequenceDataPostLoading(r, seq) %#ok<*INUSL>
             % Optionally make any changes or do any post-processing of sequence data upon loading 
             
         end
@@ -416,17 +438,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                                 '--lfads_save_dir=%s'], ...
                                    r.pathLFADSInput, r.pathLFADSOutput);
             
-            if r.params.useDJOparams
-                optionsString = sprintf(' --cell_clip_value=5 --factors_dim=8 --in_factors_dim=8 --ic_enc_dim=100 --ci_enc_dim=100 --gen_dim=100 --keep_prob=%g --learning_rate_decay_factor=%g --device=/gpu:0 --co_dim=4 --do_causal_controller=false --l2_gen_scale=500 --l2_con_scale=500 --batch_size=%d --kl_increase_steps=%d --l2_increase_steps=%d --controller_input_lag=1', ...
-                                        r.params.keepProb, r.params.learningRateDecayFactor, ...
-                                        r.params.batchSize, r.params.regularizerIncreaseSteps, r.params.regularizerIncreaseSteps);
-            else
-                % use the method from +LFADS/RunParams.m
-                optionsString = r.params.generateCommandLineOptionsString();
-            end
-            outputString = sprintf('%s%s', ...
-                                   outputString, ...
-                                   optionsString);
+            % use the method from +LFADS/RunParams.m
+            optionsString = r.params.generateCommandLineOptionsString();
+            outputString = sprintf('%s%s', outputString, optionsString);
         end
 
         function cmd = buildCommandLFADSPosteriorMeanSample(r, varargin)
@@ -563,7 +577,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});
-                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params);
+                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params); %#ok<AGROW>
             end
             prog.finish();
             

@@ -138,12 +138,12 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
           if ~isscalar(dc)
              header = getHeader@matlab.mixin.CustomDisplay(dc);
           else
-             className = matlab.mixin.CustomDisplay.getClassNameForHeader(dc);
-             newHeader = sprintf('%s %s', className, dc.name);
+             className = class(dc);
+             newHeader = sprintf('%s "%s"', className, dc.name);
              header = sprintf('%s\n  %d datasets in %s\n',newHeader, dc.nDatasets, dc.path);
 
              for s = 1:dc.nDatasets
-                 header = cat(2, header, sprintf('  %2d  %s\n', s, dc.datasets(s).name));
+                 header = cat(2, header, sprintf('  [%2d] %s\n', s, dc.datasets(s).getFirstLineHeader()));
              end
           end
        end
