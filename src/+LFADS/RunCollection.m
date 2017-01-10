@@ -1,26 +1,35 @@
 classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
-    % A set of :ref:`LFADS_Run` instances sharing common parameter settings but utilizing
+    % A set of :ref:`LFADS_Run` instances utilizing
     % different subsets of :ref:`LFADS_Dataset` insstances in a :ref:`LFADS_DatasetCollection`.
-    % A RunCollection is a logical grouping of otherwise independent LFADS runs, which are constrained
-    % to share a common Dataset collection and run parameters.
+    % A RunCollection is a logical grouping of LFADS runs, where multiple
+    % runs specifications are each run with multiple parameter
+    % settings. The run specifications are provided as arrays of RunSpec instances which
+    % indicate the name and which datasets are included for each run specification. The
+    % parameter sweeps are specified using arrays of RunParams instances.
+    % From these, a `nRunSpecs` x `nParams` matrix of :ref:`LFADS_Run`
+    % instances will be generated. These in turn can be used to train
+    % individual LFADS models on a particular set of datasets (or single
+    % dataset) and particular parameter settings.
 
     properties
-        name = '' % Name of this RunCollection, determines its relative path on disk
-        comment = '' % Textual comment for convenience
-        rootPath = ''; % Root path on disk under which individual Runs will be stored
+        name char = '' % Name of this RunCollection, determines its relative path on disk
+        comment char = '' % Textual comment for convenience
+        rootPath char = ''; % Root path on disk under which individual Runs will be stored
 
-        datasetCollection LFADS.DatasetCollection % DatasetCollection instance
+        version uint32 = 3; % version used for backwards compatibility
+        
+        datasetCollection % DatasetCollection instance
     end
 
     properties(SetAccess=protected)
-        runs % `nRunsEachParam` x `nParams` matrix of :ref:`LFADS_Run` instances
+        runs % `nRunSpecs` x `nParams` matrix of :ref:`LFADS_Run` instances
         params % array of RunParams instances
-        runSpecs
+        runSpecs % array of :ref:`LFADS_RunSpec` instances used to specify the runs for each param setting
     end
 
     properties(Dependent)
         nParams % number of parameter settings in `params`
-        nRunsEachParam % number of runs per each `RunParams` in `params`
+        nRunSpecs % number of run specifications 
         nRunsTotal % number of runs total (equal to `nParams` * `nRunsEachParam`
         
         nDatasets % number of datasets within the datasetCollection
@@ -29,7 +38,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
     end
 
     methods
-        function rc = RunCollection(rootPath, name, datasetCollection, runParams, runSpecs)
+        function rc = RunCollection(varargin)
             % rc = RunCollection(rootPath, name, datasetCollection[, runParams, runSpecs])
             %
             % Args:
@@ -46,18 +55,19 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %     datasets for each run that will be run with each set of
             %     params
 
-
-            rc.name = name;
-            rc.rootPath = rootPath;
-            rc.datasetCollection = datasetCollection;
-            if nargin > 3
-                rc.params = LFADS.Utils.makecol(runParams(:));
-            end
-            if nargin > 4
-                rc.runSpecs = LFADS.Utils.makecol(runSpecs(:));
-            end
+            p = inputParser();
+            p.addOptional('rootPath', '', @ischar);
+            p.addOptional('name', '', @ischar);
+            p.addOptional('datasetCollection', [], @(x) isa(x, 'LFADS.DatasetCollection'));
+            p.addOptional('runParams', [], @(x) isa(x, 'LFADS.RunParams'));
+            p.addOptional('runSpecs', [], @(x) isa(x, 'LFADS.DatasetCollection'));
+            p.parse(varargin{:});
             
-            rc.generateRuns();
+            rc.rootPath = p.Results.rootPath;
+            rc.name = p.Results.name;
+            rc.datasetCollection = p.Results.datasetCollection;
+            rc.runParams = p.Results.runParams;
+            rc.runSpecs = p.Results.runSpecs;
         end
         
         function addRunSpec(rc, runSpecs)
@@ -65,72 +75,124 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Automatically appends new runs to `.runs`.
             %
             % Args:
-            %   runSpec : string
+            %   runSpec : LFADS.RunSpec
+            %     new RunSpec instances describing the names and datasets
+            %     included. Each of these new RunSpecs will
+            %     be run on each of the parameter settings in `.params`
             
-            assert(isa(runSpecs, 'LFADS.RunSpec'), 'Must be LFADS.RunSpec instance');
+            assert(isa(runSpecs, 'LFADS.RunSpec'), 'Must be LFADS.RunSpec instance(s)');
             runSpecs = LFADS.Utils.makecol(runSpecs(:));
             if isempty(rc.runSpecs)
                 rc.runSpecs = runSpecs;
             else
-                rc.runSpecs = cat(1, rc.runSpecs, runSpecs);
+                % check for existing runs by name and replace them
+                names = arrayfun(@(oldR) oldR.name, rc.runSpecs, 'UniformOutput', false);
+                [tf, idx] = ismember(r.name, names);
+                if any(tf)
+                    warning('Replacing existing runs with matching name');
+                    rc.runs(idx(tf)) = runSpecs(tf);
+                end
+                rc.runSpecs = cat(1, rc.runSpecs, runSpecs(~tf));
             end
             
             rc.generateRuns();
         end
         
-        function addParams(rc, params)
-            
-        end
+        function clearRunSpecs(rc)
+            % Flush list of run specs
 
-        function p = get.path(rc)
-            if isempty(rc.params)
-                paramStr = '';
-            else
-                paramStr = ['_', rc.params.generateSuffix()];
-            end
-            p = fullfile(rc.rootPath, [rc.name, paramStr]);
-        end
-
-        function f = get.fileShellScriptTensorboard(r)
-            f = fullfile(r.path, 'launch_tensorboard.sh');
-        end
-        
-        function runs = getRunsByName(rc, names)
-            % Find runs by their names. Throws an error if any run is not
-            % found.
-            %
-            % Args:
-            %   names (string or cellstr) : single name or cell array of
-            %     names to find
-            % Returns:
-            %   runs (LFADS.Run) : matching runs
-            %   idx (uint) : list of indices into `.runs` of matching run
-            %     instances
-            %
-            
-            if ischar(names)
-                names = {names};
-            end
-            [tf, idx] = ismember(names, {rc.runs.name});
-            assert(all(tf), 'Some run names could not be found in this RunCollection');
-            
-            runs = rc.runs(idx);
-        end
-
-        function clearRuns(rc)
-            % Flush list of runs
-
-            rc.runs = [];
+            rc.runSpecs = [];
+            rc.generateRuns();
         end
 
         function filterRuns(rc, mask)
             % Apply selection mask to list of runs
             %
-            % Parameters
-            % ------------
-            % mask : logical or indices
-            %   selection mask applied to `.runs`
+            % Parameters:
+            %   mask : logical or indices
+            %     selection mask applied to `.runs`
+            
             rc.runs = rc.runs(mask);
+            rc.generateRuns();
+        end
+        
+        function addParams(rc, params)
+            % Adds new LFADS.RunParams instance(s) to this RunCollection.
+            % Automatically appends new runs to `.runs`.
+            %
+            % Args:
+            %   params : :ref:`LFADS_RunParams`
+            %     array of parameter settings to run each RunSpec on
+            
+            assert(isa(params, 'LFADS.RunParams'), 'Must be LFADS.RunParams instance(s)');
+            params = LFADS.Utils.makecol(params(:));
+            if isempty(rc.runParams)
+                rc.runParams = params;
+            else
+                rc.runParams = cat(1, rc.runSpecs, runParams);
+            end
+            
+            if rc.version < 3 && numel(rc.runParams) > 1 
+                error('Multiple params not supported for version < 3');
+            end
+                
+            rc.generateRuns();
+        end
+        
+        function clearParams(rc)
+            % Flush list of run params
+
+            rc.params = [];
+            rc.generateRuns();
+        end
+
+        function filterParams(rc, mask)
+            % Apply selection mask to .params
+            %
+            % Parameters:
+            %   mask : logical or indices
+            %     selection mask applied to `.runs`
+            
+            rc.params = rc.params(mask);
+            rc.generateRuns();
+        end
+        
+        function clearAll(rc)
+            rc.runSpecs = [];
+            rc.params = [];
+            rc.generateRuns();
+        end
+        
+        function generateRuns(rc)
+            assert(~isempty(rc.datasetCollection), 'DatasetCollection is empty');
+            assert(~isempty(rc.rootPath), 'rootPath is empty');
+            assert(~isempty(rc.name), 'name is empty');
+            
+            rc.runs = [];
+            for iS = rc.nRunSpecs:-1:1
+                spec = rc.runSpecs(iS);
+                clsFn = str2func(spec.getRunClassName());
+                
+                for iP = rc.nParams:-1:1
+                    % create the run
+                    rc.runs(iS, iP) = clsFn(spec.name, rc, rc.params(iP), spec.datasets);
+                end
+            end
+        end
+    end
+        
+    methods
+        function p = get.path(rc)
+            if rc.version < 3
+                p = fullfile(rc.rootPath, rc.name);
+            else
+                paramSuffix = rc.params(1).generateSuffix();
+                p = fullfile(rc.rootPath, [rc.name '_' paramSuffix]);
+            end
+        end
+
+        function f = get.fileShellScriptTensorboard(r)
+            f = fullfile(r.path, 'launch_tensorboard.sh');
         end
         
         function n = get.nParams(rc)
@@ -141,21 +203,100 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             n = numel(rc.runs);
         end
         
-        function n = get.nRunsEachParam(rc)
+        function n = get.nRunSpecs(rc)
             n = numel(rc.runSpecs);
         end
 
         function n = get.nDatasets(rc)
             n = rc.datasetCollection.nDatasets;
         end
+        
+        function [runSpecs, idx] = findRunSpecs(rc, runSpecSearch)
+            % Find run specs that match runSpecSearch. Throws an error if any run is not
+            % found. If runSpecSearch is string or cellstr, matches by
+            % name. If runSpecSearch is an array of RunSpec instances,
+            % finds them using isequal. If runSpecSearch is a vector of
+            % indices, selects from runSpecs directly
+            %
+            % Args:
+            %   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs
+            %
+            % Returns:
+            %   runs (LFADS.Run) : matching runs
+            %   idx : vector of indices into `.runSpecs` of matching run
+            %     instances
+            %
+            
+            if ischar(runSpecSearch)
+                runSpecSearch = {runSpecSearch};
+            end
+            if iscellstr(runSpecSearch)
+                [tf, idx] = ismember(runSpecSearch, {rc.runSpecs.name});
+                assert(all(tf), 'Some run spec names could not be found in this RunCollection');
+            elseif isa(runSpecSearch, 'LFADS.RunSpec')
+                [tf, idx] = ismember(runSpecSearch, rc.runSpecs);
+                assert(all(tf), 'Some run spec instances could not be found in this RunCollection');
+            else
+                % assume is selection
+                idx = runSpecSearch;
+            end
+            idx = LFADS.Utils.makecol(idx(:));
+            runSpecs = rc.runsSpecs(idx);
+        end
+        
+        function [params, idx] = findRunParams(rc, paramSearch)
+            % Find run params that match paramSearch. Throws an error if any RunParams is not
+            % found. If paramSearch is an array of RunParams instances,
+            % finds them using isequal. If paramSearch is a vector of
+            % indices, selects from runParams directly
+            %
+            % Args:
+            %   paramSearch : array of LFADS.RunParams or indices into .params
+            %
+            % Returns:
+            %   params : LFADS.RunParams
+            %     matching params 
+            %   idx : vector of indices into `.params` of matches
+            %
+            
+            if isa(paramSearch, 'LFADS.RunParams')
+                [tf, idx] = ismember(paramSearch, rc.params);
+                assert(all(tf), 'Some run params instances could not be found in this RunCollection');
+            else
+                % assume is selection
+                idx = paramSearch;
+            end
+            idx = LFADS.Utils.makecol(idx(:));
+            params = rc.params(idx);
+        end
+        
+        function [runs, rowIdx, colIdx] = findRuns(rc, runSpecSearch, paramSearch)
+            % Returns a subset of the .runs matrix for a certain subset of RunSpecs and RunParams. 
+            % Throws an error if any run is not found.
+            %
+            % Args:
+            %   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs
+            %   paramSearch : array of LFADS.RunParams, or indices into .params
+            %
+            % Returns:
+            %   runs : LFADS.Run matrix
+            %     matching runs as matrix
+            %   rowIdx : vector of indices
+            %     vector of indices matching into `.runSpecs`
+            %   colIdx : vector of indices
+            %     vector of indices matching into .params
+            
+            [~, rowIdx] = rc.findRunSpecs(runSpecSearch);
+            [~, colIdx] = rc.findParams(paramSearch);
+            runs = rc.runs(rowIdx, colIdx);
+        end
 
         function str = getTensorboardCommand(rc)
             % Generates the shell command text to launch a TensorBoard displaying all runs within this collection
             %
-            % Returns
-            % ---------
-            % cmd : string
-            %   Command which can luanch TensorBoard from command line
+            % Returns:
+            %   cmd : string
+            %     Command which can luanch TensorBoard from command line
 
             runEntry = cellvec(rc.nRuns);
             for r = 1:rc.nRuns
@@ -168,41 +309,15 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Generates the shell command text to launch a TensorBoard displaying all runs within this collection
             % and saves it to a file inside the RunCollection's path
             %
-            % Returns
-            % ---------
-            % file : string
-            %   Path to the shell script, will match `.fileShellScriptTensorboard`
+            % Returns:
+            %   file : string
+            %     Path to the shell script, will match `.fileShellScriptTensorboard`
 
             f = rc.fileShellScriptTensorboard;
             fid = fopen(f, 'w');
             fprintf(fid, rc.getTensorboardCommand());
             fclose(fid);
             chmod('uga+rx', f);
-        end
-
-        function addRun(rc, r)
-            % addRun(run)
-            % Adds a :ref:`LFADS_Run` to the collection. Note that :ref:`LFADS_Run` instances are generally added to their Run Collection upon construction, so calling this method is likely unnecessary for the end user.
-            %
-            % Parameters
-            % ------------------
-            % run : :ref:`LFADS_Run`
-            %   Run to add to the collection.
-
-            if isempty(rc.runs)
-                rc.runs = r;
-            else
-                % check for existing run and replace it
-                names = arrayfun(@(oldR) oldR.name, rc.runs, 'UniformOutput', false);
-                [tf, idx] = ismember(r.name, names);
-                if tf
-                    debug('Replacing existing run with matching name %s\n', rc.runs(idx).name);
-                    rc.runs(idx) = r;
-                else
-                    rc.runs(end+1, :) = r;
-                end
-            end
-            r.runCollection = rc;
         end
         
         function loadSequenceData(rc, reload)
@@ -234,18 +349,18 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         end
     end
 
-    methods
-        function rc2 = copyClearRuns(rc)
-            % Make a copy of this run collection, but without the runs inside
-            %
-            % Returns
-            % ---------
-            % rc : :ref:`LFADS_RunCollection`
-            %   Copy of RunCollection sans runs
-            rc2 = copy(rc);
-            rc2.clearRuns();
-        end
-    end
+%     methods
+%         function rc2 = copyClearAll(rc)
+%             % Make a copy of this run collection, but without the run specs and params inside
+%             %
+%             % Returns
+%             % ---------
+%             % rc : :ref:`LFADS_RunCollection`
+%             %   Copy of RunCollection sans runs
+%             rc2 = copy(rc);
+%             rc2.clearAll();
+%         end
+%     end
 
     methods (Access = protected)
        function header = getHeader(rc)

@@ -54,7 +54,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         comment char = '' % Textual comment for convenience
 
-        version uint32 = 2; % Internal versioning allowing for graceful evolution of path settings
+        version uint32 = 3; % Internal versioning allowing for graceful evolution of path settings
     end
 
     properties
@@ -69,7 +69,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     properties(Dependent)
         nDatasets % Number of datasets used by this run
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
-        path % Unique folder within rootPath including name_paramSuffix
+        path % Unique folder within rootPath including paramStr/name
         
         pathSequenceFiles % Path on disk where sequence files will be saved
         sequenceFileNames % List of sequence file names (sans path)
@@ -119,8 +119,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function p = get.path(r)
             if isempty(r.runCollection)
                 p = '';
-            else
+            elseif r.version < 3
+                % collectionPath_name
                 p = fullfile(r.runCollection.path, r.name);
+            else
+                % collectionPath / paramString / name
+                p = fullfile(r.runCollection.path, r.params.generateString(), r.name);
             end
         end
 

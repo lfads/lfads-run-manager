@@ -4,12 +4,23 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
     % instances, and all runs in a collection share the same parameter settings, which are represented by a shared
     % :ref:`LFADS_RunParams` instance.
 
+    methods(Abstract)
+        cls = getRunClassName(r);
+        % Return the name of the subclass of :ref:`LFADS_Run` to be used
+        % when generating runs
+        % 
+        % Returns:
+        %   cls : string 
+        %     Class name which subclasses from :ref:`LFADS_Run`
+        
+    end
+    
     properties
-        name = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
+        name char = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
 
-        comment = '' % Textual comment for convenience
+        comment char = '' % Textual comment for convenience
 
-        version = 2; % Internal versioning allowing for graceful evolution of path settings
+        version uint32 = 2; % Internal versioning allowing for graceful evolution of path settings
     end
 
     properties
@@ -42,7 +53,7 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
             r.datasetCollection = datasetCollection;
 
             if nargin > 2
-                r.selectDatasets(dataIndicesOrNames);
+                r.selectDatasets(datasetIndicesOrNames);
             end
         end
 
@@ -84,6 +95,7 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
             % ------------
             % names : string or cellstr
             %   Name or names to search for within this run's DatasetCollection's array of datasets
+
             r.datasets = r.datasetCollection.matchDatasetsByName(names);
         end
     end
