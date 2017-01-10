@@ -5,9 +5,9 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
     properties
         % Information about this DatasetCollection's name and location
 
-        name = '' % Name of the dataset collection, will be used to construct folder paths on disk
-        comment = '' % Textual comment for convenience
-        path = '' % path to this dataset collection's root location on disk, if applicable
+        name char = '' % Name of the dataset collection, will be used to construct folder paths on disk
+        comment char = '' % Textual comment for convenience
+        path char = '' % path to this dataset collection's root location on disk, if applicable
     end
 
     properties(SetAccess=protected)
@@ -29,11 +29,13 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
             % name : string
             %   Dataset collection name. Defaults to the leaf folder in `path`
 
-            ds.path = path;
-            if nargin < 2
-                [~, ds.name] = fileparts(path);
-            else
-                ds.name = name;
+            if nargin > 0
+                ds.path = path;
+                if nargin < 2
+                    [~, ds.name] = fileparts(path);
+                else
+                    ds.name = name;
+                end
             end
         end
 

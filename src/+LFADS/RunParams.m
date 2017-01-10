@@ -3,16 +3,71 @@ classdef RunParams < handle
     % must create a subclass of RunParams in which you specify the serialized representation of the parameters that
     % will be used in paths on disk.
 
-    methods(Abstract)
-         suffix = generateSuffix(p);
-         % Generates a string representation of the parameters that is used for reading off the parameters from a
-         % folder path on disk. You can include as many or as few fields in this serialized representation as you see
-         % fit.
-         %
-         % Returns
-         % ---------
-         % suffix : string
-         %   serialized string suffix suitable for inclusion in file paths
+    methods
+        % Methods that you may wish to override in custom subclasses
+        
+        function suffix = generateSuffix(p)
+            % Generates a string representation of the parameters that is used for reading off the parameters from a
+            % folder path on disk. You can include as many or as few fields in this serialized representation as you see
+            % fit. The default implementation will compare all property values
+            % (including those defined in subclasses) to the default property
+            % values, by creating a new instance of that class. Any property
+            % values that differ will be included in the serialization.
+            %
+            % Returns
+            % ---------
+            % suffix : string
+            %   serialized string suffix suitable for inclusion in file paths
+         
+            defaults = eval(class(p));
+         
+            meta = metaclass(p);
+            suffix = '';
+            
+            for i = 1:numel(meta.PropertyList)
+                prop = meta.PropertyList(i);
+                name = prop.Name;
+                % skip properties that are Dependent, Constant, Transient,
+                % or Hidden
+                if ~prop.Dependent && ~prop.Constant && ~prop.Transient && ~prop.Hidden
+                    if ~isequal(defaults.(name), p.(name))
+                        suffix = cat(2, suffix, p.serializeProperty(name, p.(name)), '_');
+                    end
+                end 
+            end
+            if isempty(suffix)
+                suffix = 'default';
+            end
+            if strcmp(suffix(end), '_')
+                suffix = suffix(1:end-1);
+            end
+        end
+        
+        function str = serializeProperty(p, name, value)
+            % Generates a string representation 
+            % argument formatted differently for each class
+            % Args:
+            %  name : string
+            %  value : Matlab built in type
+            % 
+            switch class(value)
+                case {'uint8', 'int8', 'uint16', 'int16', 'uint32', 'int32', 'uint64', 'int64'}
+                    valstr  = sprintf('%i', value);
+                case {'logical'}
+                    if thisVal
+                        valstr = 'true';
+                    else
+                        valstr = 'false';
+                    end
+                case {'double','single'}
+                    valstr = sprintf('%.g', value);
+                case {'char'}
+                    valstr = value;
+                otherwise
+                    error(['don''t know this type: ' class(value)]);
+            end
+            str = sprintf('%s_%s', name, valstr);
+        end
     end
 
    properties
@@ -21,17 +76,7 @@ classdef RunParams < handle
        trainToTestRatio = 4; % how many train v. test trials?
                              % defaults to 4:1 ratio
 
-       useAlignmentMatrix = false; % by default, no need to create an alignment matrix
-
-       % DJO params
-       useDJOparams = true; % default to use these params set
-                            % initially by DJO. otherwise use the
-                            % command-line versions specified below
-
-       batchSize = 200; % Number of trials in one mini-batch
-       regularizerIncreaseSteps = 900; % Number of steps over which the regularizer costs increase
-       learningRateDecayFactor = 0.98; % Decay rate of the learning rate
-       keepProb = 0.95; % Dropout of units in the network
+       useAlignmentMatrix logical = false; % by default, no need to create an alignment matrix
 
        % added by CP
        %  these are (a subset of the) command-line params to run_lfads.py
@@ -60,7 +105,6 @@ classdef RunParams < handle
        c_ic_dim uint16 = 64; % dimensionality of the initial conditions
        c_con_dim uint16 = 128; %controller dimensionality
    end
-
 
    methods
        function str = generateCommandLineOptionsString(p)
@@ -93,8 +137,11 @@ classdef RunParams < handle
                  case {'uint16', 'uint32', 'int16', 'int32'}
                    fieldstr = sprintf('%i', thisVal);
                  case {'logical'}
-                   if thisVal, fieldstr = 'true', 
-                   else fieldstr = 'false'; end
+                   if thisVal
+                       fieldstr = 'true';
+                   else
+                       fieldstr = 'false'; 
+                   end
                  case {'double','single'}
                    fieldstr = sprintf('%.3f', thisVal);
                  case {'char'}

@@ -41,7 +41,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         % alignmentMatrices : `nDatasets` cell of `nNeurons` x `nFactors` matrices
         %   For each dataset, an initial guess at the encoder matrices which maps `nNeurons` (for that dataset) to a
         %   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,
-        %   PC regression can provide a reasonable set of guesses
+        %   PC regression can provide a reasonable set of guesses.
         %
         % trainInds : `nDatasets` cell of indices into each dataset's trial array
         %   Trial indices for each datatset to use for training
@@ -50,27 +50,27 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
 
     properties
-        name = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
+        name char = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
 
-        comment = '' % Textual comment for convenience
+        comment char = '' % Textual comment for convenience
 
-        version = 2; % Internal versioning allowing for graceful evolution of path settings
+        version uint32 = 2; % Internal versioning allowing for graceful evolution of path settings
     end
 
     properties
-        runCollection % :ref:`LFADS_RunCollection` instance to which this run belongs
-        datasets % Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize
+        runCollection LFADS.RunCollection % :ref:`LFADS_RunCollection` instance to which this run belongs
+        params LFADS.RunParams % :ref:`LFADS_RunParams` instance shared by all runs in the collection, contains parameter settings
+        datasets LFADS.Dataset % Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize
         
-        sequenceData % nDatasets cell array of sequence struct data
-        posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
+        sequenceData cell % nDatasets cell array of sequence struct data
+        posteriorMeans LFADS.PosteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
     end
 
     properties(Dependent)
         nDatasets % Number of datasets used by this run
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
         path % Unique folder within rootPath including name_paramSuffix
-        params % :ref:`LFADS_RunParams` instance shared by all runs in the collection, contains parameter settings
-
+        
         pathSequenceFiles % Path on disk where sequence files will be saved
         sequenceFileNames % List of sequence file names (sans path)
 
@@ -86,9 +86,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
 
     methods
-        function r = Run(name, runCollection)
+        function r = Run(name, runCollection, runParams, datasets)
             % run = Run(name, runCollection)
             %
+            % Run instances should not be constructed directly by the user.
+            % Instead, use :ref:`LFADS_RunSpec` and add them to a
+            % :ref:`LFADS_RunCollection` instance.
+            % 
             % Parameters
             % ------------
             % name : string
@@ -96,13 +100,16 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %
             % runCollection : :ref:`LFADS_RunCollection` instance
             %   RunCollection to which this run should be added
-
+            %
+            % runParams : :ref:`LFADS_RunParams` instance
+            %   parameters for this run
+            %
+            % datasets : array of :ref:`LFADS_Dataset`
+            %   
             r.name = name;
-            runCollection.addRun(r);
-        end
-
-        function p = get.params(r)
-            p = r.runCollection.params;
+            r.params = runParams;
+            r.datasets = datasets;
+            r.runCollection = runCollection;
         end
 
         function dc = get.datasetCollection(r)
@@ -181,27 +188,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 paramStr = ['_', r.params.generateSuffix()];
             end
             n = [r.name, paramStr];
-        end
-
-        function selectDatasetsByIndex(r, idx)
-            % Specify the datasets that this Run should use from the set of datasets in its DatasetCollection by indices
-            %
-            % Parameters
-            % ------------
-            % idx : logical mask or indices
-            %   Selection applied to this run's DatasetCollection's array of datasets
-
-            r.datasets = r.datasetCollection.datasets(idx);
-        end
-
-        function selectDatasetsByName(r, names)
-            % Specify the datasets that this Run should use from the set of datasets in its DatasetCollection using name matching
-            %
-            % Parameters
-            % ------------
-            % names : string or cellstr
-            %   Name or names to search for within this run's DatasetCollection's array of datasets
-            r.datasets = r.datasetCollection.matchDatasetsByName(names);
         end
 
         function [trainList, validList] = getLFADSPosteriorSampleMeanFiles(r)

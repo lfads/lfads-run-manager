@@ -211,10 +211,7 @@
 75
 76
 77
-78
-79
-80
-81</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans">[docs]</a><span></span><span class="k">classdef</span> <span class="n">PosteriorMeans</span>
+78</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans">[docs]</a><span></span><span class="k">classdef</span> <span class="n">PosteriorMeans</span>
     <span class="c">% Wrapper around loaded posterior mean sampling data performed on a</span>
     <span class="c">% trained LFADS model</span>
     
@@ -243,12 +240,9 @@
 <a name="PosteriorMeans.PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.PosteriorMeans">[docs]</a><span class="k">        function</span><span class="w"> </span>pm <span class="p">=</span><span class="w"> </span><span class="nf">PosteriorMeans</span><span class="p">(</span>pms, params<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Construct instance by copying struct fields </span>
             <span class="c">%</span>
-            <span class="c">% Params</span>
-            <span class="c">% --------</span>
-            <span class="c">% pms : struct</span>
-            <span class="c">%   Posterior mean struct loaded from disk</span>
-            <span class="c">% params : ref:`LFADS_RunParams` instance</span>
-            <span class="c">%   Run parameters</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   pms (struct) : Posterior mean struct loaded from disk</span>
+            <span class="c">%   params (ref:`LFADS_RunParams`) : Run parameters </span>
             
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">0</span>
                 <span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">controller_outputs</span><span class="p">;</span>

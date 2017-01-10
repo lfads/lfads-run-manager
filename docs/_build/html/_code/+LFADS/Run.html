@@ -665,7 +665,73 @@
 529
 530
 531
-532</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Run"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Run</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Run"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Run</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
     <span class="c">% Represents a single LFADS experiment on a specific set of datasets. Runs are grouped into :ref:`LFADS_RunCollection`</span>
     <span class="c">% instances, and all runs in a collection share the same parameter settings, which are represented by a shared</span>
     <span class="c">% :ref:`LFADS_RunParams` instance.</span>
@@ -708,7 +774,7 @@
         <span class="c">% alignmentMatrices : `nDatasets` cell of `nNeurons` x `nFactors` matrices</span>
         <span class="c">%   For each dataset, an initial guess at the encoder matrices which maps `nNeurons` (for that dataset) to a</span>
         <span class="c">%   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,</span>
-        <span class="c">%   PC regression can provide a reasonable set of guesses</span>
+        <span class="c">%   PC regression can provide a reasonable set of guesses.</span>
         <span class="c">%</span>
         <span class="c">% trainInds : `nDatasets` cell of indices into each dataset&#39;s trial array</span>
         <span class="c">%   Trial indices for each datatset to use for training</span>
@@ -717,7 +783,7 @@
     <span class="k">end</span>
 
     <span class="k">properties</span>
-<a name="Run.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.name">[docs]</a>        <span class="n">name</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of this run unique within its RunCollection, will be used as subfolder on disk</span>
+<a name="Run.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.name">[docs]</a>        <span class="n">name</span> <span class="n">TypePackage</span><span class="p">.</span><span class="n">TypeClass</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of this run unique within its RunCollection, will be used as subfolder on disk</span>
 
 <a name="Run.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.comment">[docs]</a>        <span class="n">comment</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Textual comment for convenience</span>
 
@@ -726,6 +792,7 @@
 
     <span class="k">properties</span>
 <a name="Run.runCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.runCollection">[docs]</a>        <span class="n">runCollection</span> <span class="c">% :ref:`LFADS_RunCollection` instance to which this run belongs</span>
+<a name="Run.params"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.params">[docs]</a>        <span class="n">params</span> <span class="c">% :ref:`LFADS_RunParams` instance shared by all runs in the collection, contains parameter settings</span>
 <a name="Run.datasets"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.datasets">[docs]</a>        <span class="n">datasets</span> <span class="c">% Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize</span>
         
 <a name="Run.sequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.sequenceData">[docs]</a>        <span class="n">sequenceData</span> <span class="c">% nDatasets cell array of sequence struct data</span>
@@ -736,8 +803,7 @@
 <a name="Run.nDatasets"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.nDatasets">[docs]</a>        <span class="n">nDatasets</span> <span class="c">% Number of datasets used by this run</span>
 <a name="Run.datasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.datasetCollection">[docs]</a>        <span class="n">datasetCollection</span> <span class="c">% Dataset collection used by this run (and all runs in the same RunCollection)</span>
 <a name="Run.path"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.path">[docs]</a>        <span class="n">path</span> <span class="c">% Unique folder within rootPath including name_paramSuffix</span>
-<a name="Run.params"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.params">[docs]</a>        <span class="n">params</span> <span class="c">% :ref:`LFADS_RunParams` instance shared by all runs in the collection, contains parameter settings</span>
-
+        
 <a name="Run.pathSequenceFiles"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.pathSequenceFiles">[docs]</a>        <span class="n">pathSequenceFiles</span> <span class="c">% Path on disk where sequence files will be saved</span>
 <a name="Run.sequenceFileNames"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.sequenceFileNames">[docs]</a>        <span class="n">sequenceFileNames</span> <span class="c">% List of sequence file names (sans path)</span>
 
@@ -753,9 +819,13 @@
     <span class="k">end</span>
 
     <span class="k">methods</span>
-<a name="Run.Run"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.Run">[docs]</a><span class="k">        function</span><span class="w"> </span>r <span class="p">=</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span>name, runCollection<span class="p">)</span><span class="w"></span>
+<a name="Run.Run"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.Run">[docs]</a><span class="k">        function</span><span class="w"> </span>r <span class="p">=</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span>name, runCollection, runParams, datasets<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% run = Run(name, runCollection)</span>
             <span class="c">%</span>
+            <span class="c">% Run instances should not be constructed directly by the user.</span>
+            <span class="c">% Instead, use :ref:`LFADS_RunSpec` and add them to a</span>
+            <span class="c">% :ref:`LFADS_RunCollection` instance.</span>
+            <span class="c">% </span>
             <span class="c">% Parameters</span>
             <span class="c">% ------------</span>
             <span class="c">% name : string</span>
@@ -763,13 +833,16 @@
             <span class="c">%</span>
             <span class="c">% runCollection : :ref:`LFADS_RunCollection` instance</span>
             <span class="c">%   RunCollection to which this run should be added</span>
-
+            <span class="c">%</span>
+            <span class="c">% runParams : :ref:`LFADS_RunParams` instance</span>
+            <span class="c">%   parameters for this run</span>
+            <span class="c">%</span>
+            <span class="c">% datasets : array of :ref:`LFADS_Dataset`</span>
+            <span class="c">%   </span>
             <span class="n">r</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
-            <span class="n">runCollection</span><span class="p">.</span><span class="n">addRun</span><span class="p">(</span><span class="n">r</span><span class="p">);</span>
-        <span class="k">end</span>
-
-<span class="k">        function</span><span class="w"> </span>p <span class="p">=</span><span class="w"> </span><span class="nf">get.params</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">p</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">runCollection</span><span class="p">.</span><span class="n">params</span><span class="p">;</span>
+            <span class="n">r</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">runParams</span><span class="p">;</span>
+            <span class="n">r</span><span class="p">.</span><span class="n">datasets</span> <span class="p">=</span> <span class="n">datasets</span><span class="p">;</span>
+            <span class="n">r</span><span class="p">.</span><span class="n">runCollection</span> <span class="p">=</span> <span class="n">runCollection</span><span class="p">;</span>
         <span class="k">end</span>
 
 <span class="k">        function</span><span class="w"> </span>dc <span class="p">=</span><span class="w"> </span><span class="nf">get.datasetCollection</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
@@ -848,27 +921,6 @@
                 <span class="n">paramStr</span> <span class="p">=</span> <span class="p">[</span><span class="s">&#39;_&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">generateSuffix</span><span class="p">()];</span>
             <span class="k">end</span>
             <span class="n">n</span> <span class="p">=</span> <span class="p">[</span><span class="n">r</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">paramStr</span><span class="p">];</span>
-        <span class="k">end</span>
-<a name="Run.selectDatasetsByIndex"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.selectDatasetsByIndex">[docs]</a>
-<span class="k">        function</span><span class="w"> </span><span class="nf">selectDatasetsByIndex</span><span class="p">(</span>r, idx<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Specify the datasets that this Run should use from the set of datasets in its DatasetCollection by indices</span>
-            <span class="c">%</span>
-            <span class="c">% Parameters</span>
-            <span class="c">% ------------</span>
-            <span class="c">% idx : logical mask or indices</span>
-            <span class="c">%   Selection applied to this run&#39;s DatasetCollection&#39;s array of datasets</span>
-
-            <span class="n">r</span><span class="p">.</span><span class="n">datasets</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
-        <span class="k">end</span>
-<a name="Run.selectDatasetsByName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.selectDatasetsByName">[docs]</a>
-<span class="k">        function</span><span class="w"> </span><span class="nf">selectDatasetsByName</span><span class="p">(</span>r, names<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Specify the datasets that this Run should use from the set of datasets in its DatasetCollection using name matching</span>
-            <span class="c">%</span>
-            <span class="c">% Parameters</span>
-            <span class="c">% ------------</span>
-            <span class="c">% names : string or cellstr</span>
-            <span class="c">%   Name or names to search for within this run&#39;s DatasetCollection&#39;s array of datasets</span>
-            <span class="n">r</span><span class="p">.</span><span class="n">datasets</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">matchDatasetsByName</span><span class="p">(</span><span class="n">names</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="Run.getLFADSPosteriorSampleMeanFiles"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.getLFADSPosteriorSampleMeanFiles">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>[trainList, validList] <span class="p">=</span><span class="w"> </span><span class="nf">getLFADSPosteriorSampleMeanFiles</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
@@ -953,20 +1005,16 @@
         <span class="k">end</span>
 <a name="Run.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadSequenceData">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>seq <span class="p">=</span><span class="w"> </span><span class="nf">loadSequenceData</span><span class="p">(</span>r, reload<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% seq = loadSequenceData(r, [reload = True])</span>
+<span class="w">            </span><span class="c">% seq = loadSequenceData([reload = True])</span>
             <span class="c">% Load the sequence files from disk, caches them in</span>
-            <span class="c">% .sequenceData</span>
+            <span class="c">% .sequenceData.</span>
             <span class="c">%</span>
-            <span class="c">% Params</span>
-            <span class="c">% ----------</span>
-            <span class="c">% reload : false</span>
-            <span class="c">%   Reload sequence data from disk even if already found in</span>
-            <span class="c">%   .sequenceData</span>
-            <span class="c">% </span>
-            <span class="c">% Returns</span>
-            <span class="c">% ----------</span>
-            <span class="c">% seqData : cell of struct arrays</span>
-            <span class="c">%   nDatasets cell array of sequence structures loaded from sequence files on disk</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   reload (bool) : Reload sequence data from disk even if already found in</span>
+            <span class="c">%     .sequenceData. Default = false</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   seqData (cell of struct arrays) : nDatasets cell array of sequence structures loaded from sequence files on disk</span>
             
 
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
@@ -989,9 +1037,14 @@
                 <span class="n">tmp</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">seqFiles</span><span class="p">{</span><span class="n">nd</span><span class="p">});</span>
                 <span class="n">seq</span><span class="p">{</span><span class="n">nd</span><span class="p">}</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">.</span><span class="n">seq</span><span class="p">;</span>
             <span class="k">end</span>
-<a name="Run.makeLFADSInput"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.makeLFADSInput">[docs]</a>            <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
+            <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
             
-            <span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span> <span class="p">=</span> <span class="n">seq</span><span class="p">;</span>
+            <span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">modifySequenceDataPostLoading</span><span class="p">(</span><span class="n">seq</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="Run.modifySequenceDataPostLoading"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.modifySequenceDataPostLoading">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>seq <span class="p">=</span><span class="w"> </span><span class="nf">modifySequenceDataPostLoading</span><span class="p">(</span>r, seq<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Optionally make any changes or do any post-processing of sequence data upon loading </span>
+            
         <span class="k">end</span>
 <a name="Run.makeLFADSInput"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.makeLFADSInput">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">makeLFADSInput</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
@@ -1002,10 +1055,6 @@
             <span class="n">trainInds</span> <span class="p">=</span> <span class="p">{};</span>
 
             <span class="n">par</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">;</span>
-
-            <span class="n">dtMS</span> <span class="p">=</span> <span class="n">par</span><span class="p">.</span><span class="n">spikeBinMs</span><span class="p">;</span> <span class="c">% this is bin size into LFADS, want to make larger for speedy training times (was 2 orig)</span>
-            <span class="n">pcs_to_keep</span> <span class="p">=</span> <span class="n">par</span><span class="p">.</span><span class="n">pcsKeep</span><span class="p">;</span>
-            <span class="n">do_trial_averaging</span> <span class="p">=</span> <span class="n">par</span><span class="p">.</span><span class="n">pcTrialAvg</span><span class="p">;</span>
 
             <span class="c">% load sequence data</span>
             <span class="n">seqFiles</span> <span class="p">=</span> <span class="n">cellfun</span><span class="p">(@(</span><span class="n">file</span><span class="p">)</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathSequenceFiles</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">r</span><span class="p">.</span><span class="n">sequenceFileNames</span><span class="p">,</span> <span class="s">&#39;UniformOutput&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">);</span>
@@ -1020,22 +1069,39 @@
             <span class="k">end</span>
             <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
 
-            <span class="c">% call out to abstract dataset specific method</span>
-            <span class="p">[</span><span class="n">alignmentMatrices</span><span class="p">,</span> <span class="n">trainInds</span><span class="p">,</span> <span class="n">validInds</span><span class="p">]</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">prepareSequenceDataForLFADS</span><span class="p">(</span><span class="n">seqData</span><span class="p">);</span>
+            <span class="c">% if there are multiple datasets, we need an alignment matrix</span>
+            <span class="k">if</span> <span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">useAlignmentMatrix</span>
+                <span class="c">% call out to abstract dataset specific method</span>
+                <span class="p">[</span><span class="n">alignmentMatrices</span><span class="p">,</span> <span class="n">trainInds</span><span class="p">,</span> <span class="n">validInds</span><span class="p">]</span> <span class="p">=</span> <span class="c">...</span>
+                    <span class="n">r</span><span class="p">.</span><span class="n">prepareSequenceDataForLFADS</span><span class="p">(</span><span class="n">seqData</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="n">allInds</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">r</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">nTrials</span><span class="p">;</span>
+                <span class="n">validInds</span> <span class="p">=</span> <span class="p">{</span><span class="mi">1</span> <span class="p">:</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">trainToTestRatio</span> <span class="p">:</span><span class="n">r</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">nTrials</span><span class="p">};</span>
+                <span class="n">trainInds</span> <span class="p">=</span> <span class="p">{</span><span class="n">setdiff</span><span class="p">(</span><span class="n">allInds</span><span class="p">,</span> <span class="n">validInds</span><span class="p">{</span><span class="mi">1</span><span class="p">})};</span>
+            <span class="k">end</span>
 
+            <span class="c">% arguments for the &#39;seq_to_lfads&#39; call below</span>
+            <span class="n">seqToLFADSArgs</span> <span class="p">=</span> <span class="p">{</span><span class="s">&#39;binSizeMs&#39;</span><span class="p">,</span> <span class="n">par</span><span class="p">.</span><span class="n">spikeBinMs</span><span class="p">,</span>  <span class="c">...</span>
+                              <span class="s">&#39;inputBinSizeMs&#39;</span><span class="p">,</span> <span class="n">seqData</span><span class="p">{</span><span class="mi">1</span><span class="p">}(</span><span class="mi">1</span><span class="p">).</span><span class="n">params</span><span class="p">.</span><span class="n">dtMS</span><span class="p">,</span> <span class="c">...</span>
+                              <span class="s">&#39;trainInds&#39;</span><span class="p">,</span> <span class="n">trainInds</span><span class="p">,</span> <span class="s">&#39;testInds&#39;</span><span class="p">,</span> <span class="n">validInds</span><span class="p">};</span>
+
+            <span class="k">if</span> <span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">useAlignmentMatrix</span>
+                <span class="n">seqToLFADSArgs</span><span class="p">{</span><span class="k">end</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="p">=</span> <span class="s">&#39;alignment_matrix_cxf&#39;</span><span class="p">;</span>
+                <span class="n">seqToLFADSArgs</span><span class="p">{</span><span class="k">end</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="p">=</span> <span class="n">alignmentMatrices</span><span class="p">;</span>
+            <span class="k">end</span>
+
+            <span class="c">% write the actual lfads input file</span>
             <span class="n">LFADS</span><span class="p">.</span><span class="n">seq_to_lfads</span><span class="p">(</span><span class="n">seqData</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSInput</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">lfadsInputFileNames</span><span class="p">,</span> <span class="c">...</span>
-                         <span class="s">&#39;trainInds&#39;</span><span class="p">,</span><span class="n">trainInds</span><span class="p">,</span> <span class="s">&#39;testInds&#39;</span><span class="p">,</span> <span class="n">validInds</span><span class="p">,</span> <span class="c">...</span>
-                         <span class="s">&#39;binSizeMs&#39;</span><span class="p">,</span> <span class="n">dtMS</span><span class="p">,</span> <span class="c">...</span>
-                         <span class="s">&#39;inputBinSizeMs&#39;</span><span class="p">,</span> <span class="n">seqData</span><span class="p">{</span><span class="mi">1</span><span class="p">}(</span><span class="mi">1</span><span class="p">).</span><span class="n">params</span><span class="p">.</span><span class="n">dtMS</span><span class="p">,</span> <span class="c">...</span>
-                         <span class="s">&#39;alignment_matrix_cxf&#39;</span><span class="p">,</span> <span class="n">alignmentMatrices</span><span class="p">);</span>
+                               <span class="n">seqToLFADSArgs</span><span class="p">{:});</span>
 
-<a name="Run.writeShellScriptLFADSTrain"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSTrain">[docs]</a>            <span class="n">fname</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;lfadsInputInfo.mat&#39;</span><span class="p">);</span>
+            <span class="n">fname</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;lfadsInputInfo.mat&#39;</span><span class="p">);</span>
             <span class="n">params</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">;</span> <span class="c">%#ok&lt;*NASGU,PROP&gt;</span>
             <span class="n">save</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">&#39;trainInds&#39;</span><span class="p">,</span> <span class="s">&#39;validInds&#39;</span><span class="p">,</span> <span class="s">&#39;params&#39;</span><span class="p">);</span>
         <span class="k">end</span>
-<a name="Run.writeShellScriptLFADSTrain"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSTrain">[docs]</a>
-<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeShellScriptLFADSTrain</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% file = writeShellScriptLFADSTrain()</span>
+<a name="Run.writeShellScriptLFADSTrain"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSTrain">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeShellScriptLFADSTrain</span><span class="p">(</span>r, tmux_session_name, display,                                                  cuda_visible_device<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% function f = writeShellScriptLFADSTrain(r, tmux_session_name, display,...</span>
+            <span class="c">%                                         cuda_visible_device)</span>
             <span class="c">% Write a shell script used for running the LFADS python code</span>
             <span class="c">%</span>
             <span class="c">% Returns</span>
@@ -1045,15 +1111,50 @@
 
             <span class="n">f</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">fileShellScriptLFADSTrain</span><span class="p">;</span>
             <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
-            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;SESS_NAME=&quot;%s&quot;\n&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">nameWithParams</span><span class="p">);</span>
-            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;L2_GEN_SCALE=&quot;500&quot;\n&#39;</span><span class="p">);</span>
-            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;L2_CON_SCALE=&quot;500&quot;\n&#39;</span><span class="p">);</span>
-            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;DATADIR=&quot;%s&quot;\n&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSInput</span><span class="p">);</span>
-            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;OUTDIR=&quot;%s&quot;\n&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">);</span>
-            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="s">&#39;python $(which run_lfads.py) --data_dir=$DATADIR --data_filename_stem=lfads --lfads_save_dir=$OUTDIR --cell_clip_value=5 --factors_dim=8 --in_factors_dim=8 --ic_enc_dim=100 --ci_enc_dim=100 --gen_dim=100 --keep_prob=%g --learning_rate_decay_factor=%g --device=/gpu:0 --co_dim=4 --do_causal_controller=false --l2_gen_scale=$L2_GEN_SCALE --l2_con_scale=$L2_CON_SCALE --batch_size=%d --kl_increase_steps=%d --l2_increase_steps=%d --controller_input_lag=1 \n&#39;</span><span class="p">,</span> <span class="c">...</span>
-<a name="Run.buildCommandLFADSPosteriorMeanSample"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.buildCommandLFADSPosteriorMeanSample">[docs]</a>                <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">keepProb</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">learningRateDecayFactor</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">);</span>
+            <span class="n">outputString</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">buildLFADSTrainingCommand</span><span class="p">();</span>
+
+            <span class="c">% set cuda visible devices</span>
+            <span class="k">if</span> <span class="n">exist</span><span class="p">(</span><span class="s">&#39;cuda_visible_device&#39;</span><span class="p">,</span> <span class="s">&#39;var&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">cuda_visible_device</span><span class="p">)</span>
+                <span class="n">outputString</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;CUDA_VISIBLE_DEVICES=%i %s&#39;</span><span class="p">,</span> <span class="c">...</span>
+                                       <span class="n">cuda_visible_device</span><span class="p">,</span> <span class="n">outputString</span><span class="p">);</span>
+            <span class="k">end</span>
+            <span class="c">% set the display variable</span>
+            <span class="k">if</span> <span class="n">exist</span><span class="p">(</span><span class="s">&#39;display&#39;</span><span class="p">,</span> <span class="s">&#39;var&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+                <span class="n">outputString</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;DISPLAY=:%i %s&#39;</span><span class="p">,</span> <span class="c">...</span>
+                                       <span class="n">display</span><span class="p">,</span> <span class="n">outputString</span><span class="p">);</span>
+            <span class="k">end</span>
+
+            <span class="c">% if requested, tmux-ify the command</span>
+            <span class="k">if</span> <span class="n">exist</span><span class="p">(</span><span class="s">&#39;tmux_session_name&#39;</span><span class="p">,</span> <span class="s">&#39;var&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">tmux_session_name</span><span class="p">)</span>
+                <span class="n">outputString</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">tmuxify_string</span><span class="p">(</span> <span class="n">outputString</span><span class="p">,</span> <span class="n">tmux_session_name</span> <span class="p">);</span>
+            <span class="k">end</span>
+            
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">outputString</span><span class="p">);</span>
             <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
             <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">chmod</span><span class="p">(</span><span class="s">&#39;uga+rx&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="Run.runLFADSTrainingCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.runLFADSTrainingCommand">[docs]</a>
+<span class="k">        function</span><span class="w"> </span><span class="nf">runLFADSTrainingCommand</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="c">%   function runLFADSTrainingCommand(r)</span>
+            <span class="n">system</span><span class="p">(</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;sh %s&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">fileShellScriptLFADSTrain</span><span class="p">)</span> <span class="p">);</span>
+        <span class="k">end</span>
+<a name="Run.buildLFADSTrainingCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.buildLFADSTrainingCommand">[docs]</a>
+<span class="k">        function</span><span class="w"> </span>outputString <span class="p">=</span><span class="w"> </span><span class="nf">buildLFADSTrainingCommand</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">outputString</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">([</span><span class="s">&#39;python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads &#39;</span> <span class="c">...</span>
+                                <span class="s">&#39;--lfads_save_dir=%s&#39;</span><span class="p">],</span> <span class="c">...</span>
+                                   <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSInput</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">);</span>
+            
+            <span class="k">if</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">useDJOparams</span>
+                <span class="n">optionsString</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39; --cell_clip_value=5 --factors_dim=8 --in_factors_dim=8 --ic_enc_dim=100 --ci_enc_dim=100 --gen_dim=100 --keep_prob=%g --learning_rate_decay_factor=%g --device=/gpu:0 --co_dim=4 --do_causal_controller=false --l2_gen_scale=500 --l2_con_scale=500 --batch_size=%d --kl_increase_steps=%d --l2_increase_steps=%d --controller_input_lag=1&#39;</span><span class="p">,</span> <span class="c">...</span>
+                                        <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">keepProb</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">learningRateDecayFactor</span><span class="p">,</span> <span class="c">...</span>
+                                        <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">regularizerIncreaseSteps</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="c">% use the method from +LFADS/RunParams.m</span>
+                <span class="n">optionsString</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">generateCommandLineOptionsString</span><span class="p">();</span>
+            <span class="k">end</span>
+            <span class="n">outputString</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s%s&#39;</span><span class="p">,</span> <span class="c">...</span>
+                                   <span class="n">outputString</span><span class="p">,</span> <span class="c">...</span>
+                                   <span class="n">optionsString</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="Run.buildCommandLFADSPosteriorMeanSample"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.buildCommandLFADSPosteriorMeanSample">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>cmd <span class="p">=</span><span class="w"> </span><span class="nf">buildCommandLFADSPosteriorMeanSample</span><span class="p">(</span>r, varargin<span class="p">)</span><span class="w"></span>
@@ -1076,28 +1177,14 @@
             <span class="n">params</span><span class="p">.</span><span class="n">data_dir</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSInput</span><span class="p">;</span>
             <span class="n">params</span><span class="p">.</span><span class="n">lfads_save_dir</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">;</span>
 
-            <span class="n">params</span><span class="p">.</span><span class="n">batch_size</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">batchSize</span><span class="p">;</span>
+            <span class="n">params</span><span class="p">.</span><span class="n">batch_size</span> <span class="p">=</span> <span class="mi">512</span><span class="p">;</span> <span class="c">% this is the number of</span>
+                                     <span class="c">% samples used to calculate</span>
+                                     <span class="c">% the posterior mean</span>
             <span class="n">params</span><span class="p">.</span><span class="n">checkpoint_pb_load_name</span> <span class="p">=</span> <span class="s">&#39;checkpoint_lve&#39;</span><span class="p">;</span>
-<span class="c">%             default_keys = {&#39;batch_size&#39;, &#39;checkpoint_pb_load_name&#39;};</span>
-<span class="c">%             default_values = {r.params.batchSize, &#39;checkpoint_lve&#39;}; % was 512 not r.params.batchSize</span>
-<span class="c">%             for nkey = 1:numel(default_keys)</span>
-<span class="c">%                 % if this key is not defined, set it to the default value</span>
-<span class="c">%                 if ~any(strcmp(keys, default_keys{nkey}))</span>
-<span class="c">%                     keys{end+1} = default_keys{nkey}; %#ok&lt;*AGROW&gt;</span>
-<span class="c">%                     keys{end+1} = default_values{nkey};</span>
-<span class="c">%                 end</span>
-<span class="c">%             end</span>
-<span class="c">%             </span>
+
             <span class="c">% need to remove &quot;dataset_names&quot; and &quot;dataset_dims&quot;</span>
             <span class="n">params</span> <span class="p">=</span> <span class="n">rmfield</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;dataset_names&#39;</span><span class="p">,</span> <span class="s">&#39;dataset_dims&#39;</span><span class="p">});</span>
             <span class="n">use_controller</span> <span class="p">=</span> <span class="n">boolean</span><span class="p">(</span><span class="n">params</span><span class="p">.</span><span class="n">ci_enc_dim</span><span class="p">);</span>
-
-<span class="c">%             tmp = lfads_path();</span>
-<span class="c">%             if ~use_controller</span>
-<span class="c">%                 lfpath = fullfile(tmp.path, tmp.lfnc);</span>
-<span class="c">%             else</span>
-<span class="c">%                 lfpath = fullfile(tmp.path, tmp.lf);</span>
-<span class="c">%             end</span>
 
             <span class="n">execstr</span> <span class="p">=</span> <span class="s">&#39;python&#39;</span><span class="p">;</span>
 
@@ -1123,13 +1210,19 @@
             <span class="k">end</span>
 
             <span class="n">optstr</span> <span class="p">=</span> <span class="n">strcat</span><span class="p">(</span><span class="n">optstr</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39; --kind=posterior_sample&#39;</span><span class="p">));</span>
-<a name="Run.writeShellScriptLFADSPosteriorMeanSample"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample">[docs]</a>
+
             <span class="c">% put the command together</span>
             <span class="n">cmd</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s $(which run_lfads.py) %s&#39;</span><span class="p">,</span> <span class="n">execstr</span><span class="p">,</span> <span class="n">optstr</span><span class="p">);</span>
         <span class="k">end</span>
+<a name="Run.runLFADSPosteriorMeanCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.runLFADSPosteriorMeanCommand">[docs]</a>
+<span class="k">        function</span><span class="w"> </span><span class="nf">runLFADSPosteriorMeanCommand</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="c">%   function runLFADSPosteriorMeanCommand(r)</span>
+            <span class="n">system</span><span class="p">(</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;sh %s&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">fileShellScriptLFADSPosteriorMeanSample</span><span class="p">)</span> <span class="p">);</span>
+        <span class="k">end</span>
 <a name="Run.writeShellScriptLFADSPosteriorMeanSample"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample">[docs]</a>
-<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeShellScriptLFADSPosteriorMeanSample</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% file = writeShellScriptLFADSPosteriorMeanSample()</span>
+
+<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeShellScriptLFADSPosteriorMeanSample</span><span class="p">(</span>r, tmux_session_name<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% function file = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name)</span>
             <span class="c">% Write a shell script used for running the LFADS posterior mean sampling. This must be run after the LFADS</span>
             <span class="c">% training has been started.</span>
             <span class="c">%</span>
@@ -1141,18 +1234,26 @@
 
             <span class="n">f</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">fileShellScriptLFADSPosteriorMeanSample</span><span class="p">;</span>
             <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
-<a name="Run.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadPosteriorMeans">[docs]</a>            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">buildCommandLFADSPosteriorMeanSample</span><span class="p">());</span>
+
+            <span class="n">outputString</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">buildCommandLFADSPosteriorMeanSample</span><span class="p">();</span>
+
+            <span class="c">% if requested, tmux-ify the command</span>
+            <span class="k">if</span> <span class="n">exist</span><span class="p">(</span><span class="s">&#39;tmux_session_name&#39;</span><span class="p">,</span> <span class="s">&#39;var&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">tmux_session_name</span><span class="p">)</span>
+                <span class="n">outputString</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">tmuxify_string</span><span class="p">(</span> <span class="n">outputString</span><span class="p">,</span> <span class="n">tmux_session_name</span> <span class="p">);</span>
+            <span class="k">end</span>
+
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">outputString</span><span class="p">);</span>
             <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
             <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">chmod</span><span class="p">(</span><span class="s">&#39;uga+rx&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="Run.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadPosteriorMeans">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>pms <span class="p">=</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>r, reload<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% pmData = loadPosteriorMeans(r)</span>
+<span class="w">            </span><span class="c">% pmData = loadPosteriorMeans(r, reload)</span>
             <span class="c">% After the posterior mean shell script has been run, this will load the posterior mean samples from disk</span>
             <span class="c">% and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans</span>
             <span class="c">%</span>
-            <span class="c">% Params</span>
-            <span class="c">% ---------</span>
+            <span class="c">% Parameters</span>
+            <span class="c">% ------------</span>
             <span class="c">% reload : bool</span>
             <span class="c">%   if false, data stored in r.posteriorMeans will be returned</span>
             <span class="c">%   if all datasets are loaded. if true, new data will be</span>
@@ -1173,7 +1274,7 @@
                 
             <span class="n">info</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;lfadsInputInfo.mat&#39;</span><span class="p">));</span>
             <span class="p">[</span><span class="n">trainList</span><span class="p">,</span> <span class="n">validList</span><span class="p">]</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">getLFADSPosteriorSampleMeanFiles</span><span class="p">();</span>
-            <span class="n">prog</span> <span class="p">=</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="s">&#39;Loading posterior means for each dataset&#39;</span><span class="p">);</span>
+            <span class="n">prog</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="s">&#39;Loading posterior means for each dataset&#39;</span><span class="p">);</span>
             <span class="k">for</span> <span class="n">iDS</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span>
                 <span class="n">prog</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">iDS</span><span class="p">);</span>
                 <span class="k">if</span> <span class="o">~</span><span class="n">exist</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">trainList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="s">&#39;file&#39;</span><span class="p">)</span>
@@ -1186,6 +1287,7 @@
                         <span class="n">iDS</span><span class="p">,</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">validList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}));</span>
                     <span class="k">continue</span><span class="p">;</span>
                 <span class="k">end</span>
+
                 <span class="n">pmData</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">loadPosteriorMeans</span><span class="p">(</span><span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">validList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="c">....</span>
                     <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">pathLFADSOutput</span><span class="p">,</span> <span class="n">trainList</span><span class="p">{</span><span class="n">iDS</span><span class="p">}),</span> <span class="c">...</span>
                     <span class="n">info</span><span class="p">.</span><span class="n">validInds</span><span class="p">{</span><span class="n">iDS</span><span class="p">},</span> <span class="n">info</span><span class="p">.</span><span class="n">trainInds</span><span class="p">{</span><span class="n">iDS</span><span class="p">});</span>
@@ -1194,6 +1296,36 @@
             <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
             
             <span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span> <span class="p">=</span> <span class="n">pms</span><span class="p">;</span>
+        <span class="k">end</span>
+<a name="Run.addPosteriorMeansToSeq"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.addPosteriorMeansToSeq">[docs]</a>
+<span class="k">        function</span><span class="w"> </span>seqs <span class="p">=</span><span class="w"> </span><span class="nf">addPosteriorMeansToSeq</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="c">% function seqs = addPosteriorMeansToSeq(r)</span>
+        <span class="c">% returns a sequence that has posterior mean</span>
+        <span class="c">% values integrated</span>
+
+            <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">)</span> <span class="o">||</span> <span class="o">~</span><span class="n">all</span><span class="p">([</span><span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">.</span><span class="n">isValid</span><span class="p">])</span>
+                <span class="n">r</span><span class="p">.</span><span class="n">loadPosteriorMeans</span><span class="p">;</span>
+            <span class="k">end</span>
+
+            <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span><span class="p">)</span> <span class="o">||</span> <span class="nb">numel</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">loadSequenceData</span><span class="p">();</span>
+            <span class="k">end</span>
+            <span class="n">seqs</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span><span class="p">;</span>
+
+            <span class="c">% iterate over datasets</span>
+            <span class="k">for</span> <span class="n">iDS</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">seqs</span><span class="p">)</span>
+                <span class="n">pm</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">(</span><span class="n">iDS</span><span class="p">);</span>
+
+                <span class="k">for</span> <span class="n">ntr</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">seqs</span><span class="p">{</span><span class="n">iDS</span><span class="p">})</span>
+                    <span class="n">seqs</span><span class="p">{</span><span class="n">iDS</span><span class="p">}(</span><span class="n">ntr</span><span class="p">).</span><span class="n">rates</span> <span class="p">=</span> <span class="nb">squeeze</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">rates</span><span class="p">(:,:,</span><span class="n">ntr</span><span class="p">));</span>
+                    <span class="n">seqs</span><span class="p">{</span><span class="n">iDS</span><span class="p">}(</span><span class="n">ntr</span><span class="p">).</span><span class="n">factors</span> <span class="p">=</span> <span class="nb">squeeze</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">factors</span><span class="p">(:,:,</span><span class="n">ntr</span><span class="p">));</span>
+                    <span class="n">seqs</span><span class="p">{</span><span class="n">iDS</span><span class="p">}(</span><span class="n">ntr</span><span class="p">).</span><span class="n">generator_states</span> <span class="p">=</span> <span class="nb">squeeze</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">generator_states</span><span class="p">(:,:,</span><span class="n">ntr</span><span class="p">));</span>
+                    <span class="n">seqs</span><span class="p">{</span><span class="n">iDS</span><span class="p">}(</span><span class="n">ntr</span><span class="p">).</span><span class="n">controller_outputs</span> <span class="p">=</span> <span class="c">...</span>
+                        <span class="nb">squeeze</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span><span class="p">(:,:,</span><span class="n">ntr</span><span class="p">));</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+            
+            <span class="n">r</span><span class="p">.</span><span class="n">sequenceData</span> <span class="p">=</span> <span class="n">seqs</span><span class="p">;</span>
         <span class="k">end</span>
     <span class="k">end</span>
 <span class="k">end</span>

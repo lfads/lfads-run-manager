@@ -9,41 +9,77 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         comment = '' % Textual comment for convenience
         rootPath = ''; % Root path on disk under which individual Runs will be stored
 
-        datasetCollection % DatasetCollection instance
-
-        params % RunParams instance
+        datasetCollection LFADS.DatasetCollection % DatasetCollection instance
     end
 
     properties(SetAccess=protected)
-        runs
+        runs % `nRunsEachParam` x `nParams` matrix of :ref:`LFADS_Run` instances
+        params % array of RunParams instances
+        runSpecs
     end
 
     properties(Dependent)
-        nRuns
-        nDatasets
-        path % unique folder within rootPath including name_paramSuffix
+        nParams % number of parameter settings in `params`
+        nRunsEachParam % number of runs per each `RunParams` in `params`
+        nRunsTotal % number of runs total (equal to `nParams` * `nRunsEachParam`
+        
+        nDatasets % number of datasets within the datasetCollection
+        path % unique folder given by rootPath/name
         fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
     end
 
     methods
-        function rc = RunCollection(rootPath, name, datasetCollection, runParams)
-            %  rc = RunCollection(rootPath, name, datasetCollection, runParams)
+        function rc = RunCollection(rootPath, name, datasetCollection, runParams, runSpecs)
+            % rc = RunCollection(rootPath, name, datasetCollection[, runParams, runSpecs])
             %
-            % Parameters
-            % ------------
-            % rootPath : string
-            %   location on disk under which run collections will be saved
-            % name : string
-            %   unique identifier for this RunCollection, also used as subfolder within `rootPath`
-            % datasetCollection : :ref:`LFADS_DatasetCollection`
-            %   DatasetCollection to be used by runs within this RunCollection
-            % runParams : :ref:`LFADS_RunParams`
-            %   Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path
+            % Args:
+            %   rootPath : string
+            %     location on disk under which run collections will be saved
+            %   name : string
+            %     unique identifier for this RunCollection, also used as subfolder within `rootPath`
+            %   datasetCollection : :ref:`LFADS_DatasetCollection`
+            %     DatasetCollection to be used by runs within this RunCollection
+            %   runParams : array of :ref:`LFADS_RunParams` instances
+            %     Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path
+            %   runSpecs : array of :ref:`LFADS_RunSpec` instances
+            %     RunSpec instances describing the names and lists of
+            %     datasets for each run that will be run with each set of
+            %     params
+
 
             rc.name = name;
             rc.rootPath = rootPath;
             rc.datasetCollection = datasetCollection;
-            rc.params = runParams;
+            if nargin > 3
+                rc.params = LFADS.Utils.makecol(runParams(:));
+            end
+            if nargin > 4
+                rc.runSpecs = LFADS.Utils.makecol(runSpecs(:));
+            end
+            
+            rc.generateRuns();
+        end
+        
+        function addRunSpec(rc, runSpecs)
+            % Adds new RunSpec instance(s) to this RunCollection.
+            % Automatically appends new runs to `.runs`.
+            %
+            % Args:
+            %   runSpec : string
+            
+            assert(isa(runSpecs, 'LFADS.RunSpec'), 'Must be LFADS.RunSpec instance');
+            runSpecs = LFADS.Utils.makecol(runSpecs(:));
+            if isempty(rc.runSpecs)
+                rc.runSpecs = runSpecs;
+            else
+                rc.runSpecs = cat(1, rc.runSpecs, runSpecs);
+            end
+            
+            rc.generateRuns();
+        end
+        
+        function addParams(rc, params)
+            
         end
 
         function p = get.path(rc)
@@ -96,9 +132,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %   selection mask applied to `.runs`
             rc.runs = rc.runs(mask);
         end
+        
+        function n = get.nParams(rc)
+            n = numel(rc.params);
+        end
 
-        function n = get.nRuns(rc)
+        function n = get.nRunsTotal(rc)
             n = numel(rc.runs);
+        end
+        
+        function n = get.nRunsEachParam(rc)
+            n = numel(rc.runSpecs);
         end
 
         function n = get.nDatasets(rc)
@@ -209,11 +253,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
              header = getHeader@matlab.mixin.CustomDisplay(rc);
           else
              className = matlab.mixin.CustomDisplay.getClassNameForHeader(rc);
-             newHeader = sprintf('%s %s', className, rc.name);
-             header = sprintf('%s\n  param suffix: %s\n  %d runs in %s\n', ...
-                 newHeader, rc.params.generateSuffix(), rc.nRuns, rc.path);
-
-             for s = 1:rc.nRuns
+             header = sprintf('%s %s in %s\n', className, rc.name, rc.path);
+             header = cat(2, header, sprintf('  %d RunParams settings\n', rc.nParams));
+             for p = 1:rc.nParams
+                 header = cat(2, header, sprintf('  [%2d] %s\n', rc.params(p).getSuffix));
+             end
+             
+             header = cat(2, header, sprintf('  %d runs per param setting, %d runs total\n', rc.nRunsEachParam, rc.nRunsTotal));
+             for s = 1:rc.nRunsEachParam
                  header = cat(2, header, sprintf('  [%2d] %s', s, rc.runs(s).getFirstLineHeader()));
              end
           end

@@ -166,10 +166,34 @@ fit.</p>
 
 <div class="note admonition" id="+LFADS.RunParams.RunParams_member_group_1_+LFADS::RunParams.RunParams_member_group_1">
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
-</div><dl class="attribute">
+<p class="last">
+
+data or high-level params</p></div><dl class="attribute">
 <dt id="+LFADS.RunParams.spikeBinMs">
 <code class="descname">spikeBinMs</code><em class="property"> = 2</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.spikeBinMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.spikeBinMs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spike bin width in ms</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.trainToTestRatio">
+<code class="descname">trainToTestRatio</code><em class="property"> = 4</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.trainToTestRatio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.trainToTestRatio" title="Permalink to this definition">¶</a></dt>
+<dd><p>how many train v. test trials?
+defaults to 4:1 ratio</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.useAlignmentMatrix">
+<code class="descname">useAlignmentMatrix</code><em class="property"> = false</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.useAlignmentMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.useAlignmentMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>by default, no need to create an alignment matrix
+DJO params</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.useDJOparams">
+<code class="descname">useDJOparams</code><em class="property"> = true</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.useDJOparams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.useDJOparams" title="Permalink to this definition">¶</a></dt>
+<dd><p>default to use these params set
+initially by DJO. otherwise use the
+command-line versions specified below</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -193,7 +217,136 @@ fit.</p>
 <dl class="attribute">
 <dt id="+LFADS.RunParams.keepProb">
 <code class="descname">keepProb</code><em class="property"> = 0.95</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.keepProb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.keepProb" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dropout of units in the network</p>
+<dd><p>Dropout of units in the network
+added by CP</p>
+<blockquote>
+<div>these are (a subset of the) command-line params to run_lfads.py
+start each with <a href="#id2"><span class="problematic" id="id3">c_</span></a> so it can be differentiated from other params</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_cell_clip_value">
+<code class="descname">c_cell_clip_value</code><em class="property"> (double) = 5</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_cell_clip_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_cell_clip_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>used to avoid stepping too far during training</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_factors_dim">
+<code class="descname">c_factors_dim</code><em class="property"> (uint16) = 50</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_factors_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_factors_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_in_factors_dim">
+<code class="descname">c_in_factors_dim</code><em class="property"> (uint16) = 50</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_in_factors_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_in_factors_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_ic_enc_dim">
+<code class="descname">c_ic_enc_dim</code><em class="property"> (uint16) = 128</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_ic_enc_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_ic_enc_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>network size for IC encoder</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_ci_enc_dim">
+<code class="descname">c_ci_enc_dim</code><em class="property"> (uint16) = 128</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_ci_enc_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_ci_enc_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>network size for controller input encoder</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_gen_dim">
+<code class="descname">c_gen_dim</code><em class="property"> (uint16) = 100</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_gen_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_gen_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>generator network size</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_keep_prob">
+<code class="descname">c_keep_prob</code><em class="property"> (double) = 0.95</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_keep_prob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_keep_prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>randomly drop units during each training pass</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_learning_rate_decay_factor">
+<code class="descname">c_learning_rate_decay_factor</code><em class="property"> (double) = 0.98</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_learning_rate_decay_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_learning_rate_decay_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>how quickly to decrease the learning rate</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_device">
+<code class="descname">c_device</code><em class="property"> (char) = '/gpu:0'</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>which visible GPU/CPU to use</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_co_dim">
+<code class="descname">c_co_dim</code><em class="property"> (uint16) = 4</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_co_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_co_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_do_causal_controller">
+<code class="descname">c_do_causal_controller</code><em class="property"> (logical) = false</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_do_causal_controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_do_causal_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>restrict input
+encoder from seeing the future?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_l2_gen_scale">
+<code class="descname">c_l2_gen_scale</code><em class="property"> (double) = 500</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_l2_gen_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_l2_gen_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the
+generator l2 cost</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_l2_con_scale">
+<code class="descname">c_l2_con_scale</code><em class="property"> (double) = 500</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_l2_con_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_l2_con_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the
+controller l2 cost</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_batch_size">
+<code class="descname">c_batch_size</code><em class="property"> (uint16) = 256</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_batch_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of trials to use during
+each training pass</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_kl_increase_steps">
+<code class="descname">c_kl_increase_steps</code><em class="property"> (uint16) = 900</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_kl_increase_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_kl_increase_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of steps over which the kl costs increase</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_l2_increase_steps">
+<code class="descname">c_l2_increase_steps</code><em class="property"> (uint16) = 900</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_l2_increase_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_l2_increase_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of steps over which the l2 costs increase</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_controller_input_lag">
+<code class="descname">c_controller_input_lag</code><em class="property"> (uint16) = 1</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_controller_input_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_controller_input_lag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_ic_dim">
+<code class="descname">c_ic_dim</code><em class="property"> (uint16) = 64</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_ic_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_ic_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>dimensionality of the initial conditions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_con_dim">
+<code class="descname">c_con_dim</code><em class="property"> (uint16) = 128</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_con_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_con_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>controller dimensionality</p>
+</dd></dl>
+
+<div class="tip admonition" id="+LFADS.RunParams.RunParams_member_group_2_+LFADS::RunParams.RunParams_member_group_2">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.RunParams.generateCommandLineOptionsString">
+[<em>function str</em>] = <code class="descname">generateCommandLineOptionsString</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateCommandLineOptionsString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateCommandLineOptionsString" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>generates a string of all the command line options to
+pass directly into run_lfads.py</div></blockquote>
+<p>get all the parameters</p>
 </dd></dl>
 
 </dd></dl>
