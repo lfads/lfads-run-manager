@@ -1287,7 +1287,7 @@
 <span class="k">        function</span><span class="w"> </span>pms <span class="p">=</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>r, reload<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% pmData = loadPosteriorMeans(r, reload)</span>
             <span class="c">% After the posterior mean shell script has been run, this will load the posterior mean samples from disk</span>
-            <span class="c">% and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans</span>
+<a name="Run.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.loadPosteriorMeans">[docs]</a>            <span class="c">% and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans</span>
             <span class="c">%</span>
             <span class="c">% Parameters</span>
             <span class="c">% ------------</span>
@@ -1338,7 +1338,7 @@
 <span class="k">        function</span><span class="w"> </span>seqs <span class="p">=</span><span class="w"> </span><span class="nf">addPosteriorMeansToSeq</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
 <span class="w">        </span><span class="c">% function seqs = addPosteriorMeansToSeq(r)</span>
         <span class="c">% returns a sequence that has posterior mean</span>
-        <span class="c">% values integrated</span>
+<a name="Run.addPosteriorMeansToSeq"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Run.html#+LFADS.Run.addPosteriorMeansToSeq">[docs]</a>        <span class="c">% values integrated</span>
 
             <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">)</span> <span class="o">||</span> <span class="o">~</span><span class="n">all</span><span class="p">([</span><span class="n">r</span><span class="p">.</span><span class="n">posteriorMeans</span><span class="p">.</span><span class="n">isValid</span><span class="p">])</span>
                 <span class="n">r</span><span class="p">.</span><span class="n">loadPosteriorMeans</span><span class="p">;</span>
