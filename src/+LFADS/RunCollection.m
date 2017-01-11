@@ -197,7 +197,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                         % properties. This avoids the need for the user to
                         % preserve the constructor
                         new = clsFn();
-                        new.name = name;
+                        new.name = spec.name;
                         new.runCollection = rc;
                         new.params = rc.params(iP);
                         new.datasets = spec.datasets;
