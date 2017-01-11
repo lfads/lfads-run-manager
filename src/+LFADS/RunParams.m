@@ -6,7 +6,7 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     properties
         % High-level params unrelated to LFADS internals
         
-        spikeBinMs uint16 = 2; % Spike bin width in ms
+        spikeBinMs double = 2; % Spike bin width in ms
         trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio    
         useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together. Default = false.
     end
