@@ -1,4 +1,4 @@
-classdef DatasetCollection < handle & matlab.mixin.CustomDisplay
+classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     % A collection of multiple Datasets to be processed by LFADS as a cohesive group, either using stitching to
     % incorporate multiple datasets simultaneously, or individually to multiple independent LFADS fits.
 

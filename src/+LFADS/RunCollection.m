@@ -184,11 +184,23 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 
                 for iS = rc.nRunSpecs:-1:1
                     spec = rc.runSpecs(iS);
-                    clsFn = str2func(spec.runClassName);
+                    if ischar(spec.runClassName)
+                        clsFn = str2func(spec.runClassName);
+                    elseif isa(clsFn, 'function_handle');
+                        % okay as is
+                    else
+                        error('Unknown runClassName, must be string or function_handle to constructor');
+                    end
 
                     for iP = rc.nParams:-1:1
-                        % create the new run
-                        new = clsFn(spec.name, rc, rc.params(iP), spec.datasets);
+                        % create the new run by manually assigning
+                        % properties. This avoids the need for the user to
+                        % preserve the constructor
+                        new = clsFn();
+                        new.name = name;
+                        new.runCollection = rc;
+                        new.params = rc.params(iP);
+                        new.datasets = spec.datasets;
                         
                         % check whether the old run matches, keep it if so,
                         % so that we don't break references unless

@@ -5,7 +5,7 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
     % :ref:`LFADS_RunParams` instance.
 
     properties
-        runClassName char = '' % Class name that will be used to create LFADS.Run instances using
+        runClassName = '' % Class name that will be used to create LFADS.Run instances. Or function_handle to class constructor
         
         name char = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
 

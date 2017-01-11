@@ -89,37 +89,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
     methods
         function r = Run(varargin)
-            % run = Run(name, runCollection, params, datasets)
-            %
-            % Run instances should not be constructed directly by the user.
-            % Instead, use :ref:`LFADS_RunSpec` and add them to a
-            % :ref:`LFADS_RunCollection` instance.
-            % 
-            % Parameters
-            % ------------
-            % name : string
-            %   Unique name for this run within the collection
-            %
-            % runCollection : :ref:`LFADS_RunCollection` instance
-            %   RunCollection to which this run should be added
-            %
-            % params : :ref:`LFADS_RunParams` instance
-            %   parameters for this run
-            %
-            % datasets : array of :ref:`LFADS_Dataset`
-            % 
             
-            p = inputParser();
-            p.addOptional('name', '', @ischar);
-            p.addOptional('runCollection', [], @(x) isa(x, 'LFADS.RunCollection'));
-            p.addOptional('params', [], @(x) isa(x, 'LFADS.RunParams'));
-            p.addOptional('datasets', [], @(x) isa(x, 'LFADS.Dataset'));
-            p.parse(varargin{:});
-            
-            r.name = p.Results.name;
-            r.runCollection = p.Results.runCollection;
-            r.params = p.Results.params;
-            r.datasets = p.Results.datasets;
         end
            
         function tf = eq(a, b)
@@ -369,7 +339,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     r.prepareSequenceDataForLFADS(seqData);
             else
                 allInds = 1:r.datasets(1).nTrials;
-                validInds = {1 : r.params.trainToTestRatio :r.datasets(1).nTrials};
+                validInds = {1 : (r.params.trainToTestRatio+1) : r.datasets(1).nTrials};
                 trainInds = {setdiff(allInds, validInds{1})};
             end
 

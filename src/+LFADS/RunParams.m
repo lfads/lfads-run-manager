@@ -1,4 +1,4 @@
-classdef RunParams < handle & matlab.mixin.CustomDisplay
+classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     % Collection of parameters which are common to all :ref:`LFADS_Run` instances in a :ref:`LFADS_RunCollection`. You
     % must create a subclass of RunParams in which you specify the serialized representation of the parameters that
     % will be used in paths on disk.
