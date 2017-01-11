@@ -335,7 +335,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             r.sequenceData = r.modifySequenceDataPostLoading(seq);
         end
         
-        function seq = modifySequenceDataPostLoading(r, seq) %#ok<*INUSL>
+        function seq = modifySequenceDataPostLoading(r, seq)
             % Optionally make any changes or do any post-processing of sequence data upon loading 
             
         end
@@ -394,14 +394,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         function f = writeShellScriptLFADSTrain(r, tmux_session_name, display, ...
                                                 cuda_visible_device)
-            % function f = writeShellScriptLFADSTrain(r, tmux_session_name, display,...
-            %                                         cuda_visible_device)
+            % f = writeShellScriptLFADSTrain(tmux_session_name, display, cuda_visible_device)
             % Write a shell script used for running the LFADS python code
             %
-            % Returns
-            % --------
-            % file : string
-            %   Full path to shell script which can be used to begin or resume LFADS training
+            % Returns:
+            %   file : string
+            %     Full path to shell script which can be used to begin or resume LFADS training
 
             f = r.fileShellScriptLFADSTrain;
             fid = fopen(f, 'w');

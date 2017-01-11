@@ -84,8 +84,9 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Dataset.html">LFADS.Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunSpec.html">LFADS.RunSpec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
@@ -262,7 +263,12 @@
 126
 127
 128
-129</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Dataset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Dataset</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+129
+130
+131
+132
+133
+134</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Dataset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Dataset</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
     <span class="c">% A single-day collection of raw data to be processed by LFADS</span>
 
     <span class="k">methods</span><span class="p">(</span><span class="n">Abstract</span><span class="p">)</span>
@@ -377,15 +383,20 @@
             <span class="k">end</span>
         <span class="k">end</span>
     <span class="k">end</span>
+    
+    <span class="k">methods</span><span class="p">(</span><span class="n">Hidden</span><span class="p">)</span>
+<span class="k">        function</span><span class="w"> </span>h <span class="p">=</span><span class="w"> </span><span class="nf">getFirstLineHeader</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">className</span> <span class="p">=</span> <span class="n">class</span><span class="p">(</span><span class="n">ds</span><span class="p">);</span>
+            <span class="n">h</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot;&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
 
     <span class="k">methods</span> <span class="p">(</span><span class="n">Access</span> <span class="p">=</span> <span class="n">protected</span><span class="p">)</span>
 <span class="k">       function</span><span class="w"> </span>header <span class="p">=</span><span class="w"> </span><span class="nf">getHeader</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
 <span class="w">          </span><span class="k">if</span> <span class="o">~</span><span class="nb">isscalar</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
              <span class="n">header</span> <span class="p">=</span> <span class="n">getHeader</span><span class="p">@</span><span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span><span class="p">(</span><span class="n">ds</span><span class="p">);</span>
           <span class="k">else</span>
-             <span class="n">className</span> <span class="p">=</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span><span class="p">.</span><span class="n">getClassNameForHeader</span><span class="p">(</span><span class="n">ds</span><span class="p">);</span>
-             <span class="n">newHeader</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s %s&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
-             <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s\n&#39;</span><span class="p">,</span><span class="n">newHeader</span><span class="p">);</span>
+             <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s\n&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">getFirstLineHeader</span><span class="p">());</span>
           <span class="k">end</span>
        <span class="k">end</span>
     <span class="k">end</span>

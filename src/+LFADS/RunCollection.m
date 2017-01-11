@@ -284,16 +284,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % found. If runSpecSearch is string or cellstr, matches by
             % name. If runSpecSearch is an array of RunSpec instances,
             % finds them using isequal. If runSpecSearch is a vector of
-            % indices, selects from runSpecs directly
+            % indices, selects from runSpecs directly.
             %
             % Args:
             %   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs
             %
             % Returns:
-            %   runs (LFADS.Run) : matching runs
-            %   idx : vector of indices into `.runSpecs` of matching run
+            %   runs : LFADS.Run
+            %     matching runs
+            %   idx : vector of indices 
+            %     vector of indices into `.runSpecs` of matching run
             %     instances
-            %
             
             [tf, idx] = rc.ismemberRunSpecs(runSpecSearch);
             assert(all(tf), 'Some run spec names could not be found in this RunCollection');
@@ -304,7 +305,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Determine if any run params that match paramSearch are found in .params.
             % If paramSearch is an array of RunParams instances,
             % finds them using isequal. If paramSearch is a vector of
-            % indices, selects from runParams directly
+            % indices, selects from runParams directly.
             %
             % Args:
             %   paramSearch : array of LFADS.RunParams or indices into .params
@@ -312,8 +313,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Returns:
             %   params : LFADS.RunParams
             %     matching params 
-            %   idx : vector of indices into `.params` of matches
-            %
+            %   idx : vector of indices 
+            %     selection into `.params` of matches
             
             if isa(paramSearch, 'LFADS.RunParams')
                 [tf, idx] = ismember(paramSearch, rc.params);
@@ -338,8 +339,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Returns:
             %   params : LFADS.RunParams
             %     matching params 
-            %   idx : vector of indices into `.params` of matches
-            %
+            %   idx : vector of indices 
+            %     selection into `.params` of matches
             
             [tf, idx] = rc.ismemberParams(paramSearch);
             assert(all(tf), 'Some run params could not be found in this RunCollection');
@@ -426,19 +427,6 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             prog.finish();
         end
     end
-
-%     methods
-%         function rc2 = copyClearAll(rc)
-%             % Make a copy of this run collection, but without the run specs and params inside
-%             %
-%             % Returns
-%             % ---------
-%             % rc : :ref:`LFADS_RunCollection`
-%             %   Copy of RunCollection sans runs
-%             rc2 = copy(rc);
-%             rc2.clearAll();
-%         end
-%     end
 
     methods (Access = protected)
        function header = getHeader(rc)

@@ -84,8 +84,9 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunSpec.html">LFADS.RunSpec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
@@ -142,7 +143,7 @@
 <h2 id=""></h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="LFADS_Dataset.html#module-+LFADS">+LFADS (module)</a>, <a href="LFADS_DatasetCollection.html#module-+LFADS">[1]</a>, <a href="LFADS_PosteriorMeans.html#module-+LFADS">[2]</a>, <a href="LFADS_Run.html#module-+LFADS">[3]</a>, <a href="LFADS_RunCollection.html#module-+LFADS">[4]</a>, <a href="LFADS_RunParams.html#module-+LFADS">[5]</a>
+      <li><a href="LFADS_Dataset.html#module-+LFADS">+LFADS (module)</a>, <a href="LFADS_DatasetCollection.html#module-+LFADS">[1]</a>, <a href="LFADS_PosteriorMeans.html#module-+LFADS">[2]</a>, <a href="LFADS_Run.html#module-+LFADS">[3]</a>, <a href="LFADS_RunCollection.html#module-+LFADS">[4]</a>, <a href="LFADS_RunParams.html#module-+LFADS">[5]</a>, <a href="LFADS_RunSpec.html#module-+LFADS">[6]</a>
 </li>
       <li><a href="LFADS_DatasetCollection.html#+LFADS.DatasetCollection.addDataset">addDataset() (+LFADS.DatasetCollection method)</a>
 </li>
@@ -150,11 +151,7 @@
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.addPosteriorMeansToSeq">addPosteriorMeansToSeq() (+LFADS.Run method)</a>
 </li>
-      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.addRun">addRun() (+LFADS.RunCollection method)</a>
-</li>
       <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.addRunSpec">addRunSpec() (+LFADS.RunCollection method)</a>
-</li>
-      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.batchSize">batchSize (+LFADS.RunParams attribute)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.buildCommandLFADSPosteriorMeanSample">buildCommandLFADSPosteriorMeanSample() (+LFADS.Run method)</a>
 </li>
@@ -198,9 +195,13 @@
 </li>
       <li><a href="LFADS_RunParams.html#+LFADS.RunParams.c_learning_rate_decay_factor">c_learning_rate_decay_factor (+LFADS.RunParams attribute)</a>
 </li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.clearAll">clearAll() (+LFADS.RunCollection method)</a>
+</li>
       <li><a href="LFADS_DatasetCollection.html#+LFADS.DatasetCollection.clearDatasets">clearDatasets() (+LFADS.DatasetCollection method)</a>
 </li>
-      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.clearRuns">clearRuns() (+LFADS.RunCollection method)</a>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.clearParams">clearParams() (+LFADS.RunCollection method)</a>
+</li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.clearRunSpecs">clearRunSpecs() (+LFADS.RunCollection method)</a>
 </li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.collection">collection (+LFADS.Dataset attribute)</a>
 </li>
@@ -213,12 +214,12 @@
 </li>
         <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.comment">(+LFADS.RunCollection attribute)</a>
 </li>
+        <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.comment">(+LFADS.RunSpec attribute)</a>
+</li>
       </ul></li>
       <li><a href="LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.controller_outputs">controller_outputs (+LFADS.PosteriorMeans attribute)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.convertDatasetToSequenceStruct">convertDatasetToSequenceStruct() (+LFADS.Run method)</a>
-</li>
-      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.copyClearRuns">copyClearRuns() (+LFADS.RunCollection method)</a>
 </li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset">Dataset (class in +LFADS)</a>
 </li>
@@ -228,6 +229,8 @@
 
       <ul>
         <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.datasetCollection">(+LFADS.RunCollection attribute)</a>
+</li>
+        <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.datasetCollection">(+LFADS.RunSpec attribute)</a>
 </li>
       </ul></li>
       <li><a href="LFADS_DatasetCollection.html#+LFADS.DatasetCollection">DatasetCollection (class in +LFADS)</a>
@@ -239,10 +242,14 @@
       <ul>
         <li><a href="LFADS_Run.html#+LFADS.Run.datasets">(+LFADS.Run attribute)</a>
 </li>
+        <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.datasets">(+LFADS.RunSpec attribute)</a>
+</li>
       </ul></li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.datenum">datenum (+LFADS.Dataset attribute)</a>
 </li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.datestr">datestr (+LFADS.Dataset attribute)</a>
+</li>
+      <li><a href="LFADS_Run.html#+LFADS.Run.eq">eq() (+LFADS.Run method)</a>
 </li>
       <li><a href="LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.factors">factors (+LFADS.PosteriorMeans attribute)</a>
 </li>
@@ -254,11 +261,21 @@
 </li>
       <li><a href="LFADS_DatasetCollection.html#+LFADS.DatasetCollection.filterDatasets">filterDatasets() (+LFADS.DatasetCollection method)</a>
 </li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.filterParams">filterParams() (+LFADS.RunCollection method)</a>
+</li>
       <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.filterRuns">filterRuns() (+LFADS.RunCollection method)</a>
+</li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.findParams">findParams() (+LFADS.RunCollection method)</a>
+</li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.findRuns">findRuns() (+LFADS.RunCollection method)</a>
+</li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.findRunSpecs">findRunSpecs() (+LFADS.RunCollection method)</a>
 </li>
       <li><a href="LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">generateCommandLineOptionsString() (+LFADS.RunParams method)</a>
 </li>
-      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.generateSuffix">generateSuffix() (+LFADS.RunParams method)</a>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.generateRuns">generateRuns() (+LFADS.RunCollection method)</a>
+</li>
+      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.generateString">generateString() (+LFADS.RunParams method)</a>
 </li>
       <li><a href="LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.generator_ics">generator_ics (+LFADS.PosteriorMeans attribute)</a>
 </li>
@@ -268,17 +285,15 @@
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.getLFADSPosteriorSampleMeanFiles">getLFADSPosteriorSampleMeanFiles() (+LFADS.Run method)</a>
 </li>
-      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.getRunsByName">getRunsByName() (+LFADS.RunCollection method)</a>
-</li>
       <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.getTensorboardCommand">getTensorboardCommand() (+LFADS.RunCollection method)</a>
 </li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.infoLoaded">infoLoaded (+LFADS.Dataset attribute)</a>
 </li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.ismemberParams">ismemberParams() (+LFADS.RunCollection method)</a>
+</li>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.ismemberRunSpecs">ismemberRunSpecs() (+LFADS.RunCollection method)</a>
+</li>
       <li><a href="LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.isValid">isValid (+LFADS.PosteriorMeans attribute)</a>
-</li>
-      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.keepProb">keepProb (+LFADS.RunParams attribute)</a>
-</li>
-      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.learningRateDecayFactor">learningRateDecayFactor (+LFADS.RunParams attribute)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.lfadsInputFileNames">lfadsInputFileNames (+LFADS.Run attribute)</a>
 </li>
@@ -292,14 +307,14 @@
       </ul></li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.loadInfoFromData">loadInfoFromData() (+LFADS.Dataset method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="LFADS_Run.html#+LFADS.Run.loadPosteriorMeans">loadPosteriorMeans() (+LFADS.Run method)</a>
 
       <ul>
         <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">(+LFADS.RunCollection method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="LFADS_Run.html#+LFADS.Run.loadSequenceData">loadSequenceData() (+LFADS.Run method)</a>
 
       <ul>
@@ -323,6 +338,8 @@
 </li>
         <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.name">(+LFADS.RunCollection attribute)</a>
 </li>
+        <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.name">(+LFADS.RunSpec attribute)</a>
+</li>
       </ul></li>
       <li><a href="LFADS_Run.html#+LFADS.Run.nameWithParams">nameWithParams (+LFADS.Run attribute)</a>
 </li>
@@ -337,6 +354,8 @@
 </li>
         <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.nDatasets">(+LFADS.RunCollection attribute)</a>
 </li>
+        <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.nDatasets">(+LFADS.RunSpec attribute)</a>
+</li>
       </ul></li>
       <li><a href="LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nFactors">nFactors (+LFADS.PosteriorMeans attribute)</a>
 </li>
@@ -346,7 +365,7 @@
 </li>
       <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.nParams">nParams (+LFADS.RunCollection attribute)</a>
 </li>
-      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.nRunsEachParam">nRunsEachParam (+LFADS.RunCollection attribute)</a>
+      <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.nRunSpecs">nRunSpecs (+LFADS.RunCollection attribute)</a>
 </li>
       <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.nRunsTotal">nRunsTotal (+LFADS.RunCollection attribute)</a>
 </li>
@@ -364,6 +383,8 @@
         <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.params">(+LFADS.RunCollection attribute)</a>
 </li>
       </ul></li>
+      <li><a href="LFADS_Run.html#+LFADS.Run.paramsString">paramsString (+LFADS.Run attribute)</a>
+</li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.path">path (+LFADS.Dataset attribute)</a>
 
       <ul>
@@ -392,8 +413,6 @@
 </li>
       <li><a href="LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.rates">rates (+LFADS.PosteriorMeans attribute)</a>
 </li>
-      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.regularizerIncreaseSteps">regularizerIncreaseSteps (+LFADS.RunParams attribute)</a>
-</li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.reloadInfo">reloadInfo() (+LFADS.Dataset method)</a>
 
       <ul>
@@ -407,6 +426,8 @@
       <li><a href="LFADS_Run.html#+LFADS.Run">Run (class in +LFADS)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.Run">Run() (+LFADS.Run method)</a>
+</li>
+      <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.runClassName">runClassName (+LFADS.RunSpec attribute)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.runCollection">runCollection (+LFADS.Run attribute)</a>
 </li>
@@ -422,13 +443,25 @@
 </li>
       <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.runs">runs (+LFADS.RunCollection attribute)</a>
 </li>
+      <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec">RunSpec (class in +LFADS)</a>
+</li>
+      <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.RunSpec">RunSpec() (+LFADS.RunSpec method)</a>
+</li>
       <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.runSpecs">runSpecs (+LFADS.RunCollection attribute)</a>
 </li>
       <li><a href="LFADS_Dataset.html#+LFADS.Dataset.saveTags">saveTags (+LFADS.Dataset attribute)</a>
 </li>
+      <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.selectDatasets">selectDatasets() (+LFADS.RunSpec method)</a>
+</li>
+      <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.selectDatasetsByIndex">selectDatasetsByIndex() (+LFADS.RunSpec method)</a>
+</li>
+      <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.selectDatasetsByName">selectDatasetsByName() (+LFADS.RunSpec method)</a>
+</li>
       <li><a href="LFADS_Run.html#+LFADS.Run.sequenceData">sequenceData (+LFADS.Run attribute)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.sequenceFileNames">sequenceFileNames (+LFADS.Run attribute)</a>
+</li>
+      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.serializeProperty">serializeProperty() (+LFADS.RunParams method)</a>
 </li>
       <li><a href="LFADS_RunParams.html#+LFADS.RunParams.spikeBinMs">spikeBinMs (+LFADS.RunParams attribute)</a>
 </li>
@@ -442,12 +475,16 @@
 </li>
       <li><a href="LFADS_RunParams.html#+LFADS.RunParams.useAlignmentMatrix">useAlignmentMatrix (+LFADS.RunParams attribute)</a>
 </li>
-      <li><a href="LFADS_RunParams.html#+LFADS.RunParams.useDJOparams">useDJOparams (+LFADS.RunParams attribute)</a>
-</li>
       <li><a href="LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.validInds">validInds (+LFADS.PosteriorMeans attribute)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.version">version (+LFADS.Run attribute)</a>
+
+      <ul>
+        <li><a href="LFADS_RunCollection.html#+LFADS.RunCollection.version">(+LFADS.RunCollection attribute)</a>
 </li>
+        <li><a href="LFADS_RunSpec.html#+LFADS.RunSpec.version">(+LFADS.RunSpec attribute)</a>
+</li>
+      </ul></li>
       <li><a href="LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample">writeShellScriptLFADSPosteriorMeanSample() (+LFADS.Run method)</a>
 </li>
       <li><a href="LFADS_Run.html#+LFADS.Run.writeShellScriptLFADSTrain">writeShellScriptLFADSTrain() (+LFADS.Run method)</a>

@@ -14,8 +14,9 @@ LFADS Run Manager Classes
 .. toctree::
    :maxdepth: 2
 
-   LFADS_Dataset
    LFADS_DatasetCollection
+   LFADS_Dataset
+   LFADS_RunSpec
    LFADS_Run
    LFADS_RunCollection
    LFADS_RunParams

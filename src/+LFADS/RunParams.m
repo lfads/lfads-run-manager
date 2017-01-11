@@ -4,15 +4,19 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay
     % will be used in paths on disk.
     
     properties
-        % data or high-level params
+        % High-level params unrelated to LFADS internals
+        
         spikeBinMs uint16 = 2; % Spike bin width in ms
-        trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio
+        trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio    
+        useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together. Default = false.
+    end
+    
+    properties
+        % Subset of the command-line params to run_lfads.py
+        % Each starts with c_ so it can be differentiated from other params
+        % Avoid naming other parameters the same as these without the c_
+        % since the prefix will be stripped from the serialization
         
-        useAlignmentMatrix logical = false; % by default, no need to create an alignment matrix
-        
-        % added by CP
-        %  these are (a subset of the) command-line params to run_lfads.py
-        %  start each with c_ so it can be differentiated from other params
         c_cell_clip_value double = 5; % used to avoid stepping too far during training
         c_factors_dim uint16 = 50;
         c_in_factors_dim uint16 = 50;
@@ -44,6 +48,13 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay
             % (including those defined in subclasses) to the inline default property
             % values defined in the class that defines them. Any property
             % values that differ will be included in the serialization.
+            %
+            % By default this will be a list of properties and values
+            % separated by double underscores, e.g.
+            % 
+            % .. code::
+            %
+            %     prop1Name_value1__prop2Name_value2__prop3Name_value3
             %
             % Args:
             %   ignoreProperties : cellstr
@@ -94,12 +105,12 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay
         
         function str = serializeProperty(p, name, value)
             % Generates a string representation like name_value
-            % Strips c_ from beginnning of name
+            % Strips "c\_" from beginnning of name
             %
             % Args:
             %  name : string
             %  value : Matlab built in type
-            %
+            
             switch class(value)
                 case {'uint8', 'int8', 'uint16', 'int16', 'uint32', 'int32', 'uint64', 'int64'}
                     valstr  = sprintf('%i', value);

@@ -84,8 +84,9 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Dataset.html">LFADS.Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunSpec.html">LFADS.RunSpec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
@@ -402,29 +403,220 @@
 266
 267
 268
-269</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
-    <span class="c">% A set of :ref:`LFADS_Run` instances sharing common parameter settings but utilizing</span>
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
+    <span class="c">% A set of :ref:`LFADS_Run` instances utilizing</span>
     <span class="c">% different subsets of :ref:`LFADS_Dataset` insstances in a :ref:`LFADS_DatasetCollection`.</span>
-    <span class="c">% A RunCollection is a logical grouping of otherwise independent LFADS runs, which are constrained</span>
-    <span class="c">% to share a common Dataset collection and run parameters.</span>
+    <span class="c">% A RunCollection is a logical grouping of LFADS runs, where multiple</span>
+    <span class="c">% runs specifications are each run with multiple parameter</span>
+    <span class="c">% settings. The run specifications are provided as arrays of RunSpec instances which</span>
+    <span class="c">% indicate the name and which datasets are included for each run specification. The</span>
+    <span class="c">% parameter sweeps are specified using arrays of RunParams instances.</span>
+    <span class="c">% From these, a `nRunSpecs` x `nParams` matrix of :ref:`LFADS_Run`</span>
+    <span class="c">% instances will be generated. These in turn can be used to train</span>
+    <span class="c">% individual LFADS models on a particular set of datasets (or single</span>
+    <span class="c">% dataset) and particular parameter settings.</span>
 
     <span class="k">properties</span>
-<a name="RunCollection.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.name">[docs]</a>        <span class="n">name</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of this RunCollection, determines its relative path on disk</span>
-<a name="RunCollection.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.comment">[docs]</a>        <span class="n">comment</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Textual comment for convenience</span>
-<a name="RunCollection.rootPath"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.rootPath">[docs]</a>        <span class="n">rootPath</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span> <span class="c">% Root path on disk under which individual Runs will be stored</span>
+<a name="RunCollection.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.name">[docs]</a>        <span class="n">name</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of this RunCollection, determines its relative path on disk</span>
+<a name="RunCollection.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.comment">[docs]</a>        <span class="n">comment</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Textual comment for convenience</span>
+<a name="RunCollection.rootPath"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.rootPath">[docs]</a>        <span class="n">rootPath</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span> <span class="c">% Root path on disk under which individual Runs will be stored</span>
 
-<a name="RunCollection.datasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.datasetCollection">[docs]</a>        <span class="n">datasetCollection</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">DatasetCollection</span> <span class="c">% DatasetCollection instance</span>
+<a name="RunCollection.version"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.version">[docs]</a>        <span class="n">version</span> <span class="n">uint32</span> <span class="p">=</span> <span class="mi">3</span><span class="p">;</span> <span class="c">% version used for backwards compatibility</span>
+        
+<a name="RunCollection.datasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.datasetCollection">[docs]</a>        <span class="n">datasetCollection</span> <span class="c">% DatasetCollection instance</span>
     <span class="k">end</span>
 
     <span class="k">properties</span><span class="p">(</span><span class="n">SetAccess</span><span class="p">=</span><span class="n">protected</span><span class="p">)</span>
-<a name="RunCollection.runs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.runs">[docs]</a>        <span class="n">runs</span> <span class="c">% `nRunsEachParam` x `nParams` matrix of :ref:`LFADS_Run` instances</span>
+<a name="RunCollection.runs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.runs">[docs]</a>        <span class="n">runs</span> <span class="c">% `nRunSpecs` x `nParams` matrix of :ref:`LFADS_Run` instances</span>
 <a name="RunCollection.params"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.params">[docs]</a>        <span class="n">params</span> <span class="c">% array of RunParams instances</span>
-<a name="RunCollection.runSpecs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.runSpecs">[docs]</a>        <span class="n">runSpecs</span>
+<a name="RunCollection.runSpecs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.runSpecs">[docs]</a>        <span class="n">runSpecs</span> <span class="c">% array of :ref:`LFADS_RunSpec` instances used to specify the runs for each param setting</span>
     <span class="k">end</span>
 
     <span class="k">properties</span><span class="p">(</span><span class="n">Dependent</span><span class="p">)</span>
 <a name="RunCollection.nParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nParams">[docs]</a>        <span class="n">nParams</span> <span class="c">% number of parameter settings in `params`</span>
-<a name="RunCollection.nRunsEachParam"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nRunsEachParam">[docs]</a>        <span class="n">nRunsEachParam</span> <span class="c">% number of runs per each `RunParams` in `params`</span>
+<a name="RunCollection.nRunSpecs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nRunSpecs">[docs]</a>        <span class="n">nRunSpecs</span> <span class="c">% number of run specifications </span>
 <a name="RunCollection.nRunsTotal"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nRunsTotal">[docs]</a>        <span class="n">nRunsTotal</span> <span class="c">% number of runs total (equal to `nParams` * `nRunsEachParam`</span>
         
 <a name="RunCollection.nDatasets"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nDatasets">[docs]</a>        <span class="n">nDatasets</span> <span class="c">% number of datasets within the datasetCollection</span>
@@ -433,7 +625,7 @@
     <span class="k">end</span>
 
     <span class="k">methods</span>
-<a name="RunCollection.RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.RunCollection">[docs]</a><span class="k">        function</span><span class="w"> </span>rc <span class="p">=</span><span class="w"> </span><span class="nf">RunCollection</span><span class="p">(</span>rootPath, name, datasetCollection, runParams, runSpecs<span class="p">)</span><span class="w"></span>
+<a name="RunCollection.RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.RunCollection">[docs]</a><span class="k">        function</span><span class="w"> </span>rc <span class="p">=</span><span class="w"> </span><span class="nf">RunCollection</span><span class="p">(</span>varargin<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% rc = RunCollection(rootPath, name, datasetCollection[, runParams, runSpecs])</span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
@@ -450,18 +642,19 @@
             <span class="c">%     datasets for each run that will be run with each set of</span>
             <span class="c">%     params</span>
 
-
-            <span class="n">rc</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
-            <span class="n">rc</span><span class="p">.</span><span class="n">rootPath</span> <span class="p">=</span> <span class="n">rootPath</span><span class="p">;</span>
-            <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span> <span class="p">=</span> <span class="n">datasetCollection</span><span class="p">;</span>
-            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">3</span>
-                <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">makecol</span><span class="p">(</span><span class="n">runParams</span><span class="p">(:));</span>
-            <span class="k">end</span>
-            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">4</span>
-                <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">makecol</span><span class="p">(</span><span class="n">runSpecs</span><span class="p">(:));</span>
-            <span class="k">end</span>
+            <span class="n">p</span> <span class="p">=</span> <span class="n">inputParser</span><span class="p">();</span>
+            <span class="n">p</span><span class="p">.</span><span class="n">addOptional</span><span class="p">(</span><span class="s">&#39;rootPath&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
+            <span class="n">p</span><span class="p">.</span><span class="n">addOptional</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
+            <span class="n">p</span><span class="p">.</span><span class="n">addOptional</span><span class="p">(</span><span class="s">&#39;datasetCollection&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="p">@(</span><span class="n">x</span><span class="p">)</span> <span class="n">isa</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;LFADS.DatasetCollection&#39;</span><span class="p">));</span>
+            <span class="n">p</span><span class="p">.</span><span class="n">addOptional</span><span class="p">(</span><span class="s">&#39;runParams&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="p">@(</span><span class="n">x</span><span class="p">)</span> <span class="n">isa</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;LFADS.RunParams&#39;</span><span class="p">));</span>
+            <span class="n">p</span><span class="p">.</span><span class="n">addOptional</span><span class="p">(</span><span class="s">&#39;runSpecs&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="p">@(</span><span class="n">x</span><span class="p">)</span> <span class="n">isa</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;LFADS.DatasetCollection&#39;</span><span class="p">));</span>
+            <span class="n">p</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:});</span>
             
-            <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">rootPath</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">rootPath</span><span class="p">;</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">;</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">runParams</span><span class="p">;</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">;</span>
         <span class="k">end</span>
 <a name="RunCollection.addRunSpec"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.addRunSpec">[docs]</a><span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span><span class="nf">addRunSpec</span><span class="p">(</span>rc, runSpecs<span class="p">)</span><span class="w"></span>
@@ -469,72 +662,158 @@
             <span class="c">% Automatically appends new runs to `.runs`.</span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
-            <span class="c">%   runSpec : string</span>
+            <span class="c">%   runSpec : LFADS.RunSpec</span>
+            <span class="c">%     new RunSpec instances describing the names and datasets</span>
+            <span class="c">%     included. Each of these new RunSpecs will</span>
+            <span class="c">%     be run on each of the parameter settings in `.params`</span>
             
-            <span class="n">assert</span><span class="p">(</span><span class="n">isa</span><span class="p">(</span><span class="n">runSpecs</span><span class="p">,</span> <span class="s">&#39;LFADS.RunSpec&#39;</span><span class="p">),</span> <span class="s">&#39;Must be LFADS.RunSpec instance&#39;</span><span class="p">);</span>
+            <span class="n">assert</span><span class="p">(</span><span class="n">isa</span><span class="p">(</span><span class="n">runSpecs</span><span class="p">,</span> <span class="s">&#39;LFADS.RunSpec&#39;</span><span class="p">),</span> <span class="s">&#39;Must be LFADS.RunSpec instance(s)&#39;</span><span class="p">);</span>
             <span class="n">runSpecs</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">makecol</span><span class="p">(</span><span class="n">runSpecs</span><span class="p">(:));</span>
+            
+            <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">runSpecs</span><span class="p">)</span>
+                <span class="n">assert</span><span class="p">(</span><span class="nb">isequal</span><span class="p">(</span><span class="n">runSpecs</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">datasetCollection</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">),</span> <span class="s">&#39;DatasetCollection of added RunSpecs must match RunCollection&#39;</span><span class="p">);</span>
+            <span class="k">end</span>
+            
             <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">)</span>
                 <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="n">runSpecs</span><span class="p">;</span>
             <span class="k">else</span>
-                <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">,</span> <span class="n">runSpecs</span><span class="p">);</span>
+                <span class="c">% check for existing runs by name and replace them</span>
+                <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">ismemberRunSpecs</span><span class="p">(</span><span class="n">runSpecs</span><span class="p">);</span>
+                <span class="k">if</span> <span class="n">any</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span>
+                    <span class="n">warning</span><span class="p">(</span><span class="s">&#39;Replacing existing runs with matching name&#39;</span><span class="p">);</span>
+                    <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">idx</span><span class="p">(</span><span class="n">tf</span><span class="p">))</span> <span class="p">=</span> <span class="n">runSpecs</span><span class="p">(</span><span class="n">tf</span><span class="p">);</span>
+                <span class="k">end</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">,</span> <span class="n">runSpecs</span><span class="p">(</span><span class="o">~</span><span class="n">tf</span><span class="p">));</span>
             <span class="k">end</span>
             
             <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
         <span class="k">end</span>
-<a name="RunCollection.addParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.addParams">[docs]</a><span class="k">        </span>
-<span class="k">        function</span><span class="w"> </span><span class="nf">addParams</span><span class="p">(</span>rc, params<span class="p">)</span><span class="w"></span>
-<span class="w">            </span>
-<span class="w">        </span><span class="k">end</span>
+<a name="RunCollection.clearRunSpecs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.clearRunSpecs">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">clearRunSpecs</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Flush list of run specs</span>
 
-<span class="k">        function</span><span class="w"> </span>p <span class="p">=</span><span class="w"> </span><span class="nf">get.path</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">)</span>
-                <span class="n">paramStr</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
-            <span class="k">else</span>
-                <span class="n">paramStr</span> <span class="p">=</span> <span class="p">[</span><span class="s">&#39;_&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">generateSuffix</span><span class="p">()];</span>
-            <span class="k">end</span>
-            <span class="n">p</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">rootPath</span><span class="p">,</span> <span class="p">[</span><span class="n">rc</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">paramStr</span><span class="p">]);</span>
-        <span class="k">end</span>
-
-<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">get.fileShellScriptTensorboard</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">f</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;launch_tensorboard.sh&#39;</span><span class="p">);</span>
-        <span class="k">end</span>
-<a name="RunCollection.getRunsByName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.getRunsByName">[docs]</a><span class="k">        </span>
-<span class="k">        function</span><span class="w"> </span>runs <span class="p">=</span><span class="w"> </span><span class="nf">getRunsByName</span><span class="p">(</span>rc, names<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Find runs by their names. Throws an error if any run is not</span>
-            <span class="c">% found.</span>
-            <span class="c">%</span>
-            <span class="c">% Args:</span>
-            <span class="c">%   names (string or cellstr) : single name or cell array of</span>
-            <span class="c">%     names to find</span>
-            <span class="c">% Returns:</span>
-            <span class="c">%   runs (LFADS.Run) : matching runs</span>
-            <span class="c">%   idx (uint) : list of indices into `.runs` of matching run</span>
-            <span class="c">%     instances</span>
-            <span class="c">%</span>
-            
-            <span class="k">if</span> <span class="n">ischar</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
-                <span class="n">names</span> <span class="p">=</span> <span class="p">{</span><span class="n">names</span><span class="p">};</span>
-            <span class="k">end</span>
-            <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">{</span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">.</span><span class="n">name</span><span class="p">});</span>
-            <span class="n">assert</span><span class="p">(</span><span class="n">all</span><span class="p">(</span><span class="n">tf</span><span class="p">),</span> <span class="s">&#39;Some run names could not be found in this RunCollection&#39;</span><span class="p">);</span>
-            
-            <span class="n">runs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
-        <span class="k">end</span>
-<a name="RunCollection.clearRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.clearRuns">[docs]</a>
-<span class="k">        function</span><span class="w"> </span><span class="nf">clearRuns</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Flush list of runs</span>
-
-            <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="p">[];</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="p">[];</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
         <span class="k">end</span>
 <a name="RunCollection.filterRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.filterRuns">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">filterRuns</span><span class="p">(</span>rc, mask<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Apply selection mask to list of runs</span>
             <span class="c">%</span>
-            <span class="c">% Parameters</span>
-            <span class="c">% ------------</span>
-            <span class="c">% mask : logical or indices</span>
-            <span class="c">%   selection mask applied to `.runs`</span>
+            <span class="c">% Parameters:</span>
+            <span class="c">%   mask : logical or indices</span>
+            <span class="c">%     selection mask applied to `.runs`</span>
+            
             <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
+        <span class="k">end</span>
+<a name="RunCollection.addParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.addParams">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">addParams</span><span class="p">(</span>rc, params<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Adds new LFADS.RunParams instance(s) to this RunCollection.</span>
+            <span class="c">% Automatically appends new runs to `.runs`.</span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   params : :ref:`LFADS_RunParams`</span>
+            <span class="c">%     array of parameter settings to run each RunSpec on</span>
+            
+            <span class="n">assert</span><span class="p">(</span><span class="n">isa</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s">&#39;LFADS.RunParams&#39;</span><span class="p">),</span> <span class="s">&#39;Must be LFADS.RunParams instance(s)&#39;</span><span class="p">);</span>
+            <span class="n">params</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">makecol</span><span class="p">(</span><span class="n">params</span><span class="p">(:));</span>
+            <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">)</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">params</span><span class="p">;</span>
+            <span class="k">else</span>
+                <span class="c">% check for existing runs by name and replace them</span>
+                <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">ismemberParams</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
+                <span class="k">if</span> <span class="n">any</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span>
+                    <span class="n">warning</span><span class="p">(</span><span class="s">&#39;Replacing existing runs with matching name&#39;</span><span class="p">);</span>
+                    <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">idx</span><span class="p">(</span><span class="n">tf</span><span class="p">))</span> <span class="p">=</span> <span class="n">params</span><span class="p">(</span><span class="n">tf</span><span class="p">);</span>
+                <span class="k">end</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">,</span> <span class="n">params</span><span class="p">(</span><span class="o">~</span><span class="n">tf</span><span class="p">));</span>
+            <span class="k">end</span>
+            
+            <span class="k">if</span> <span class="n">rc</span><span class="p">.</span><span class="n">version</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="nb">numel</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> 
+                <span class="n">error</span><span class="p">(</span><span class="s">&#39;Multiple params not supported for version &lt; 3&#39;</span><span class="p">);</span>
+            <span class="k">end</span>
+                
+            <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
+        <span class="k">end</span>
+<a name="RunCollection.clearParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.clearParams">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">clearParams</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Flush list of run params</span>
+
+            <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="p">[];</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
+        <span class="k">end</span>
+<a name="RunCollection.filterParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.filterParams">[docs]</a>
+<span class="k">        function</span><span class="w"> </span><span class="nf">filterParams</span><span class="p">(</span>rc, mask<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Apply selection mask to .params</span>
+            <span class="c">%</span>
+            <span class="c">% Parameters:</span>
+            <span class="c">%   mask : logical or indices</span>
+            <span class="c">%     selection mask applied to `.runs`</span>
+            
+            <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
+        <span class="k">end</span>
+<a name="RunCollection.clearAll"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.clearAll">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">clearAll</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="p">[];</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="p">[];</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
+        <span class="k">end</span>
+<a name="RunCollection.generateRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.generateRuns">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">generateRuns</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">assert</span><span class="p">(</span><span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">),</span> <span class="s">&#39;DatasetCollection is empty&#39;</span><span class="p">);</span>
+            <span class="n">assert</span><span class="p">(</span><span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">rootPath</span><span class="p">),</span> <span class="s">&#39;rootPath is empty&#39;</span><span class="p">);</span>
+            <span class="n">assert</span><span class="p">(</span><span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">name</span><span class="p">),</span> <span class="s">&#39;name is empty&#39;</span><span class="p">);</span>
+            
+            <span class="k">if</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunsTotal</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="c">% start with existing matrix</span>
+                <span class="n">matOrig</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">;</span>
+                
+                <span class="k">for</span> <span class="n">iS</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span>
+                    <span class="n">spec</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">iS</span><span class="p">);</span>
+                    <span class="n">clsFn</span> <span class="p">=</span> <span class="n">str2func</span><span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">runClassName</span><span class="p">);</span>
+
+                    <span class="k">for</span> <span class="n">iP</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span>
+                        <span class="c">% create the new run</span>
+                        <span class="n">new</span> <span class="p">=</span> <span class="n">clsFn</span><span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">iP</span><span class="p">),</span> <span class="n">spec</span><span class="p">.</span><span class="n">datasets</span><span class="p">);</span>
+                        
+                        <span class="c">% check whether the old run matches, keep it if so,</span>
+                        <span class="c">% so that we don&#39;t break references unless</span>
+                        <span class="c">% something has changed</span>
+                        <span class="k">if</span> <span class="nb">size</span><span class="p">(</span><span class="n">matOrig</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span><span class="p">=</span> <span class="n">iS</span> <span class="o">&amp;&amp;</span> <span class="nb">size</span><span class="p">(</span><span class="n">matOrig</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span><span class="p">=</span> <span class="n">iP</span>
+                            <span class="n">orig</span> <span class="p">=</span> <span class="n">matOrig</span><span class="p">(</span><span class="n">iS</span><span class="p">,</span> <span class="n">iP</span><span class="p">);</span>
+                            <span class="k">if</span> <span class="n">orig</span> <span class="o">==</span> <span class="n">new</span>
+                                <span class="n">new</span> <span class="p">=</span> <span class="n">orig</span><span class="p">;</span>
+                            <span class="k">end</span>
+                        <span class="k">end</span>
+                        
+                        <span class="n">mat</span><span class="p">(</span><span class="n">iS</span><span class="p">,</span> <span class="n">iP</span><span class="p">)</span> <span class="p">=</span> <span class="n">new</span><span class="p">;</span>                        
+                    <span class="k">end</span>
+                <span class="k">end</span>
+
+                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="n">mat</span><span class="p">;</span>
+            <span class="k">else</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="p">[];</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+        
+    <span class="k">methods</span>
+<span class="k">        function</span><span class="w"> </span>p <span class="p">=</span><span class="w"> </span><span class="nf">get.path</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span> <span class="n">rc</span><span class="p">.</span><span class="n">version</span> <span class="o">&gt;</span><span class="p">=</span> <span class="mi">3</span>
+                <span class="n">p</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">rootPath</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">)</span>
+                    <span class="n">paramSuffix</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
+                <span class="k">else</span>
+                    <span class="n">paramSuffix</span> <span class="p">=</span> <span class="p">[</span><span class="s">&#39;_&#39;</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">generateString</span><span class="p">()];</span>
+                <span class="k">end</span>
+                <span class="n">p</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">rootPath</span><span class="p">,</span> <span class="p">[</span><span class="n">rc</span><span class="p">.</span><span class="n">name</span> <span class="n">paramSuffix</span><span class="p">]);</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+
+<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">get.fileShellScriptTensorboard</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">f</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;launch_tensorboard.sh&#39;</span><span class="p">);</span>
         <span class="k">end</span>
 <span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nParams</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
@@ -542,40 +821,162 @@
         <span class="k">end</span>
 
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nRunsTotal</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="nb">numel</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">);</span>
+<span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span> <span class="o">*</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">;</span>
         <span class="k">end</span>
 <span class="k">        </span>
-<span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nRunsEachParam</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nRunSpecs</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="nb">numel</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">);</span>
         <span class="k">end</span>
 
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nDatasets</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">;</span>
         <span class="k">end</span>
+<a name="RunCollection.ismemberRunSpecs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.ismemberRunSpecs">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>[tf, idx] <span class="p">=</span><span class="w"> </span><span class="nf">ismemberRunSpecs</span><span class="p">(</span>rc, runSpecSearch<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Determine if any run specs that match runSpecSearch are found in .runSpecs.</span>
+            <span class="c">% If runSpecSearch is string or cellstr, matches by</span>
+            <span class="c">% name. If runSpecSearch is an array of RunSpec instances,</span>
+            <span class="c">% finds them using isequal. If runSpecSearch is a vector of</span>
+            <span class="c">% indices, selects from runSpecs directly</span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   tf : logical</span>
+            <span class="c">%     does each runSpec exist within .runSpecs</span>
+            <span class="c">%   idx : indices</span>
+            <span class="c">%     which index in .runSpecs</span>
+            <span class="c">%</span>
+            
+            <span class="k">if</span> <span class="n">ischar</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">)</span>
+                <span class="n">runSpecSearch</span> <span class="p">=</span> <span class="p">{</span><span class="n">runSpecSearch</span><span class="p">};</span>
+            <span class="k">end</span>
+            <span class="k">if</span> <span class="n">iscellstr</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">)</span>
+                <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">,</span> <span class="p">{</span><span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">.</span><span class="n">name</span><span class="p">});</span>
+                
+            <span class="k">elseif</span> <span class="n">isa</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">,</span> <span class="s">&#39;LFADS.RunSpec&#39;</span><span class="p">)</span>
+                <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">);</span>
+                
+            <span class="k">else</span>
+                <span class="c">% assume is selection</span>
+                <span class="n">idx</span> <span class="p">=</span> <span class="n">runSpecSearch</span><span class="p">;</span>
+                <span class="n">tf</span> <span class="p">=</span> <span class="n">true</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">idx</span><span class="p">));</span>
+            <span class="k">end</span>
+            <span class="n">idx</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">makecol</span><span class="p">(</span><span class="n">idx</span><span class="p">(:));</span>
+        <span class="k">end</span>
+<a name="RunCollection.findRunSpecs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findRunSpecs">[docs]</a><span class="k">           </span>
+<span class="k">        function</span><span class="w"> </span>[runSpecs, idx] <span class="p">=</span><span class="w"> </span><span class="nf">findRunSpecs</span><span class="p">(</span>rc, runSpecSearch<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Find run specs that match runSpecSearch. Throws an error if any run is not</span>
+            <span class="c">% found. If runSpecSearch is string or cellstr, matches by</span>
+            <span class="c">% name. If runSpecSearch is an array of RunSpec instances,</span>
+            <span class="c">% finds them using isequal. If runSpecSearch is a vector of</span>
+            <span class="c">% indices, selects from runSpecs directly</span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   runs (LFADS.Run) : matching runs</span>
+            <span class="c">%   idx : vector of indices into `.runSpecs` of matching run</span>
+            <span class="c">%     instances</span>
+            <span class="c">%</span>
+            
+            <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">ismemberRunSpecs</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">);</span>
+            <span class="n">assert</span><span class="p">(</span><span class="n">all</span><span class="p">(</span><span class="n">tf</span><span class="p">),</span> <span class="s">&#39;Some run spec names could not be found in this RunCollection&#39;</span><span class="p">);</span>
+            <span class="n">runSpecs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="RunCollection.ismemberParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.ismemberParams">[docs]</a><span class="k">        </span>
+<a name="RunCollection.ismemberParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.ismemberParams">[docs]</a><span class="k">        function</span><span class="w"> </span>[tf, idx] <span class="p">=</span><span class="w"> </span><span class="nf">ismemberParams</span><span class="p">(</span>rc, paramSearch<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Determine if any run params that match paramSearch are found in .params.</span>
+            <span class="c">% If paramSearch is an array of RunParams instances,</span>
+            <span class="c">% finds them using isequal. If paramSearch is a vector of</span>
+            <span class="c">% indices, selects from runParams directly</span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   paramSearch : array of LFADS.RunParams or indices into .params</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   params : LFADS.RunParams</span>
+            <span class="c">%     matching params </span>
+            <span class="c">%   idx : vector of indices into `.params` of matches</span>
+            <span class="c">%</span>
+            
+            <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">,</span> <span class="s">&#39;LFADS.RunParams&#39;</span><span class="p">)</span>
+                <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">);</span>
+                
+            <span class="k">else</span>
+                <span class="c">% assume is selection</span>
+                <span class="n">idx</span> <span class="p">=</span> <span class="n">paramSearch</span><span class="p">;</span>
+                <span class="n">tf</span> <span class="p">=</span> <span class="n">true</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">idx</span><span class="p">));</span>
+            <span class="k">end</span>
+            <span class="n">idx</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">makecol</span><span class="p">(</span><span class="n">idx</span><span class="p">(:));</span>
+        <span class="k">end</span>
+<a name="RunCollection.findParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findParams">[docs]</a><span class="k">        </span>
+<a name="RunCollection.findParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findParams">[docs]</a><span class="k">        function</span><span class="w"> </span>[params, idx] <span class="p">=</span><span class="w"> </span><span class="nf">findParams</span><span class="p">(</span>rc, paramSearch<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Find run params that match paramSearch. Throws an error if any RunParams is not</span>
+            <span class="c">% found. If paramSearch is an array of RunParams instances,</span>
+            <span class="c">% finds them using isequal. If paramSearch is a vector of</span>
+            <span class="c">% indices, selects from runParams directly</span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   paramSearch : array of LFADS.RunParams or indices into .params</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   params : LFADS.RunParams</span>
+            <span class="c">%     matching params </span>
+            <span class="c">%   idx : vector of indices into `.params` of matches</span>
+            <span class="c">%</span>
+            
+            <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">ismemberParams</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">);</span>
+            <span class="n">assert</span><span class="p">(</span><span class="n">all</span><span class="p">(</span><span class="n">tf</span><span class="p">),</span> <span class="s">&#39;Some run params could not be found in this RunCollection&#39;</span><span class="p">);</span>
+            <span class="n">params</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="RunCollection.findRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findRuns">[docs]</a><span class="k">        </span>
+<a name="RunCollection.findRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findRuns">[docs]</a><span class="k">        function</span><span class="w"> </span>[runs, rowIdx, colIdx] <span class="p">=</span><span class="w"> </span><span class="nf">findRuns</span><span class="p">(</span>rc, runSpecSearch, paramSearch<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Returns a subset of the .runs matrix for a certain subset of RunSpecs and RunParams. </span>
+            <span class="c">% Throws an error if any run is not found.</span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs</span>
+            <span class="c">%   paramSearch : array of LFADS.RunParams, or indices into .params</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   runs : LFADS.Run matrix</span>
+            <span class="c">%     matching runs as matrix</span>
+            <span class="c">%   rowIdx : vector of indices</span>
+            <span class="c">%     vector of indices matching into `.runSpecs`</span>
+            <span class="c">%   colIdx : vector of indices</span>
+            <span class="c">%     vector of indices matching into .params</span>
+            
+            <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">rowIdx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findRunSpecs</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">);</span>
+            <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">colIdx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findParams</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">);</span>
+            <span class="n">runs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">rowIdx</span><span class="p">,</span> <span class="n">colIdx</span><span class="p">);</span>
+        <span class="k">end</span>
 <a name="RunCollection.getTensorboardCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.getTensorboardCommand">[docs]</a>
-<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">getTensorboardCommand</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<a name="RunCollection.getTensorboardCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.getTensorboardCommand">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">getTensorboardCommand</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates the shell command text to launch a TensorBoard displaying all runs within this collection</span>
             <span class="c">%</span>
-            <span class="c">% Returns</span>
-            <span class="c">% ---------</span>
-            <span class="c">% cmd : string</span>
-            <span class="c">%   Command which can luanch TensorBoard from command line</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   cmd : string</span>
+            <span class="c">%     Command which can luanch TensorBoard from command line</span>
 
-            <span class="n">runEntry</span> <span class="p">=</span> <span class="n">cellvec</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span><span class="p">);</span>
-            <span class="k">for</span> <span class="n">r</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span>
-                <span class="n">runEntry</span><span class="p">{</span><span class="n">r</span><span class="p">}</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s:%s&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">r</span><span class="p">).</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">r</span><span class="p">).</span><span class="n">pathLFADSOutput</span><span class="p">);</span>
+            <span class="n">runEntry</span> <span class="p">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">);</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nParams</span>
+                    <span class="n">runEntry</span><span class="p">{</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">}</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s__par%d:%s&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">).</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">).</span><span class="n">pathLFADSOutput</span><span class="p">);</span>
+                <span class="k">end</span>
             <span class="k">end</span>
             <span class="n">str</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;tensorboard --logdir=%s&#39;</span><span class="p">,</span> <span class="n">strjoin</span><span class="p">(</span><span class="n">runEntry</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">));</span>
         <span class="k">end</span>
 <a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a>
-<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeTensorboardShellScript</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a><span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeTensorboardShellScript</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates the shell command text to launch a TensorBoard displaying all runs within this collection</span>
             <span class="c">% and saves it to a file inside the RunCollection&#39;s path</span>
             <span class="c">%</span>
-            <span class="c">% Returns</span>
-            <span class="c">% ---------</span>
-            <span class="c">% file : string</span>
-            <span class="c">%   Path to the shell script, will match `.fileShellScriptTensorboard`</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   file : string</span>
+            <span class="c">%     Path to the shell script, will match `.fileShellScriptTensorboard`</span>
 
             <span class="n">f</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">fileShellScriptTensorboard</span><span class="p">;</span>
             <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
@@ -583,33 +984,8 @@
             <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
             <span class="n">chmod</span><span class="p">(</span><span class="s">&#39;uga+rx&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
         <span class="k">end</span>
-<a name="RunCollection.addRun"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.addRun">[docs]</a>
-<span class="k">        function</span><span class="w"> </span><span class="nf">addRun</span><span class="p">(</span>rc, r<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% addRun(run)</span>
-            <span class="c">% Adds a :ref:`LFADS_Run` to the collection. Note that :ref:`LFADS_Run` instances are generally added to their Run Collection upon construction, so calling this method is likely unnecessary for the end user.</span>
-            <span class="c">%</span>
-            <span class="c">% Parameters</span>
-            <span class="c">% ------------------</span>
-            <span class="c">% run : :ref:`LFADS_Run`</span>
-            <span class="c">%   Run to add to the collection.</span>
-
-            <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">)</span>
-                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="n">r</span><span class="p">;</span>
-            <span class="k">else</span>
-                <span class="c">% check for existing run and replace it</span>
-                <span class="n">names</span> <span class="p">=</span> <span class="n">arrayfun</span><span class="p">(@(</span><span class="n">oldR</span><span class="p">)</span> <span class="n">oldR</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">,</span> <span class="s">&#39;UniformOutput&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">);</span>
-                <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">names</span><span class="p">);</span>
-                <span class="k">if</span> <span class="n">tf</span>
-                    <span class="n">debug</span><span class="p">(</span><span class="s">&#39;Replacing existing run with matching name %s\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">idx</span><span class="p">).</span><span class="n">name</span><span class="p">);</span>
-                    <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="p">=</span> <span class="n">r</span><span class="p">;</span>
-                <span class="k">else</span>
-                    <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="k">end</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">:)</span> <span class="p">=</span> <span class="n">r</span><span class="p">;</span>
-                <span class="k">end</span>
-            <span class="k">end</span>
-            <span class="n">r</span><span class="p">.</span><span class="n">runCollection</span> <span class="p">=</span> <span class="n">rc</span><span class="p">;</span>
-        <span class="k">end</span>
 <a name="RunCollection.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadSequenceData">[docs]</a><span class="k">        </span>
-<span class="k">        function</span><span class="w"> </span><span class="nf">loadSequenceData</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
+<a name="RunCollection.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadSequenceData">[docs]</a><span class="k">        function</span><span class="w"> </span><span class="nf">loadSequenceData</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Call `loadSequenceData` on each run in this collection</span>
 
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
@@ -623,7 +999,7 @@
             <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
         <span class="k">end</span>
 <a name="RunCollection.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">[docs]</a><span class="k">        </span>
-<span class="k">        function</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
+<a name="RunCollection.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">[docs]</a><span class="k">        function</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Call `loadPosteriorMeans` on each run in this collection</span>
 
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
@@ -638,34 +1014,23 @@
         <span class="k">end</span>
     <span class="k">end</span>
 
-    <span class="k">methods</span>
-<a name="RunCollection.copyClearRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.copyClearRuns">[docs]</a><span class="k">        function</span><span class="w"> </span>rc2 <span class="p">=</span><span class="w"> </span><span class="nf">copyClearRuns</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Make a copy of this run collection, but without the runs inside</span>
-            <span class="c">%</span>
-            <span class="c">% Returns</span>
-            <span class="c">% ---------</span>
-            <span class="c">% rc : :ref:`LFADS_RunCollection`</span>
-            <span class="c">%   Copy of RunCollection sans runs</span>
-            <span class="n">rc2</span> <span class="p">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">rc</span><span class="p">);</span>
-            <span class="n">rc2</span><span class="p">.</span><span class="n">clearRuns</span><span class="p">();</span>
-        <span class="k">end</span>
-    <span class="k">end</span>
-
     <span class="k">methods</span> <span class="p">(</span><span class="n">Access</span> <span class="p">=</span> <span class="n">protected</span><span class="p">)</span>
 <span class="k">       function</span><span class="w"> </span>header <span class="p">=</span><span class="w"> </span><span class="nf">getHeader</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">          </span><span class="k">if</span> <span class="o">~</span><span class="nb">isscalar</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
              <span class="n">header</span> <span class="p">=</span> <span class="n">getHeader</span><span class="p">@</span><span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span><span class="p">(</span><span class="n">rc</span><span class="p">);</span>
           <span class="k">else</span>
-             <span class="n">className</span> <span class="p">=</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span><span class="p">.</span><span class="n">getClassNameForHeader</span><span class="p">(</span><span class="n">rc</span><span class="p">);</span>
-             <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s %s in %s\n&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">path</span><span class="p">);</span>
-             <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  %d RunParams settings\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">));</span>
+             <span class="n">className</span> <span class="p">=</span> <span class="n">class</span><span class="p">(</span><span class="n">rc</span><span class="p">);</span>
+             <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot; (%d runs total)\n  Dataset Collection &quot;%s&quot; (%d datasets) in %s\n&#39;</span><span class="p">,</span> <span class="c">...</span>
+                 <span class="n">className</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunsTotal</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">path</span><span class="p">);</span>
+             <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  Path: %s\n\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">path</span><span class="p">));</span>
+             <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  %d parameter settings\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">));</span>
              <span class="k">for</span> <span class="n">p</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nParams</span>
-                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">p</span><span class="p">).</span><span class="n">getSuffix</span><span class="p">));</span>
+                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s\n&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">p</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
              <span class="k">end</span>
              
-             <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  %d runs per param setting, %d runs total\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunsEachParam</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunsTotal</span><span class="p">));</span>
-             <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunsEachParam</span>
-                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
+             <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;\n  %d run specifications\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">));</span>
+             <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span>
+                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
              <span class="k">end</span>
           <span class="k">end</span>
        <span class="k">end</span>

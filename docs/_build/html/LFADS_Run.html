@@ -35,7 +35,7 @@
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="LFADS Run Manager 0.5.1 documentation" href="index.html"/>
         <link rel="next" title="LFADS.RunCollection" href="LFADS_RunCollection.html"/>
-        <link rel="prev" title="LFADS.DatasetCollection" href="LFADS_DatasetCollection.html"/> 
+        <link rel="prev" title="LFADS.RunSpec" href="LFADS_RunSpec.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -85,8 +85,9 @@
             
             
                 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunSpec.html">LFADS.RunSpec</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
@@ -139,7 +140,7 @@
 <span id="id1"></span><span id="lfads-run"></span><h1>LFADS.Run<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="+LFADS.Run">
-<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>name</em>, <em>runCollection</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run" title="Permalink to this definition">¶</a></dt>
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>name</em>, <em>runCollection</em>, <em>params</em>, <em>datasets</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
 <p>Represents a single LFADS experiment on a specific set of datasets. Runs are grouped into <a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a>
 instances, and all runs in a collection share the same parameter settings, which are represented by a shared
@@ -206,19 +207,19 @@ PC regression can provide a reasonable set of guesses.</li>
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
 </div><dl class="attribute">
 <dt id="+LFADS.Run.name">
-<code class="descname">name</code><em class="property"> (TypePackage.TypeClass) = ''</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.name" title="Permalink to this definition">¶</a></dt>
+<code class="descname">name</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of this run unique within its RunCollection, will be used as subfolder on disk</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="+LFADS.Run.comment">
-<code class="descname">comment</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.comment" title="Permalink to this definition">¶</a></dt>
+<code class="descname">comment</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.comment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Textual comment for convenience</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="+LFADS.Run.version">
-<code class="descname">version</code><em class="property"> = 2</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.version" title="Permalink to this definition">¶</a></dt>
+<code class="descname">version</code><em class="property"> (uint32) = 3</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal versioning allowing for graceful evolution of path settings</p>
 </dd></dl>
 
@@ -232,7 +233,7 @@ PC regression can provide a reasonable set of guesses.</li>
 
 <dl class="attribute">
 <dt id="+LFADS.Run.sequenceData">
-<code class="descname">sequenceData</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.sequenceData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.sequenceData" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sequenceData</code><em class="property"> (cell) = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.sequenceData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.sequenceData" title="Permalink to this definition">¶</a></dt>
 <dd><p>nDatasets cell array of sequence struct data</p>
 </dd></dl>
 
@@ -257,6 +258,12 @@ PC regression can provide a reasonable set of guesses.</li>
 <div class="note admonition" id="+LFADS.Run.Run_member_group_3_+LFADS::Run.Run_member_group_3">
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Dependent Properties</p>
 </div><dl class="attribute">
+<dt id="+LFADS.Run.paramsString">
+<em class="property">Dependent</em><code class="descname">paramsString</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.paramsString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.paramsString" title="Permalink to this definition">¶</a></dt>
+<dd><p>string representation of params generated using .params.generateString()</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.Run.pathSequenceFiles">
 <em class="property">Dependent</em><code class="descname">pathSequenceFiles</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.pathSequenceFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.pathSequenceFiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Path on disk where sequence files will be saved</p>
@@ -307,7 +314,7 @@ PC regression can provide a reasonable set of guesses.</li>
 <dl class="attribute">
 <dt id="+LFADS.Run.path">
 <em class="property">Dependent</em><code class="descname">path</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unique folder within rootPath including name_paramSuffix</p>
+<dd><p>Unique folder within rootPath including paramStr/name</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -326,9 +333,9 @@ PC regression can provide a reasonable set of guesses.</li>
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
 <dt id="+LFADS.Run.Run">
-[<em>run</em>] = <code class="descname">Run</code><span class="sig-paren">(</span><em>name</em>, <em>runCollection</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.Run" title="Permalink to this definition">¶</a></dt>
+[<em>run</em>] = <code class="descname">Run</code><span class="sig-paren">(</span><em>name</em>, <em>runCollection</em>, <em>params</em>, <em>datasets</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.Run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run instances should not be constructed directly by the user.
-Instead, use <em class="xref std std-ref">LFADS_RunSpec</em> and add them to a
+Instead, use <a class="reference internal" href="LFADS_RunSpec.html#lfads-runspec"><em>LFADS.RunSpec</em></a> and add them to a
 <a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a> instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -337,13 +344,20 @@ Instead, use <em class="xref std std-ref">LFADS_RunSpec</em> and add them to a
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>name</strong> (<em>string</em>) &#8211; Unique name for this run within the collection</li>
 <li><strong>runCollection</strong> (<a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a> instance) &#8211; RunCollection to which this run should be added</li>
-<li><strong>runParams</strong> (<a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a> instance) &#8211; parameters for this run</li>
+<li><strong>params</strong> (<a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a> instance) &#8211; parameters for this run</li>
 <li><strong>datasets</strong> (array of <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a>) &#8211; </li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.eq">
+[<em>tf</em>] = <code class="descname">eq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded == operator to enable equality if name, params,
+datasets, and runCollection fields all match.</p>
 </dd></dl>
 
 <dl class="method">
@@ -393,19 +407,19 @@ Shortcut for generating and saving sequence files, LFADS input HD5 input files, 
 
 <dl class="method">
 <dt id="+LFADS.Run.writeShellScriptLFADSTrain">
-[<em>f</em>] = <code class="descname">writeShellScriptLFADSTrain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSTrain" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>function f = writeShellScriptLFADSTrain(r, tmux_session_name, display,...</dt>
-<dd>cuda_visible_device)</dd>
-</dl>
-<p>Write a shell script used for running the LFADS python code</p>
+[<em>f</em>] = <code class="descname">writeShellScriptLFADSTrain</code><span class="sig-paren">(</span><em>tmux_session_name</em>, <em>display</em>, <em>cuda_visible_device</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSTrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a shell script used for running the LFADS python code</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>file</strong> &#8211; Full path to shell script which can be used to begin or resume LFADS training</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>string</dt>
+<dd>Full path to shell script which can be used to begin or resume LFADS training</dd>
+</dl>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">file</td>
 </tr>
 </tbody>
 </table>
@@ -524,7 +538,7 @@ loaded from disk always.</td>
         <a href="LFADS_RunCollection.html" class="btn btn-neutral float-right" title="LFADS.RunCollection" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="LFADS_DatasetCollection.html" class="btn btn-neutral" title="LFADS.DatasetCollection" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="LFADS_RunSpec.html" class="btn btn-neutral" title="LFADS.RunSpec" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
