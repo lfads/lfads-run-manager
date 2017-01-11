@@ -363,8 +363,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %   colIdx : vector of indices
             %     vector of indices matching into .params
             
-            [~, rowIdx] = rc.findRunSpecs(runSpecSearch);
-            [~, colIdx] = rc.findParams(paramSearch);
+            if isempty(runSpecSearch)
+                rowIdx = 1:rc.nRunSpecs;
+            else
+                [~, rowIdx] = rc.findRunSpecs(runSpecSearch);
+            end
+            if nargin > 2 && ~isempty(paramSearch)
+                [~, colIdx] = rc.findParams(paramSearch);
+            else
+                colIdx = 1:rc.nParams;
+            end
+            
             runs = rc.runs(rowIdx, colIdx);
         end
 
