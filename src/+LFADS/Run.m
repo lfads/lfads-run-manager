@@ -505,7 +505,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
 
 
-        function f = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name)
+        function f = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name, cude_visible_device)
             % function file = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name)
             % Write a shell script used for running the LFADS posterior mean sampling. This must be run after the LFADS
             % training has been started.
@@ -520,6 +520,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             fid = fopen(f, 'w');
 
             outputString = r.buildCommandLFADSPosteriorMeanSample();
+
+            % set cuda visible devices
+            if exist('cuda_visible_device', 'var') && ~isempty(cuda_visible_device)
+                outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
+                                       cuda_visible_device, outputString);
+            end
 
             % if requested, tmux-ify the command
             if exist('tmux_session_name', 'var') && ~isempty(tmux_session_name)
@@ -575,7 +581,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});
-                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params); %#ok<AGROW>
+                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params);
             end
             prog.finish();
             
