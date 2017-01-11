@@ -534,7 +534,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 reload = false;
             end
             if ~isempty(r.posteriorMeans) && all([r.posteriorMeans.isValid]) && ~reload
-                pms = r.posteriorMeans;
+                pms = LFADS.Utils.makecol(r.posteriorMeans);
                 return;
             end
                 
@@ -561,6 +561,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             prog.finish();
             
+            pms = LFADS.Utils.makecol(pms);
             r.posteriorMeans = pms;
         end
 
