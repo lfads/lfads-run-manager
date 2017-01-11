@@ -129,9 +129,9 @@ for ndset = 1:numel(seqs)
     nNeurons = numel(whichChannelsThisSet);
 
     % how many output time bins should there be
-    nTimeBins = floor(nTimeMS / binSizeMS);
+    nTimeBins = floor( double( nTimeMS ) / double( binSizeMS ) );
     % how many input timebins should we keep
-    inputTimeBinsToKeep = nTimeBins * binSizeMS / inputBinSizeMS;
+    inputTimeBinsToKeep = nTimeBins * double( binSizeMS ) / double( inputBinSizeMS );
 
     nTrainTrials = numel(trainInds);
     nTestTrials = numel(testInds);
