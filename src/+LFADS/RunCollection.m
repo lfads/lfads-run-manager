@@ -1,8 +1,8 @@
 classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     % A set of :ref:`LFADS_Run` instances sharing common parameter settings but utilizing
-    % different subsets of :ref:`LFADS_Dataset` insstances in a :ref:`LFADS_DatasetCollection`.
+    % different subsets of :ref:`LFADS_Dataset` instances in a :ref:`LFADS_DatasetCollection`.
     % A RunCollection is a logical grouping of otherwise independent LFADS runs, which are constrained
-    % to share a common Dataset collection and run parameters.
+    % to share a common DatasetCollection and run parameters.
 
     properties
         name = '' % Name of this RunCollection, determines its relative path on disk
@@ -130,7 +130,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 names = arrayfun(@(oldR) oldR.name, rc.runs, 'UniformOutput', false);
                 [tf, idx] = ismember(r.name, names);
                 if tf
-                    debug('Replacing existing run with matching name %s\n', rc.runs(idx).name);
+                    disp(sprintf('Replacing existing run with matching name %s\n', rc.runs(idx).name));
                     rc.runs(idx) = r;
                 else
                     rc.runs(end+1, :) = r;
