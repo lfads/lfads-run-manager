@@ -71,6 +71,7 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay
             %   Relative path to data from `collection.path`
 
             [~, ds.name] = fileparts(relPath);
+            ds.name = strrep(ds.name, ',', '_');
             ds.relPath = relPath;
             collection.addDataset(ds);
         end
@@ -119,7 +120,7 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay
              header = getHeader@matlab.mixin.CustomDisplay(ds);
           else
              className = matlab.mixin.CustomDisplay.getClassNameForHeader(ds);
-             newHeader = sprintf('%s %s in %s', className, ds.name, ds.relPath);
+             newHeader = sprintf('%s %s', className, ds.name);
              header = sprintf('%s\n',newHeader);
           end
        end
