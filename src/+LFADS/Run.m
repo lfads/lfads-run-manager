@@ -25,28 +25,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         % seq : struct Array
         %   sequence formatted data. A struct array where each elemnt corresponds to a specific trial.
 
-        [alignmentMatrices, trainInds, validInds] = prepareSequenceDataForLFADS(seqData);
-        % Prepares multiple days of sequence data for LFADS input file generation. Generate
-        % alignment matrices which specify the initial guess at the encoder matrix that converts neural activity
-        % from each dataset to a common set of factors (for stitching). Specify training and validation indices
-        % (subsets of trials) on each day.
-        %
-        % Parameters
-        % ------------
-        % seqData : `nDatasets` cell of struct arrays of sequence data
-        %   Sequence data for each dataset as returned by `convertDatasetToSequenceStruct`
-        %
-        % Returns
-        % ----------
-        % alignmentMatrices : `nDatasets` cell of `nNeurons` x `nFactors` matrices
-        %   For each dataset, an initial guess at the encoder matrices which maps `nNeurons` (for that dataset) to a
-        %   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,
-        %   PC regression can provide a reasonable set of guesses.
-        %
-        % trainInds : `nDatasets` cell of indices into each dataset's trial array
-        %   Trial indices for each datatset to use for training
-        % validInds : `nDatasets` cell of indices into each dataset's trial array
-        %   Trial indices for each datatset to use for validation
     end
 
     properties
@@ -88,6 +66,29 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
 
     methods
+        function alignmentMatrices = prepareAlignmentMatrices(seqData)
+            % Prepares alignment matrices to seed the stitching process when using multiple days of sequence data for 
+            % LFADS input file generation. Generate
+            % alignment matrices which specify the initial guess at the encoder matrix that converts neural activity
+            % from each dataset to a common set of factors (for stitching). Specify training and validation indices
+            % (subsets of trials) on each day.
+            %
+            % Parameters
+            % ------------
+            % seqData : `nDatasets` cell of struct arrays of sequence data
+            %   Sequence data for each dataset as returned by `convertDatasetToSequenceStruct`
+            %
+            % Returns
+            % ----------
+            % alignmentMatrices : `nDatasets` cell of `nNeurons` x `nFactors` matrices
+            %   For each dataset, an initial guess at the encoder matrices which maps `nNeurons` (for that dataset) to a
+            %   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,
+            %   PC regression can provide a reasonable set of guesses.
+            
+            alignmentMatrices = {};
+            error('You must override prepareAlignmentMatrices in your Run class if params.useAlignmentMatrices is set to true');
+        end
+        
         function r = Run(varargin)
             
         end
@@ -333,22 +334,25 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             prog.finish();
 
             % if there are multiple datasets, we need an alignment matrix
-            if r.nDatasets > 1 || r.params.useAlignmentMatrix
+            if r.nDatasets > 1 && r.params.useAlignmentMatrix
                 % call out to abstract dataset specific method
-                [alignmentMatrices, trainInds, validInds] = ...
-                    r.prepareSequenceDataForLFADS(seqData);
+                useAlignMatrices = true;
+                alignmentMatrices= r.prepareAlignmentMatrices(seqData);
             else
-                allInds = 1:r.datasets(1).nTrials;
-                validInds = {1 : (r.params.trainToTestRatio+1) : r.datasets(1).nTrials};
-                trainInds = {setdiff(allInds, validInds{1})};
+                useAlignMatrices = false;
             end
+            
+            % choose validation and training trial indices
+            allInds = 1:r.datasets(1).nTrials;
+            validInds = {1 : (r.params.trainToTestRatio+1) : r.datasets(1).nTrials};
+            trainInds = {setdiff(allInds, validInds{1})};
 
             % arguments for the 'seq_to_lfads' call below
             seqToLFADSArgs = {'binSizeMs', par.spikeBinMs,  ...
                               'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
                               'trainInds', trainInds, 'testInds', validInds};
 
-            if r.nDatasets > 1 || r.params.useAlignmentMatrix
+            if useAlignMatrices
                 seqToLFADSArgs{end+1} = 'alignment_matrix_cxf';
                 seqToLFADSArgs{end+1} = alignmentMatrices;
             end
