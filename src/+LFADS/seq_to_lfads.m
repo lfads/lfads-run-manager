@@ -50,7 +50,7 @@ if ~iscell(testInds)
     testInds = {testInds};
 end
 
-if ~exist('whichChannels','var'), 
+if ~exist('whichChannels','var')
     for nset = 1:numel(seqs)
         nNeuronsTmp = unique(arrayfun(@(x) size(x.y,1), seqs{nset}));
         assert(numel(nNeuronsTmp)==1, 'trials do not have consistent #s of neurons');

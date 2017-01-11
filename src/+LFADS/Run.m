@@ -343,10 +343,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             
             % choose validation and training trial indices
-            allInds = 1:r.datasets(1).nTrials;
-            validInds = {1 : (r.params.trainToTestRatio+1) : r.datasets(1).nTrials};
-            trainInds = {setdiff(allInds, validInds{1})};
-
+            [validInds, trainInds] = deal(cell(r.nDatasets, 1));
+            for nd = 1:r.nDatasets
+                allInds = 1:r.datasets(1).nTrials;
+                validInds{nd} = 1 : (r.params.trainToTestRatio+1) : r.datasets(nd).nTrials;
+                trainInds{nd} = setdiff(allInds, validInds{nd});
+            end
             % arguments for the 'seq_to_lfads' call below
             seqToLFADSArgs = {'binSizeMs', par.spikeBinMs,  ...
                               'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
