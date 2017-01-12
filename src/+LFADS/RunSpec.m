@@ -102,12 +102,32 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
 
             r.datasets = r.datasetCollection.matchDatasetsByName(names);
         end
+        
+        function text = generateSummaryText(r, indent, index)
+            % Generate a string representation of this Run Spec's info
+            %
+            % Returns:
+            %   text : string
+            if nargin < 2
+                indent = 0;
+            end
+            if nargin > 2
+                indexStr = sprintf('[runSpec %d] ', index);
+            else
+                indexStr = '';
+            end
+            indent = blanks(indent);
+            text = sprintf('%s%s%s\n', indent, indexStr, r.getFirstLineHeader());
+            for s = 1:r.nDatasets
+                text = cat(2, text, sprintf('%s  [ds %d] %s\n', indent, s, r.datasets(s).getFirstLineHeader()));
+            end
+        end
     end
 
     methods(Hidden)
         function h = getFirstLineHeader(r)
             className = class(r);
-            h = sprintf('%s "%s" (%d datasets)\n', className, r.name, r.nDatasets);
+            h = sprintf('%s "%s" (%d datasets)', className, r.name, r.nDatasets);
         end
     end
 

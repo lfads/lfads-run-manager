@@ -2,10 +2,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     % Represents a single LFADS experiment on a specific set of datasets. Runs are grouped into :ref:`LFADS_RunCollection`
     % instances, and all runs in a collection share the same parameter settings, which are represented by a shared
     % :ref:`LFADS_RunParams` instance.
-
+    
     methods(Abstract)
         % These methods will need to be implemented in a subclass that provides the custom behavior for your application
-
+        
         seq = convertDatasetToSequenceStruct(r, dataset, data);
         % Converts the loaded data within a dataset into a sequence struct. The sequence data returned will be a
         % struct array where each element corresponds to a trial. You can include any metadata or information fields
@@ -24,26 +24,27 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         % ----------
         % seq : struct Array
         %   sequence formatted data. A struct array where each elemnt corresponds to a specific trial.
-
+        
     end
-
+    
     properties
         name char = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
-
+        
         comment char = '' % Textual comment for convenience
-
+        
         version uint32 = 3; % Internal versioning allowing for graceful evolution of path settings
     end
-
+    
     properties
         runCollection % :ref:`LFADS_RunCollection` instance to which this run belongs
         params % :ref:`LFADS_RunParams` instance shared by all runs in the collection, contains parameter settings
+        paramIndexInRunCollection % which RunParams index in the RunCollection this params corresponds to
         datasets % Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize
         
         sequenceData cell % nDatasets cell array of sequence struct data
         posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
     end
-
+    
     properties(Dependent)
         nDatasets % Number of datasets used by this run
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
@@ -53,21 +54,22 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         pathSequenceFiles % Path on disk where sequence files will be saved
         sequenceFileNames % List of sequence file names (sans path)
-
+        
         pathLFADSInput % Path on disk where LFADS input hd5 files will be saved
         lfadsInputFileNames % List of LFADS input hd5 files (sans path)
-
+        
         pathLFADSOutput % Path on disk where LFADS output will be written
-
+        
         fileShellScriptLFADSTrain % Location on disk where shell script for LFADS training will be written
         fileShellScriptLFADSPosteriorMeanSample  % Location on disk where shell script for LFADS posterior mean sampling will be written
-
-        nameWithParams % Concatenation of this Run's name and the serialized representation of the RunParams
+        
+        sessionNameTrain % name of tmux session that will be created if useSession = true is passed to writeShellScriptLFADSTrain
+        sessionNamePosteriorMean % name of tmux session that will be created if useTmuxSession = true is passed to writeShellScriptLFADSPosteriorMean
     end
-
+    
     methods
         function alignmentMatrices = prepareAlignmentMatrices(seqData)
-            % Prepares alignment matrices to seed the stitching process when using multiple days of sequence data for 
+            % Prepares alignment matrices to seed the stitching process when using multiple days of sequence data for
             % LFADS input file generation. Generate
             % alignment matrices which specify the initial guess at the encoder matrix that converts neural activity
             % from each dataset to a common set of factors (for stitching). Specify training and validation indices
@@ -92,7 +94,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function r = Run(varargin)
             
         end
-           
+        
         function tf = eq(a, b)
             % Overloaded == operator to enable equality if name, params,
             % datasets, and runCollection fields all match.
@@ -104,11 +106,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     && isequal(a(i).datasets, b(i).datasets) && isequal(a(i).runCollection, b(i).runCollection);
             end
         end
-
+        
         function dc = get.datasetCollection(r)
             dc = r.runCollection.datasetCollection;
         end
-
+        
         function p = get.path(r)
             if isempty(r.runCollection)
                 p = '';
@@ -117,18 +119,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 p = fullfile(r.runCollection.path, r.name);
             else
                 % collectionPath / paramString / name
-                p = fullfile(r.runCollection.path, r.params.generateString(), r.name);
+                p = fullfile(r.runCollection.path, r.paramsString, r.name);
             end
         end
         
         function str = get.paramsString(r)
             if ~isempty(r.params)
-                str = r.params.generateString();
+                str = sprintf('param_%s', r.params.generateHash('length', 6));
             else
                 str = '';
             end
         end
-
+        
         function p = get.pathSequenceFiles(r)
             if isempty(r.runCollection)
                 p = '';
@@ -136,7 +138,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 p = fullfile(r.path, 'seq');
             end
         end
-
+        
         function names = get.lfadsInputFileNames(r)
             if r.version < 2
                 names = arrayfun(@(ds) sprintf('lfads_%s_spikes.h5',  [r.nameWithParams '_' ds.name]), ...
@@ -147,7 +149,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     r.datasets, 'UniformOutput', false);
             end
         end
-
+        
         function p = get.pathLFADSInput(r)
             if isempty(r.runCollection)
                 p = '';
@@ -155,7 +157,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 p = fullfile(r.path, 'lfadsInput');
             end
         end
-
+        
         function p = get.pathLFADSOutput(r)
             if isempty(r.runCollection)
                 p = '';
@@ -163,19 +165,19 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 p = fullfile(r.path, 'lfadsOutput');
             end
         end
-
+        
         function f = get.fileShellScriptLFADSTrain(r)
             f = fullfile(r.path, 'lfads_train.sh');
         end
-
+        
         function f = get.fileShellScriptLFADSPosteriorMeanSample(r)
             f = fullfile(r.path, 'lfads_posterior_mean_sample.sh');
         end
-
+        
         function n = get.nDatasets(r)
             n = numel(r.datasets);
         end
-
+        
         function names = get.sequenceFileNames(r)
             if r.version < 2
                 names = arrayfun(@(ds) [r.nameWithParams '_' ds.name '_seq.mat'], r.datasets, 'UniformOutput', false);
@@ -185,7 +187,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 names = arrayfun(@(ds) ['seq_' ds.name '.mat'], r.datasets, 'UniformOutput', false);
             end
         end
-
+        
         function [trainList, validList] = getLFADSPosteriorSampleMeanFiles(r)
             % Generates the list of training and validation LFADS posterior mean files for loading, without path
             %
@@ -195,7 +197,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   list of file names for training posterior samples
             % validList : cellstr
             %   list of file names for validation posterior samples
-
+            
             if r.version < 2
                 trainList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_train_posterior_sample',  [r.nameWithParams '_' ds.name]), ...
                     r.datasets, 'UniformOutput', false);
@@ -208,29 +210,37 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     r.datasets, 'UniformOutput', false);
             end
         end
+        
+        function sess = get.sessionNameTrain(r)
+            sess = sprintf('train_%s_par%d', r.name, r.paramIndexInRunCollection);
+        end
+        
+        function sess = get.sessionNamePosteriorMean(r)
+            sess = sprintf('pm_%s_par%d', r.name, r.paramIndexInRunCollection);
+        end
     end
-
+    
     methods(Hidden)
         function h = getFirstLineHeader(r)
             className = class(r);
             h = sprintf('%s "%s" (%d datasets)\n', className, r.name, r.nDatasets);
         end
     end
-
+    
     methods (Access = protected)
-       function header = getHeader(r)
-          if ~isscalar(r)
-             header = getHeader@matlab.mixin.CustomDisplay(r);
-          else
-             rc = r.runCollection;
-             header = sprintf('%s\n  Path: %s\n\n  %d datasets in "%s"\n', r.getFirstLineHeader(), r.path, r.nDatasets, r.datasetCollection.name);
-             for s = 1:r.nDatasets
-                 header = cat(2, header, sprintf('    [%2d] %s', s, r.datasets(s).getHeader()));
-             end
-          end
-       end
+        function header = getHeader(r)
+            if ~isscalar(r)
+                header = getHeader@matlab.mixin.CustomDisplay(r);
+            else
+                rc = r.runCollection;
+                header = sprintf('%s\n  Path: %s\n\n  %d datasets in "%s"\n', r.getFirstLineHeader(), r.path, r.nDatasets, r.datasetCollection.name);
+                for s = 1:r.nDatasets
+                    header = cat(2, header, sprintf('    [%2d] %s', s, r.datasets(s).getHeader()));
+                end
+            end
+        end
     end
-
+    
     methods
         function prepareForLFADS(r)
             % Generate all files needed to run LFADS.
@@ -240,34 +250,34 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             f = r.writeShellScriptLFADSTrain();
             fprintf('Shell script for training "%s": \n  %s\n', r.name, f);
         end
-
+        
         function makeSequenceFiles(r)
             % Generate the seqence files and save them to disk
             if isempty(r.datasets)
                 fprintf('No datasets added to Run\n');
                 return;
             end
-
-%             fprintf('Saving sequence files in %s\n', r.pathSequenceFiles);
+            
+            %             fprintf('Saving sequence files in %s\n', r.pathSequenceFiles);
             LFADS.Utils.mkdirRecursive(r.pathSequenceFiles);
-
+            
             sequenceFileNames = r.sequenceFileNames; %#ok<PROP>
-
+            
             prog = LFADS.Utils.ProgressBar(numel(r.datasets), 'Generating sequence files');
             for iDS = 1:numel(r.datasets)
                 ds = r.datasets(iDS);
                 prog.update(iDS, 'Generating sequence files for %s', ds.name);
-
+                
                 % call user
                 seq = r.convertDatasetToSequenceStruct(ds);
-
+                
                 seqFile = fullfile(r.pathSequenceFiles, sequenceFileNames{iDS}); %#ok<PROP>
-%                 fprintf('Saving seq file to %s\n', seqFile);
+                %                 fprintf('Saving seq file to %s\n', seqFile);
                 save(seqFile, 'seq');
             end
             prog.finish();
         end
-
+        
         function seq = loadSequenceData(r, reload)
             % seq = loadSequenceData([reload = True])
             % Load the sequence files from disk, caches them in
@@ -280,7 +290,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % Returns:
             %   seqData (cell of struct arrays) : nDatasets cell array of sequence structures loaded from sequence files on disk
             
-
+            
             if nargin < 2
                 reload = false;
             end
@@ -290,7 +300,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
-
+            
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading sequence files');
             seq = cell(r.nDatasets, 1);
             for nd = 1:r.nDatasets
@@ -307,22 +317,22 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function seq = modifySequenceDataPostLoading(r, seq)
-            % Optionally make any changes or do any post-processing of sequence data upon loading 
+            % Optionally make any changes or do any post-processing of sequence data upon loading
             
         end
-
+        
         function makeLFADSInput(r)
             % Generate the LFADS input HD5 files and save them to disk
-
+            
             seqs = {};
             validInds = {};
             trainInds = {};
-
+            
             par = r.params;
-
+            
             % load sequence data
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
-
+            
             % load seq files
             seqData = cell(r.nDatasets, 1);
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading sequence files');
@@ -332,7 +342,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 seqData{nd} = tmp.seq;
             end
             prog.finish();
-
+            
             % if there are multiple datasets, we need an alignment matrix
             if r.nDatasets > 1 && r.params.useAlignmentMatrix
                 % call out to abstract dataset specific method
@@ -345,78 +355,94 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % choose validation and training trial indices
             [validInds, trainInds] = deal(cell(r.nDatasets, 1));
             for nd = 1:r.nDatasets
-                allInds = 1:r.datasets(1).nTrials;
+                allInds = 1:r.datasets(nd).nTrials;
                 validInds{nd} = 1 : (r.params.trainToTestRatio+1) : r.datasets(nd).nTrials;
                 trainInds{nd} = setdiff(allInds, validInds{nd});
             end
             % arguments for the 'seq_to_lfads' call below
             seqToLFADSArgs = {'binSizeMs', par.spikeBinMs,  ...
-                              'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
-                              'trainInds', trainInds, 'testInds', validInds};
-
+                'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
+                'trainInds', trainInds, 'testInds', validInds};
+            
             if useAlignMatrices
                 seqToLFADSArgs{end+1} = 'alignment_matrix_cxf';
                 seqToLFADSArgs{end+1} = alignmentMatrices;
             end
-
+            
             % write the actual lfads input file
             LFADS.seq_to_lfads(seqData, r.pathLFADSInput, r.lfadsInputFileNames, ...
-                               seqToLFADSArgs{:});
-
+                seqToLFADSArgs{:});
+            
             fname = fullfile(r.path, 'lfadsInputInfo.mat');
             params = r.params; %#ok<*NASGU,PROP>
             save(fname, 'trainInds', 'validInds', 'params');
         end
         
-        function f = writeShellScriptLFADSTrain(r, tmux_session_name, display, ...
-                                                cuda_visible_device)
-            % f = writeShellScriptLFADSTrain(tmux_session_name, display, cuda_visible_device)
+        function f = writeShellScriptLFADSTrain(r, varargin)
+            % f = writeShellScriptLFADSTrain(cuda_visible_device, display, varargin)
             % Write a shell script used for running the LFADS python code
+            %
+            % Args:
+            %   cuda_visible_devices : int
+            %     which GPUs to make visible to CUDA, e.g. 0 or 1
+            %   display : int
+            %     which display to use for plot generation, e.g. 500 -->
+            %     DISPLAY=:500
+            %   useTmuxSession : bool
+            %     if true, will prefix the command so that it runs within a
+            %     new tmux session
             %
             % Returns:
             %   file : string
             %     Full path to shell script which can be used to begin or resume LFADS training
-
+            
+            p = inputParser();
+            p.addOptional('cuda_visible_devices', [], @isscalar);
+            p.addOptional('display', '', @ischar);
+            p.addParameter('useTmuxSession', false, @islogical);
+            p.parse(varargin{:});
+            
             f = r.fileShellScriptLFADSTrain;
             fid = fopen(f, 'w');
             outputString = r.buildLFADSTrainingCommand();
-
+            
             % set cuda visible devices
-            if exist('cuda_visible_device', 'var') && ~isempty(cuda_visible_device)
+            if ~isempty(p.Results.cuda_visible_devices)
                 outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
-                                       cuda_visible_device, outputString);
+                    cuda_visible_device, outputString);
             end
             % set the display variable
-            if exist('display', 'var') && ~isempty(display)
+            if ~isempty(p.Results.display)
                 outputString = sprintf('DISPLAY=:%i %s', ...
-                                       display, outputString);
+                    display, outputString);
             end
-
+            
             % if requested, tmux-ify the command
-            if exist('tmux_session_name', 'var') && ~isempty(tmux_session_name)
-                outputString = LFADS.Utils.tmuxify_string( outputString, tmux_session_name );
+            if p.Results.useTmuxSession
+                outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNameTrain );
+                fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNameTrain, r.sessionNameTrain);
             end
             
             fprintf(fid, outputString);
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
-
+        
         function runLFADSTrainingCommand(r)
-        %   function runLFADSTrainingCommand(r)
+            %   function runLFADSTrainingCommand(r)
             system( sprintf('sh %s', r.fileShellScriptLFADSTrain) );
         end
-
+        
         function outputString = buildLFADSTrainingCommand(r)
             outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
-                                '--lfads_save_dir=%s'], ...
-                                   r.pathLFADSInput, r.pathLFADSOutput);
+                '--lfads_save_dir=%s'], ...
+                r.pathLFADSInput, r.pathLFADSOutput);
             
             % use the method from +LFADS/RunParams.m
             optionsString = r.params.generateCommandLineOptionsString();
             outputString = sprintf('%s%s', outputString, optionsString);
         end
-
+        
         function cmd = buildCommandLFADSPosteriorMeanSample(r, varargin)
             % Generates the command string for LFADS posterior mean sampling
             %
@@ -424,42 +450,42 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % --------
             % cmd : string
             %   Shell command for running LFADS posterior mean sampling
-
+            
             lfdir = r.pathLFADSOutput;
-
+            
             % set some default parameters
             %if ~exist('varargin','var'), varargin ={}; end
             %keys = varargin(1:2:end);
-
+            
             params = lfadsi_read_parameters(lfdir); %#ok<*PROPLC>
-
+            
             % make sure these are up to date
             params.data_dir = r.pathLFADSInput;
             params.lfads_save_dir = r.pathLFADSOutput;
-
+            
             params.batch_size = 512; % this is the number of
-                                     % samples used to calculate
-                                     % the posterior mean
+            % samples used to calculate
+            % the posterior mean
             params.checkpoint_pb_load_name = 'checkpoint_lve';
-
+            
             % need to remove "dataset_names" and "dataset_dims"
             params = rmfield(params, {'dataset_names', 'dataset_dims'});
             use_controller = boolean(params.ci_enc_dim);
-
+            
             execstr = 'python';
-
+            
             % take the arguments passed in via varargin, add new params, or overwrite existing ones
             for nn = 1:2:numel(varargin)
                 % have to specially handle CUDA_VISIBLE_DEVICES as an environment ...
                 %   variable rather than a command line param
                 if strcmpi(varargin{nn},'device')
                     execstr = strcat(sprintf('CUDA_VISIBLE_DEVICES=%i', varargin{nn+1}),  ...
-                                     execstr);
+                        execstr);
                 else
                     params.(varargin{nn}) = varargin{nn+1};
                 end
             end
-
+            
             f = fields(params);
             optstr = '';
             for nf = 1:numel(f)
@@ -468,51 +494,78 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 if isnumeric(fval), fval = num2str(fval); end
                 optstr = strcat(optstr, sprintf(' --%s=%s',f{nf}, fval));
             end
-
+            
             optstr = strcat(optstr, sprintf(' --kind=posterior_sample'));
-
+            
             % put the command together
             cmd = sprintf('%s $(which run_lfads.py) %s', execstr, optstr);
         end
-
+        
         function runLFADSPosteriorMeanCommand(r)
-        %   function runLFADSPosteriorMeanCommand(r)
+            %   function runLFADSPosteriorMeanCommand(r)
             system( sprintf('sh %s', r.fileShellScriptLFADSPosteriorMeanSample) );
         end
-
-
-        function f = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name, cude_visible_device)
-            % function file = writeShellScriptLFADSPosteriorMeanSample(r, tmux_session_name)
+        
+        function f = writeShellScriptLFADSPosteriorMeanSample(r, varargin)
+            % function file = writeShellScriptLFADSPosteriorMeanSample(r, cuda_visible_devices, varargin)
             % Write a shell script used for running the LFADS posterior mean sampling. This must be run after the LFADS
             % training has been started.
+            %
+            % Args:
+            %   cuda_visible_devices : int
+            %     which GPUs to make visible to CUDA, e.g. 0 or 1
+            %   useTmuxSession : bool
+            %     if true, will prefix the command so that it runs within a
+            %     new tmux session
             %
             % Returns
             % --------
             % file : string
             %   Full path to shell script which can be used to perform LFADS posterior mean sampling on the lowest
             %   validation error checkpoint
-
+            
+            
+            % Args:
+            %   cuda_visible_devices : int
+            %     which GPUs to make visible to CUDA, e.g. 0 or 1
+            %   display : int
+            %     which display to use for plot generation, e.g. 500 -->
+            %     DISPLAY=:500
+            %   useTmuxSession : bool
+            %     if true, will prefix the command so that it runs within a
+            %     new tmux session
+            %
+            % Returns:
+            %   file : string
+            %     Full path to shell script which can be used to begin or resume LFADS training
+            
+            p = inputParser();
+            p.addOptional('cuda_visible_devices', [], @isscalar);
+            p.addParameter('useTmuxSession', false, @islogical);
+            p.parse(varargin{:});
+            
             f = r.fileShellScriptLFADSPosteriorMeanSample;
             fid = fopen(f, 'w');
-
+            
             outputString = r.buildCommandLFADSPosteriorMeanSample();
-
+            
             % set cuda visible devices
-            if exist('cuda_visible_device', 'var') && ~isempty(cuda_visible_device)
+            if ~isempty(p.Results.cuda_visible_devices)
                 outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
-                                       cuda_visible_device, outputString);
+                    cuda_visible_device, outputString);
             end
-
+            
             % if requested, tmux-ify the command
-            if exist('tmux_session_name', 'var') && ~isempty(tmux_session_name)
-                outputString = LFADS.Utils.tmuxify_string( outputString, tmux_session_name );
+            if p.Results.useTmuxSession
+                outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNamePosteriorMean );
+                fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNamePosteriorMean, r.sessionNamePosteriorMean);
             end
-
+            
             fprintf(fid, outputString);
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
-
+        
         function pms = loadPosteriorMeans(r, reload)
             % pmData = loadPosteriorMeans(r, reload)
             % After the posterior mean shell script has been run, this will load the posterior mean samples from disk
@@ -529,7 +582,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % --------
             % pmData : string
             %   nDatasets cell of :ref:`LFADS_PosteriorMeans` data loaded from disk
-
+            
             if nargin < 2
                 reload = false;
             end
@@ -537,7 +590,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 pms = LFADS.Utils.makecol(r.posteriorMeans);
                 return;
             end
-                
+            
             info = load(fullfile(r.path, 'lfadsInputInfo.mat'));
             [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
@@ -553,36 +606,36 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
                     continue;
                 end
-
+                
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});
-                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params);
+                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params); %#ok<AGROW>
             end
             prog.finish();
             
             pms = LFADS.Utils.makecol(pms);
             r.posteriorMeans = pms;
         end
-
+        
         function seqs = addPosteriorMeansToSeq(r)
-        % function seqs = addPosteriorMeansToSeq(r)
-        % returns a sequence that has posterior mean
-        % values integrated
-
+            % function seqs = addPosteriorMeansToSeq(r)
+            % returns a sequence that has posterior mean
+            % values integrated
+            
             if isempty(r.posteriorMeans) || ~all([r.posteriorMeans.isValid])
                 r.loadPosteriorMeans;
             end
-
+            
             if isempty(r.sequenceData) || numel(r.sequenceData) == 0
                 r.sequenceData = r.loadSequenceData();
             end
             seqs = r.sequenceData;
-
+            
             % iterate over datasets
             for iDS = 1:numel(seqs)
                 pm = r.posteriorMeans(iDS);
-
+                
                 for ntr = 1:numel(seqs{iDS})
                     seqs{iDS}(ntr).rates = squeeze(pm.rates(:,:,ntr));
                     seqs{iDS}(ntr).factors = squeeze(pm.factors(:,:,ntr));

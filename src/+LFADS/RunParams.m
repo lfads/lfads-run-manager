@@ -39,36 +39,22 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     end
     
     methods
-        % Methods that you may wish to override in custom subclasses
-        
-        function str = generateString(p, varargin)
-            % Generates a string representation of the parameters that is used for reading off the parameters from a
-            % folder path on disk. You can include as many or as few fields in this serialized representation as you see
-            % fit. The default implementation will compare all property values
-            % (including those defined in subclasses) to the inline default property
-            % values defined in the class that defines them. Any property
-            % values that differ will be included in the serialization.
-            %
-            % By default this will be a list of properties and values
-            % separated by double underscores, e.g.
-            % 
-            % .. code::
-            %
-            %     prop1Name_value1__prop2Name_value2__prop3Name_value3
+        function [props, propMeta] = listNonTransientProperties(p, varargin)
+            % Return a list of properties in this class that are not
+            % Dependent, Constant, Transient, or Hidden
             %
             % Args:
             %   ignoreProperties : cellstr
-            %     list of properties to ignore when serializing, useful
-            %     when called from subclasses
+            %     list of properties to ignore
             %   onlyRootClassProperties : bool (False)
             %     if true, only include properties declared in
             %     LFADS.RunParams. if false, include properties declared in
             %     subclasses.
             %
             % Returns:
-            %   str : string
-            %     serialized string suffix suitable for inclusion in file paths
-            %
+            %   props : cellstr
+            %     list of properties
+            %   propMeta : meta.property array
             
             parser = inputParser();
             parser.addParameter('ignoreProperties', {}, @iscellstr);
@@ -81,41 +67,165 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
                 meta = metaclass(p);
             end
             
-            str = '';
+            props = cell(numel(meta.PropertyList), 1);
+            mask = false(numel(meta.PropertyList), 1);
             for i = 1:numel(meta.PropertyList)
                 prop = meta.PropertyList(i);
                 name = prop.Name;
+                props{i} = name;
                 if ismember(name, parser.Results.ignoreProperties)
                     continue;
                 end
                 % skip properties that are Dependent, Constant, Transient,
                 % or Hidden. Serialize the value if it differes from the 
                 if ~prop.Dependent && ~prop.Constant && ~prop.Transient && ~prop.Hidden
-                    if ~isequal(prop.DefaultValue, p.(name))
-                        str = cat(2, str, p.serializeProperty(name, p.(name)), '__');
-                    end
+                    mask(i) = true;
                 end
             end
-            if isempty(str)
-                str = 'default';
+            
+            props = props(mask);
+            propMeta = meta.PropertyList(mask);
+        end
+
+        function hash = generateHash(p, varargin)
+            % Generate a short hash of this RunParams non-transient
+            % properties that can be used in a directory name.
+            %
+            % Args:
+            %   length : int
+            %     number of characters to truncate the hash value to
+            %   ignoreProperties : cellstr
+            %     list of properties to ignore
+            %   onlyRootClassProperties : bool (False)
+            %     if true, only include properties declared in
+            %     LFADS.RunParams. if false, include properties declared in
+            %     subclasses.
+            parser = inputParser();
+            parser.addParameter('length', 6, @isscalar);
+            parser.KeepUnmatched = true;
+            parser.parse(varargin{:});
+            
+            props = p.listNonTransientProperties(parser.Unmatched);
+            data = struct();
+            for i = 1:numel(props)
+                prop = props{i};
+                data.(prop) = p.(prop);
             end
-            % strip __ off the end
-            if strcmp(str(end-1:end), '__'), str = str(1:end-2); end
+            
+            hash = LFADS.Utils.DataHash(data, struct('Format', 'base64'));
+            hash = lower(hash(1:parser.Results.length));
         end
         
-        function str = serializeProperty(p, name, value)
+        function str = generateString(p, varargin)
+            % Generates a string representation of all parameters, with custom
+            % strings inserted between property names and values. 
+            %
+            % Args:
+            %   filterDiffersFromDefault : bool
+            %     if true, only properties whose value differs from the
+            %     default value 
+            %   defaultsFromClassDefinition : bool
+            %     if true, default value comes from the class definition,
+            %     next to each property's definition. If false, the default
+            %     values come from constructing a new class of the same
+            %     type with no arguments. Default true.
+            %   beforeProp : char
+            %     default ''
+            %   betweenPropValue : char
+            %     default '='
+            %   afterValue : char
+            %     default ''
+            %   betweenProps : char
+            %     default ' '
+            %   ignoreProperties : cellstr
+            %     list of properties to ignore
+            %   onlyRootClassProperties : bool (False)
+            %     if true, only include properties declared in
+            %     LFADS.RunParams. if false, include properties declared in
+            %     subclasses.
+            %
+            % Returns:
+            %   str : string
+            %     serialized string suffix suitable for inclusion in file paths
+            %
+            
+            parser = inputParser();
+            parser.addParameter('onlyDifferentFromDefault', false, @islogical);
+            parser.addParameter('defaultsFromClassDefinition', true, @islogical);
+            parser.addParameter('beforeProp', '', @ischar);
+            parser.addParameter('betweenPropValue', '=', @ischar);
+            parser.addParameter('afterValue', '', @ischar);
+            parser.addParameter('betweenProps', ' ', @ischar);
+            parser.parse(varargin{:});
+            
+            [props, propMeta] = p.listNonTransientProperties(parser.Unmatched);
+            str = '';
+            
+            defaultInstance = eval(class(p));
+                
+            for i = 1:numel(props)
+                prop = props{i};
+                value = p.(prop);
+                
+                if parser.Results.onlyDifferentFromDefault
+                    if parser.Results.defaultsFromClassDefinition
+                        def = propMeta(i).DefaultValue;
+                    else
+                        def = defaultInstance.(prop);
+                    end
+                    if isequal(def, value)
+                        continue;
+                    end
+                end
+                
+                this = sprintf('%s%s%s%s%s%s', parser.Results.beforeProp, prop, parser.Results.betweenPropValue, ...
+                    p.serializePropertyValue(prop, value), parser.Results.afterValue, parser.Results.betweenProps);
+                str = cat(2, str, this);
+            end
+            if ~isempty(str)
+                str = str(1:end-numel(parser.Results.betweenProps));
+            end
+            if parser.Results.onlyDifferentFromDefault && isempty(str)
+                str = 'default';
+            end
+        end
+        
+        function str = generateShortDifferencesString(p)
+            str = p.generateString('onlyDifferentFromDefault', true, ...
+                'defaultsFromClassDefinition', false, ...
+                'beforeProp', '', 'betweenPropValue', '=', 'afterValue', '', 'betweenProps', ' ');
+        end
+        
+        function str = generateSummaryText(p, indent, paramIndex)
+            if nargin < 2
+                indent = 0;
+            end
+            className = class(p);
+            if nargin > 2
+                indexStr = sprintf('[%d param_%s]', paramIndex, p.generateHash);
+            else
+                indexStr = sprintf('[param_%s]', p.generateHash);
+            end
+            header = sprintf('%s%s %s\n%sDiff: %s\n\n', blanks(indent), indexStr,className, blanks(indent+2), p.generateShortDifferencesString());
+            text = p.generateString('onlyDifferentFromDefault', false, ...
+                'beforeProp', blanks(indent+2), 'betweenPropValue', ': ', 'afterValue', '', 'betweenProps', sprintf('\n'));
+            str = cat(2, header, text, sprintf('\n'));
+        end
+        
+        function valstr = serializePropertyValue(p, prop, value)
             % Generates a string representation like name_value
             % Strips "c\_" from beginnning of name
             %
             % Args:
-            %  name : string
+            %  prop : string
+            %    which property
             %  value : Matlab built in type
             
             switch class(value)
                 case {'uint8', 'int8', 'uint16', 'int16', 'uint32', 'int32', 'uint64', 'int64'}
                     valstr  = sprintf('%i', value);
                 case {'logical'}
-                    if thisVal
+                    if value
                         valstr = 'true';
                     else
                         valstr = 'false';
@@ -127,10 +237,6 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
                 otherwise
                     error(['don''t know this type: ' class(value)]);
             end
-            if strncmp(name, 'c_', 2)
-                name = name(3:end);
-            end
-            str = sprintf('%s_%s', name, valstr);
         end
     end
     
@@ -190,7 +296,7 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     methods(Hidden)
         function h = getFirstLineHeader(p)
             className = class(p);
-            h = sprintf('%s "%s"', className, p.generateString());
+            h = sprintf('%s %s', className, p.generateShortDifferencesString());
         end
     end
 

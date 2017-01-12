@@ -35,6 +35,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         nDatasets % number of datasets within the datasetCollection
         path % unique folder given by rootPath/name
         fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
+        fileSummaryText % path where summary text info will be written
     end
 
     methods
@@ -109,14 +110,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             rc.generateRuns();
         end
 
-        function filterRuns(rc, mask)
-            % Apply selection mask to list of runs
+        function filterRunSpecs(rc, mask)
+            % Apply selection mask to list of runs specs
             %
             % Parameters:
             %   mask : logical or indices
-            %     selection mask applied to `.runs`
+            %     selection mask applied to `.runSpecs`
             
-            rc.runs = rc.runs(mask);
+            rc.runSpecs = rc.runSpecs(mask);
             rc.generateRuns();
         end
         
@@ -200,6 +201,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                         new.name = spec.name;
                         new.runCollection = rc;
                         new.params = rc.params(iP);
+                        new.paramIndexInRunCollection = iP;
                         new.datasets = spec.datasets;
                         
                         % check whether the old run matches, keep it if so,
@@ -239,6 +241,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
         function f = get.fileShellScriptTensorboard(r)
             f = fullfile(r.path, 'launch_tensorboard.sh');
+        end
+        
+        function f = get.fileSummaryText(r)
+            f = fullfile(r.path, 'summary.txt');
         end
         
         function n = get.nParams(rc)
@@ -329,7 +335,13 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %     selection into `.params` of matches
             
             if isa(paramSearch, 'LFADS.RunParams')
-                [tf, idx] = ismember(paramSearch, rc.params);
+                if ~strcmp(class(paramSearch), class(rc.params))
+                    % if classes don't match, cannot be member
+                    tf = false(size(rc.params));
+                    idx = [];
+                else                    
+                    [tf, idx] = ismember(paramSearch, rc.params);
+                end
                 
             else
                 % assume is selection
@@ -420,6 +432,38 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             chmod('uga+rx', f);
         end
         
+        function text = generateSummaryText(rc)
+            newline = sprintf('\n');
+            text = sprintf('%s "%s" (%d runs total)\n  Dataset Collection "%s" (%d datasets) in %s\n', ...
+                 class(rc), rc.name, rc.nRunsTotal, rc.datasetCollection.name, rc.nDatasets, rc.datasetCollection.path);
+            text = cat(2, text, sprintf('  Path: %s\n\n', rc.path));
+             
+            sep = sprintf('------------------------\n');
+            text = cat(2, text, sprintf('  %s\n  %d Run Specifications:\n\n', sep, rc.nRunSpecs));
+            for s = 1:rc.nRunSpecs
+                text = cat(2, text, rc.runSpecs(s).generateSummaryText(4, s), newline);
+            end
+            
+            text = cat(2, text, sprintf('  %s\n  %d Parameter Settings:\n\n', sep, rc.nParams));
+            for p = 1:rc.nParams
+               text = cat(2, text, rc.params(p).generateSummaryText(4, p), newline);
+            end 
+        end
+        
+        function f = writeSummaryText(rc)
+            % Generates a text file sumamrizing the details of the RunSpecs and RunParams
+            % within this run collection.
+            %
+            % Returns:
+            %   file : string
+            %     Path to the text file, which will match .fileSummaryText
+            f = rc.fileSummaryText;
+            fid = fopen(f, 'w');
+            fprintf(fid, rc.generateSummaryText());
+            fclose(fid);
+            chmod('uga+rx', f);
+        end
+        
         function loadSequenceData(rc, reload)
             % Call `loadSequenceData` on each run in this collection
 
@@ -465,7 +509,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
              
              header = cat(2, header, sprintf('\n  %d run specifications\n', rc.nRunSpecs));
              for s = 1:rc.nRunSpecs
-                 header = cat(2, header, sprintf('  [%2d] %s', s, rc.runSpecs(s).getFirstLineHeader()));
+                 header = cat(2, header, sprintf('  [%2d] %s\n', s, rc.runSpecs(s).getFirstLineHeader()));
              end
           end
        end
