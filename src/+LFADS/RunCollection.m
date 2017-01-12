@@ -434,9 +434,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         
         function text = generateSummaryText(rc)
             newline = sprintf('\n');
-            text = sprintf('%s "%s" (%d runs total)\n  Dataset Collection "%s" (%d datasets) in %s\n', ...
-                 class(rc), rc.name, rc.nRunsTotal, rc.datasetCollection.name, rc.nDatasets, rc.datasetCollection.path);
-            text = cat(2, text, sprintf('  Path: %s\n\n', rc.path));
+            text = sprintf('%s "%s" (%d runs total)\n', ...
+                 class(rc), rc.name, rc.nRunsTotal);
+            text = cat(2, text, sprintf('  Path: %s\n', rc.path));
+            text = cat(2, text, sprintf('  Dataset Collection "%s" (%d datasets) in %s\n\n', ...
+                 rc.datasetCollection.name, rc.nDatasets, rc.datasetCollection.path));
              
             sep = sprintf('------------------------\n');
             text = cat(2, text, sprintf('  %s\n  %d Run Specifications:\n\n', sep, rc.nRunSpecs));
@@ -504,7 +506,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
              header = cat(2, header, sprintf('  Path: %s\n\n', rc.path));
              header = cat(2, header, sprintf('  %d parameter settings\n', rc.nParams));
              for p = 1:rc.nParams
-                 header = cat(2, header, sprintf('  [%2d] %s\n', p, rc.params(p).getFirstLineHeader()));
+                 header = cat(2, header, sprintf('  [%d %s] %s\n', p, rc.params(p).generateHashName, rc.params(p).getFirstLineHeader()));
              end
              
              header = cat(2, header, sprintf('\n  %d run specifications\n', rc.nRunSpecs));

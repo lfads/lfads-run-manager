@@ -125,7 +125,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         function str = get.paramsString(r)
             if ~isempty(r.params)
-                str = sprintf('param_%s', r.params.generateHash('length', 6));
+                str = r.params.generateHashName();
             else
                 str = '';
             end
