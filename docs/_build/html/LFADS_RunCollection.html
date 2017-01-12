@@ -238,6 +238,12 @@ dataset) and particular parameter settings.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="+LFADS.RunCollection.fileSummaryText">
+<em class="property">Dependent</em><code class="descname">fileSummaryText</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.fileSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.fileSummaryText" title="Permalink to this definition">¶</a></dt>
+<dd><p>path where summary text info will be written</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.RunCollection.nDatasets">
 <em class="property">Dependent</em><code class="descname">nDatasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nDatasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>number of datasets within the datasetCollection</p>
@@ -297,15 +303,15 @@ be run on each of the parameter settings in <cite>.params</cite></td>
 </dd></dl>
 
 <dl class="method">
-<dt id="+LFADS.RunCollection.filterRuns">
-<code class="descname">filterRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.filterRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.filterRuns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply selection mask to list of runs</p>
+<dt id="+LFADS.RunCollection.filterRunSpecs">
+<code class="descname">filterRunSpecs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.filterRunSpecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.filterRunSpecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply selection mask to list of runs specs</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> &#8211; logical or indices
-selection mask applied to <cite>.runs</cite></td>
+selection mask applied to <cite>.runSpecs</cite></td>
 </tr>
 </tbody>
 </table>
@@ -549,6 +555,27 @@ and saves it to a file inside the RunCollection&#8217;s path</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="+LFADS.RunCollection.writeSummaryText">
+[<em>f</em>] = <code class="descname">writeSummaryText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.writeSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.writeSummaryText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a text file sumamrizing the details of the RunSpecs and RunParams
+within this run collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>string</dt>
+<dd>Path to the text file, which will match .fileSummaryText</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="+LFADS.RunCollection.loadSequenceData">
 <code class="descname">loadSequenceData</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.loadSequenceData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.loadSequenceData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call <cite>loadSequenceData</cite> on each run in this collection</p>
@@ -559,6 +586,11 @@ and saves it to a file inside the RunCollection&#8217;s path</p>
 <code class="descname">loadPosteriorMeans</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.loadPosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.loadPosteriorMeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call <cite>loadPosteriorMeans</cite> on each run in this collection</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.generateSummaryText">
+[<em>text</em>] = <code class="descname">generateSummaryText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.generateSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.generateSummaryText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

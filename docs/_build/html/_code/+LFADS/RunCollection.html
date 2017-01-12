@@ -585,7 +585,75 @@
 448
 449
 450
-451</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
     <span class="c">% A set of :ref:`LFADS_Run` instances utilizing</span>
     <span class="c">% different subsets of :ref:`LFADS_Dataset` insstances in a :ref:`LFADS_DatasetCollection`.</span>
     <span class="c">% A RunCollection is a logical grouping of LFADS runs, where multiple</span>
@@ -622,6 +690,7 @@
 <a name="RunCollection.nDatasets"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.nDatasets">[docs]</a>        <span class="n">nDatasets</span> <span class="c">% number of datasets within the datasetCollection</span>
 <a name="RunCollection.path"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.path">[docs]</a>        <span class="n">path</span> <span class="c">% unique folder given by rootPath/name</span>
 <a name="RunCollection.fileShellScriptTensorboard"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.fileShellScriptTensorboard">[docs]</a>        <span class="n">fileShellScriptTensorboard</span> <span class="c">% path the location where a shell script to launch TensorBoard for all runs will be written</span>
+<a name="RunCollection.fileSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.fileSummaryText">[docs]</a>        <span class="n">fileSummaryText</span> <span class="c">% path where summary text info will be written</span>
     <span class="k">end</span>
 
     <span class="k">methods</span>
@@ -695,15 +764,15 @@
             <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="p">[];</span>
             <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
         <span class="k">end</span>
-<a name="RunCollection.filterRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.filterRuns">[docs]</a>
-<span class="k">        function</span><span class="w"> </span><span class="nf">filterRuns</span><span class="p">(</span>rc, mask<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Apply selection mask to list of runs</span>
+<a name="RunCollection.filterRunSpecs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.filterRunSpecs">[docs]</a>
+<span class="k">        function</span><span class="w"> </span><span class="nf">filterRunSpecs</span><span class="p">(</span>rc, mask<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Apply selection mask to list of runs specs</span>
             <span class="c">%</span>
             <span class="c">% Parameters:</span>
             <span class="c">%   mask : logical or indices</span>
-            <span class="c">%     selection mask applied to `.runs`</span>
+            <span class="c">%     selection mask applied to `.runSpecs`</span>
             
-            <span class="n">rc</span><span class="p">.</span><span class="n">runs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
+            <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
             <span class="n">rc</span><span class="p">.</span><span class="n">generateRuns</span><span class="p">();</span>
         <span class="k">end</span>
 <a name="RunCollection.addParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.addParams">[docs]</a><span class="k">        </span>
@@ -771,11 +840,24 @@
                 
                 <span class="k">for</span> <span class="n">iS</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span>
                     <span class="n">spec</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">iS</span><span class="p">);</span>
-                    <span class="n">clsFn</span> <span class="p">=</span> <span class="n">str2func</span><span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">runClassName</span><span class="p">);</span>
+                    <span class="k">if</span> <span class="n">ischar</span><span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">runClassName</span><span class="p">)</span>
+                        <span class="n">clsFn</span> <span class="p">=</span> <span class="n">str2func</span><span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">runClassName</span><span class="p">);</span>
+                    <span class="k">elseif</span> <span class="n">isa</span><span class="p">(</span><span class="n">clsFn</span><span class="p">,</span> <span class="s">&#39;function_handle&#39;</span><span class="p">);</span>
+                        <span class="c">% okay as is</span>
+                    <span class="k">else</span>
+                        <span class="n">error</span><span class="p">(</span><span class="s">&#39;Unknown runClassName, must be string or function_handle to constructor&#39;</span><span class="p">);</span>
+                    <span class="k">end</span>
 
                     <span class="k">for</span> <span class="n">iP</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span>
-                        <span class="c">% create the new run</span>
-                        <span class="n">new</span> <span class="p">=</span> <span class="n">clsFn</span><span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">iP</span><span class="p">),</span> <span class="n">spec</span><span class="p">.</span><span class="n">datasets</span><span class="p">);</span>
+                        <span class="c">% create the new run by manually assigning</span>
+                        <span class="c">% properties. This avoids the need for the user to</span>
+                        <span class="c">% preserve the constructor</span>
+                        <span class="n">new</span> <span class="p">=</span> <span class="n">clsFn</span><span class="p">();</span>
+                        <span class="n">new</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">spec</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+                        <span class="n">new</span><span class="p">.</span><span class="n">runCollection</span> <span class="p">=</span> <span class="n">rc</span><span class="p">;</span>
+                        <span class="n">new</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">iP</span><span class="p">);</span>
+                        <span class="n">new</span><span class="p">.</span><span class="n">paramIndexInRunCollection</span> <span class="p">=</span> <span class="n">iP</span><span class="p">;</span>
+                        <span class="n">new</span><span class="p">.</span><span class="n">datasets</span> <span class="p">=</span> <span class="n">spec</span><span class="p">.</span><span class="n">datasets</span><span class="p">;</span>
                         
                         <span class="c">% check whether the old run matches, keep it if so,</span>
                         <span class="c">% so that we don&#39;t break references unless</span>
@@ -814,6 +896,10 @@
 
 <span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">get.fileShellScriptTensorboard</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">f</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;launch_tensorboard.sh&#39;</span><span class="p">);</span>
+        <span class="k">end</span>
+<span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">get.fileSummaryText</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">f</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;summary.txt&#39;</span><span class="p">);</span>
         <span class="k">end</span>
 <span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nParams</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
@@ -871,27 +957,28 @@
             <span class="c">% found. If runSpecSearch is string or cellstr, matches by</span>
             <span class="c">% name. If runSpecSearch is an array of RunSpec instances,</span>
             <span class="c">% finds them using isequal. If runSpecSearch is a vector of</span>
-            <span class="c">% indices, selects from runSpecs directly</span>
+            <span class="c">% indices, selects from runSpecs directly.</span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
             <span class="c">%   runSpecSearch : array of LFADS.RunSpec, strings, or indices into .runSpecs</span>
             <span class="c">%</span>
             <span class="c">% Returns:</span>
-            <span class="c">%   runs (LFADS.Run) : matching runs</span>
-            <span class="c">%   idx : vector of indices into `.runSpecs` of matching run</span>
+            <span class="c">%   runs : LFADS.Run</span>
+            <span class="c">%     matching runs</span>
+            <span class="c">%   idx : vector of indices </span>
+            <span class="c">%     vector of indices into `.runSpecs` of matching run</span>
             <span class="c">%     instances</span>
-            <span class="c">%</span>
             
             <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">ismemberRunSpecs</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">);</span>
             <span class="n">assert</span><span class="p">(</span><span class="n">all</span><span class="p">(</span><span class="n">tf</span><span class="p">),</span> <span class="s">&#39;Some run spec names could not be found in this RunCollection&#39;</span><span class="p">);</span>
             <span class="n">runSpecs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="RunCollection.ismemberParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.ismemberParams">[docs]</a><span class="k">        </span>
-<a name="RunCollection.ismemberParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.ismemberParams">[docs]</a><span class="k">        function</span><span class="w"> </span>[tf, idx] <span class="p">=</span><span class="w"> </span><span class="nf">ismemberParams</span><span class="p">(</span>rc, paramSearch<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>[tf, idx] <span class="p">=</span><span class="w"> </span><span class="nf">ismemberParams</span><span class="p">(</span>rc, paramSearch<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Determine if any run params that match paramSearch are found in .params.</span>
             <span class="c">% If paramSearch is an array of RunParams instances,</span>
             <span class="c">% finds them using isequal. If paramSearch is a vector of</span>
-            <span class="c">% indices, selects from runParams directly</span>
+            <span class="c">% indices, selects from runParams directly.</span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
             <span class="c">%   paramSearch : array of LFADS.RunParams or indices into .params</span>
@@ -899,11 +986,17 @@
             <span class="c">% Returns:</span>
             <span class="c">%   params : LFADS.RunParams</span>
             <span class="c">%     matching params </span>
-            <span class="c">%   idx : vector of indices into `.params` of matches</span>
-            <span class="c">%</span>
+            <span class="c">%   idx : vector of indices </span>
+            <span class="c">%     selection into `.params` of matches</span>
             
             <span class="k">if</span> <span class="n">isa</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">,</span> <span class="s">&#39;LFADS.RunParams&#39;</span><span class="p">)</span>
-                <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">);</span>
+                <span class="k">if</span> <span class="o">~</span><span class="n">strcmp</span><span class="p">(</span><span class="n">class</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">),</span> <span class="n">class</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">))</span>
+                    <span class="c">% if classes don&#39;t match, cannot be member</span>
+                    <span class="n">tf</span> <span class="p">=</span> <span class="n">false</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">));</span>
+                    <span class="n">idx</span> <span class="p">=</span> <span class="p">[];</span>
+                <span class="k">else</span>                    
+                    <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">);</span>
+                <span class="k">end</span>
                 
             <span class="k">else</span>
                 <span class="c">% assume is selection</span>
@@ -913,7 +1006,7 @@
             <span class="n">idx</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">makecol</span><span class="p">(</span><span class="n">idx</span><span class="p">(:));</span>
         <span class="k">end</span>
 <a name="RunCollection.findParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findParams">[docs]</a><span class="k">        </span>
-<a name="RunCollection.findParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findParams">[docs]</a><span class="k">        function</span><span class="w"> </span>[params, idx] <span class="p">=</span><span class="w"> </span><span class="nf">findParams</span><span class="p">(</span>rc, paramSearch<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>[params, idx] <span class="p">=</span><span class="w"> </span><span class="nf">findParams</span><span class="p">(</span>rc, paramSearch<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Find run params that match paramSearch. Throws an error if any RunParams is not</span>
             <span class="c">% found. If paramSearch is an array of RunParams instances,</span>
             <span class="c">% finds them using isequal. If paramSearch is a vector of</span>
@@ -925,15 +1018,15 @@
             <span class="c">% Returns:</span>
             <span class="c">%   params : LFADS.RunParams</span>
             <span class="c">%     matching params </span>
-            <span class="c">%   idx : vector of indices into `.params` of matches</span>
-            <span class="c">%</span>
+            <span class="c">%   idx : vector of indices </span>
+            <span class="c">%     selection into `.params` of matches</span>
             
             <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">ismemberParams</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">);</span>
             <span class="n">assert</span><span class="p">(</span><span class="n">all</span><span class="p">(</span><span class="n">tf</span><span class="p">),</span> <span class="s">&#39;Some run params could not be found in this RunCollection&#39;</span><span class="p">);</span>
             <span class="n">params</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="RunCollection.findRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findRuns">[docs]</a><span class="k">        </span>
-<a name="RunCollection.findRuns"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.findRuns">[docs]</a><span class="k">        function</span><span class="w"> </span>[runs, rowIdx, colIdx] <span class="p">=</span><span class="w"> </span><span class="nf">findRuns</span><span class="p">(</span>rc, runSpecSearch, paramSearch<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>[runs, rowIdx, colIdx] <span class="p">=</span><span class="w"> </span><span class="nf">findRuns</span><span class="p">(</span>rc, runSpecSearch, paramSearch<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Returns a subset of the .runs matrix for a certain subset of RunSpecs and RunParams. </span>
             <span class="c">% Throws an error if any run is not found.</span>
             <span class="c">%</span>
@@ -949,12 +1042,21 @@
             <span class="c">%   colIdx : vector of indices</span>
             <span class="c">%     vector of indices matching into .params</span>
             
-            <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">rowIdx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findRunSpecs</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">);</span>
-            <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">colIdx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findParams</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">);</span>
+            <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">)</span>
+                <span class="n">rowIdx</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">;</span>
+            <span class="k">else</span>
+                <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">rowIdx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findRunSpecs</span><span class="p">(</span><span class="n">runSpecSearch</span><span class="p">);</span>
+            <span class="k">end</span>
+            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">)</span>
+                <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">colIdx</span><span class="p">]</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findParams</span><span class="p">(</span><span class="n">paramSearch</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="n">colIdx</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">;</span>
+            <span class="k">end</span>
+            
             <span class="n">runs</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">rowIdx</span><span class="p">,</span> <span class="n">colIdx</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="RunCollection.getTensorboardCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.getTensorboardCommand">[docs]</a>
-<a name="RunCollection.getTensorboardCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.getTensorboardCommand">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">getTensorboardCommand</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">getTensorboardCommand</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates the shell command text to launch a TensorBoard displaying all runs within this collection</span>
             <span class="c">%</span>
             <span class="c">% Returns:</span>
@@ -963,14 +1065,14 @@
 
             <span class="n">runEntry</span> <span class="p">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">);</span>
             <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span>
-<a name="RunCollection.getTensorboardCommand"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.getTensorboardCommand">[docs]</a>                <span class="k">for</span> <span class="n">p</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nParams</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nParams</span>
                     <span class="n">runEntry</span><span class="p">{</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">}</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s__par%d:%s&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">).</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">).</span><span class="n">pathLFADSOutput</span><span class="p">);</span>
                 <span class="k">end</span>
             <span class="k">end</span>
             <span class="n">str</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;tensorboard --logdir=%s&#39;</span><span class="p">,</span> <span class="n">strjoin</span><span class="p">(</span><span class="n">runEntry</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">));</span>
         <span class="k">end</span>
 <a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a>
-<a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a><span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeTensorboardShellScript</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeTensorboardShellScript</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates the shell command text to launch a TensorBoard displaying all runs within this collection</span>
             <span class="c">% and saves it to a file inside the RunCollection&#39;s path</span>
             <span class="c">%</span>
@@ -979,13 +1081,47 @@
             <span class="c">%     Path to the shell script, will match `.fileShellScriptTensorboard`</span>
 
             <span class="n">f</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">fileShellScriptTensorboard</span><span class="p">;</span>
-<a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a>            <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
+            <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
             <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">getTensorboardCommand</span><span class="p">());</span>
             <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
             <span class="n">chmod</span><span class="p">(</span><span class="s">&#39;uga+rx&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
         <span class="k">end</span>
+<a name="RunCollection.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.generateSummaryText">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>text <span class="p">=</span><span class="w"> </span><span class="nf">generateSummaryText</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">newline</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">);</span>
+            <span class="n">text</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot; (%d runs total)\n&#39;</span><span class="p">,</span> <span class="c">...</span>
+                 <span class="n">class</span><span class="p">(</span><span class="n">rc</span><span class="p">),</span> <span class="n">rc</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunsTotal</span><span class="p">);</span>
+            <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  Path: %s\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">path</span><span class="p">));</span>
+            <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  Dataset Collection &quot;%s&quot; (%d datasets) in %s\n\n&#39;</span><span class="p">,</span> <span class="c">...</span>
+                 <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">path</span><span class="p">));</span>
+             
+            <span class="n">sep</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;------------------------\n&#39;</span><span class="p">);</span>
+            <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  %s\n  %d Run Specifications:\n\n&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">));</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span>
+                <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">generateSummaryText</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span> <span class="n">newline</span><span class="p">);</span>
+            <span class="k">end</span>
+            
+            <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  %s\n  %d Parameter Settings:\n\n&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">));</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nParams</span>
+               <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">p</span><span class="p">).</span><span class="n">generateSummaryText</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">newline</span><span class="p">);</span>
+            <span class="k">end</span> 
+        <span class="k">end</span>
+<a name="RunCollection.writeSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeSummaryText">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeSummaryText</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Generates a text file sumamrizing the details of the RunSpecs and RunParams</span>
+            <span class="c">% within this run collection.</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   file : string</span>
+            <span class="c">%     Path to the text file, which will match .fileSummaryText</span>
+            <span class="n">f</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">fileSummaryText</span><span class="p">;</span>
+            <span class="n">fid</span> <span class="p">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">);</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">generateSummaryText</span><span class="p">());</span>
+            <span class="n">fclose</span><span class="p">(</span><span class="n">fid</span><span class="p">);</span>
+            <span class="n">chmod</span><span class="p">(</span><span class="s">&#39;uga+rx&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+        <span class="k">end</span>
 <a name="RunCollection.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadSequenceData">[docs]</a><span class="k">        </span>
-<a name="RunCollection.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadSequenceData">[docs]</a><span class="k">        function</span><span class="w"> </span><span class="nf">loadSequenceData</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">loadSequenceData</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Call `loadSequenceData` on each run in this collection</span>
 
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
@@ -994,12 +1130,12 @@
             <span class="n">prog</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span><span class="p">,</span> <span class="s">&#39;Loading sequence data&#39;</span><span class="p">);</span>
             <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span>
                 <span class="n">prog</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="nb">i</span><span class="p">);</span>
-<a name="RunCollection.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadSequenceData">[docs]</a>                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">loadSequenceData</span><span class="p">(</span><span class="n">reload</span><span class="p">);</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">loadSequenceData</span><span class="p">(</span><span class="n">reload</span><span class="p">);</span>
             <span class="k">end</span>
             <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
         <span class="k">end</span>
 <a name="RunCollection.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">[docs]</a><span class="k">        </span>
-<a name="RunCollection.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">[docs]</a><span class="k">        function</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Call `loadPosteriorMeans` on each run in this collection</span>
 
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
@@ -1008,7 +1144,7 @@
             <span class="n">prog</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span><span class="p">,</span> <span class="s">&#39;Loading posterior mean samples&#39;</span><span class="p">);</span>
             <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRuns</span>
                 <span class="n">prog</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="nb">i</span><span class="p">);</span>
-<a name="RunCollection.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">[docs]</a>                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">loadPosteriorMeans</span><span class="p">(</span><span class="n">reload</span><span class="p">);</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">loadPosteriorMeans</span><span class="p">(</span><span class="n">reload</span><span class="p">);</span>
             <span class="k">end</span>
             <span class="n">prog</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
         <span class="k">end</span>
@@ -1025,12 +1161,12 @@
              <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  Path: %s\n\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">path</span><span class="p">));</span>
              <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  %d parameter settings\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nParams</span><span class="p">));</span>
              <span class="k">for</span> <span class="n">p</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nParams</span>
-                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s\n&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">p</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
+                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%d %s] %s\n&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">p</span><span class="p">).</span><span class="n">generateHashName</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span><span class="p">(</span><span class="n">p</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
              <span class="k">end</span>
              
              <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;\n  %d run specifications\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span><span class="p">));</span>
              <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">rc</span><span class="p">.</span><span class="n">nRunSpecs</span>
-                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
+                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s\n&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">runSpecs</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
              <span class="k">end</span>
           <span class="k">end</span>
        <span class="k">end</span>

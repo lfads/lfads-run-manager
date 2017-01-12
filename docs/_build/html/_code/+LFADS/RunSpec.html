@@ -260,14 +260,36 @@
 123
 124
 125
-126</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunSpec"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunSpec</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunSpec"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunSpec</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
     <span class="c">% Represents a set of specifications for an LFADS experiment on a specific subset of datasets</span>
     <span class="c">% within a :ref:`LFADS_DatasetCollection`. RunSpec instances are used to create</span>
     <span class="c">% instances, and all runs in a collection share the same parameter settings, which are represented by a shared</span>
     <span class="c">% :ref:`LFADS_RunParams` instance.</span>
 
     <span class="k">properties</span>
-<a name="RunSpec.runClassName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.runClassName">[docs]</a>        <span class="n">runClassName</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Class name that will be used to create LFADS.Run instances using</span>
+<a name="RunSpec.runClassName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.runClassName">[docs]</a>        <span class="n">runClassName</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Class name that will be used to create LFADS.Run instances. Or function_handle to class constructor</span>
         
 <a name="RunSpec.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.name">[docs]</a>        <span class="n">name</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of this run unique within its RunCollection, will be used as subfolder on disk</span>
 
@@ -278,7 +300,8 @@
 
     <span class="k">properties</span>
 <a name="RunSpec.datasets"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.datasets">[docs]</a>        <span class="n">datasets</span> <span class="c">% Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize</span>
-
+<a name="RunSpec.datasetIndsInCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.datasetIndsInCollection">[docs]</a>        <span class="n">datasetIndsInCollection</span> <span class="c">% indices of each dataset into datasetCollection.datasets</span>
+        
 <a name="RunSpec.datasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.datasetCollection">[docs]</a>        <span class="n">datasetCollection</span> <span class="c">% Dataset collection used by this run (and all runs in the same RunCollection)</span>
     <span class="k">end</span>
 
@@ -352,6 +375,7 @@
             <span class="c">%   Selection applied to this run&#39;s DatasetCollection&#39;s array of datasets</span>
 
             <span class="n">r</span><span class="p">.</span><span class="n">datasets</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+            <span class="n">r</span><span class="p">.</span><span class="n">datasetIndsInCollection</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">vectorMaskToIndices</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="RunSpec.selectDatasetsByName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.selectDatasetsByName">[docs]</a>
 <span class="k">        function</span><span class="w"> </span><span class="nf">selectDatasetsByName</span><span class="p">(</span>r, names<span class="p">)</span><span class="w"></span>
@@ -362,14 +386,34 @@
             <span class="c">% names : string or cellstr</span>
             <span class="c">%   Name or names to search for within this run&#39;s DatasetCollection&#39;s array of datasets</span>
 
-            <span class="n">r</span><span class="p">.</span><span class="n">datasets</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">matchDatasetsByName</span><span class="p">(</span><span class="n">names</span><span class="p">);</span>
+            <span class="p">[</span><span class="n">r</span><span class="p">.</span><span class="n">datasets</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetIndsInCollection</span><span class="p">]</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">matchDatasetsByName</span><span class="p">(</span><span class="n">names</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="RunSpec.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.generateSummaryText">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>text <span class="p">=</span><span class="w"> </span><span class="nf">generateSummaryText</span><span class="p">(</span>r, indent, index<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Generate a string representation of this Run Spec&#39;s info</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   text : string</span>
+            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
+                <span class="n">indent</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="k">end</span>
+            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">2</span>
+                <span class="n">indexStr</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;[runSpec %d] &#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="n">indexStr</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
+            <span class="k">end</span>
+            <span class="n">indent</span> <span class="p">=</span> <span class="n">blanks</span><span class="p">(</span><span class="n">indent</span><span class="p">);</span>
+            <span class="n">text</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s%s%s\n&#39;</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">indexStr</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">getFirstLineHeader</span><span class="p">());</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span>
+                <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s  [ds %d] %s\n&#39;</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetIndsInCollection</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">r</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
+            <span class="k">end</span>
         <span class="k">end</span>
     <span class="k">end</span>
 
     <span class="k">methods</span><span class="p">(</span><span class="n">Hidden</span><span class="p">)</span>
 <span class="k">        function</span><span class="w"> </span>h <span class="p">=</span><span class="w"> </span><span class="nf">getFirstLineHeader</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">className</span> <span class="p">=</span> <span class="n">class</span><span class="p">(</span><span class="n">r</span><span class="p">);</span>
-            <span class="n">h</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot; (%d datasets)\n&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">);</span>
+            <span class="n">h</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot; (%d datasets)&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">);</span>
         <span class="k">end</span>
     <span class="k">end</span>
 
@@ -380,7 +424,7 @@
           <span class="k">else</span>
              <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s\n  %d datasets from collection %s\n&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">getFirstLineHeader</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
              <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">r</span><span class="p">.</span><span class="n">nDatasets</span>
-                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;    [%2d] %s\n&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
+                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;    [ds %d] %s\n&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">datasetIndsInCollection</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">r</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
              <span class="k">end</span>
           <span class="k">end</span>
        <span class="k">end</span>

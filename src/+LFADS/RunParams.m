@@ -55,6 +55,7 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             %   props : cellstr
             %     list of properties
             %   propMeta : meta.property array
+            %      meta.property list from metaclass
             
             parser = inputParser();
             parser.addParameter('ignoreProperties', {}, @iscellstr);

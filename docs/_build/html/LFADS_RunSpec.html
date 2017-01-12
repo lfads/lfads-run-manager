@@ -150,8 +150,8 @@ instances, and all runs in a collection share the same parameter settings, which
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
 </div><dl class="attribute">
 <dt id="+LFADS.RunSpec.runClassName">
-<code class="descname">runClassName</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.runClassName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.runClassName" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class name that will be used to create LFADS.Run instances using</p>
+<code class="descname">runClassName</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.runClassName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.runClassName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class name that will be used to create LFADS.Run instances. Or function_handle to class constructor</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -178,6 +178,12 @@ instances, and all runs in a collection share the same parameter settings, which
 <dt id="+LFADS.RunSpec.datasets">
 <code class="descname">datasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Array of <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> instances which this particular Run will utilize</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunSpec.datasetIndsInCollection">
+<code class="descname">datasetIndsInCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.datasetIndsInCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.datasetIndsInCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>indices of each dataset into datasetCollection.datasets</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -253,6 +259,22 @@ search for datasets by name within datasetCollection.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<em>string or cellstr</em>) &#8211; Name or names to search for within this run&#8217;s DatasetCollection&#8217;s array of datasets</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunSpec.generateSummaryText">
+[<em>text</em>] = <code class="descname">generateSummaryText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.generateSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.generateSummaryText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a string representation of this Run Spec&#8217;s info</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">text</td>
 </tr>
 </tbody>
 </table>

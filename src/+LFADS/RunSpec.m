@@ -16,7 +16,8 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
 
     properties
         datasets % Array of :ref:`LFADS_Dataset` instances which this particular Run will utilize
-
+        datasetIndsInCollection % indices of each dataset into datasetCollection.datasets
+        
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
     end
 
@@ -90,6 +91,7 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
             %   Selection applied to this run's DatasetCollection's array of datasets
 
             r.datasets = r.datasetCollection.datasets(idx);
+            r.datasetIndsInCollection = LFADS.Utils.vectorMaskToIndices(idx);
         end
 
         function selectDatasetsByName(r, names)
@@ -100,7 +102,7 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
             % names : string or cellstr
             %   Name or names to search for within this run's DatasetCollection's array of datasets
 
-            r.datasets = r.datasetCollection.matchDatasetsByName(names);
+            [r.datasets, r.datasetIndsInCollection] = r.datasetCollection.matchDatasetsByName(names);
         end
         
         function text = generateSummaryText(r, indent, index)
@@ -119,7 +121,7 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
             indent = blanks(indent);
             text = sprintf('%s%s%s\n', indent, indexStr, r.getFirstLineHeader());
             for s = 1:r.nDatasets
-                text = cat(2, text, sprintf('%s  [ds %d] %s\n', indent, s, r.datasets(s).getFirstLineHeader()));
+                text = cat(2, text, sprintf('%s  [ds %d] %s\n', indent, r.datasetIndsInCollection(s), r.datasets(s).getFirstLineHeader()));
             end
         end
     end
@@ -138,7 +140,7 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
           else
              header = sprintf('%s\n  %d datasets from collection %s\n', r.getFirstLineHeader(), r.nDatasets, r.datasetCollection.name);
              for s = 1:r.nDatasets
-                 header = cat(2, header, sprintf('    [%2d] %s\n', s, r.datasets(s).getFirstLineHeader()));
+                 header = cat(2, header, sprintf('    [ds %d] %s\n', r.datasetIndsInCollection(s), r.datasets(s).getFirstLineHeader()));
              end
           end
        end

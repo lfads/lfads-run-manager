@@ -285,7 +285,10 @@
 148
 149
 150
-151</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="DatasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">DatasetCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+151
+152
+153
+154</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="DatasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">DatasetCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
     <span class="c">% A collection of multiple Datasets to be processed by LFADS as a cohesive group, either using stitching to</span>
     <span class="c">% incorporate multiple datasets simultaneously, or individually to multiple independent LFADS fits.</span>
 
@@ -393,17 +396,20 @@
             <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span> <span class="p">=</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="DatasetCollection.matchDatasetsByName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.matchDatasetsByName">[docs]</a>
-<span class="k">        function</span><span class="w"> </span>datasets <span class="p">=</span><span class="w"> </span><span class="nf">matchDatasetsByName</span><span class="p">(</span>dc, names<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>[datasets, idx] <span class="p">=</span><span class="w"> </span><span class="nf">matchDatasetsByName</span><span class="p">(</span>dc, names<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Returns the subset of datasets in this collection matching a name in names.</span>
             <span class="c">%</span>
-            <span class="c">% Parameters</span>
-            <span class="c">% ----------------</span>
-            <span class="c">% names : string or cellstr</span>
-            <span class="c">%   Name or names of datasets to find</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   names : string or cellstr</span>
+            <span class="c">%     Name or names of datasets to find</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   datasets : LFADS.Dataset array</span>
+            <span class="c">%   idx : list of indices into datasets array</span>
 
-            <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">which</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">{</span><span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">.</span><span class="n">name</span><span class="p">});</span>
+            <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">{</span><span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">.</span><span class="n">name</span><span class="p">});</span>
             <span class="n">assert</span><span class="p">(</span><span class="n">all</span><span class="p">(</span><span class="n">tf</span><span class="p">),</span> <span class="s">&#39;Missing datasets %s&#39;</span><span class="p">,</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">strjoin</span><span class="p">(</span><span class="n">names</span><span class="p">(</span><span class="o">~</span><span class="n">tf</span><span class="p">),</span> <span class="s">&#39;, &#39;</span><span class="p">));</span>
-            <span class="n">datasets</span> <span class="p">=</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">which</span><span class="p">);</span>
+            <span class="n">datasets</span> <span class="p">=</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="DatasetCollection.getDatasetInfoTable"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.getDatasetInfoTable">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>t <span class="p">=</span><span class="w"> </span><span class="nf">getDatasetInfoTable</span><span class="p">(</span>dc<span class="p">)</span><span class="w"></span>

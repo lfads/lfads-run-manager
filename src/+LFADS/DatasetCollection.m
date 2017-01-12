@@ -106,17 +106,20 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
             dc.datasets = dc.datasets(mask);
         end
 
-        function datasets = matchDatasetsByName(dc, names)
+        function [datasets, idx] = matchDatasetsByName(dc, names)
             % Returns the subset of datasets in this collection matching a name in names.
             %
-            % Parameters
-            % ----------------
-            % names : string or cellstr
-            %   Name or names of datasets to find
+            % Args:
+            %   names : string or cellstr
+            %     Name or names of datasets to find
+            %
+            % Returns:
+            %   datasets : LFADS.Dataset array
+            %   idx : list of indices into datasets array
 
-            [tf, which] = ismember(names, {dc.datasets.name});
+            [tf, idx] = ismember(names, {dc.datasets.name});
             assert(all(tf), 'Missing datasets %s', LFADS.Utils.strjoin(names(~tf), ', '));
-            datasets = dc.datasets(which);
+            datasets = dc.datasets(idx);
         end
 
         function t = getDatasetInfoTable(dc)

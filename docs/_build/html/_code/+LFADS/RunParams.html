@@ -330,66 +330,188 @@
 193
 194
 195
-196</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunParams</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunParams</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
     <span class="c">% Collection of parameters which are common to all :ref:`LFADS_Run` instances in a :ref:`LFADS_RunCollection`. You</span>
     <span class="c">% must create a subclass of RunParams in which you specify the serialized representation of the parameters that</span>
     <span class="c">% will be used in paths on disk.</span>
     
     <span class="k">properties</span>
-        <span class="c">% data or high-level params</span>
-<a name="RunParams.spikeBinMs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.spikeBinMs">[docs]</a>        <span class="n">spikeBinMs</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c">% Spike bin width in ms</span>
-<a name="RunParams.spikeBinMs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.spikeBinMs">[docs]</a>        <span class="n">trainToTestRatio</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">4</span><span class="p">;</span> <span class="c">% how many train v. test trials, defaults to 4:1 ratio</span>
-<a name="RunParams.trainToTestRatio"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.trainToTestRatio">[docs]</a>        
-<a name="RunParams.useAlignmentMatrix"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.useAlignmentMatrix">[docs]</a>        <span class="n">useAlignmentMatrix</span> <span class="n">logical</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span> <span class="c">% by default, no need to create an alignment matrix</span>
+        <span class="c">% High-level params unrelated to LFADS internals</span>
         
-<a name="RunParams.c_cell_clip_value"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_cell_clip_value">[docs]</a>        <span class="c">% added by CP</span>
-<a name="RunParams.c_factors_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_factors_dim">[docs]</a>        <span class="c">%  these are (a subset of the) command-line params to run_lfads.py</span>
-<a name="RunParams.c_in_factors_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_in_factors_dim">[docs]</a>        <span class="c">%  start each with c_ so it can be differentiated from other params</span>
-<a name="RunParams.c_ic_enc_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ic_enc_dim">[docs]</a>        <span class="n">c_cell_clip_value</span> <span class="n">double</span> <span class="p">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c">% used to avoid stepping too far during training</span>
-<a name="RunParams.c_ci_enc_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ci_enc_dim">[docs]</a>        <span class="n">c_factors_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">50</span><span class="p">;</span>
-<a name="RunParams.c_gen_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_gen_dim">[docs]</a>        <span class="n">c_in_factors_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">50</span><span class="p">;</span>
-<a name="RunParams.c_keep_prob"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_keep_prob">[docs]</a>        <span class="n">c_ic_enc_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span> <span class="c">% network size for IC encoder</span>
-<a name="RunParams.c_cell_clip_value"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_cell_clip_value">[docs]</a>        <span class="n">c_ci_enc_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span> <span class="c">% network size for controller input encoder</span>
-<a name="RunParams.c_factors_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_factors_dim">[docs]</a>        <span class="n">c_gen_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">100</span><span class="p">;</span> <span class="c">% generator network size</span>
-<a name="RunParams.c_in_factors_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_in_factors_dim">[docs]</a>        <span class="n">c_keep_prob</span> <span class="n">double</span> <span class="p">=</span> <span class="mf">0.95</span><span class="p">;</span> <span class="c">% randomly drop units during each training pass</span>
-<a name="RunParams.c_ic_enc_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ic_enc_dim">[docs]</a>        <span class="n">c_learning_rate_decay_factor</span> <span class="n">double</span> <span class="p">=</span> <span class="mf">0.98</span><span class="p">;</span> <span class="c">% how quickly to decrease the learning rate</span>
-<a name="RunParams.c_ci_enc_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ci_enc_dim">[docs]</a>        <span class="n">c_device</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;/gpu:0&#39;</span><span class="p">;</span> <span class="c">% which visible GPU/CPU to use</span>
-<a name="RunParams.c_gen_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_gen_dim">[docs]</a>        <span class="n">c_co_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">4</span><span class="p">;</span>
-<a name="RunParams.c_keep_prob"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_keep_prob">[docs]</a>        <span class="n">c_do_causal_controller</span> <span class="n">logical</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span> <span class="c">% restrict input encoder from seeing the future?</span>
-<a name="RunParams.c_learning_rate_decay_factor"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_learning_rate_decay_factor">[docs]</a>        <span class="n">c_l2_gen_scale</span> <span class="n">double</span> <span class="p">=</span> <span class="mi">500</span><span class="p">;</span> <span class="c">% how much to weight the generator l2 cost</span>
-<a name="RunParams.c_device"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_device">[docs]</a>        <span class="n">c_l2_con_scale</span> <span class="n">double</span> <span class="p">=</span> <span class="mi">500</span><span class="p">;</span> <span class="c">% how much to weight the controller l2 cost</span>
-<a name="RunParams.c_co_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_co_dim">[docs]</a>        <span class="n">c_batch_size</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">256</span><span class="p">;</span> <span class="c">% number of trials to use during each training pass</span>
-<a name="RunParams.c_do_causal_controller"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_do_causal_controller">[docs]</a>        <span class="n">c_kl_increase_steps</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">900</span><span class="p">;</span> <span class="c">% Number of steps over which the kl costs increase</span>
-<a name="RunParams.c_l2_gen_scale"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_l2_gen_scale">[docs]</a>        <span class="n">c_l2_increase_steps</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">900</span><span class="p">;</span> <span class="c">% Number of steps over which the l2 costs increase</span>
-<a name="RunParams.c_l2_con_scale"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_l2_con_scale">[docs]</a>        <span class="n">c_controller_input_lag</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
-<a name="RunParams.c_batch_size"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_batch_size">[docs]</a>        <span class="n">c_ic_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">64</span><span class="p">;</span> <span class="c">% dimensionality of the initial conditions</span>
-<a name="RunParams.c_kl_increase_steps"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_kl_increase_steps">[docs]</a>        <span class="n">c_con_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span> <span class="c">%controller dimensionality</span>
-<a name="RunParams.c_l2_increase_steps"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_l2_increase_steps">[docs]</a>    <span class="k">end</span>
-<a name="RunParams.c_controller_input_lag"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_controller_input_lag">[docs]</a>    
-<a name="RunParams.c_ic_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ic_dim">[docs]</a>    <span class="k">methods</span>
-<a name="RunParams.c_con_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_con_dim">[docs]</a>        <span class="c">% Methods that you may wish to override in custom subclasses</span>
-<a name="RunParams.generateString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateString">[docs]</a><span class="k">        </span>
-<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateString</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Generates a string representation of the parameters that is used for reading off the parameters from a</span>
-            <span class="c">% folder path on disk. You can include as many or as few fields in this serialized representation as you see</span>
-<a name="RunParams.generateString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateString">[docs]</a>            <span class="c">% fit. The default implementation will compare all property values</span>
-            <span class="c">% (including those defined in subclasses) to the inline default property</span>
-            <span class="c">% values defined in the class that defines them. Any property</span>
-            <span class="c">% values that differ will be included in the serialization.</span>
+<a name="RunParams.spikeBinMs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.spikeBinMs">[docs]</a>        <span class="n">spikeBinMs</span> <span class="n">double</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c">% Spike bin width in ms</span>
+<a name="RunParams.trainToTestRatio"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.trainToTestRatio">[docs]</a>        <span class="n">trainToTestRatio</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">4</span><span class="p">;</span> <span class="c">% how many train v. test trials, defaults to 4:1 ratio    </span>
+<a name="RunParams.useAlignmentMatrix"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.useAlignmentMatrix">[docs]</a>        <span class="n">useAlignmentMatrix</span> <span class="n">logical</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span> <span class="c">% Whether to use an alignment matrix when stitching datasets together. Default = false.</span>
+    <span class="k">end</span>
+    
+    <span class="k">properties</span>
+        <span class="c">% Subset of the command-line params to run_lfads.py</span>
+        <span class="c">% Each starts with c_ so it can be differentiated from other params</span>
+        <span class="c">% Avoid naming other parameters the same as these without the c_</span>
+        <span class="c">% since the prefix will be stripped from the serialization</span>
+        
+<a name="RunParams.c_cell_clip_value"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_cell_clip_value">[docs]</a>        <span class="n">c_cell_clip_value</span> <span class="n">double</span> <span class="p">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c">% used to avoid stepping too far during training</span>
+<a name="RunParams.c_factors_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_factors_dim">[docs]</a>        <span class="n">c_factors_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">50</span><span class="p">;</span>
+<a name="RunParams.c_in_factors_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_in_factors_dim">[docs]</a>        <span class="n">c_in_factors_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">50</span><span class="p">;</span>
+<a name="RunParams.c_ic_enc_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ic_enc_dim">[docs]</a>        <span class="n">c_ic_enc_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span> <span class="c">% network size for IC encoder</span>
+<a name="RunParams.c_ci_enc_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ci_enc_dim">[docs]</a>        <span class="n">c_ci_enc_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span> <span class="c">% network size for controller input encoder</span>
+<a name="RunParams.c_gen_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_gen_dim">[docs]</a>        <span class="n">c_gen_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">100</span><span class="p">;</span> <span class="c">% generator network size</span>
+<a name="RunParams.c_keep_prob"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_keep_prob">[docs]</a>        <span class="n">c_keep_prob</span> <span class="n">double</span> <span class="p">=</span> <span class="mf">0.95</span><span class="p">;</span> <span class="c">% randomly drop units during each training pass</span>
+<a name="RunParams.c_learning_rate_decay_factor"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_learning_rate_decay_factor">[docs]</a>        <span class="n">c_learning_rate_decay_factor</span> <span class="n">double</span> <span class="p">=</span> <span class="mf">0.98</span><span class="p">;</span> <span class="c">% how quickly to decrease the learning rate</span>
+<a name="RunParams.c_device"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_device">[docs]</a>        <span class="n">c_device</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;/gpu:0&#39;</span><span class="p">;</span> <span class="c">% which visible GPU/CPU to use</span>
+<a name="RunParams.c_co_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_co_dim">[docs]</a>        <span class="n">c_co_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">4</span><span class="p">;</span>
+<a name="RunParams.c_do_causal_controller"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_do_causal_controller">[docs]</a>        <span class="n">c_do_causal_controller</span> <span class="n">logical</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span> <span class="c">% restrict input encoder from seeing the future?</span>
+<a name="RunParams.c_l2_gen_scale"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_l2_gen_scale">[docs]</a>        <span class="n">c_l2_gen_scale</span> <span class="n">double</span> <span class="p">=</span> <span class="mi">500</span><span class="p">;</span> <span class="c">% how much to weight the generator l2 cost</span>
+<a name="RunParams.c_l2_con_scale"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_l2_con_scale">[docs]</a>        <span class="n">c_l2_con_scale</span> <span class="n">double</span> <span class="p">=</span> <span class="mi">500</span><span class="p">;</span> <span class="c">% how much to weight the controller l2 cost</span>
+<a name="RunParams.c_batch_size"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_batch_size">[docs]</a>        <span class="n">c_batch_size</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">256</span><span class="p">;</span> <span class="c">% number of trials to use during each training pass</span>
+<a name="RunParams.c_kl_increase_steps"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_kl_increase_steps">[docs]</a>        <span class="n">c_kl_increase_steps</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">900</span><span class="p">;</span> <span class="c">% Number of steps over which the kl costs increase</span>
+<a name="RunParams.c_l2_increase_steps"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_l2_increase_steps">[docs]</a>        <span class="n">c_l2_increase_steps</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">900</span><span class="p">;</span> <span class="c">% Number of steps over which the l2 costs increase</span>
+<a name="RunParams.c_controller_input_lag"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_controller_input_lag">[docs]</a>        <span class="n">c_controller_input_lag</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="RunParams.c_ic_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ic_dim">[docs]</a>        <span class="n">c_ic_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">64</span><span class="p">;</span> <span class="c">% dimensionality of the initial conditions</span>
+<a name="RunParams.c_con_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_con_dim">[docs]</a>        <span class="n">c_con_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span> <span class="c">%controller dimensionality</span>
+    <span class="k">end</span>
+    
+    <span class="k">methods</span>
+<a name="RunParams.listNonTransientProperties"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.listNonTransientProperties">[docs]</a><span class="k">        function</span><span class="w"> </span>[props, propMeta] <span class="p">=</span><span class="w"> </span><span class="nf">listNonTransientProperties</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Return a list of properties in this class that are not</span>
+            <span class="c">% Dependent, Constant, Transient, or Hidden</span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
             <span class="c">%   ignoreProperties : cellstr</span>
-            <span class="c">%     list of properties to ignore when serializing, useful</span>
-            <span class="c">%     when called from subclasses</span>
+            <span class="c">%     list of properties to ignore</span>
             <span class="c">%   onlyRootClassProperties : bool (False)</span>
             <span class="c">%     if true, only include properties declared in</span>
             <span class="c">%     LFADS.RunParams. if false, include properties declared in</span>
             <span class="c">%     subclasses.</span>
             <span class="c">%</span>
             <span class="c">% Returns:</span>
-            <span class="c">%   str : string</span>
-            <span class="c">%     serialized string suffix suitable for inclusion in file paths</span>
-            <span class="c">%</span>
+            <span class="c">%   props : cellstr</span>
+            <span class="c">%     list of properties</span>
+            <span class="c">%   propMeta : meta.property array</span>
             
             <span class="n">parser</span> <span class="p">=</span> <span class="n">inputParser</span><span class="p">();</span>
             <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;ignoreProperties&#39;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">@</span><span class="n">iscellstr</span><span class="p">);</span>
@@ -402,41 +524,173 @@
                 <span class="n">meta</span> <span class="p">=</span> <span class="n">metaclass</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
             <span class="k">end</span>
             
-            <span class="n">str</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
+            <span class="n">props</span> <span class="p">=</span> <span class="n">cell</span><span class="p">(</span><span class="nb">numel</span><span class="p">(</span><span class="n">meta</span><span class="p">.</span><span class="n">PropertyList</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="n">mask</span> <span class="p">=</span> <span class="n">false</span><span class="p">(</span><span class="nb">numel</span><span class="p">(</span><span class="n">meta</span><span class="p">.</span><span class="n">PropertyList</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
             <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">meta</span><span class="p">.</span><span class="n">PropertyList</span><span class="p">)</span>
                 <span class="n">prop</span> <span class="p">=</span> <span class="n">meta</span><span class="p">.</span><span class="n">PropertyList</span><span class="p">(</span><span class="nb">i</span><span class="p">);</span>
                 <span class="n">name</span> <span class="p">=</span> <span class="n">prop</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+                <span class="n">props</span><span class="p">{</span><span class="nb">i</span><span class="p">}</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
                 <span class="k">if</span> <span class="n">ismember</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">ignoreProperties</span><span class="p">)</span>
                     <span class="k">continue</span><span class="p">;</span>
                 <span class="k">end</span>
                 <span class="c">% skip properties that are Dependent, Constant, Transient,</span>
                 <span class="c">% or Hidden. Serialize the value if it differes from the </span>
                 <span class="k">if</span> <span class="o">~</span><span class="n">prop</span><span class="p">.</span><span class="n">Dependent</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="n">prop</span><span class="p">.</span><span class="n">Constant</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="n">prop</span><span class="p">.</span><span class="n">Transient</span> <span class="o">&amp;&amp;</span> <span class="o">~</span><span class="n">prop</span><span class="p">.</span><span class="n">Hidden</span>
-                    <span class="k">if</span> <span class="o">~</span><span class="nb">isequal</span><span class="p">(</span><span class="n">prop</span><span class="p">.</span><span class="n">DefaultValue</span><span class="p">,</span> <span class="n">p</span><span class="p">.(</span><span class="n">name</span><span class="p">))</span>
-                        <span class="n">str</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">serializeProperty</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="p">.(</span><span class="n">name</span><span class="p">)),</span> <span class="s">&#39;__&#39;</span><span class="p">);</span>
-                    <span class="k">end</span>
+                    <span class="n">mask</span><span class="p">(</span><span class="nb">i</span><span class="p">)</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
                 <span class="k">end</span>
             <span class="k">end</span>
-            <span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+            
+            <span class="n">props</span> <span class="p">=</span> <span class="n">props</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
+            <span class="n">propMeta</span> <span class="p">=</span> <span class="n">meta</span><span class="p">.</span><span class="n">PropertyList</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="RunParams.generateHash"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHash">[docs]</a>
+<a name="RunParams.generateHash"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHash">[docs]</a><span class="k">        function</span><span class="w"> </span>hash <span class="p">=</span><span class="w"> </span><span class="nf">generateHash</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Generate a short hash of this RunParams non-transient</span>
+            <span class="c">% properties that can be used in a directory name.</span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   length : int</span>
+            <span class="c">%     number of characters to truncate the hash value to</span>
+            <span class="c">%   ignoreProperties : cellstr</span>
+            <span class="c">%     list of properties to ignore</span>
+            <span class="c">%   onlyRootClassProperties : bool (False)</span>
+            <span class="c">%     if true, only include properties declared in</span>
+            <span class="c">%     LFADS.RunParams. if false, include properties declared in</span>
+            <span class="c">%     subclasses.</span>
+            <span class="n">parser</span> <span class="p">=</span> <span class="n">inputParser</span><span class="p">();</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;length&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="p">@</span><span class="nb">isscalar</span><span class="p">);</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">KeepUnmatched</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:});</span>
+            
+            <span class="n">props</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">listNonTransientProperties</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="n">Unmatched</span><span class="p">);</span>
+            <span class="n">data</span> <span class="p">=</span> <span class="n">struct</span><span class="p">();</span>
+            <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
+                <span class="n">prop</span> <span class="p">=</span> <span class="n">props</span><span class="p">{</span><span class="nb">i</span><span class="p">};</span>
+                <span class="n">data</span><span class="p">.(</span><span class="n">prop</span><span class="p">)</span> <span class="p">=</span> <span class="n">p</span><span class="p">.(</span><span class="n">prop</span><span class="p">);</span>
+            <span class="k">end</span>
+            
+            <span class="n">hash</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">DataHash</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">struct</span><span class="p">(</span><span class="s">&#39;Format&#39;</span><span class="p">,</span> <span class="s">&#39;base64&#39;</span><span class="p">));</span>
+            <span class="n">hash</span> <span class="p">=</span> <span class="n">lower</span><span class="p">(</span><span class="n">hash</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="nb">length</span><span class="p">));</span>
+        <span class="k">end</span>
+<a name="RunParams.generateHashName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHashName">[docs]</a><span class="k">        </span>
+<a name="RunParams.generateHashName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHashName">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateHashName</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Generate a short hash name like &#39;param_HASH&#39; where HASH is</span>
+            <span class="c">% generated by generateHash()</span>
+            
+            <span class="n">str</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;param_%s&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">generateHash</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:}));</span>
+        <span class="k">end</span>
+<a name="RunParams.generateString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateString">[docs]</a><span class="k">            </span>
+<a name="RunParams.generateString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateString">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateString</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Generates a string representation of all parameters, with custom</span>
+            <span class="c">% strings inserted between property names and values. </span>
+            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   filterDiffersFromDefault : bool</span>
+            <span class="c">%     if true, only properties whose value differs from the</span>
+            <span class="c">%     default value </span>
+            <span class="c">%   defaultsFromClassDefinition : bool</span>
+            <span class="c">%     if true, default value comes from the class definition,</span>
+            <span class="c">%     next to each property&#39;s definition. If false, the default</span>
+            <span class="c">%     values come from constructing a new class of the same</span>
+            <span class="c">%     type with no arguments. Default true.</span>
+            <span class="c">%   beforeProp : char</span>
+            <span class="c">%     default &#39;&#39;</span>
+            <span class="c">%   betweenPropValue : char</span>
+            <span class="c">%     default &#39;=&#39;</span>
+            <span class="c">%   afterValue : char</span>
+            <span class="c">%     default &#39;&#39;</span>
+            <span class="c">%   betweenProps : char</span>
+            <span class="c">%     default &#39; &#39;</span>
+            <span class="c">%   ignoreProperties : cellstr</span>
+            <span class="c">%     list of properties to ignore</span>
+            <span class="c">%   onlyRootClassProperties : bool (False)</span>
+            <span class="c">%     if true, only include properties declared in</span>
+            <span class="c">%     LFADS.RunParams. if false, include properties declared in</span>
+            <span class="c">%     subclasses.</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   str : string</span>
+            <span class="c">%     serialized string suffix suitable for inclusion in file paths</span>
+            <span class="c">%</span>
+            
+            <span class="n">parser</span> <span class="p">=</span> <span class="n">inputParser</span><span class="p">();</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;onlyDifferentFromDefault&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">,</span> <span class="p">@</span><span class="n">islogical</span><span class="p">);</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;defaultsFromClassDefinition&#39;</span><span class="p">,</span> <span class="n">true</span><span class="p">,</span> <span class="p">@</span><span class="n">islogical</span><span class="p">);</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;beforeProp&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;betweenPropValue&#39;</span><span class="p">,</span> <span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;afterValue&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;betweenProps&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:});</span>
+            
+            <span class="p">[</span><span class="n">props</span><span class="p">,</span> <span class="n">propMeta</span><span class="p">]</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">listNonTransientProperties</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="n">Unmatched</span><span class="p">);</span>
+            <span class="n">str</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
+            
+            <span class="n">defaultInstance</span> <span class="p">=</span> <span class="n">eval</span><span class="p">(</span><span class="n">class</span><span class="p">(</span><span class="n">p</span><span class="p">));</span>
+                
+            <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
+                <span class="n">prop</span> <span class="p">=</span> <span class="n">props</span><span class="p">{</span><span class="nb">i</span><span class="p">};</span>
+                <span class="n">value</span> <span class="p">=</span> <span class="n">p</span><span class="p">.(</span><span class="n">prop</span><span class="p">);</span>
+                
+                <span class="k">if</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">onlyDifferentFromDefault</span>
+                    <span class="k">if</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">defaultsFromClassDefinition</span>
+                        <span class="n">def</span> <span class="p">=</span> <span class="n">propMeta</span><span class="p">(</span><span class="nb">i</span><span class="p">).</span><span class="n">DefaultValue</span><span class="p">;</span>
+                    <span class="k">else</span>
+                        <span class="n">def</span> <span class="p">=</span> <span class="n">defaultInstance</span><span class="p">.(</span><span class="n">prop</span><span class="p">);</span>
+                    <span class="k">end</span>
+                    <span class="k">if</span> <span class="nb">isequal</span><span class="p">(</span><span class="n">def</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                        <span class="k">continue</span><span class="p">;</span>
+                    <span class="k">end</span>
+                <span class="k">end</span>
+                
+                <span class="n">this</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s%s%s%s%s%s&#39;</span><span class="p">,</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">beforeProp</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">betweenPropValue</span><span class="p">,</span> <span class="c">...</span>
+                    <span class="n">p</span><span class="p">.</span><span class="n">serializePropertyValue</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">afterValue</span><span class="p">,</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">betweenProps</span><span class="p">);</span>
+                <span class="n">str</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="n">this</span><span class="p">);</span>
+            <span class="k">end</span>
+            <span class="k">if</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+                <span class="n">str</span> <span class="p">=</span> <span class="n">str</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="k">end</span><span class="o">-</span><span class="nb">numel</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">betweenProps</span><span class="p">));</span>
+            <span class="k">end</span>
+            <span class="k">if</span> <span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">onlyDifferentFromDefault</span> <span class="o">&amp;&amp;</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
                 <span class="n">str</span> <span class="p">=</span> <span class="s">&#39;default&#39;</span><span class="p">;</span>
             <span class="k">end</span>
-<a name="RunParams.serializeProperty"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializeProperty">[docs]</a>            <span class="c">% strip __ off the end</span>
-            <span class="k">if</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="k">end</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="k">end</span><span class="p">),</span> <span class="s">&#39;__&#39;</span><span class="p">),</span> <span class="n">str</span> <span class="p">=</span> <span class="n">str</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="k">end</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span> <span class="k">end</span>
         <span class="k">end</span>
-<a name="RunParams.serializeProperty"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializeProperty">[docs]</a><span class="k">        </span>
-<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">serializeProperty</span><span class="p">(</span>p, name, value<span class="p">)</span><span class="w"></span>
+<a name="RunParams.generateShortDifferencesString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateShortDifferencesString">[docs]</a><span class="k">        </span>
+<a name="RunParams.generateShortDifferencesString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateShortDifferencesString">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateShortDifferencesString</span><span class="p">(</span>p<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">str</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">generateString</span><span class="p">(</span><span class="s">&#39;onlyDifferentFromDefault&#39;</span><span class="p">,</span> <span class="n">true</span><span class="p">,</span> <span class="c">...</span>
+                <span class="s">&#39;defaultsFromClassDefinition&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">,</span> <span class="c">...</span>
+                <span class="s">&#39;beforeProp&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;betweenPropValue&#39;</span><span class="p">,</span> <span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="s">&#39;afterValue&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;betweenProps&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">);</span>
+        <span class="k">end</span>
+<a name="RunParams.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateSummaryText">[docs]</a><span class="k">        </span>
+<a name="RunParams.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateSummaryText">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateSummaryText</span><span class="p">(</span>p, indent, paramIndex<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
+                <span class="n">indent</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="k">end</span>
+            <span class="n">className</span> <span class="p">=</span> <span class="n">class</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">2</span>
+                <span class="n">indexStr</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;[%d param_%s]&#39;</span><span class="p">,</span> <span class="n">paramIndex</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">generateHash</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="n">indexStr</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;[param_%s]&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">generateHash</span><span class="p">);</span>
+            <span class="k">end</span>
+            <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s%s %s\n%sDiff: %s\n\n&#39;</span><span class="p">,</span> <span class="n">blanks</span><span class="p">(</span><span class="n">indent</span><span class="p">),</span> <span class="n">indexStr</span><span class="p">,</span><span class="n">className</span><span class="p">,</span> <span class="n">blanks</span><span class="p">(</span><span class="n">indent</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span> <span class="n">p</span><span class="p">.</span><span class="n">generateShortDifferencesString</span><span class="p">());</span>
+            <span class="n">text</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">generateString</span><span class="p">(</span><span class="s">&#39;onlyDifferentFromDefault&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">,</span> <span class="c">...</span>
+                <span class="s">&#39;beforeProp&#39;</span><span class="p">,</span> <span class="n">blanks</span><span class="p">(</span><span class="n">indent</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span> <span class="s">&#39;betweenPropValue&#39;</span><span class="p">,</span> <span class="s">&#39;: &#39;</span><span class="p">,</span> <span class="s">&#39;afterValue&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;betweenProps&#39;</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">));</span>
+            <span class="n">str</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">));</span>
+        <span class="k">end</span>
+<a name="RunParams.serializePropertyValue"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializePropertyValue">[docs]</a><span class="k">        </span>
+<a name="RunParams.serializePropertyValue"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializePropertyValue">[docs]</a><span class="k">        function</span><span class="w"> </span>valstr <span class="p">=</span><span class="w"> </span><span class="nf">serializePropertyValue</span><span class="p">(</span>p, prop, value<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates a string representation like name_value</span>
-            <span class="c">% Strips c_ from beginnning of name</span>
-<a name="RunParams.serializeProperty"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializeProperty">[docs]</a>            <span class="c">%</span>
-            <span class="c">% Args:</span>
-            <span class="c">%  name : string</span>
-            <span class="c">%  value : Matlab built in type</span>
+            <span class="c">% Strips &quot;c\_&quot; from beginnning of name</span>
             <span class="c">%</span>
-<a name="RunParams.serializeProperty"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializeProperty">[docs]</a>            <span class="k">switch</span> <span class="n">class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-<a name="RunParams.serializeProperty"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializeProperty">[docs]</a>                <span class="k">case</span> <span class="p">{</span><span class="s">&#39;uint8&#39;</span><span class="p">,</span> <span class="s">&#39;int8&#39;</span><span class="p">,</span> <span class="s">&#39;uint16&#39;</span><span class="p">,</span> <span class="s">&#39;int16&#39;</span><span class="p">,</span> <span class="s">&#39;uint32&#39;</span><span class="p">,</span> <span class="s">&#39;int32&#39;</span><span class="p">,</span> <span class="s">&#39;uint64&#39;</span><span class="p">,</span> <span class="s">&#39;int64&#39;</span><span class="p">}</span>
-<a name="RunParams.serializeProperty"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializeProperty">[docs]</a>                    <span class="n">valstr</span>  <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%i&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+            <span class="c">% Args:</span>
+            <span class="c">%  prop : string</span>
+            <span class="c">%    which property</span>
+            <span class="c">%  value : Matlab built in type</span>
+            
+            <span class="k">switch</span> <span class="n">class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">case</span> <span class="p">{</span><span class="s">&#39;uint8&#39;</span><span class="p">,</span> <span class="s">&#39;int8&#39;</span><span class="p">,</span> <span class="s">&#39;uint16&#39;</span><span class="p">,</span> <span class="s">&#39;int16&#39;</span><span class="p">,</span> <span class="s">&#39;uint32&#39;</span><span class="p">,</span> <span class="s">&#39;int32&#39;</span><span class="p">,</span> <span class="s">&#39;uint64&#39;</span><span class="p">,</span> <span class="s">&#39;int64&#39;</span><span class="p">}</span>
+                    <span class="n">valstr</span>  <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%i&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
                 <span class="k">case</span> <span class="p">{</span><span class="s">&#39;logical&#39;</span><span class="p">}</span>
-                    <span class="k">if</span> <span class="n">thisVal</span>
+                    <span class="k">if</span> <span class="n">value</span>
                         <span class="n">valstr</span> <span class="p">=</span> <span class="s">&#39;true&#39;</span><span class="p">;</span>
                     <span class="k">else</span>
                         <span class="n">valstr</span> <span class="p">=</span> <span class="s">&#39;false&#39;</span><span class="p">;</span>
@@ -448,26 +702,22 @@
                 <span class="k">otherwise</span>
                     <span class="n">error</span><span class="p">([</span><span class="s">&#39;don&#39;&#39;t know this type: &#39;</span> <span class="n">class</span><span class="p">(</span><span class="n">value</span><span class="p">)]);</span>
             <span class="k">end</span>
-            <span class="k">if</span> <span class="n">strncmp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;c_&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-                <span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">(</span><span class="mi">3</span><span class="p">:</span><span class="k">end</span><span class="p">);</span>
-            <span class="k">end</span>
-            <span class="n">str</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s_%s&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">valstr</span><span class="p">);</span>
         <span class="k">end</span>
-<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a>    <span class="k">end</span>
+    <span class="k">end</span>
     
     <span class="k">methods</span>
 <a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateCommandLineOptionsString</span><span class="p">(</span>p<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% str = generateCommandLineOptionsString(p)</span>
+<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a><span class="w">            </span><span class="c">% str = generateCommandLineOptionsString(p)</span>
             <span class="c">% Generates a string of all the command line options to</span>
             <span class="c">% pass directly into run_lfads.py</span>
-<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a>            <span class="c">%</span>
+            <span class="c">%</span>
             <span class="c">% Returns:</span>
             <span class="c">%   str : char</span>
             
             <span class="c">% get all the parameters</span>
-<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a>            <span class="n">f</span> <span class="p">=</span> <span class="n">fields</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
-<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a>            <span class="c">% only keep the command line params</span>
-<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a>            <span class="c">%  these begin with &#39;c_&#39;</span>
+            <span class="n">f</span> <span class="p">=</span> <span class="n">fields</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+            <span class="c">% only keep the command line params</span>
+            <span class="c">%  these begin with &#39;c_&#39;</span>
             <span class="n">keepFields</span> <span class="p">=</span> <span class="n">false</span><span class="p">(</span><span class="nb">numel</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
             <span class="k">for</span> <span class="n">nf</span><span class="p">=</span><span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">numel</span><span class="p">(</span><span class="n">f</span><span class="p">{</span><span class="n">nf</span><span class="p">})</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">f</span><span class="p">{</span><span class="n">nf</span><span class="p">}(</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">),</span> <span class="s">&#39;c_&#39;</span><span class="p">)</span>
@@ -511,7 +761,7 @@
     <span class="k">methods</span><span class="p">(</span><span class="n">Hidden</span><span class="p">)</span>
 <span class="k">        function</span><span class="w"> </span>h <span class="p">=</span><span class="w"> </span><span class="nf">getFirstLineHeader</span><span class="p">(</span>p<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">className</span> <span class="p">=</span> <span class="n">class</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
-            <span class="n">h</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot;&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">generateString</span><span class="p">());</span>
+            <span class="n">h</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s %s&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">generateShortDifferencesString</span><span class="p">());</span>
         <span class="k">end</span>
     <span class="k">end</span>
 

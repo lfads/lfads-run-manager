@@ -141,7 +141,7 @@
 <dl class="class">
 <dt id="+LFADS.DatasetCollection">
 <em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">DatasetCollection</code><span class="sig-paren">(</span><em>path</em><span class="optional">[</span>, <em>name=leaf of path</em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/DatasetCollection.html#DatasetCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.DatasetCollection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
+<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.Copyable</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
 <p>A collection of multiple Datasets to be processed by LFADS as a cohesive group, either using stitching to
 incorporate multiple datasets simultaneously, or individually to multiple independent LFADS fits.</p>
 <div class="note admonition" id="+LFADS.DatasetCollection.DatasetCollection_member_group_0_+LFADS::DatasetCollection.DatasetCollection_member_group_0">
@@ -250,13 +250,19 @@ datasets from disk directly as <cite>.mat</cite> files</li>
 
 <dl class="method">
 <dt id="+LFADS.DatasetCollection.matchDatasetsByName">
-[<em>datasets</em>] = <code class="descname">matchDatasetsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/DatasetCollection.html#DatasetCollection.matchDatasetsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.DatasetCollection.matchDatasetsByName" title="Permalink to this definition">¶</a></dt>
+[<em>datasets, idx</em>] = <code class="descname">matchDatasetsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/DatasetCollection.html#DatasetCollection.matchDatasetsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.DatasetCollection.matchDatasetsByName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the subset of datasets in this collection matching a name in names.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<em>string or cellstr</em>) &#8211; Name or names of datasets to find</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> &#8211; string or cellstr
+Name or names of datasets to find</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">LFADS.Dataset array
+idx : list of indices into datasets array</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">datasets</td>
 </tr>
 </tbody>
 </table>
