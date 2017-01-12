@@ -84,8 +84,9 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Dataset.html">LFADS.Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunSpec.html">LFADS.RunSpec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
@@ -282,16 +283,18 @@
 146
 147
 148
-149</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="DatasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">DatasetCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+149
+150
+151</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="DatasetCollection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection">[docs]</a><span></span><span class="k">classdef</span> <span class="n">DatasetCollection</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
     <span class="c">% A collection of multiple Datasets to be processed by LFADS as a cohesive group, either using stitching to</span>
     <span class="c">% incorporate multiple datasets simultaneously, or individually to multiple independent LFADS fits.</span>
 
     <span class="k">properties</span>
         <span class="c">% Information about this DatasetCollection&#39;s name and location</span>
 
-<a name="DatasetCollection.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.name">[docs]</a>        <span class="n">name</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of the dataset collection, will be used to construct folder paths on disk</span>
-<a name="DatasetCollection.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.comment">[docs]</a>        <span class="n">comment</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Textual comment for convenience</span>
-<a name="DatasetCollection.path"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.path">[docs]</a>        <span class="n">path</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% path to this dataset collection&#39;s root location on disk, if applicable</span>
+<a name="DatasetCollection.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.name">[docs]</a>        <span class="n">name</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Name of the dataset collection, will be used to construct folder paths on disk</span>
+<a name="DatasetCollection.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.comment">[docs]</a>        <span class="n">comment</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% Textual comment for convenience</span>
+<a name="DatasetCollection.path"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.path">[docs]</a>        <span class="n">path</span> <span class="n">char</span> <span class="p">=</span> <span class="s">&#39;&#39;</span> <span class="c">% path to this dataset collection&#39;s root location on disk, if applicable</span>
     <span class="k">end</span>
 
     <span class="k">properties</span><span class="p">(</span><span class="n">SetAccess</span><span class="p">=</span><span class="n">protected</span><span class="p">)</span>
@@ -313,11 +316,13 @@
             <span class="c">% name : string</span>
             <span class="c">%   Dataset collection name. Defaults to the leaf folder in `path`</span>
 
-            <span class="n">ds</span><span class="p">.</span><span class="n">path</span> <span class="p">=</span> <span class="n">path</span><span class="p">;</span>
-            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
-                <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">]</span> <span class="p">=</span> <span class="n">fileparts</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
-            <span class="k">else</span>
-                <span class="n">ds</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
+            <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="n">ds</span><span class="p">.</span><span class="n">path</span> <span class="p">=</span> <span class="n">path</span><span class="p">;</span>
+                <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
+                    <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">]</span> <span class="p">=</span> <span class="n">fileparts</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+                <span class="k">else</span>
+                    <span class="n">ds</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
+                <span class="k">end</span>
             <span class="k">end</span>
         <span class="k">end</span>
 <a name="DatasetCollection.addDataset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_DatasetCollection.html#+LFADS.DatasetCollection.addDataset">[docs]</a>
@@ -337,7 +342,7 @@
                 <span class="n">names</span> <span class="p">=</span> <span class="n">arrayfun</span><span class="p">(@(</span><span class="n">old</span><span class="p">)</span> <span class="n">old</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">,</span> <span class="s">&#39;UniformOutput&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">);</span>
                 <span class="p">[</span><span class="n">tf</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="p">=</span> <span class="n">ismember</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">names</span><span class="p">);</span>
                 <span class="k">if</span> <span class="n">tf</span>
-                    <span class="n">debug</span><span class="p">(</span><span class="s">&#39;Replacing existing dataset with matching name %s\n&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+                    <span class="n">fprintf</span><span class="p">(</span><span class="s">&#39;Replacing existing dataset with matching name %s\n&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
                     <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="p">=</span> <span class="n">ds</span><span class="p">;</span>
                 <span class="k">else</span>
                     <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="k">end</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">:)</span> <span class="p">=</span> <span class="n">ds</span><span class="p">;</span>
@@ -420,12 +425,12 @@
 <span class="w">          </span><span class="k">if</span> <span class="o">~</span><span class="nb">isscalar</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span>
              <span class="n">header</span> <span class="p">=</span> <span class="n">getHeader</span><span class="p">@</span><span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span><span class="p">(</span><span class="n">dc</span><span class="p">);</span>
           <span class="k">else</span>
-             <span class="n">className</span> <span class="p">=</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span><span class="p">.</span><span class="n">getClassNameForHeader</span><span class="p">(</span><span class="n">dc</span><span class="p">);</span>
-             <span class="n">newHeader</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s %s&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+             <span class="n">className</span> <span class="p">=</span> <span class="n">class</span><span class="p">(</span><span class="n">dc</span><span class="p">);</span>
+             <span class="n">newHeader</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot;&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
              <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s\n  %d datasets in %s\n&#39;</span><span class="p">,</span><span class="n">newHeader</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">path</span><span class="p">);</span>
 
              <span class="k">for</span> <span class="n">s</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span>
-                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  %2d  %s\n&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">name</span><span class="p">));</span>
+                 <span class="n">header</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  [%2d] %s\n&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="n">getFirstLineHeader</span><span class="p">()));</span>
              <span class="k">end</span>
           <span class="k">end</span>
        <span class="k">end</span>

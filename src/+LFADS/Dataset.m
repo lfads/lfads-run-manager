@@ -1,4 +1,4 @@
-classdef Dataset < handle & matlab.mixin.CustomDisplay
+classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     % A single-day collection of raw data to be processed by LFADS
 
     methods(Abstract)
@@ -113,15 +113,20 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay
             end
         end
     end
+    
+    methods(Hidden)
+        function h = getFirstLineHeader(ds)
+            className = class(ds);
+            h = sprintf('%s "%s"', className, ds.name);
+        end
+    end
 
     methods (Access = protected)
        function header = getHeader(ds)
           if ~isscalar(ds)
              header = getHeader@matlab.mixin.CustomDisplay(ds);
           else
-             className = matlab.mixin.CustomDisplay.getClassNameForHeader(ds);
-             newHeader = sprintf('%s %s', className, ds.name);
-             header = sprintf('%s\n',newHeader);
+             header = sprintf('%s\n', ds.getFirstLineHeader());
           end
        end
     end

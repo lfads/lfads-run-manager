@@ -50,7 +50,7 @@ if ~iscell(testInds)
     testInds = {testInds};
 end
 
-if ~exist('whichChannels','var'), 
+if ~exist('whichChannels','var')
     for nset = 1:numel(seqs)
         nNeuronsTmp = unique(arrayfun(@(x) size(x.y,1), seqs{nset}));
         assert(numel(nNeuronsTmp)==1, 'trials do not have consistent #s of neurons');
@@ -98,7 +98,10 @@ for nn = 1:numel(dirsToCreate)
     end
 end
 
+prog = LFADS.Utils.ProgressBar(numel(seqs), 'Writing LFADS Input files');
 for ndset = 1:numel(seqs)
+    prog.update(ndset);
+    
     seq = seqs{ndset};
     trainInds = allTrainInds{ndset};
     testInds = allTestInds{ndset};
@@ -126,9 +129,9 @@ for ndset = 1:numel(seqs)
     nNeurons = numel(whichChannelsThisSet);
 
     % how many output time bins should there be
-    nTimeBins = floor(nTimeMS / binSizeMS);
+    nTimeBins = floor( double( nTimeMS ) / double( binSizeMS ) );
     % how many input timebins should we keep
-    inputTimeBinsToKeep = nTimeBins * binSizeMS / inputBinSizeMS;
+    inputTimeBinsToKeep = nTimeBins * double( binSizeMS ) / double( inputBinSizeMS );
 
     nTrainTrials = numel(trainInds);
     nTestTrials = numel(testInds);
@@ -227,9 +230,9 @@ for ndset = 1:numel(seqs)
     varout{end+1} = testInds;
 
     %% export the spikes
-    fprintf('Saving LFADS Input in %s\n', outfile);
     lfadsi_export_spikes(outfile, ytrain, ytest, varout{:})
 end
+prog.finish();
 
 
 % tmp = comparisonDefaults();

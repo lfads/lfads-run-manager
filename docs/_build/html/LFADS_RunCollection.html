@@ -85,8 +85,9 @@
             
             
                 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunSpec.html">LFADS.RunSpec</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_Run.html">LFADS.Run</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
@@ -139,30 +140,43 @@
 <span id="id1"></span><span id="lfads-runcollection"></span><h1>LFADS.RunCollection<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="+LFADS.RunCollection">
-<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">RunCollection</code><span class="sig-paren">(</span><em>rootPath</em>, <em>name</em>, <em>datasetCollection</em>, <em>runParams</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">RunCollection</code><span class="sig-paren">(</span><em>rootPath</em>, <em>name</em>, <em>datasetCollection</em><span class="optional">[</span>, <em>runParams</em>, <em>runSpecs</em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.Copyable</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
-<p>A set of <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances sharing common parameter settings but utilizing
+<p>A set of <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances utilizing
 different subsets of <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> insstances in a <a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a>.
-A RunCollection is a logical grouping of otherwise independent LFADS runs, which are constrained
-to share a common Dataset collection and run parameters.</p>
+A RunCollection is a logical grouping of LFADS runs, where multiple
+runs specifications are each run with multiple parameter
+settings. The run specifications are provided as arrays of RunSpec instances which
+indicate the name and which datasets are included for each run specification. The
+parameter sweeps are specified using arrays of RunParams instances.
+From these, a <cite>nRunSpecs</cite> x <cite>nParams</cite> matrix of <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a>
+instances will be generated. These in turn can be used to train
+individual LFADS models on a particular set of datasets (or single
+dataset) and particular parameter settings.</p>
 <div class="note admonition" id="+LFADS.RunCollection.RunCollection_member_group_0_+LFADS::RunCollection.RunCollection_member_group_0">
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
 </div><dl class="attribute">
+<dt id="+LFADS.RunCollection.rootPath">
+<code class="descname">rootPath</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.rootPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.rootPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root path on disk under which individual Runs will be stored</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.RunCollection.name">
-<code class="descname">name</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.name" title="Permalink to this definition">¶</a></dt>
+<code class="descname">name</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of this RunCollection, determines its relative path on disk</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="+LFADS.RunCollection.comment">
-<code class="descname">comment</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.comment" title="Permalink to this definition">¶</a></dt>
+<code class="descname">comment</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.comment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Textual comment for convenience</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="+LFADS.RunCollection.rootPath">
-<code class="descname">rootPath</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.rootPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.rootPath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Root path on disk under which individual Runs will be stored</p>
+<dt id="+LFADS.RunCollection.version">
+<code class="descname">version</code><em class="property"> (uint32) = 3</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>version used for backwards compatibility</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -171,35 +185,50 @@ to share a common Dataset collection and run parameters.</p>
 <dd><p>DatasetCollection instance</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="+LFADS.RunCollection.params">
-<code class="descname">params</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.params" title="Permalink to this definition">¶</a></dt>
-<dd><p>RunParams instance</p>
-</dd></dl>
-
 <div class="note admonition" id="+LFADS.RunCollection.RunCollection_member_group_1_+LFADS::RunCollection.RunCollection_member_group_1">
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Read-only Properties</p>
 </div><dl class="attribute">
 <dt id="+LFADS.RunCollection.runs">
 <em class="property">Read-only</em><code class="descname">runs</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.runs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.runs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><cite>nRunSpecs</cite> x <cite>nParams</cite> matrix of <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.params">
+<em class="property">Read-only</em><code class="descname">params</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of RunParams instances</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.runSpecs">
+<em class="property">Read-only</em><code class="descname">runSpecs</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.runSpecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.runSpecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of <a class="reference internal" href="LFADS_RunSpec.html#lfads-runspec"><em>LFADS.RunSpec</em></a> instances used to specify the runs for each param setting</p>
+</dd></dl>
 
 <div class="note admonition" id="+LFADS.RunCollection.RunCollection_member_group_2_+LFADS::RunCollection.RunCollection_member_group_2">
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Dependent Properties</p>
 </div><dl class="attribute">
-<dt id="+LFADS.RunCollection.nRuns">
-<em class="property">Dependent</em><code class="descname">nRuns</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nRuns" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="+LFADS.RunCollection.nParams">
+<em class="property">Dependent</em><code class="descname">nParams</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of parameter settings in <cite>params</cite></p>
+</dd></dl>
 
 <dl class="attribute">
-<dt id="+LFADS.RunCollection.nDatasets">
-<em class="property">Dependent</em><code class="descname">nDatasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nDatasets" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="+LFADS.RunCollection.nRunSpecs">
+<em class="property">Dependent</em><code class="descname">nRunSpecs</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nRunSpecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nRunSpecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of run specifications</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.nRunsTotal">
+<em class="property">Dependent</em><code class="descname">nRunsTotal</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nRunsTotal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nRunsTotal" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of runs total (equal to <cite>nParams</cite> * <cite>nRunsEachParam</cite></p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="+LFADS.RunCollection.path">
 <em class="property">Dependent</em><code class="descname">path</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.path" title="Permalink to this definition">¶</a></dt>
-<dd><p>unique folder within rootPath including name_paramSuffix</p>
+<dd><p>unique folder given by rootPath/name</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -208,20 +237,34 @@ to share a common Dataset collection and run parameters.</p>
 <dd><p>path the location where a shell script to launch TensorBoard for all runs will be written</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.nDatasets">
+<em class="property">Dependent</em><code class="descname">nDatasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.nDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.nDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of datasets within the datasetCollection</p>
+</dd></dl>
+
 <div class="tip admonition" id="+LFADS.RunCollection.RunCollection_member_group_3_+LFADS::RunCollection.RunCollection_member_group_3">
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
 <dt id="+LFADS.RunCollection.RunCollection">
-[<em>rc</em>] = <code class="descname">RunCollection</code><span class="sig-paren">(</span><em>rootPath</em>, <em>name</em>, <em>datasetCollection</em>, <em>runParams</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.RunCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.RunCollection" title="Permalink to this definition">¶</a></dt>
+[<em>rc</em>] = <code class="descname">RunCollection</code><span class="sig-paren">(</span><em>rootPath</em>, <em>name</em>, <em>datasetCollection</em><span class="optional">[</span>, <em>runParams</em>, <em>runSpecs</em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.RunCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.RunCollection" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>rootPath</strong> (<em>string</em>) &#8211; location on disk under which run collections will be saved</li>
-<li><strong>name</strong> (<em>string</em>) &#8211; unique identifier for this RunCollection, also used as subfolder within <cite>rootPath</cite></li>
-<li><strong>datasetCollection</strong> (<a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a>) &#8211; DatasetCollection to be used by runs within this RunCollection</li>
-<li><strong>runParams</strong> (<a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a>) &#8211; Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path</li>
+<li><strong>rootPath</strong> &#8211; string
+location on disk under which run collections will be saved</li>
+<li><strong>name</strong> &#8211; string
+unique identifier for this RunCollection, also used as subfolder within <cite>rootPath</cite></li>
+<li><strong>datasetCollection</strong> &#8211; <a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a>
+DatasetCollection to be used by runs within this RunCollection</li>
+<li><strong>runParams</strong> &#8211; array of <a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a> instances
+Parameter settings which will be used uniformly by all runs, will also be serialized in the folder path</li>
+<li><strong>runSpecs</strong> &#8211; array of <a class="reference internal" href="LFADS_RunSpec.html#lfads-runspec"><em>LFADS.RunSpec</em></a> instances
+RunSpec instances describing the names and lists of
+datasets for each run that will be run with each set of
+params</li>
 </ul>
 </td>
 </tr>
@@ -230,9 +273,27 @@ to share a common Dataset collection and run parameters.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="+LFADS.RunCollection.clearRuns">
-<code class="descname">clearRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.clearRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.clearRuns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flush list of runs</p>
+<dt id="+LFADS.RunCollection.addRunSpec">
+<code class="descname">addRunSpec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.addRunSpec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.addRunSpec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds new RunSpec instance(s) to this RunCollection.
+Automatically appends new runs to <cite>.runs</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>runSpec</strong> &#8211; LFADS.RunSpec
+new RunSpec instances describing the names and datasets
+included. Each of these new RunSpecs will
+be run on each of the parameter settings in <cite>.params</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.clearRunSpecs">
+<code class="descname">clearRunSpecs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.clearRunSpecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.clearRunSpecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush list of run specs</p>
 </dd></dl>
 
 <dl class="method">
@@ -243,7 +304,204 @@ to share a common Dataset collection and run parameters.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<em>logical or indices</em>) &#8211; selection mask applied to <cite>.runs</cite></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> &#8211; logical or indices
+selection mask applied to <cite>.runs</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.addParams">
+<code class="descname">addParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.addParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.addParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds new LFADS.RunParams instance(s) to this RunCollection.
+Automatically appends new runs to <cite>.runs</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> &#8211; <a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a>
+array of parameter settings to run each RunSpec on</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.clearParams">
+<code class="descname">clearParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.clearParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.clearParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush list of run params</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.filterParams">
+<code class="descname">filterParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.filterParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.filterParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply selection mask to .params</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> &#8211; logical or indices
+selection mask applied to <cite>.runs</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.clearAll">
+<code class="descname">clearAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.clearAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.clearAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.generateRuns">
+<code class="descname">generateRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.generateRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.generateRuns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="tip admonition" id="+LFADS.RunCollection.RunCollection_member_group_4_+LFADS::RunCollection.RunCollection_member_group_4">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.RunCollection.ismemberRunSpecs">
+[<em>tf, idx</em>] = <code class="descname">ismemberRunSpecs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.ismemberRunSpecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.ismemberRunSpecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if any run specs that match runSpecSearch are found in .runSpecs.
+If runSpecSearch is string or cellstr, matches by
+name. If runSpecSearch is an array of RunSpec instances,
+finds them using isequal. If runSpecSearch is a vector of
+indices, selects from runSpecs directly</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>runSpecSearch</strong> &#8211; array of LFADS.RunSpec, strings, or indices into .runSpecs</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>logical</dt>
+<dd>does each runSpec exist within .runSpecs</dd>
+<dt>idx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">indices</span><dd>which index in .runSpecs</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tf</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.findRunSpecs">
+[<em>runSpecs, idx</em>] = <code class="descname">findRunSpecs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.findRunSpecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.findRunSpecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find run specs that match runSpecSearch. Throws an error if any run is not
+found. If runSpecSearch is string or cellstr, matches by
+name. If runSpecSearch is an array of RunSpec instances,
+finds them using isequal. If runSpecSearch is a vector of
+indices, selects from runSpecs directly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>runSpecSearch</strong> &#8211; array of LFADS.RunSpec, strings, or indices into .runSpecs</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>LFADS.Run</dt>
+<dd>matching runs</dd>
+<dt>idx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">vector of indices</span><dd>vector of indices into <cite>.runSpecs</cite> of matching run
+instances</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">runs</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.ismemberParams">
+[<em>tf, idx</em>] = <code class="descname">ismemberParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.ismemberParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.ismemberParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if any run params that match paramSearch are found in .params.
+If paramSearch is an array of RunParams instances,
+finds them using isequal. If paramSearch is a vector of
+indices, selects from runParams directly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramSearch</strong> &#8211; array of LFADS.RunParams or indices into .params</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>LFADS.RunParams</dt>
+<dd>matching params</dd>
+<dt>idx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">vector of indices</span><dd>selection into <cite>.params</cite> of matches</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">params</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.findParams">
+[<em>params, idx</em>] = <code class="descname">findParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.findParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.findParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find run params that match paramSearch. Throws an error if any RunParams is not
+found. If paramSearch is an array of RunParams instances,
+finds them using isequal. If paramSearch is a vector of
+indices, selects from runParams directly</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramSearch</strong> &#8211; array of LFADS.RunParams or indices into .params</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>LFADS.RunParams</dt>
+<dd>matching params</dd>
+<dt>idx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">vector of indices</span><dd>selection into <cite>.params</cite> of matches</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">params</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.findRuns">
+[<em>runs, rowIdx, colIdx</em>] = <code class="descname">findRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.findRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.findRuns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a subset of the .runs matrix for a certain subset of RunSpecs and RunParams.
+Throws an error if any run is not found.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>runSpecSearch</strong> &#8211; array of LFADS.RunSpec, strings, or indices into .runSpecs</li>
+<li><strong>paramSearch</strong> &#8211; array of LFADS.RunParams, or indices into .params</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>LFADS.Run matrix</dt>
+<dd><p class="first last">matching runs as matrix</p>
+</dd>
+<dt>rowIdx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">vector of indices</span><dd><p class="first last">vector of indices matching into <cite>.runSpecs</cite></p>
+</dd>
+<dt>colIdx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">vector of indices</span><dd><p class="first last">vector of indices matching into .params</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">runs</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -257,9 +515,13 @@ to share a common Dataset collection and run parameters.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>cmd</strong> &#8211; Command which can luanch TensorBoard from command line</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>string</dt>
+<dd>Command which can luanch TensorBoard from command line</dd>
+</dl>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">cmd</td>
 </tr>
 </tbody>
 </table>
@@ -274,23 +536,13 @@ and saves it to a file inside the RunCollection&#8217;s path</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>file</strong> &#8211; Path to the shell script, will match <cite>.fileShellScriptTensorboard</cite></td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>string</dt>
+<dd>Path to the shell script, will match <cite>.fileShellScriptTensorboard</cite></dd>
+</dl>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="+LFADS.RunCollection.addRun">
-<code class="descname">addRun</code><span class="sig-paren">(</span><em>run</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.addRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.addRun" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> to the collection. Note that <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances are generally added to their Run Collection upon construction, so calling this method is likely unnecessary for the end user.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>run</strong> (<a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a>) &#8211; Run to add to the collection.</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">file</td>
 </tr>
 </tbody>
 </table>
@@ -306,24 +558,6 @@ and saves it to a file inside the RunCollection&#8217;s path</p>
 <dt id="+LFADS.RunCollection.loadPosteriorMeans">
 <code class="descname">loadPosteriorMeans</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.loadPosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.loadPosteriorMeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call <cite>loadPosteriorMeans</cite> on each run in this collection</p>
-</dd></dl>
-
-<div class="tip admonition" id="+LFADS.RunCollection.RunCollection_member_group_4_+LFADS::RunCollection.RunCollection_member_group_4">
-<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
-</div><dl class="method">
-<dt id="+LFADS.RunCollection.copyClearRuns">
-[<em>rc2</em>] = <code class="descname">copyClearRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.copyClearRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.copyClearRuns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a copy of this run collection, but without the runs inside</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>rc</strong> &#8211; Copy of RunCollection sans runs</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#lfads-runcollection"><em>LFADS.RunCollection</em></a></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </dd></dl>
