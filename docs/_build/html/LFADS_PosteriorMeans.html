@@ -139,7 +139,7 @@
 <span id="id1"></span><span id="lfads-posteriormeans"></span><h1>LFADS.PosteriorMeans<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="+LFADS.PosteriorMeans">
-<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">PosteriorMeans</code><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">PosteriorMeans</code><span class="sig-paren">(</span><em>pms</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around loaded posterior mean sampling data performed on a
 trained LFADS model</p>
 <div class="note admonition" id="+LFADS.PosteriorMeans.PosteriorMeans_member_group_0_+LFADS::PosteriorMeans.PosteriorMeans_member_group_0">
@@ -238,7 +238,7 @@ trained LFADS model</p>
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
 <dt id="+LFADS.PosteriorMeans.PosteriorMeans">
-[<em>pm</em>] = <code class="descname">PosteriorMeans</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans.PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
+[<em>pm</em>] = <code class="descname">PosteriorMeans</code><span class="sig-paren">(</span><em>pms</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans.PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct instance by copying struct fields</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -246,8 +246,40 @@ trained LFADS model</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>pms</strong> (<em>struct</em>) &#8211; Posterior mean struct loaded from disk</li>
-<li><strong>(ref</strong> (<em>params</em>) &#8211; <cite>LFADS_RunParams</cite>) : Run parameters</li>
+<li><strong>params</strong> (<em>LFADS.RunParams</em>) &#8211; Run parameters</li>
 </ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="tip admonition" id="+LFADS.PosteriorMeans.PosteriorMeans_member_group_4_+LFADS::PosteriorMeans.PosteriorMeans_member_group_4">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.PosteriorMeans.getConditionAveragedFieldValues">
+[<em>avg</em>] = <code class="descname">getConditionAveragedFieldValues</code><span class="sig-paren">(</span><em>field</em>, <em>conditionIds</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans.getConditionAveragedFieldValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans.getConditionAveragedFieldValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using the conditionId values, average over trials (the last dim) within each
+condition for a particular field in this class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>field</strong> (<em>string</em>) &#8211; name of field in LFADS.PosteriorMeans class</li>
+<li><strong>conditionIds</strong> (<em>vector</em>) &#8211; condition labels with size nTrials x 1. The results of
+unique(conditionIds) will determine the ordering of the
+conditions within avg</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>avg</strong> &#8211;   Averaged values, will have same size as the corresponding
+field in PosteriorMeans, except the last dim&#8217;s size will
+be nConditions == numel(unique(conditionIds)) rather than
+nTrials.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numeric</p>
 </td>
 </tr>
 </tbody>

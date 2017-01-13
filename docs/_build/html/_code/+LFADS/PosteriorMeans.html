@@ -135,84 +135,125 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for +LFADS.PosteriorMeans</h1><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans">[docs]</a><span></span><span class="k">classdef</span> <span class="n">PosteriorMeans</span>
+  <h1>Source code for +LFADS.PosteriorMeans</h1><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans">[docs]</a><span></span><span class="k">classdef</span> <span class="n">PosteriorMeans</span>
     <span class="c">% Wrapper around loaded posterior mean sampling data performed on a</span>
     <span class="c">% trained LFADS model</span>
     
@@ -289,6 +330,47 @@
 <span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="nb">size</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
         <span class="k">end</span>
     <span class="k">end</span>
+    
+    
+    <span class="k">methods</span>
+<a name="PosteriorMeans.getConditionAveragedFieldValues"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.getConditionAveragedFieldValues">[docs]</a><span class="k">        function</span><span class="w"> </span>avg <span class="p">=</span><span class="w"> </span><span class="nf">getConditionAveragedFieldValues</span><span class="p">(</span>pm, field, conditionIds<span class="p">)</span><span class="w"></span>
+<a name="PosteriorMeans.getConditionAveragedFieldValues"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.getConditionAveragedFieldValues">[docs]</a><span class="w">            </span><span class="c">% Using the conditionId values, average over trials (the last dim) within each</span>
+            <span class="c">% condition for a particular field in this class.</span>
+<a name="PosteriorMeans.getConditionAveragedFieldValues"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.getConditionAveragedFieldValues">[docs]</a>            <span class="c">%</span>
+            <span class="c">% Args:</span>
+            <span class="c">%   field : string</span>
+            <span class="c">%      name of field in LFADS.PosteriorMeans class</span>
+            <span class="c">%   conditionIds : vector</span>
+            <span class="c">%      condition labels with size nTrials x 1. The results of</span>
+            <span class="c">%      unique(conditionIds) will determine the ordering of the</span>
+            <span class="c">%      conditions within avg</span>
+            <span class="c">%</span>
+            <span class="c">% Returns:</span>
+            <span class="c">%   avg : numeric</span>
+            <span class="c">%     Averaged values, will have same size as the corresponding</span>
+            <span class="c">%     field in PosteriorMeans, except the last dim&#39;s size will</span>
+            <span class="c">%     be nConditions == numel(unique(conditionIds)) rather than</span>
+            <span class="c">%     nTrials.</span>
+            
+            <span class="n">data</span> <span class="p">=</span> <span class="n">pm</span><span class="p">.(</span><span class="n">field</span><span class="p">);</span>
+            <span class="n">dim</span> <span class="p">=</span> <span class="nb">ndims</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+            
+            <span class="p">[</span><span class="n">uc</span><span class="p">,</span> <span class="o">~</span><span class="p">,</span> <span class="n">whichC</span><span class="p">]</span> <span class="p">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">conditionIds</span><span class="p">);</span>
+            <span class="n">nC</span> <span class="p">=</span> <span class="nb">numel</span><span class="p">(</span><span class="n">uc</span><span class="p">);</span>
+            <span class="n">sz</span> <span class="p">=</span> <span class="nb">size</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+            <span class="n">sz</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="p">=</span> <span class="n">nC</span><span class="p">;</span>
+            
+            <span class="n">avg</span> <span class="p">=</span> <span class="nb">nan</span><span class="p">(</span><span class="n">sz</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+            
+            <span class="k">for</span> <span class="n">iC</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">nC</span>
+                <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span>
+                    <span class="n">avg</span><span class="p">(:,</span> <span class="n">iC</span><span class="p">)</span> <span class="p">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">(:,</span> <span class="n">whichC</span> <span class="o">==</span> <span class="n">iC</span><span class="p">),</span> <span class="n">dim</span><span class="p">);</span>
+                <span class="k">elseif</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">3</span>
+                    <span class="n">avg</span><span class="p">(:,</span> <span class="p">:,</span> <span class="n">iC</span><span class="p">)</span> <span class="p">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">(:,</span> <span class="p">:,</span> <span class="n">whichC</span> <span class="o">==</span> <span class="n">iC</span><span class="p">),</span> <span class="n">dim</span><span class="p">);</span>
+                <span class="k">end</span>
+            <span class="k">end</span>                      
+        <span class="k">end</span>
+    <span class="k">end</span>    
 <span class="k">end</span>
 </pre></div>
 </td></tr></table>

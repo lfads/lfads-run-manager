@@ -455,7 +455,8 @@
 318
 319
 320
-321</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunParams</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
+321
+322</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunParams"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunParams</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
     <span class="c">% Collection of parameters which are common to all :ref:`LFADS_Run` instances in a :ref:`LFADS_RunCollection`. You</span>
     <span class="c">% must create a subclass of RunParams in which you specify the serialized representation of the parameters that</span>
     <span class="c">% will be used in paths on disk.</span>
@@ -512,6 +513,7 @@
             <span class="c">%   props : cellstr</span>
             <span class="c">%     list of properties</span>
             <span class="c">%   propMeta : meta.property array</span>
+            <span class="c">%      meta.property list from metaclass</span>
             
             <span class="n">parser</span> <span class="p">=</span> <span class="n">inputParser</span><span class="p">();</span>
             <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;ignoreProperties&#39;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">@</span><span class="n">iscellstr</span><span class="p">);</span>
@@ -544,7 +546,7 @@
             <span class="n">propMeta</span> <span class="p">=</span> <span class="n">meta</span><span class="p">.</span><span class="n">PropertyList</span><span class="p">(</span><span class="n">mask</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="RunParams.generateHash"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHash">[docs]</a>
-<a name="RunParams.generateHash"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHash">[docs]</a><span class="k">        function</span><span class="w"> </span>hash <span class="p">=</span><span class="w"> </span><span class="nf">generateHash</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>hash <span class="p">=</span><span class="w"> </span><span class="nf">generateHash</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generate a short hash of this RunParams non-transient</span>
             <span class="c">% properties that can be used in a directory name.</span>
             <span class="c">%</span>
@@ -573,14 +575,14 @@
             <span class="n">hash</span> <span class="p">=</span> <span class="n">lower</span><span class="p">(</span><span class="n">hash</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">parser</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="nb">length</span><span class="p">));</span>
         <span class="k">end</span>
 <a name="RunParams.generateHashName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHashName">[docs]</a><span class="k">        </span>
-<a name="RunParams.generateHashName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHashName">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateHashName</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateHashName</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generate a short hash name like &#39;param_HASH&#39; where HASH is</span>
             <span class="c">% generated by generateHash()</span>
             
             <span class="n">str</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;param_%s&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">generateHash</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:}));</span>
         <span class="k">end</span>
 <a name="RunParams.generateString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateString">[docs]</a><span class="k">            </span>
-<a name="RunParams.generateString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateString">[docs]</a><span class="k">        </span>
+<span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateString</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates a string representation of all parameters, with custom</span>
             <span class="c">% strings inserted between property names and values. </span>
@@ -655,13 +657,13 @@
             <span class="k">end</span>
         <span class="k">end</span>
 <a name="RunParams.generateShortDifferencesString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateShortDifferencesString">[docs]</a><span class="k">        </span>
-<a name="RunParams.generateShortDifferencesString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateShortDifferencesString">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateShortDifferencesString</span><span class="p">(</span>p<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateShortDifferencesString</span><span class="p">(</span>p<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">str</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">generateString</span><span class="p">(</span><span class="s">&#39;onlyDifferentFromDefault&#39;</span><span class="p">,</span> <span class="n">true</span><span class="p">,</span> <span class="c">...</span>
                 <span class="s">&#39;defaultsFromClassDefinition&#39;</span><span class="p">,</span> <span class="n">false</span><span class="p">,</span> <span class="c">...</span>
                 <span class="s">&#39;beforeProp&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;betweenPropValue&#39;</span><span class="p">,</span> <span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="s">&#39;afterValue&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;betweenProps&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">);</span>
         <span class="k">end</span>
 <a name="RunParams.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateSummaryText">[docs]</a><span class="k">        </span>
-<a name="RunParams.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateSummaryText">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateSummaryText</span><span class="p">(</span>p, indent, paramIndex<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateSummaryText</span><span class="p">(</span>p, indent, paramIndex<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
                 <span class="n">indent</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
             <span class="k">end</span>
@@ -677,7 +679,7 @@
             <span class="n">str</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">));</span>
         <span class="k">end</span>
 <a name="RunParams.serializePropertyValue"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializePropertyValue">[docs]</a><span class="k">        </span>
-<a name="RunParams.serializePropertyValue"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializePropertyValue">[docs]</a><span class="k">        function</span><span class="w"> </span>valstr <span class="p">=</span><span class="w"> </span><span class="nf">serializePropertyValue</span><span class="p">(</span>p, prop, value<span class="p">)</span><span class="w"></span>
+<span class="k">        function</span><span class="w"> </span>valstr <span class="p">=</span><span class="w"> </span><span class="nf">serializePropertyValue</span><span class="p">(</span>p, prop, value<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates a string representation like name_value</span>
             <span class="c">% Strips &quot;c\_&quot; from beginnning of name</span>
             <span class="c">%</span>
@@ -707,7 +709,7 @@
     
     <span class="k">methods</span>
 <a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateCommandLineOptionsString</span><span class="p">(</span>p<span class="p">)</span><span class="w"></span>
-<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a><span class="w">            </span><span class="c">% str = generateCommandLineOptionsString(p)</span>
+<span class="w">            </span><span class="c">% str = generateCommandLineOptionsString(p)</span>
             <span class="c">% Generates a string of all the command line options to</span>
             <span class="c">% pass directly into run_lfads.py</span>
             <span class="c">%</span>

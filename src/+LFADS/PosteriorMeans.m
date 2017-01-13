@@ -25,11 +25,12 @@ classdef PosteriorMeans
     
     methods
         function pm = PosteriorMeans(pms, params)
+            % pm = PosteriorMeans(pms, params)
             % Construct instance by copying struct fields 
             %
             % Args:
-            %   pms (struct) : Posterior mean struct loaded from disk
-            %   params (ref:`LFADS_RunParams`) : Run parameters 
+            %   pms (struct): Posterior mean struct loaded from disk
+            %   params (LFADS.RunParams): Run parameters 
             
             if nargin > 0
                 pm.controller_outputs = pms.controller_outputs;
@@ -75,4 +76,44 @@ classdef PosteriorMeans
             n = size(pm.controller_outputs, 3);
         end
     end
+    
+    
+    methods
+        function avg = getConditionAveragedFieldValues(pm, field, conditionIds)
+            % avg = getConditionAveragedFieldValues(field, conditionIds)
+            % Using the conditionId values, average over trials (the last dim) within each
+            % condition for a particular field in this class.
+            %
+            % Args:
+            %   field (string): name of field in LFADS.PosteriorMeans class
+            %   conditionIds (vector) : condition labels with size nTrials x 1. The results of
+            %      unique(conditionIds) will determine the ordering of the
+            %      conditions within avg
+            %
+            % Returns:
+            %   avg (numeric):
+            %     Averaged values, will have same size as the corresponding
+            %     field in PosteriorMeans, except the last dim's size will
+            %     be nConditions == numel(unique(conditionIds)) rather than
+            %     nTrials.
+            
+            data = pm.(field);
+            dim = ndims(data);
+            
+            [uc, ~, whichC] = unique(conditionIds);
+            nC = numel(uc);
+            sz = size(data);
+            sz(dim) = nC;
+            
+            avg = nan(sz, 'like', data);
+            
+            for iC = 1:nC
+                if dim == 2
+                    avg(:, iC) = mean(data(:, whichC == iC), dim);
+                elseif dim == 3
+                    avg(:, :, iC) = mean(data(:, :, whichC == iC), dim);
+                end
+            end                      
+        end
+    end    
 end
