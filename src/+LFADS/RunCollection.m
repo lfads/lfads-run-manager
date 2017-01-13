@@ -463,7 +463,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             fid = fopen(f, 'w');
             fprintf(fid, rc.generateSummaryText());
             fclose(fid);
-            chmod('uga+rx', f);
+            LFADS.Utils.chmod('uga+rx', f);
         end
         
         function loadSequenceData(rc, reload)
