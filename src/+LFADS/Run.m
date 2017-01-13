@@ -575,7 +575,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 return;
             end
             
+            seq = r.loadSequenceData();
+            
             info = load(fullfile(r.path, 'lfadsInputInfo.mat'));
+            
+            if ~isequal(info.params, r.params)
+                warning('Params saved for run in lfadsInputInfo.mat do not match. See params inside %s.', fullfile(r.path, 'lfadsInputInfo.mat'));
+            end
+                
             [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
             for iDS = 1:r.nDatasets
@@ -594,7 +601,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});
-                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params); %#ok<AGROW>
+                time = seq{iDS}(1).y_time;
+                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params, time); %#ok<AGROW>
             end
             prog.finish();
             

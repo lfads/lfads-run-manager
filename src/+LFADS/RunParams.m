@@ -305,7 +305,7 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     methods(Hidden)
         function h = getFirstLineHeader(p)
             className = class(p);
-            h = sprintf('%s %s', className, p.generateShortDifferencesString());
+            h = sprintf('%s %s %s', className, p.generateHash, p.generateShortDifferencesString());
         end
     end
 

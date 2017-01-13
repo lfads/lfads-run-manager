@@ -3,14 +3,15 @@ classdef PosteriorMeans
     % trained LFADS model
     
     properties
+        time % nTime x 1 vector of times in ms for each of the timeseries below
         controller_outputs % `nControllerOutputs x T x nTrials` controller outputs to generator inputs
-               factors % `nFactors x T x nTrials` factor trajectories
-         generator_ics % nGeneratorUnits x nTrials` generator initial conditions
-      generator_states % nGeneratorUnits x T x nTrials 
-                 rates % nNeurons x T x nTrials
-             validInds % list of validation trial indices
-             trainInds % list of training trial indices
-                params % :ref:`LFADS_RunParams` instance
+        factors % `nFactors x T x nTrials` factor trajectories
+        generator_ics % nGeneratorUnits x nTrials` generator initial conditions
+        generator_states % nGeneratorUnits x T x nTrials 
+         rates % nNeurons x T x nTrials
+        validInds % list of validation trial indices
+        trainInds % list of training trial indices
+        params % :ref:`LFADS_RunParams` instance
     end
     
     properties
@@ -24,13 +25,14 @@ classdef PosteriorMeans
     end
     
     methods
-        function pm = PosteriorMeans(pms, params)
-            % pm = PosteriorMeans(pms, params)
+        function pm = PosteriorMeans(pms, params, time)
+            % pm = PosteriorMeans(pms, params, seq)
             % Construct instance by copying struct fields 
             %
             % Args:
             %   pms (struct): Posterior mean struct loaded from disk
             %   params (LFADS.RunParams): Run parameters 
+            %   time (vector): time vector for all timeseries
             
             if nargin > 0
                 pm.controller_outputs = pms.controller_outputs;
@@ -40,6 +42,7 @@ classdef PosteriorMeans
                 pm.rates = pms.rates;
                 pm.validInds = pms.validInds;
                 pm.trainInds = pms.trainInds;
+                pm.time = time;
             end
             if nargin > 1
                 pm.params = params;
