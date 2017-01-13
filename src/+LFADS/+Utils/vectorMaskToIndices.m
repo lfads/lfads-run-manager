@@ -1,7 +1,7 @@
 function idx = vectorMaskToIndices(mask)
     if islogical(mask)
-        idx = makecol(find(mask));
+        idx = LFADS.Utils.makecol(find(mask));
     else
-        idx = makecol(mask);
+        idx = LFADS.Utils.makecol(mask);
     end
 end
