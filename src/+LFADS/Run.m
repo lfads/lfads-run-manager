@@ -398,7 +398,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             p = inputParser();
             p.addOptional('cuda_visible_devices', [], @isscalar);
-            p.addOptional('display', '', @ischar);
+            p.addOptional('display', '', @(x) isnumeric(x) && mod(x,1)==0);
             p.addParameter('useTmuxSession', false, @islogical);
             p.parse(varargin{:});
             
@@ -409,12 +409,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % set cuda visible devices
             if ~isempty(p.Results.cuda_visible_devices)
                 outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
-                    cuda_visible_device, outputString);
+                    p.Results.cuda_visible_devices, outputString);
             end
             % set the display variable
             if ~isempty(p.Results.display)
                 outputString = sprintf('DISPLAY=:%i %s', ...
-                    display, outputString);
+                    p.Results.display, outputString);
             end
             
             % if requested, tmux-ify the command
