@@ -23,11 +23,8 @@ for nf = 1:numel(vars_to_get)
     variable = vars_to_get{nf};
     outputName = outputFields{name_index(nf)};
 
-    valid.(outputName) = squeeze(h5read(validFile, ...
-                                            sprintf('/%s',variable)));
-    train.(outputName) = squeeze(h5read(trainFile, ...
-                                            sprintf('/%s', ...
-                                                    variable)));
+    valid.(outputName) = h5read(validFile, sprintf('/%s',variable));
+    train.(outputName) = h5read(trainFile, sprintf('/%s',variable));
     
     % put them in the correct order
     if ismember(variable, {'gen_ics'})

@@ -9,9 +9,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         seq = convertDatasetToSequenceStruct(r, dataset, data);
         % Converts the loaded data within a dataset into a sequence struct. The sequence data returned will be a
         % struct array where each element corresponds to a trial. You can include any metadata or information fields
-        % that you like for future reference or analysis. At a minimum, you must include field `.y`. For each trial,
-        % `.y` will contain spike data as an `nNeurons` x `nTimeBins` array of spike counts. The spike binning is
-        % typically specified in this Run's `.params`  in the field `spikeBinMs`.
+        % that you like for future reference or analysis. At a minimum, you must include field `.y`, `.y_time`, and `.params.dtMS`
+        %
+        % For each trial:
+        %   - `.y` will contain spike data as an `nNeurons` x `nTimeBins` array of spike counts. The spike binning is
+        %       for this is determined by you, and can be left at 1 ms. Later,
+        %       this data will be rebinned according to RunParams .spikeBinMs field.
+        %   - `.y_time` provides a time vector corresponding to the time
+        %       bins of `.y`, which should be identical on each trial
+        %   - `.params.dtMS` specifies the time bin width for `.y`
         %
         % Parameters
         % ------------
@@ -398,7 +404,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             p = inputParser();
             p.addOptional('cuda_visible_devices', [], @isscalar);
-            p.addOptional('display', '', @ischar);
+            p.addOptional('display', '', @isscalar);
             p.addParameter('useTmuxSession', false, @islogical);
             p.parse(varargin{:});
             
@@ -409,12 +415,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % set cuda visible devices
             if ~isempty(p.Results.cuda_visible_devices)
                 outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
-                    cuda_visible_device, outputString);
+                    p.Results.cuda_visible_devices, outputString);
             end
             % set the display variable
             if ~isempty(p.Results.display)
                 outputString = sprintf('DISPLAY=:%i %s', ...
-                    display, outputString);
+                    p.Results.display, outputString);
             end
             
             % if requested, tmux-ify the command
@@ -601,7 +607,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info.validInds{iDS}, info.trainInds{iDS});
-                time = seq{iDS}(1).y_time;
+                
+                dt_y = seq{iDS}(1).params.dtMS;
+                dt_pm = r.params.spikeBinMs;
+                rebin = dt_pm / dt_y;
+                time = seq{iDS}(1).y_time(1:rebin:end);
+                
                 pms(iDS) = LFADS.PosteriorMeans(pmData, info.params, time); %#ok<AGROW>
             end
             prog.finish();

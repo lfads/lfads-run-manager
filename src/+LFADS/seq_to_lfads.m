@@ -154,7 +154,7 @@ for ndset = 1:numel(seqs)
         spks = seq(nn).y(whichChannelsThisSet,1:inputTimeBinsToKeep);
         if binSizeMS ~= inputBinSizeMS
             tmp = reshape(full(spks'),[],nTimeBins,size(spks,1));
-            tmp2=squeeze(sum(tmp));
+            tmp2=squeeze(sum(tmp)); % should be nTimeBins x nChannels
         else
             tmp2 = full(spks)';
         end

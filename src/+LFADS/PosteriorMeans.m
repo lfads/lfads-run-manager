@@ -8,7 +8,7 @@ classdef PosteriorMeans
         factors % `nFactors x T x nTrials` factor trajectories
         generator_ics % nGeneratorUnits x nTrials` generator initial conditions
         generator_states % nGeneratorUnits x T x nTrials 
-         rates % nNeurons x T x nTrials
+        rates % nNeurons x T x nTrials
         validInds % list of validation trial indices
         trainInds % list of training trial indices
         params % :ref:`LFADS_RunParams` instance
@@ -39,7 +39,9 @@ classdef PosteriorMeans
                 pm.factors = pms.factors;
                 pm.generator_ics = pms.generator_ics;
                 pm.generator_states = pms.generator_states;
-                pm.rates = pms.rates;
+                
+                % convert rates into spikes / sec
+                pm.rates = pms.rates * 1000 / params.spikeBinMs;
                 pm.validInds = pms.validInds;
                 pm.trainInds = pms.trainInds;
                 pm.time = time;
