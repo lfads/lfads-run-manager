@@ -443,7 +443,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             outputString = sprintf('%s%s', outputString, optionsString);
         end
         
-        function cmd = buildCommandLFADSPosteriorMeanSample(r, varargin)
+        function cmd = buildCommandLFADSPosteriorMeanSample(r, inputParams)
             % Generates the command string for LFADS posterior mean sampling
             %
             % Returns
@@ -452,20 +452,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   Shell command for running LFADS posterior mean sampling
             
             lfdir = r.pathLFADSOutput;
-            
-            % set some default parameters
-            %if ~exist('varargin','var'), varargin ={}; end
-            %keys = varargin(1:2:end);
-            
+
+            % load the params that were used for training            
             params = lfadsi_read_parameters(lfdir); %#ok<*PROPLC>
             
             % make sure these are up to date
             params.data_dir = r.pathLFADSInput;
             params.lfads_save_dir = r.pathLFADSOutput;
             
-            params.batch_size = 512; % this is the number of
-            % samples used to calculate
-            % the posterior mean
+            params.batch_size = 512; % this is the number of samples used to calculate the posterior mean
             params.checkpoint_pb_load_name = 'checkpoint_lve';
             
             % need to remove "dataset_names" and "dataset_dims"
@@ -473,16 +468,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             use_controller = boolean(params.ci_enc_dim);
             
             execstr = 'python';
-            
-            % take the arguments passed in via varargin, add new params, or overwrite existing ones
-            for nn = 1:2:numel(varargin)
-                % have to specially handle CUDA_VISIBLE_DEVICES as an environment ...
-                %   variable rather than a command line param
-                if strcmpi(varargin{nn},'device')
-                    execstr = strcat(sprintf('CUDA_VISIBLE_DEVICES=%i', varargin{nn+1}),  ...
-                        execstr);
-                else
-                    params.(varargin{nn}) = varargin{nn+1};
+            if exist('inputParams','var')
+                % take the arguments passed, add new params, or overwrite existing ones
+                f = fields(inputParams);
+                for nn = 1:numel(f)
+                    params.(f{nn}) = inputParams.(f{nn});
                 end
             end
             
@@ -526,17 +516,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p = inputParser();
             p.addOptional('cuda_visible_devices', [], @isscalar);
             p.addParameter('useTmuxSession', false, @islogical);
+            p.KeepUnmatched = true;
             p.parse(varargin{:});
             
             f = r.fileShellScriptLFADSPosteriorMeanSample;
             fid = fopen(f, 'w');
             
-            outputString = r.buildCommandLFADSPosteriorMeanSample();
+            outputString = r.buildCommandLFADSPosteriorMeanSample(p.Unmatched);
 
             % set cuda visible devices
             if ~isempty(p.Results.cuda_visible_devices)
                 outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
-                    cuda_visible_device, outputString);
+                    p.Results.cuda_visible_devices, outputString);
             end
             
             % if requested, tmux-ify the command
