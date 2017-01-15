@@ -208,7 +208,7 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             parser.KeepUnmatched = true;
             parser.parse(varargin{:});
             
-            data = p.getPropertyValueSubset(parser.Unmatched, 'onlyDifferentFromDefault', true);
+            data = p.getPropertyValueSubset(parser.Unmatched);
             
             props = fieldnames(data);
             
