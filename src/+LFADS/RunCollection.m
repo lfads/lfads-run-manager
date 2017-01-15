@@ -411,7 +411,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             runEntry = cell(rc.nRunSpecs, rc.nParams);
             for s = 1:rc.nRunSpecs
                 for p = 1:rc.nParams
-                    runEntry{s,p} = sprintf('%s__par%d:%s', rc.runs(s,p).name, p, rc.runs(s,p).pathLFADSOutput);
+                    runEntry{s,p} = sprintf('%s/%s:%s', ...
+                        rc.runs(s, p).params.generateHashName(), ...
+                        rc.runs(s,p).name, ...
+                        rc.runs(s,p).pathLFADSOutput);
                 end
             end
             str = sprintf('tensorboard --logdir=%s', strjoin(runEntry, ','));
