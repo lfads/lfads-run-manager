@@ -284,6 +284,12 @@ since the prefix will be stripped from the serialization</p></div><dl class="att
 <dd><p>controller dimensionality</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_learning_rate_stop">
+<code class="descname">c_learning_rate_stop</code><em class="property"> = 0.00001</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_learning_rate_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_learning_rate_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>when the learning rate reaches this threshold, stop training</p>
+</dd></dl>
+
 <div class="tip admonition" id="+LFADS.RunParams.RunParams_member_group_2_+LFADS::RunParams.RunParams_member_group_2">
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
@@ -324,6 +330,39 @@ subclasses.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="+LFADS.RunParams.getPropertyValueSubset">
+[<em>out</em>] = <code class="descname">getPropertyValueSubset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.getPropertyValueSubset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.getPropertyValueSubset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a struct of non-transient property values that
+differ from their default values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ignoreProperties</strong> (<em>cellstr</em>) &#8211; list of properties to ignore</li>
+<li><strong>filterDiffersFromDefault</strong> (<em>bool=true</em>) &#8211; if true, only properties whose value differs from the
+default value</li>
+<li><strong>onlyRootClassProperties</strong> (<em>bool = false</em>) &#8211; if true, only include properties declared in
+LFADS.RunParams. if false, include properties declared in
+subclasses.</li>
+<li><strong>defaultsFromClassDefinition</strong> (<em>bool = true</em>) &#8211; if true, default value comes from the class definition,
+next to each property&#8217;s definition. If false, the default
+values come from constructing a new class of the same
+type with no arguments. Default true.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>differ</strong> &#8211; property names and values that differ</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">struct</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="+LFADS.RunParams.generateHash">
 [<em>hash</em>] = <code class="descname">generateHash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateHash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateHash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a short hash of this RunParams non-transient
@@ -332,17 +371,11 @@ properties that can be used in a directory name.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>length</strong> &#8211; int
-number of characters to truncate the hash value to</li>
-<li><strong>ignoreProperties</strong> &#8211; cellstr
-list of properties to ignore</li>
-<li><strong>onlyRootClassProperties</strong> &#8211; bool (False)
-if true, only include properties declared in
-LFADS.RunParams. if false, include properties declared in
-subclasses.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>length</strong> (<em>int</em>) &#8211; number of characters to truncate the hash value to</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>hash</strong> &#8211; hash string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
 </tbody>
 </table>
@@ -364,15 +397,7 @@ strings inserted between property names and values.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filterDiffersFromDefault</strong> &#8211; bool
-if true, only properties whose value differs from the
-default value</li>
-<li><strong>defaultsFromClassDefinition</strong> &#8211; bool
-if true, default value comes from the class definition,
-next to each property&#8217;s definition. If false, the default
-values come from constructing a new class of the same
-type with no arguments. Default true.</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>beforeProp</strong> &#8211; char
 default &#8216;&#8217;</li>
 <li><strong>betweenPropValue</strong> &#8211; char
@@ -390,16 +415,20 @@ subclasses.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+</tbody>
+</table>
+<p>Also accepts arguments for getPropertyValueSubset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
 <dt>string</dt>
-<dd><p class="first last">serialized string suffix suitable for inclusion in file paths</p>
-</dd>
+<dd>serialized string suffix suitable for inclusion in file paths</dd>
 </dl>
-</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
-</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
 </tbody>
 </table>

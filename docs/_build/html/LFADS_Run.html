@@ -154,9 +154,28 @@ These methods will need to be implemented in a subclass that provides the custom
 <em class="property">Abstract</em>[<em>seq</em>] = <code class="descname">convertDatasetToSequenceStruct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.convertDatasetToSequenceStruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.convertDatasetToSequenceStruct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts the loaded data within a dataset into a sequence struct. The sequence data returned will be a
 struct array where each element corresponds to a trial. You can include any metadata or information fields
-that you like for future reference or analysis. At a minimum, you must include field <cite>.y</cite>. For each trial,
-<cite>.y</cite> will contain spike data as an <cite>nNeurons</cite> x <cite>nTimeBins</cite> array of spike counts. The spike binning is
-typically specified in this Run&#8217;s <cite>.params</cite>  in the field <cite>spikeBinMs</cite>.</p>
+that you like for future reference or analysis. At a minimum, you must include field <cite>.y</cite>, <cite>.y_time</cite>, and <cite>.params.dtMS</cite></p>
+<dl class="docutils">
+<dt>For each trial:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt><cite>.y</cite> will contain spike data as an <cite>nNeurons</cite> x <cite>nTimeBins</cite> array of spike counts. The spike binning is</dt>
+<dd><p class="first last">for this is determined by you, and can be left at 1 ms. Later,
+this data will be rebinned according to RunParams .spikeBinMs field.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><cite>.y_time</cite> provides a time vector corresponding to the time</dt>
+<dd><p class="first last">bins of <cite>.y</cite>, which should be identical on each trial</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><cite>.params.dtMS</cite> specifies the time bin width for <cite>.y</cite></p>
+</li>
+</ul>
+</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

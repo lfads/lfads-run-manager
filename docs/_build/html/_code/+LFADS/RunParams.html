@@ -495,11 +495,11 @@
 <a name="RunParams.c_ic_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_ic_dim">[docs]</a>        <span class="n">c_ic_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">64</span><span class="p">;</span> <span class="c">% dimensionality of the initial conditions</span>
 <a name="RunParams.c_con_dim"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_con_dim">[docs]</a>        <span class="n">c_con_dim</span> <span class="n">uint16</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span> <span class="c">%controller dimensionality</span>
     <span class="k">end</span>
-    
+<a name="RunParams.c_learning_rate_stop"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.c_learning_rate_stop">[docs]</a>    
     <span class="k">methods</span>
 <a name="RunParams.listNonTransientProperties"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.listNonTransientProperties">[docs]</a><span class="k">        function</span><span class="w"> </span>[props, propMeta] <span class="p">=</span><span class="w"> </span><span class="nf">listNonTransientProperties</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Return a list of properties in this class that are not</span>
-            <span class="c">% Dependent, Constant, Transient, or Hidden</span>
+<a name="RunParams.listNonTransientProperties"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.listNonTransientProperties">[docs]</a>            <span class="c">% Dependent, Constant, Transient, or Hidden</span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
             <span class="c">%   ignoreProperties : cellstr</span>
@@ -547,7 +547,7 @@
         <span class="k">end</span>
 <a name="RunParams.generateHash"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHash">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>hash <span class="p">=</span><span class="w"> </span><span class="nf">generateHash</span><span class="p">(</span>p, varargin<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% Generate a short hash of this RunParams non-transient</span>
+<a name="RunParams.getPropertyValueSubset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.getPropertyValueSubset">[docs]</a><span class="w">            </span><span class="c">% Generate a short hash of this RunParams non-transient</span>
             <span class="c">% properties that can be used in a directory name.</span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
@@ -600,7 +600,7 @@
             <span class="c">%     default &#39;&#39;</span>
             <span class="c">%   betweenPropValue : char</span>
             <span class="c">%     default &#39;=&#39;</span>
-            <span class="c">%   afterValue : char</span>
+<a name="RunParams.generateHash"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHash">[docs]</a>            <span class="c">%   afterValue : char</span>
             <span class="c">%     default &#39;&#39;</span>
             <span class="c">%   betweenProps : char</span>
             <span class="c">%     default &#39; &#39;</span>
@@ -623,14 +623,14 @@
             <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;betweenPropValue&#39;</span><span class="p">,</span> <span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
             <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;afterValue&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
             <span class="n">parser</span><span class="p">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s">&#39;betweenProps&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="p">@</span><span class="n">ischar</span><span class="p">);</span>
-            <span class="n">parser</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:});</span>
+<a name="RunParams.generateHashName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateHashName">[docs]</a>            <span class="n">parser</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:});</span>
             
             <span class="p">[</span><span class="n">props</span><span class="p">,</span> <span class="n">propMeta</span><span class="p">]</span> <span class="p">=</span> <span class="n">p</span><span class="p">.</span><span class="n">listNonTransientProperties</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="n">Unmatched</span><span class="p">);</span>
             <span class="n">str</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
             
             <span class="n">defaultInstance</span> <span class="p">=</span> <span class="n">eval</span><span class="p">(</span><span class="n">class</span><span class="p">(</span><span class="n">p</span><span class="p">));</span>
                 
-            <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
+<a name="RunParams.generateString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateString">[docs]</a>            <span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">numel</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
                 <span class="n">prop</span> <span class="p">=</span> <span class="n">props</span><span class="p">{</span><span class="nb">i</span><span class="p">};</span>
                 <span class="n">value</span> <span class="p">=</span> <span class="n">p</span><span class="p">.(</span><span class="n">prop</span><span class="p">);</span>
                 
@@ -687,13 +687,13 @@
             <span class="c">%  prop : string</span>
             <span class="c">%    which property</span>
             <span class="c">%  value : Matlab built in type</span>
-            
+<a name="RunParams.generateShortDifferencesString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateShortDifferencesString">[docs]</a>            
             <span class="k">switch</span> <span class="n">class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">case</span> <span class="p">{</span><span class="s">&#39;uint8&#39;</span><span class="p">,</span> <span class="s">&#39;int8&#39;</span><span class="p">,</span> <span class="s">&#39;uint16&#39;</span><span class="p">,</span> <span class="s">&#39;int16&#39;</span><span class="p">,</span> <span class="s">&#39;uint32&#39;</span><span class="p">,</span> <span class="s">&#39;int32&#39;</span><span class="p">,</span> <span class="s">&#39;uint64&#39;</span><span class="p">,</span> <span class="s">&#39;int64&#39;</span><span class="p">}</span>
                     <span class="n">valstr</span>  <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%i&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
                 <span class="k">case</span> <span class="p">{</span><span class="s">&#39;logical&#39;</span><span class="p">}</span>
                     <span class="k">if</span> <span class="n">value</span>
-                        <span class="n">valstr</span> <span class="p">=</span> <span class="s">&#39;true&#39;</span><span class="p">;</span>
+<a name="RunParams.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateSummaryText">[docs]</a>                        <span class="n">valstr</span> <span class="p">=</span> <span class="s">&#39;true&#39;</span><span class="p">;</span>
                     <span class="k">else</span>
                         <span class="n">valstr</span> <span class="p">=</span> <span class="s">&#39;false&#39;</span><span class="p">;</span>
                     <span class="k">end</span>
@@ -709,7 +709,7 @@
     
     <span class="k">methods</span>
 <a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a><span class="k">        function</span><span class="w"> </span>str <span class="p">=</span><span class="w"> </span><span class="nf">generateCommandLineOptionsString</span><span class="p">(</span>p<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="c">% str = generateCommandLineOptionsString(p)</span>
+<a name="RunParams.serializePropertyValue"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.serializePropertyValue">[docs]</a><span class="w">            </span><span class="c">% str = generateCommandLineOptionsString(p)</span>
             <span class="c">% Generates a string of all the command line options to</span>
             <span class="c">% pass directly into run_lfads.py</span>
             <span class="c">%</span>
@@ -739,7 +739,7 @@
                 <span class="k">switch</span> <span class="n">class</span><span class="p">(</span><span class="n">thisVal</span><span class="p">)</span>
                     <span class="k">case</span> <span class="p">{</span><span class="s">&#39;uint16&#39;</span><span class="p">,</span> <span class="s">&#39;uint32&#39;</span><span class="p">,</span> <span class="s">&#39;int16&#39;</span><span class="p">,</span> <span class="s">&#39;int32&#39;</span><span class="p">}</span>
                         <span class="n">fieldstr</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%i&#39;</span><span class="p">,</span> <span class="n">thisVal</span><span class="p">);</span>
-                    <span class="k">case</span> <span class="p">{</span><span class="s">&#39;logical&#39;</span><span class="p">}</span>
+<a name="RunParams.generateCommandLineOptionsString"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunParams.html#+LFADS.RunParams.generateCommandLineOptionsString">[docs]</a>                    <span class="k">case</span> <span class="p">{</span><span class="s">&#39;logical&#39;</span><span class="p">}</span>
                         <span class="k">if</span> <span class="n">thisVal</span>
                             <span class="n">fieldstr</span> <span class="p">=</span> <span class="s">&#39;true&#39;</span><span class="p">;</span>
                         <span class="k">else</span>

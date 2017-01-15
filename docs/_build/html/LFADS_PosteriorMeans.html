@@ -139,12 +139,18 @@
 <span id="id1"></span><span id="lfads-posteriormeans"></span><h1>LFADS.PosteriorMeans<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="+LFADS.PosteriorMeans">
-<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">PosteriorMeans</code><span class="sig-paren">(</span><em>pms</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">PosteriorMeans</code><span class="sig-paren">(</span><em>pms</em>, <em>params</em>, <em>seq</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around loaded posterior mean sampling data performed on a
 trained LFADS model</p>
 <div class="note admonition" id="+LFADS.PosteriorMeans.PosteriorMeans_member_group_0_+LFADS::PosteriorMeans.PosteriorMeans_member_group_0">
 <p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
 </div><dl class="attribute">
+<dt id="+LFADS.PosteriorMeans.time">
+<code class="descname">time</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans.time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>nTime x 1 vector of times in ms for each of the timeseries below</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.PosteriorMeans.controller_outputs">
 <code class="descname">controller_outputs</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans.controller_outputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans.controller_outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p><cite>nControllerOutputs x T x nTrials</cite> controller outputs to generator inputs</p>
@@ -238,7 +244,7 @@ trained LFADS model</p>
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
 <dt id="+LFADS.PosteriorMeans.PosteriorMeans">
-[<em>pm</em>] = <code class="descname">PosteriorMeans</code><span class="sig-paren">(</span><em>pms</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans.PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
+[<em>pm</em>] = <code class="descname">PosteriorMeans</code><span class="sig-paren">(</span><em>pms</em>, <em>params</em>, <em>seq</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/PosteriorMeans.html#PosteriorMeans.PosteriorMeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.PosteriorMeans.PosteriorMeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct instance by copying struct fields</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -247,6 +253,7 @@ trained LFADS model</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>pms</strong> (<em>struct</em>) &#8211; Posterior mean struct loaded from disk</li>
 <li><strong>params</strong> (<em>LFADS.RunParams</em>) &#8211; Run parameters</li>
+<li><strong>time</strong> (<em>vector</em>) &#8211; time vector for all timeseries</li>
 </ul>
 </td>
 </tr>

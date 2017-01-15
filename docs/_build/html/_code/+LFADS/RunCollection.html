@@ -1074,7 +1074,7 @@
 <a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a>
 <span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeTensorboardShellScript</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates the shell command text to launch a TensorBoard displaying all runs within this collection</span>
-            <span class="c">% and saves it to a file inside the RunCollection&#39;s path</span>
+<a name="RunCollection.writeTensorboardShellScript"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeTensorboardShellScript">[docs]</a>            <span class="c">% and saves it to a file inside the RunCollection&#39;s path</span>
             <span class="c">%</span>
             <span class="c">% Returns:</span>
             <span class="c">%   file : string</span>
@@ -1089,7 +1089,7 @@
 <a name="RunCollection.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.generateSummaryText">[docs]</a><span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span>text <span class="p">=</span><span class="w"> </span><span class="nf">generateSummaryText</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="n">newline</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">);</span>
-            <span class="n">text</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot; (%d runs total)\n&#39;</span><span class="p">,</span> <span class="c">...</span>
+<a name="RunCollection.generateSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.generateSummaryText">[docs]</a>            <span class="n">text</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot; (%d runs total)\n&#39;</span><span class="p">,</span> <span class="c">...</span>
                  <span class="n">class</span><span class="p">(</span><span class="n">rc</span><span class="p">),</span> <span class="n">rc</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">nRunsTotal</span><span class="p">);</span>
             <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  Path: %s\n&#39;</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">path</span><span class="p">));</span>
             <span class="n">text</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;  Dataset Collection &quot;%s&quot; (%d datasets) in %s\n\n&#39;</span><span class="p">,</span> <span class="c">...</span>
@@ -1109,7 +1109,7 @@
 <a name="RunCollection.writeSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeSummaryText">[docs]</a><span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span>f <span class="p">=</span><span class="w"> </span><span class="nf">writeSummaryText</span><span class="p">(</span>rc<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Generates a text file sumamrizing the details of the RunSpecs and RunParams</span>
-            <span class="c">% within this run collection.</span>
+<a name="RunCollection.writeSummaryText"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.writeSummaryText">[docs]</a>            <span class="c">% within this run collection.</span>
             <span class="c">%</span>
             <span class="c">% Returns:</span>
             <span class="c">%   file : string</span>
@@ -1123,7 +1123,7 @@
 <a name="RunCollection.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadSequenceData">[docs]</a><span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span><span class="nf">loadSequenceData</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Call `loadSequenceData` on each run in this collection</span>
-
+<a name="RunCollection.loadSequenceData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadSequenceData">[docs]</a>
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
                 <span class="n">reload</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
             <span class="k">end</span>
@@ -1137,7 +1137,7 @@
 <a name="RunCollection.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">[docs]</a><span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span><span class="nf">loadPosteriorMeans</span><span class="p">(</span>rc, reload<span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="c">% Call `loadPosteriorMeans` on each run in this collection</span>
-
+<a name="RunCollection.loadPosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunCollection.html#+LFADS.RunCollection.loadPosteriorMeans">[docs]</a>
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&lt;</span> <span class="mi">2</span>
                 <span class="n">reload</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
             <span class="k">end</span>
