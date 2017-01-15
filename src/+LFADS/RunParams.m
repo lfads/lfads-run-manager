@@ -319,7 +319,7 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
                             fieldstr = 'false';
                         end
                     case {'double','single'}
-                        fieldstr = sprintf('%.3f', thisVal);
+                        fieldstr = sprintf('%f', thisVal);
                     case {'char'}
                         fieldstr = thisVal;
                     otherwise
