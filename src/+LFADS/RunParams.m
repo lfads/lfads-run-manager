@@ -36,6 +36,8 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         c_controller_input_lag uint16 = 1;
         c_ic_dim uint16 = 64; % dimensionality of the initial conditions
         c_con_dim uint16 = 128; %controller dimensionality
+        
+        c_learning_rate_stop = 0.00001; % when the learning rate reaches this threshold, stop training
     end
     
     methods
@@ -88,33 +90,80 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             propMeta = meta.PropertyList(mask);
         end
 
+        function out = getPropertyValueSubset(p, varargin)
+            % Generates a struct of non-transient property values that
+            % differ from their default values.
+            % 
+            % Args:
+            %   ignoreProperties (cellstr) : list of properties to ignore
+            %   filterDiffersFromDefault (bool=true) :
+            %     if true, only properties whose value differs from the
+            %     default value 
+            %   onlyRootClassProperties (bool = false): if true, only include properties declared in
+            %     LFADS.RunParams. if false, include properties declared in
+            %     subclasses.
+            %   defaultsFromClassDefinition (bool = true): 
+            %     if true, default value comes from the class definition,
+            %     next to each property's definition. If false, the default
+            %     values come from constructing a new class of the same
+            %     type with no arguments. Default true.
+            % Returns:
+            %   differ (struct) : property names and values that differ
+            
+            parser = inputParser();
+            parser.addParameter('onlyDifferentFromDefault', false, @islogical);
+            parser.addParameter('ignoreProperties', {}, @iscellstr);
+            parser.addParameter('onlyRootClassProperties', false, @islogical);
+            parser.addParameter('defaultsFromClassDefinition', true, @islogical);
+            parser.parse(varargin{:});
+            
+            [props, propMeta] = p.listNonTransientProperties('ignoreProperties', parser.Results.ignoreProperties, ...
+                'onlyRootClassProperties', parser.Results.onlyRootClassProperties);
+            
+            if ~parser.Results.defaultsFromClassDefinition
+                defaultInstance = eval(class(p));
+            end
+                
+            out = struct();
+            for i = 1:numel(props)
+                prop = props{i};
+                value = p.(prop);
+                
+                if parser.Results.onlyDifferentFromDefault
+                    if parser.Results.defaultsFromClassDefinition
+                        def = propMeta(i).DefaultValue;
+                    else
+                        def = defaultInstance.(prop);
+                    end
+                    if isequal(def, value)
+                        continue;
+                    end
+                end
+                out.(prop) = value;
+            end
+        end
+        
         function hash = generateHash(p, varargin)
             % Generate a short hash of this RunParams non-transient
             % properties that can be used in a directory name.
             %
             % Args:
-            %   length : int
-            %     number of characters to truncate the hash value to
-            %   ignoreProperties : cellstr
-            %     list of properties to ignore
-            %   onlyRootClassProperties : bool (False)
-            %     if true, only include properties declared in
-            %     LFADS.RunParams. if false, include properties declared in
-            %     subclasses.
+            %   length (int): number of characters to truncate the hash value to
+            % 
+            % Returns:
+            %   hash (string): hash string
+            
             parser = inputParser();
             parser.addParameter('length', 6, @isscalar);
             parser.KeepUnmatched = true;
             parser.parse(varargin{:});
             
-            props = p.listNonTransientProperties(parser.Unmatched);
-            data = struct();
-            for i = 1:numel(props)
-                prop = props{i};
-                data.(prop) = p.(prop);
-            end
-            
+            data = p.getPropertyValueSubset(parser.Unmatched, 'onlyDifferentFromDefault', true);
             hash = LFADS.Utils.DataHash(data, struct('Format', 'base64'));
-            hash = lower(hash(1:parser.Results.length));
+            hash = strrep(strrep(hash, '/', '_'), '+', '-'); % https://tools.ietf.org/html/rfc3548#page-6
+            if numel(hash) > parser.Results.length
+                hash = hash(1:parser.Results.length);
+            end
         end
         
         function str = generateHashName(p, varargin)
@@ -124,20 +173,11 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             str = sprintf('param_%s', p.generateHash(varargin{:}));
         end
             
-        
         function str = generateString(p, varargin)
             % Generates a string representation of all parameters, with custom
             % strings inserted between property names and values. 
             %
             % Args:
-            %   filterDiffersFromDefault : bool
-            %     if true, only properties whose value differs from the
-            %     default value 
-            %   defaultsFromClassDefinition : bool
-            %     if true, default value comes from the class definition,
-            %     next to each property's definition. If false, the default
-            %     values come from constructing a new class of the same
-            %     type with no arguments. Default true.
             %   beforeProp : char
             %     default ''
             %   betweenPropValue : char
@@ -153,49 +193,40 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             %     LFADS.RunParams. if false, include properties declared in
             %     subclasses.
             %
+            % Also accepts arguments for getPropertyValueSubset
+            % 
             % Returns:
             %   str : string
             %     serialized string suffix suitable for inclusion in file paths
             %
             
             parser = inputParser();
-            parser.addParameter('onlyDifferentFromDefault', false, @islogical);
-            parser.addParameter('defaultsFromClassDefinition', true, @islogical);
             parser.addParameter('beforeProp', '', @ischar);
             parser.addParameter('betweenPropValue', '=', @ischar);
             parser.addParameter('afterValue', '', @ischar);
             parser.addParameter('betweenProps', ' ', @ischar);
+            parser.KeepUnmatched = true;
             parser.parse(varargin{:});
             
-            [props, propMeta] = p.listNonTransientProperties(parser.Unmatched);
-            str = '';
+            data = p.getPropertyValueSubset(parser.Unmatched, 'onlyDifferentFromDefault', true);
             
-            defaultInstance = eval(class(p));
-                
-            for i = 1:numel(props)
-                prop = props{i};
-                value = p.(prop);
-                
-                if parser.Results.onlyDifferentFromDefault
-                    if parser.Results.defaultsFromClassDefinition
-                        def = propMeta(i).DefaultValue;
-                    else
-                        def = defaultInstance.(prop);
-                    end
-                    if isequal(def, value)
-                        continue;
-                    end
-                end
-                
-                this = sprintf('%s%s%s%s%s%s', parser.Results.beforeProp, prop, parser.Results.betweenPropValue, ...
-                    p.serializePropertyValue(prop, value), parser.Results.afterValue, parser.Results.betweenProps);
-                str = cat(2, str, this);
-            end
-            if ~isempty(str)
-                str = str(1:end-numel(parser.Results.betweenProps));
-            end
-            if parser.Results.onlyDifferentFromDefault && isempty(str)
+            props = fieldnames(data);
+            
+            if isempty(props) && parser.Results.onlyDifferentFromDefault
                 str = 'default';
+            else
+                str = '';
+                for i = 1:numel(props)
+                    prop = props{i};
+                    value = data.(prop);
+
+                    this = sprintf('%s%s%s%s%s%s', parser.Results.beforeProp, prop, parser.Results.betweenPropValue, ...
+                        p.serializePropertyValue(prop, value), parser.Results.afterValue, parser.Results.betweenProps);
+                    str = cat(2, str, this);
+                end
+                if ~isempty(str)
+                    str = str(1:end-numel(parser.Results.betweenProps));
+                end
             end
         end
         

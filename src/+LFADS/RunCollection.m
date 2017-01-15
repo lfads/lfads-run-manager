@@ -506,7 +506,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
              header = cat(2, header, sprintf('  Path: %s\n\n', rc.path));
              header = cat(2, header, sprintf('  %d parameter settings\n', rc.nParams));
              for p = 1:rc.nParams
-                 header = cat(2, header, sprintf('  [%d %s] %s\n', p, rc.params(p).generateHashName, rc.params(p).getFirstLineHeader()));
+                 header = cat(2, header, sprintf('  [%d %s] %s %s\n', p, rc.params(p).generateHashName, class(rc.params(p)), rc.params(p).generateShortDifferencesString()));
              end
              
              header = cat(2, header, sprintf('\n  %d run specifications\n', rc.nRunSpecs));
