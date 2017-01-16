@@ -49,6 +49,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         sequenceData cell % nDatasets cell array of sequence struct data
         posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
+
+        inputInfo % parameters used to train model
     end
     
     properties(Dependent)
@@ -63,6 +65,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         pathLFADSInput % Path on disk where LFADS input hd5 files will be saved
         lfadsInputFileNames % List of LFADS input hd5 files (sans path)
+
+        lfadsInputInfoFileName % List of LFADS input info .mat files (sans path)
         
         pathLFADSOutput % Path on disk where LFADS output will be written
         
@@ -156,6 +160,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
         
+        function name = get.lfadsInputInfoFileName(r)
+            name = 'lfadsInputInfo.mat';
+        end
+
         function p = get.pathLFADSInput(r)
             if isempty(r.runCollection)
                 p = '';
@@ -284,6 +292,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             prog.finish();
         end
         
+        function out = loadInputInfo(r)
+            fname = fullfile(r.path, r.lfadsInputInfoFileName);
+            r.inputInfo = load(fname);
+            out = r.inputInfo;
+        end
+
         function seq = loadSequenceData(r, reload)
             % seq = loadSequenceData([reload = True])
             % Load the sequence files from disk, caches them in
@@ -379,7 +393,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             LFADS.seq_to_lfads(seqData, r.pathLFADSInput, r.lfadsInputFileNames, ...
                 seqToLFADSArgs{:});
             
-            fname = fullfile(r.path, 'lfadsInputInfo.mat');
+            fname = fullfile(r.path, r.lfadsInputInfoFileName);
             params = r.params; %#ok<*NASGU,PROP>
             save(fname, 'trainInds', 'validInds', 'params');
         end
@@ -574,10 +588,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             seq = r.loadSequenceData();
             
-            info = load(fullfile(r.path, 'lfadsInputInfo.mat'));
+            info = load(fullfile(r.path, r.lfadsInputInfoFileName));
             
             if ~isequal(info.params, r.params)
-                warning('Params saved for run in lfadsInputInfo.mat do not match. See params inside %s.', fullfile(r.path, 'lfadsInputInfo.mat'));
+                warning('Params saved for run in lfadsInputInfo.mat do not match. See params inside %s.', fullfile(r.path, r.lfadsInputInfoFileName));
             end
                 
             [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
