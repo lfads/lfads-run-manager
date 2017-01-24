@@ -1,4 +1,4 @@
-classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
+classdef RunParams < matlab.mixin.CustomDisplay 
     % Collection of parameters which are common to all :ref:`LFADS_Run` instances in a :ref:`LFADS_RunCollection`. You
     % must create a subclass of RunParams in which you specify the serialized representation of the parameters that
     % will be used in paths on disk.
@@ -38,6 +38,7 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         c_con_dim uint16 = 128; %controller dimensionality
         
         c_learning_rate_stop = 0.00001; % when the learning rate reaches this threshold, stop training
+        c_temporal_spike_jitter_width uint16 = 0; % jittering spike times during training, in units of bin size
     end
     
     methods
@@ -334,6 +335,11 @@ classdef RunParams < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     
     
     methods(Hidden)
+        function p = copy(p)
+            % RunParams was once a handle class, this enables copy to go
+            % through as intended
+        end
+            
         function h = getFirstLineHeader(p)
             className = class(p);
             h = sprintf('%s %s %s', className, p.generateHash, p.generateShortDifferencesString());
