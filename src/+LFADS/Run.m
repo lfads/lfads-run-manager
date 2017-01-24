@@ -226,11 +226,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function sess = get.sessionNameTrain(r)
-            sess = sprintf('train_%s_par%d', r.name, r.paramIndexInRunCollection);
+            sess = sprintf('train_%s_%s', r.name, r.paramsString);
         end
         
         function sess = get.sessionNamePosteriorMean(r)
-            sess = sprintf('pm_%s_par%d', r.name, r.paramIndexInRunCollection);
+            sess = sprintf('pm_%s_%s', r.name, r.paramsString);
         end
     end
     
@@ -483,8 +483,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             params.batch_size = 512; % this is the number of samples used to calculate the posterior mean
             params.checkpoint_pb_load_name = 'checkpoint_lve';
             
-            % need to remove "dataset_names" and "dataset_dims"
-            params = rmfield(params, {'dataset_names', 'dataset_dims'});
+            % need to remove "dataset_names" and "dataset_dims" and
+            % "temporal_spike_jitter_width"
+            params = rmfield(params, {'dataset_names', 'dataset_dims', 'temporal_spike_jitter_width'});
             use_controller = boolean(params.ci_enc_dim);
             
             execstr = 'python';
