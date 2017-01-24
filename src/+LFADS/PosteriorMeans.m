@@ -35,7 +35,11 @@ classdef PosteriorMeans
             %   time (vector): time vector for all timeseries
             
             if nargin > 0
-                pm.controller_outputs = pms.controller_outputs;
+                if isfield(pms, 'controller_outputs')
+                    pm.controller_outputs = pms.controller_outputs;
+                else
+                    pm.controller_outputs = [];
+                end
                 pm.factors = pms.factors;
                 pm.generator_ics = pms.generator_ics;
                 pm.generator_states = pms.generator_states;
