@@ -59,6 +59,18 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
                 r.selectDatasets(p.Results.datasetIndicesOrNames);
             end
         end
+        
+        function tf = eq(a, b)
+            % Overloaded == operator to enable equality if name,
+            % datasetCollection, and datasets all match
+            
+            tf = LFADS.Utils.bsxfun_object(@compare, a, b);
+                
+            function tf = compare(a,b)
+                tf = strcmp(a.name, b.name) ...
+                    && isequal(a.datasets, b.datasets) && isequal(a.datasetCollection, b.datasetCollection);
+            end
+        end
 
         function n = get.nDatasets(r)
             n = numel(r.datasets);

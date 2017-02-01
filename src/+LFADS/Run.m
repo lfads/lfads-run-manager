@@ -247,7 +247,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 header = getHeader@matlab.mixin.CustomDisplay(r);
             else
                 rc = r.runCollection;
-                header = sprintf('%s\n  Path: %s\n\n  %d datasets in "%s"\n', r.getFirstLineHeader(), r.path, r.nDatasets, r.datasetCollection.name);
+                header = sprintf('%s\n  Path: %s\n\n  %s "%s" : %s\n\n  %d datasets in "%s"\n', r.getFirstLineHeader(), r.path, ...
+                    class(r.params), r.paramsString, r.params.generateShortDifferencesString, ...
+                    r.nDatasets, r.datasetCollection.name);
                 for s = 1:r.nDatasets
                     header = cat(2, header, sprintf('    [%2d] %s', s, r.datasets(s).getHeader()));
                 end

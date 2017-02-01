@@ -42,6 +42,13 @@ classdef RunParams < matlab.mixin.CustomDisplay
     end
     
     methods
+        function tf = eq(a, b)
+            % Overloaded == operator to enable equality if name,
+            % datasetCollection, and datasets all match
+            
+            tf = isequal(a.generateHash, b.generateHash);
+        end
+        
         function [props, propMeta] = listNonTransientProperties(p, varargin)
             % Return a list of properties in this class that are not
             % Dependent, Constant, Transient, or Hidden
