@@ -39,6 +39,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         c_learning_rate_stop = 0.00001; % when the learning rate reaches this threshold, stop training
         c_temporal_spike_jitter_width uint16 = 0; % jittering spike times during training, in units of bin size
+
+        c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
     end
     
     methods
