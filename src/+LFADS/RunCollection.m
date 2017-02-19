@@ -159,7 +159,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
         function filterParams(rc, mask)
             % Apply selection mask to .params
-            %
+            % 
             % Parameters:
             %   mask : logical or indices
             %     selection mask applied to `.runs`
@@ -187,7 +187,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     spec = rc.runSpecs(iS);
                     if ischar(spec.runClassName)
                         clsFn = str2func(spec.runClassName);
-                    elseif isa(clsFn, 'function_handle');
+                    elseif isa(clsFn, 'function_handle')
                         % okay as is
                     else
                         error('Unknown runClassName, must be string or function_handle to constructor');

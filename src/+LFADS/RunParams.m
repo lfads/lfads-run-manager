@@ -9,6 +9,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         spikeBinMs double = 2; % Spike bin width in ms
         trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio    
         useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together. Default = false.
+        
+        scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run
     end
     
     properties
@@ -291,10 +293,16 @@ classdef RunParams < matlab.mixin.CustomDisplay
     end
     
     methods
-        function str = generateCommandLineOptionsString(p)
+        function str = generateCommandLineOptionsString(p, run)
             % str = generateCommandLineOptionsString(p)
             % Generates a string of all the command line options to
-            % pass directly into run_lfads.py
+            % pass directly into run_lfads.py. Also takes care of scaling
+            % c_kl_increase_steps and c_l2_increase_steps by the number of 
+            % datasets in a Run when scaleIncreaseStepsWithDatasets == true
+            %
+            % Args:
+            %   run (LFADS.Run) : run instance for which these options will
+            %   be generated
             %
             % Returns:
             %   str : char
@@ -317,6 +325,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 clear fieldstr
                 thisField = f{nf};
                 thisVal = p.(thisField);
+                
+                if ismember(thisField, {'c_kl_increase_steps', 'c_l2_increase_steps'}) && ...
+                        p.scaleIncreaseStepsWithDatasets
+                    % scale thisVal by nDatasets
+                    thisVal = thisVal * run.nDatasets;
+                end
                 
                 % argument formatted differently for each class
                 switch class(thisVal)
