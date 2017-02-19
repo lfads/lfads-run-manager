@@ -14,7 +14,7 @@ classdef PosteriorMeans
         params % :ref:`LFADS_RunParams` instance
     end
     
-    properties
+    properties(Dependent)
         isValid % contains valid, loaded data, false means empty
         nControllerOutputs
         nGeneratorUnits % number of units in the generator RNN
@@ -58,7 +58,7 @@ classdef PosteriorMeans
     
     methods
         function tf = get.isValid(pm)
-            tf = ~isempty(pm.controller_outputs);
+            tf = ~isempty(pm.factors);
         end
         
         function n = get.nControllerOutputs(pm)
@@ -82,7 +82,7 @@ classdef PosteriorMeans
         end
         
         function n = get.nTrials(pm)
-            n = size(pm.controller_outputs, 3);
+            n = size(pm.factors, 3);
         end
     end
     
