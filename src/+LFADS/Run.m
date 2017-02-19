@@ -58,6 +58,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
         path % Unique folder within rootPath including paramStr/name
         
+        datasetIndsInCollection % indices of each dataset into datasetCollection.datasets
+        
         paramsString % string representation of params generated using .params.generateString()
         
         pathSequenceFiles % Path on disk where sequence files will be saved
@@ -232,6 +234,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function sess = get.sessionNamePosteriorMean(r)
             sess = sprintf('pm_%s_%s', r.name, r.paramsString);
         end
+        
+        function idx = get.datasetIndsInCollection(r)
+            [~, idx] = ismember(r.datasets, r.datasetCollection.datasets);
+        end
     end
     
     methods(Hidden)
@@ -274,7 +280,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 return;
             end
             
-            %             fprintf('Saving sequence files in %s\n', r.pathSequenceFiles);
             LFADS.Utils.mkdirRecursive(r.pathSequenceFiles);
             
             sequenceFileNames = r.sequenceFileNames; %#ok<PROP>
@@ -284,11 +289,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 ds = r.datasets(iDS);
                 prog.update(iDS, 'Generating sequence files for %s', ds.name);
                 
-                % call user
+                % call user function
                 seq = r.convertDatasetToSequenceStruct(ds);
                 
                 seqFile = fullfile(r.pathSequenceFiles, sequenceFileNames{iDS}); %#ok<PROP>
-                %                 fprintf('Saving seq file to %s\n', seqFile);
                 save(seqFile, 'seq');
             end
             prog.finish();
@@ -377,8 +381,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % choose validation and training trial indices
             [validInds, trainInds] = deal(cell(r.nDatasets, 1));
             for nd = 1:r.nDatasets
-                allInds = 1:r.datasets(nd).nTrials;
-                validInds{nd} = 1 : (r.params.trainToTestRatio+1) : r.datasets(nd).nTrials;
+                allInds = 1:numel(seqData{nd});
+                validInds{nd} = 1 : (r.params.trainToTestRatio+1) : numel(seqData{nd});
                 trainInds{nd} = setdiff(allInds, validInds{nd});
             end
             % arguments for the 'seq_to_lfads' call below
@@ -461,7 +465,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 r.pathLFADSInput, r.pathLFADSOutput);
             
             % use the method from +LFADS/RunParams.m
-            optionsString = r.params.generateCommandLineOptionsString();
+            optionsString = r.params.generateCommandLineOptionsString(r);
             outputString = sprintf('%s%s', outputString, optionsString);
         end
         
