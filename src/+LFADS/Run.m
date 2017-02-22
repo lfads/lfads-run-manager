@@ -489,6 +489,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             params.batch_size = 512; % this is the number of samples used to calculate the posterior mean
             params.checkpoint_pb_load_name = 'checkpoint_lve';
             
+            % add in allow growth field
+            params.allow_gpu_growth = r.params.c_allow_gpu_growth;
+            
             % need to remove "dataset_names" and "dataset_dims" and
             % "temporal_spike_jitter_width"
             params = rmfield(params, {'dataset_names', 'dataset_dims', 'temporal_spike_jitter_width'});
@@ -508,7 +511,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             for nf = 1:numel(f)
                 fval = params.(f{nf});
                 %convert any numbers to strings
-                if isnumeric(fval), fval = num2str(fval); end
+                if islogical(fval)
+                    if fval
+                        fval = 'True';
+                    else
+                        fval = 'False';
+                    end
+                elseif isnumeric(fval)
+                    fval = num2str(fval);
+                end
                 optstr = strcat(optstr, sprintf(' --%s=%s',f{nf}, fval));
             end
             
