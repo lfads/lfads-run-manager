@@ -229,10 +229,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         function sess = get.sessionNameTrain(r)
             sess = sprintf('train_%s_%s', r.name, r.paramsString);
+            sess = strrep(sess, '.', '_');
         end
         
         function sess = get.sessionNamePosteriorMean(r)
             sess = sprintf('pm_%s_%s', r.name, r.paramsString);
+            sess = strrep(sess, '.', '_');
         end
         
         function idx = get.datasetIndsInCollection(r)
@@ -426,6 +428,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addOptional('cuda_visible_devices', [], @isscalar);
             p.addOptional('display', '', @(x) isnumeric(x) && mod(x,1)==0);
             p.addParameter('useTmuxSession', false, @islogical);
+            p.addParameter('keepSessionAlive', true, @islogical);
             p.parse(varargin{:});
             
             f = r.fileShellScriptLFADSTrain;
@@ -445,7 +448,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             % if requested, tmux-ify the command
             if p.Results.useTmuxSession
-                outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNameTrain );
+                outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNameTrain, 'keepSessionAlive', p.Results.keepSessionAlive);
                 fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNameTrain, r.sessionNameTrain);
             end
             
@@ -554,6 +557,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p = inputParser();
             p.addOptional('cuda_visible_devices', [], @isscalar);
             p.addParameter('useTmuxSession', false, @islogical);
+            p.addParameter('keepSessionAlive', false, @islogical);
             p.KeepUnmatched = true;
             p.parse(varargin{:});
             
@@ -570,7 +574,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             % if requested, tmux-ify the command
             if p.Results.useTmuxSession
-                outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNamePosteriorMean );
+                outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNamePosteriorMean, 'keepSessionAlive', p.Results.keepSessionAlive );
                 fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNamePosteriorMean, r.sessionNamePosteriorMean);
             end
             
