@@ -243,6 +243,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             f = fullfile(r.path, 'launch_tensorboard.sh');
         end
         
+        function runTensorboard(r)
+            system( sprintf('sh %s', r.fileShellScriptTensorboard) );
+        end
+
         function f = get.fileSummaryText(r)
             f = fullfile(r.path, 'summary.txt');
         end
@@ -401,12 +405,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             runs = rc.runs(rowIdx, colIdx);
         end
 
-        function str = getTensorboardCommand(rc)
+        function str = getTensorboardCommand(rc, varargin)
             % Generates the shell command text to launch a TensorBoard displaying all runs within this collection
             %
             % Returns:
             %   cmd : string
             %     Command which can luanch TensorBoard from command line
+
+            ip = inputParser();
+            ip.addOptional('display', '', @(x) isnumeric(x) && mod(x,1)==0);
+            ip.addParameter('useTmuxSession', false, @islogical);
+            ip.parse(varargin{:});
 
             runEntry = cell(rc.nRunSpecs, rc.nParams);
             for s = 1:rc.nRunSpecs
@@ -418,9 +427,13 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 end
             end
             str = sprintf('tensorboard --logdir=%s', strjoin(runEntry, ','));
+
+            if ip.Results.useTmuxSession
+                str = LFADS.Utils.tmuxify_string( str, rc.name );
+            end
         end
 
-        function f = writeTensorboardShellScript(rc)
+        function f = writeTensorboardShellScript(rc, varargin)
             % Generates the shell command text to launch a TensorBoard displaying all runs within this collection
             % and saves it to a file inside the RunCollection's path
             %
@@ -430,9 +443,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
             f = rc.fileShellScriptTensorboard;
             fid = fopen(f, 'w');
-            fprintf(fid, rc.getTensorboardCommand());
+            fprintf(fid, rc.getTensorboardCommand(varargin{:}));
             fclose(fid);
-            chmod('uga+rx', f);
+            LFADS.Utils.chmod('uga+rx', f);
         end
         
         function text = generateSummaryText(rc)

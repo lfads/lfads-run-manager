@@ -43,6 +43,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_temporal_spike_jitter_width uint16 = 0; % jittering spike times during training, in units of bin size
 
         c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
+        c_kl_ic_weight double = 1; % how much to weight the generator l2 cost
+        c_kl_co_weight double = 1; % how much to weight the controller l2 cost
     end
     
     methods
