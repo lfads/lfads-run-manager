@@ -472,7 +472,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             outputString = sprintf('%s%s', outputString, optionsString);
         end
         
-        function cmd = buildCommandLFADSPosteriorMeanSample(r, inputParams)
+        function cmd = buildCommandLFADSPosteriorMeanSample(r, inputParams, varargin)
             % Generates the command string for LFADS posterior mean sampling
             %
             % Returns
@@ -480,35 +480,52 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % cmd : string
             %   Shell command for running LFADS posterior mean sampling
             
-            lfdir = r.pathLFADSOutput;
+            p = inputParser();
+            p.addParameter('loadHyperparametersFromFile', false, @islogical);
+            p.parse(varargin{:});
+            
+            if p.Results.loadHyperparametersFromFile
+                % this is the old way of doing it that isn't necessary now
+                % that the LFADS run_lfads.py code has stabilized
+                
+                lfdir = r.pathLFADSOutput;
 
-            % load the params that were used for training            
-            params = lfadsi_read_parameters(lfdir); %#ok<*PROPLC>
+                % load the params that were used for training            
+                params = lfadsi_read_parameters(lfdir); %#ok<*PROPLC>
+
+                % make sure these are up to date
+                params.data_dir = r.pathLFADSInput;
+                params.lfads_save_dir = r.pathLFADSOutput;
+
+                params.batch_size = 512; % this is the number of samples used to calculate the posterior mean
+                params.checkpoint_pb_load_name = 'checkpoint_lve';
+
+                % add in allow growth field
+                params.allow_gpu_growth = r.params.c_allow_gpu_growth;
+
+                % need to remove "dataset_names" and "dataset_dims" and
+                % "temporal_spike_jitter_width"
+                params = rmfield(params, {'dataset_names', 'dataset_dims', 'temporal_spike_jitter_width'});
+                use_controller = boolean(params.ci_enc_dim);
             
-            % make sure these are up to date
-            params.data_dir = r.pathLFADSInput;
-            params.lfads_save_dir = r.pathLFADSOutput;
-            
-            params.batch_size = 512; % this is the number of samples used to calculate the posterior mean
-            params.checkpoint_pb_load_name = 'checkpoint_lve';
-            
-            % add in allow growth field
-            params.allow_gpu_growth = r.params.c_allow_gpu_growth;
-            
-            % need to remove "dataset_names" and "dataset_dims" and
-            % "temporal_spike_jitter_width"
-            params = rmfield(params, {'dataset_names', 'dataset_dims', 'temporal_spike_jitter_width'});
-            use_controller = boolean(params.ci_enc_dim);
-            
-            execstr = 'python';
-            if exist('inputParams','var')
-                % take the arguments passed, add new params, or overwrite existing ones
-                f = fields(inputParams);
-                for nn = 1:numel(f)
-                    params.(f{nn}) = inputParams.(f{nn});
+                execstr = 'python';
+                if exist('inputParams','var')
+                    % take the arguments passed, add new params, or overwrite existing ones
+                    f = fields(inputParams);
+                    for nn = 1:numel(f)
+                        params.(f{nn}) = inputParams.(f{nn});
+                    end
                 end
+            else
+                % use the RunParams to generate the params
+                paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width', 'batch_size'});
+                
+                outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
+                '--lfads_save_dir=%s --kind=posterior_sample --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
+                r.pathLFADSInput, r.pathLFADSOutput, batchSize, paramsString);
+                
             end
-            
+
             f = fields(params);
             optstr = '';
             for nf = 1:numel(f)

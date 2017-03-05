@@ -295,7 +295,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
     end
     
     methods
-        function str = generateCommandLineOptionsString(p, run)
+        function str = generateCommandLineOptionsString(p, run, varargin)
             % str = generateCommandLineOptionsString(p)
             % Generates a string of all the command line options to
             % pass directly into run_lfads.py. Also takes care of scaling
@@ -309,8 +309,13 @@ classdef RunParams < matlab.mixin.CustomDisplay
             % Returns:
             %   str : char
             
-            % get all the parameters
-            f = fields(p);
+            parser = inputParser();
+            parser.addParameter('omitFields', {}, @iscellstr);
+            parser.parse(varargin{:});
+            
+            % get all the parameters except the fields which are skipped
+            f = setdiff(fields(p), p.Results.omitFields);
+            
             % only keep the command line params
             %  these begin with 'c_'
             keepFields = false(numel(f), 1);
