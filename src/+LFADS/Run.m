@@ -482,7 +482,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             p = inputParser();
             p.addParameter('loadHyperparametersFromFile', false, @islogical);
+            p.addParameter('batchSize', 512, @isscalar);
             p.parse(varargin{:});
+            batchSize = p.Results.batchSize;
             
             if p.Results.loadHyperparametersFromFile
                 % this is the old way of doing it that isn't necessary now
@@ -497,7 +499,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 params.data_dir = r.pathLFADSInput;
                 params.lfads_save_dir = r.pathLFADSOutput;
 
-                params.batch_size = 512; % this is the number of samples used to calculate the posterior mean
+                params.batch_size = batchSize; % this is the number of samples used to calculate the posterior mean
                 params.checkpoint_pb_load_name = 'checkpoint_lve';
 
                 % add in allow growth field
@@ -516,37 +518,36 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         params.(f{nn}) = inputParams.(f{nn});
                     end
                 end
+                
+                f = fields(params);
+                optstr = '';
+                for nf = 1:numel(f)
+                    fval = params.(f{nf});
+                    %convert any numbers to strings
+                    if islogical(fval)
+                        if fval
+                            fval = 'True';
+                        else
+                            fval = 'False';
+                        end
+                    elseif isnumeric(fval)
+                        fval = num2str(fval);
+                    end
+                    optstr = strcat(optstr, sprintf(' --%s=%s',f{nf}, fval));
+                end
+
+                optstr = strcat(optstr, sprintf(' --kind=posterior_sample'));
+
+                % put the command together
+                cmd = sprintf('%s $(which run_lfads.py) %s', execstr, optstr);
             else
                 % use the RunParams to generate the params
                 paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width', 'batch_size'});
                 
-                outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
+                cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
                 '--lfads_save_dir=%s --kind=posterior_sample --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
                 r.pathLFADSInput, r.pathLFADSOutput, batchSize, paramsString);
-                
-            end
-
-            f = fields(params);
-            optstr = '';
-            for nf = 1:numel(f)
-                fval = params.(f{nf});
-                %convert any numbers to strings
-                if islogical(fval)
-                    if fval
-                        fval = 'True';
-                    else
-                        fval = 'False';
-                    end
-                elseif isnumeric(fval)
-                    fval = num2str(fval);
-                end
-                optstr = strcat(optstr, sprintf(' --%s=%s',f{nf}, fval));
-            end
-            
-            optstr = strcat(optstr, sprintf(' --kind=posterior_sample'));
-            
-            % put the command together
-            cmd = sprintf('%s $(which run_lfads.py) %s', execstr, optstr);
+            end        
         end
         
         function runLFADSPosteriorMeanCommand(r)

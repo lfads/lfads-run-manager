@@ -314,7 +314,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser.parse(varargin{:});
             
             % get all the parameters except the fields which are skipped
-            f = setdiff(fields(p), p.Results.omitFields);
+            f = setdiff(fields(p), parser.Results.omitFields);
             
             % only keep the command line params
             %  these begin with 'c_'
