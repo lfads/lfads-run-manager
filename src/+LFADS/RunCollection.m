@@ -414,7 +414,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
             ip = inputParser();
             ip.addOptional('display', '', @(x) isnumeric(x) && mod(x,1)==0);
+            ip.addOptional('portNum', 6006, @(x) isnumeric(x) && mod(x,1)==0);
             ip.addParameter('useTmuxSession', false, @islogical);
+            ip.addParameter('tmuxName', rc.name, @ischar);
             ip.parse(varargin{:});
 
             runEntry = cell(rc.nRunSpecs, rc.nParams);
@@ -426,10 +428,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                         rc.runs(s,p).pathLFADSOutput);
                 end
             end
-            str = sprintf('tensorboard --logdir=%s', strjoin(runEntry, ','));
+
+            str = sprintf('tensorboard --logdir=%s  --port=%i', strjoin(runEntry, ','), ip.Results.portNum);
 
             if ip.Results.useTmuxSession
-                str = LFADS.Utils.tmuxify_string( str, rc.name );
+                str = LFADS.Utils.tmuxify_string( str, ip.Results.tmuxName );
             end
         end
 
