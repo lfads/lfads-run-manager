@@ -34,6 +34,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         
         nDatasets % number of datasets within the datasetCollection
         path % unique folder given by rootPath/name
+        pathsForParams % cellstr of folders given by rootPath/name/{paramStr}
         fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
         fileSummaryText % path where summary text info will be written
     end
@@ -237,6 +238,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 end
                 p = fullfile(rc.rootPath, [rc.name paramSuffix]);
             end
+        end
+        
+        function pcell = get.pathsForParams(rc)
+            p = rc.path;
+            pcell = arrayfun(@(par) fullfile(p, par.generateHashName()), rc.params, 'UniformOutput', false);
         end
 
         function f = get.fileShellScriptTensorboard(r)
