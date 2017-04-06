@@ -37,6 +37,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         pathsForParams % cellstr of folders given by rootPath/name/{paramStr}
         fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
         fileSummaryText % path where summary text info will be written
+        
+        fileShellScriptRunQueue % path of shell script to launch lfadsqueue to train and sample all runs within
     end
 
     methods
@@ -224,6 +226,91 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 rc.runs = [];
             end
         end
+        
+        function prepareForLFADS(rc)
+            prog = LFADS.Utils.ProgressBar(rc.nRunsTotal, 'Generating input data for each run');
+            for iR = 1:rc.nRunsTotal
+                prog.update(iR);
+                rc.runs(iR).prepareForLFADS();
+            end
+            prog.finish();
+        end
+        
+        function deleteLFADSOutput(rc, varargin)
+            resp = input('Are you sure you want to delete EVERYTHING (type yes): ', 's');
+            if ~strcmpi(resp, 'yes')
+                return;
+            end
+            
+            for iR = 1:rc.nRunsTotal
+                rc.runs(iR).deleteLFADSOutput('confirmed', true);
+            end
+        end
+        
+        function writeShellScriptRunQueue(rc, varargin)
+            p = inputParser();
+            p.addParameter('rerun', false, @islogical);
+            p.addParameter('gpuList', [], @(x) isempty(x) || isvector(x));
+            p.addParameter('display', [], @(x) isempty(x) || isscalar(x));
+            p.addParameter('maxTasksSimultaneously', [], @(x) isempty(x) || isscalar(x));
+            p.parse(varargin{:});
+            
+            rc.writeTensorboardShellScript();
+            
+            if isempty(p.Results.display)
+                display = LFADS.Utils.getDisplay();
+                if isempty(display)
+                    error('Please specify a display');
+                end
+            else
+                display = p.Results.display;
+            end
+            
+            out_file = rc.fileShellScriptRunQueue;
+            
+            fid = fopen(out_file, 'w');
+            fprintf(fid, 'import lfadsqueue as lq\n\n');
+            fprintf(fid, 'queue_name = "%s"\n', rc.name);
+            fprintf(fid, 'tensorboard_script = "%s"\n', rc.fileShellScriptTensorboard);
+
+            if ~isempty(p.Results.gpuList)
+                gpuListStr = ['[', LFADS.Utils.strjoin(p.Results.gpuList, ', '), ']'];
+                fprintf(fid, 'gpu_list = %s\n\n', gpuListStr);
+            else
+                fprintf(fid, 'gpu_list = []\n\n');
+            end
+
+            fprintf(fid, 'task_specs = [');
+            prog = LFADS.Utils.ProgressBar(rc.nRunsTotal, 'Writing shell scripts for each run');
+            for iR = 1:rc.nRunsTotal
+                prog.update(iR);
+                rc.runs(iR).writeShellScriptLFADSTrain('display', display, 'useTmuxSession', false, ...
+                    'appendPosteriorMeanSample', true, 'teeOutput', true);
+                outfile = rc.runs(iR).fileLFADSOutput;
+                donefile = fullfile(rc.runs(iR).path, 'lfads.done');
+
+                name = sprintf('%s__%s', rc.runs(iR).paramsString, rc.runs(iR).name); %#ok<*PROPLC>
+                fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": 2000, "outfile": "%s", "donefile": "%s"}, \n', ... 
+                    name, rc.runs(iR).fileShellScriptLFADSTrain, ...
+                    outfile, donefile);
+            end
+            prog.finish();
+            fprintf(fid, ']\n\n');
+            
+            if p.Results.rerun
+                donefileStr = ', ignore_donefile=True';
+            else
+                donefileStr = '';
+            end
+            
+            if ~isempty(p.Results.maxTasksSimultaneously)
+                maxStr = sprintf(', max_tasks_simultaneously=%d', p.Results.maxTasksSimultaneously);
+            else
+                maxStr = '';
+            end
+            fprintf(fid, 'tasks = lq.run_lfads_queue(queue_name, tensorboard_script, task_specs%s%s)\n\n', maxStr, donefileStr);
+            fclose(fid);
+        end
     end
         
     methods
@@ -255,6 +342,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
         function f = get.fileSummaryText(r)
             f = fullfile(r.path, 'summary.txt');
+        end
+        
+        function f = get.fileShellScriptRunQueue(rc)
+            f = fullfile(rc.path, 'run_lfadsqueue.py');
         end
         
         function n = get.nParams(rc)

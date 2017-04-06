@@ -76,6 +76,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         fileShellScriptLFADSPosteriorMeanSample  % Location on disk where shell script for LFADS posterior mean sampling will be written
         fileShellScriptLFADSWriteModelParams % Location on disk where shell script for LFADS write model params will be written
         
+        fileLFADSOutput % output from training and sampling can be tee'd here
+        
         fileModelParams % Location on disk where model params will be written
         
         sessionNameTrain % name of tmux session that will be created if useSession = true is passed to writeShellScriptLFADSTrain
@@ -202,6 +204,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             f = fullfile(r.pathLFADSOutput, 'model_params');
         end
         
+        function f = get.fileLFADSOutput(r)
+            f = fullfile(r.path, 'lfads.out');
+        end
+        
         function n = get.nDatasets(r)
             n = numel(r.datasets);
         end
@@ -283,8 +289,37 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % Shortcut for generating and saving sequence files, LFADS input HD5 input files, and the shell script for running LFADS python code.
             r.makeSequenceFiles();
             r.makeLFADSInput();
-            f = r.writeShellScriptLFADSTrain();
-            fprintf('Shell script for training "%s": \n  %s\n', r.name, f);
+%             f = r.writeShellScriptLFADSTrain();
+%             fprintf('Shell script for training "%s": \n  %s\n', r.name, f);
+        end
+        
+        function deleteLFADSOutput(r, varargin)
+            p = inputParser();
+            p.addParameter('confirmed', false, @islogical);
+            p.parse(varargin{:});
+            
+            if ~p.Results.confirmed
+                resp = input(sprintf('Are you sure you want to delete %s:\n', r.pathLFADSOutput), 's');
+                if lower(resp(1)) ~= 'y'
+                    return;
+                end
+            end
+            
+            fprintf('Deleting %s\n', r.pathLFADSOutput);
+            cmd = sprintf('rm --preserve-root -rf "%s"', r.pathLFADSOutput);
+            [s, res] = system(cmd);
+            if s
+                error('Error deleting output: %s', res);
+            end
+            
+            if exist(r.fileLFADSOutput, 'file')
+                delete(r.fileLFADSOutput);
+            end
+            
+            donefile = fullfile(r.path, 'lfads.done');
+            if exist(donefile, 'file')
+                delete(donefile);
+            end
         end
         
         function makeSequenceFiles(r)
@@ -446,6 +481,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('keepSessionAlive', true, @islogical);
             p.addParameter('header', '#!/bin/bash', @ischar);
             p.addParameter('appendPosteriorMeanSample', false, @islogical);
+            p.addParameter('teeOutput', false, @islogical);
             p.parse(varargin{:});
             
             f = r.fileShellScriptLFADSTrain;
@@ -454,18 +490,21 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 'cuda_visible_devices', p.Results.cuda_visible_devices, ...
                 'display', p.Results.display, ...
                 'useTmuxSession', p.Results.useTmuxSession, ...
-                'keepSessionAlive', p.Results.keepSessionAlive);
+                'keepSessionAlive', p.Results.keepSessionAlive, ...
+                'teeOutput', p.Results.teeOutput);
             
             if p.Results.appendPosteriorMeanSample
-                pmString = r.buildCommandLFADSPosteriorMeanSample(...
+                % run only if train succeeds
+                pmString = [' && ', r.buildCommandLFADSPosteriorMeanSample(...
                     'cuda_visible_devices', p.Results.cuda_visible_devices, ...
                     'useTmuxSession', p.Results.useTmuxSession, ...
-                    'keepSessionAlive', p.Results.keepSessionAlive);
+                    'keepSessionAlive', p.Results.keepSessionAlive, ...
+                    'teeOutput', p.Results.teeOutput)];
             else
                 pmString = '';
             end
             
-            fprintf(fid, '%s\n%s\n%s\n', p.Results.header, trainString, pmString);
+            fprintf(fid, '%s\n%s%s\n', p.Results.header, trainString, pmString);
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
@@ -481,6 +520,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addOptional('display', '', @(x) isempty(x) || (isnumeric(x) && mod(x,1)==0));
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', true, @islogical);
+            p.addParameter('teeOutput', false, @islogical);
             p.parse(varargin{:});
             
             outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
@@ -500,6 +540,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if ~isempty(p.Results.display)
                 outputString = sprintf('DISPLAY=:%i %s', ...
                     p.Results.display, outputString);
+            end
+            
+            if p.Results.teeOutput
+                outputString = LFADS.Utils.teeify_string(outputString, r.fileLFADSOutput, false);
             end
             
             % if requested, tmux-ify the command
@@ -523,6 +567,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('cuda_visible_devices', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', false, @islogical);
+            p.addParameter('teeOutput', false, @islogical);
             p.parse(varargin{:});
             batchSize = p.Results.batchSize;
             
@@ -594,6 +639,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if ~isempty(p.Results.cuda_visible_devices)
                 cmd = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
                     p.Results.cuda_visible_devices, cmd);
+            end
+            
+            if p.Results.teeOutput
+                cmd = LFADS.Utils.teeify_string(cmd, r.fileLFADSOutput, true);
             end
             
             % if requested, tmux-ify the command
