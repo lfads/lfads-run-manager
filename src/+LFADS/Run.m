@@ -426,11 +426,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   cuda_visible_devices : int
             %     which GPUs to make visible to CUDA, e.g. 0 or 1
             %   display : int
-            %     which display to use for plot generation, e.g. 500 -->
+            %     which display to use for internal LFADS plot generation, e.g. 500 -->
             %     DISPLAY=:500
             %   useTmuxSession : bool
             %     if true, will prefix the command so that it runs within a
             %     new tmux session
+            %   appendPosteriorMeanSample : bool (false)
+            %     if true, will append the command to run posterior mean
+            %     sampling after training is finished
             %
             % Returns:
             %   file : string
@@ -441,12 +444,52 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addOptional('display', '', @(x) isnumeric(x) && mod(x,1)==0);
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', true, @islogical);
-            p.addParameter('header', '#!/bin/bash\n', @ischar);
+            p.addParameter('header', '#!/bin/bash', @ischar);
+            p.addParameter('appendPosteriorMeanSample', false, @islogical);
             p.parse(varargin{:});
             
             f = r.fileShellScriptLFADSTrain;
             fid = fopen(f, 'w');
-            outputString = r.buildLFADSTrainingCommand();
+            trainString = r.buildLFADSTrainingCommand(...
+                'cuda_visible_devices', p.Results.cuda_visible_devices, ...
+                'display', p.Results.display, ...
+                'useTmuxSession', p.Results.useTmuxSession, ...
+                'keepSessionAlive', p.Results.keepSessionAlive);
+            
+            if p.Results.appendPosteriorMeanSample
+                pmString = r.buildCommandLFADSPosteriorMeanSample(...
+                    'cuda_visible_devices', p.Results.cuda_visible_devices, ...
+                    'useTmuxSession', p.Results.useTmuxSession, ...
+                    'keepSessionAlive', p.Results.keepSessionAlive);
+            else
+                pmString = '';
+            end
+            
+            fprintf(fid, '%s\n%s\n%s\n', p.Results.header, trainString, pmString);
+            fclose(fid);
+            LFADS.Utils.chmod('uga+rx', f);
+        end
+        
+        function runLFADSTrainingCommand(r)
+            %   function runLFADSTrainingCommand(r)
+            system( sprintf('sh %s', r.fileShellScriptLFADSTrain) );
+        end
+        
+        function outputString = buildLFADSTrainingCommand(r, varargin)
+            p = inputParser();
+            p.addOptional('cuda_visible_devices', [], @(x) isempty(x) || isscalar(x));
+            p.addOptional('display', '', @(x) isempty(x) || (isnumeric(x) && mod(x,1)==0));
+            p.addParameter('useTmuxSession', false, @islogical);
+            p.addParameter('keepSessionAlive', true, @islogical);
+            p.parse(varargin{:});
+            
+            outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
+                '--lfads_save_dir=%s'], ...
+                r.pathLFADSInput, r.pathLFADSOutput);
+            
+            % use the method from +LFADS/RunParams.m
+            optionsString = r.params.generateCommandLineOptionsString(r);
+            outputString = sprintf('%s%s', outputString, optionsString);
             
             % set cuda visible devices
             if ~isempty(p.Results.cuda_visible_devices)
@@ -462,27 +505,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % if requested, tmux-ify the command
             if p.Results.useTmuxSession
                 outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNameTrain, 'keepSessionAlive', p.Results.keepSessionAlive);
-                fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNameTrain, r.sessionNameTrain);
             end
-            
-            fprintf(fid, [p.Results.header, outputString]);
-            fclose(fid);
-            LFADS.Utils.chmod('uga+rx', f);
-        end
-        
-        function runLFADSTrainingCommand(r)
-            %   function runLFADSTrainingCommand(r)
-            system( sprintf('sh %s', r.fileShellScriptLFADSTrain) );
-        end
-        
-        function outputString = buildLFADSTrainingCommand(r)
-            outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
-                '--lfads_save_dir=%s'], ...
-                r.pathLFADSInput, r.pathLFADSOutput);
-            
-            % use the method from +LFADS/RunParams.m
-            optionsString = r.params.generateCommandLineOptionsString(r);
-            outputString = sprintf('%s%s', outputString, optionsString);
         end
         
         function cmd = buildCommandLFADSPosteriorMeanSample(r, varargin)
@@ -497,6 +520,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addOptional('inputParams', @iscell)
             p.addParameter('loadHyperparametersFromFile', false, @islogical);
             p.addParameter('batchSize', 512, @isscalar);
+            p.addParameter('cuda_visible_devices', [], @(x) isempty(x) || isscalar(x));
+            p.addParameter('useTmuxSession', false, @islogical);
+            p.addParameter('keepSessionAlive', false, @islogical);
             p.parse(varargin{:});
             batchSize = p.Results.batchSize;
             
@@ -563,6 +589,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 '--lfads_save_dir=%s --kind=posterior_sample --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
                 r.pathLFADSInput, r.pathLFADSOutput, batchSize, paramsString);
             end        
+            
+            % set cuda visible devices
+            if ~isempty(p.Results.cuda_visible_devices)
+                cmd = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
+                    p.Results.cuda_visible_devices, cmd);
+            end
+            
+            % if requested, tmux-ify the command
+            if p.Results.useTmuxSession
+                cmd = LFADS.Utils.tmuxify_string(cmd, r.sessionNamePosteriorMean, 'keepSessionAlive', p.Results.keepSessionAlive );
+                fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNamePosteriorMean, r.sessionNamePosteriorMean);
+            end
         end
         
         function cmd = buildCommandLFADSWriteModelParams(r)
@@ -604,8 +642,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
            
             p = inputParser();
             p.addOptional('cuda_visible_devices', [], @isscalar);
-            p.addParameter('useTmuxSession', false, @islogical);
-            p.addParameter('keepSessionAlive', false, @islogical);
             p.addParameter('header', '#!/bin/bash\n', @ischar);
             p.KeepUnmatched = true;
             p.parse(varargin{:});
@@ -613,21 +649,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             f = r.fileShellScriptLFADSPosteriorMeanSample;
             fid = fopen(f, 'w');
             
-            outputString = r.buildCommandLFADSPosteriorMeanSample(p.Unmatched);
-
-            % set cuda visible devices
-            if ~isempty(p.Results.cuda_visible_devices)
-                outputString = sprintf('%sCUDA_VISIBLE_DEVICES=%i %s', ...
-                    p.Results.cuda_visible_devices, outputString);
-            end
+            outputString = r.buildCommandLFADSPosteriorMeanSample('cuda_visible_devices', p.Results.cuda_visible_devices, p.Unmatched);
             
-            % if requested, tmux-ify the command
-            if p.Results.useTmuxSession
-                outputString = LFADS.Utils.tmuxify_string(outputString, r.sessionNamePosteriorMean, 'keepSessionAlive', p.Results.keepSessionAlive );
-                fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNamePosteriorMean, r.sessionNamePosteriorMean);
-            end
-            
-            fprintf(fid, [p.Results.header outputString]);
+            fprintf(fid, [p.Results.header, outputString]);
             fclose(fid);
             LFADS.Utils.chmod('ug+rx', f);
         end
@@ -768,8 +792,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     seqs{iDS}(ntr).rates = squeeze(pm.rates(:,:,ntr));
                     seqs{iDS}(ntr).factors = squeeze(pm.factors(:,:,ntr));
                     seqs{iDS}(ntr).generator_states = squeeze(pm.generator_states(:,:,ntr));
-                    seqs{iDS}(ntr).controller_outputs = ...
-                        squeeze(pm.controller_outputs(:,:,ntr));
+                    if ~isempty(pm.controller_outputs)
+                        seqs{iDS}(ntr).controller_outputs = ...
+                            squeeze(pm.controller_outputs(:,:,ntr));
+                    else
+                        seqs{iDS}(ntr).controller_outputs = [];
+                    end
                 end
             end
             
