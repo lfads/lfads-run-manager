@@ -387,7 +387,7 @@ def get_open_port():
     return port
 
 def launch_tensorboard_in_tmux(session_name, tensorboard_script, port):
-    command = '{} --port={}'.format(tensorboard_script, port)
+    command = 'bash {} --port={}'.format(tensorboard_script, port)
     print(command)
     return run_command_in_tmux_session_no_monitoring(session_name, command)
     
