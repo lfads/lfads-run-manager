@@ -510,8 +510,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %     Command which can luanch TensorBoard from command line
 
             ip = inputParser();
-            ip.addOptional('display', '', @(x) isnumeric(x) && mod(x,1)==0);
-            ip.addOptional('portNum', 6006, @(x) isnumeric(x) && mod(x,1)==0);
+            ip.addOptional('port', [], @(x) isscalar(x) || isempty(x));
             ip.addParameter('useTmuxSession', false, @islogical);
             ip.addParameter('tmuxName', rc.name, @ischar);
             ip.parse(varargin{:});
@@ -519,14 +518,20 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             runEntry = cell(rc.nRunSpecs, rc.nParams);
             for s = 1:rc.nRunSpecs
                 for p = 1:rc.nParams
-                    runEntry{s,p} = sprintf('%s/%s:%s', ...
+                    runEntry{s,p} = sprintf('%s/%s:"%s"', ...
                         rc.runs(s, p).params.generateHashName(), ...
                         rc.runs(s,p).name, ...
                         rc.runs(s,p).pathLFADSOutput);
                 end
             end
 
-            str = sprintf('tensorboard --logdir=%s  --port=%i', strjoin(runEntry, ','), ip.Results.portNum);
+            if ~isempty(ip.Results.port)
+                portStr = sprintf('--port=%i', ip.Results.port);
+            else
+                portStr = '';
+            end
+                
+            str = sprintf('tensorboard --logdir=%s %s', LFADS.Utils.strjoin(runEntry, ','), portStr);
 
             if ip.Results.useTmuxSession
                 str = LFADS.Utils.tmuxify_string( str, ip.Results.tmuxName );
@@ -543,7 +548,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
             f = rc.fileShellScriptTensorboard;
             fid = fopen(f, 'w');
-            fprintf(fid, rc.getTensorboardCommand(varargin{:}));
+            fprintf(fid, '#!/bin/bash\n');
+            fprintf(fid, '%s "$@"\n', rc.getTensorboardCommand(varargin{:}));
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
