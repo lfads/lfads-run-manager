@@ -491,20 +491,27 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 'display', p.Results.display, ...
                 'useTmuxSession', p.Results.useTmuxSession, ...
                 'keepSessionAlive', p.Results.keepSessionAlive, ...
-                'teeOutput', p.Results.teeOutput);
+                'teeOutput', false); % teeify later
             
             if p.Results.appendPosteriorMeanSample
                 % run only if train succeeds
-                pmString = [' && ', r.buildCommandLFADSPosteriorMeanSample(...
+                pmString = r.buildCommandLFADSPosteriorMeanSample(...
                     'cuda_visible_devices', p.Results.cuda_visible_devices, ...
                     'useTmuxSession', p.Results.useTmuxSession, ...
                     'keepSessionAlive', p.Results.keepSessionAlive, ...
-                    'teeOutput', p.Results.teeOutput)];
-            else
-                pmString = '';
+                    'teeOutput', false); % teeify later
+                if p.Results.teeOutput
+                    trainString = sprintf('(%s && %s)', trainString, pmString);
+                else
+                    trainString = sprintf('%s && %s', trainString, pmString);
+                end
             end
             
-            fprintf(fid, '%s\n%s%s\n', p.Results.header, trainString, pmString);
+            if p.Results.teeOutput
+                trainString = LFADS.Utils.teeify_string(trainString, r.fileLFADSOutput, false);
+            end
+            
+            fprintf(fid, '%s\n%s\n', p.Results.header, trainString);
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
