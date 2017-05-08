@@ -11,6 +11,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together. Default = false.
         
         scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run
+    
+        setInFactorsMatchDataForSingleDataset logical = false; % if true, in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
     end
     
     properties
@@ -333,8 +335,16 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 thisField = f{nf};
                 thisVal = p.(thisField);
                 
+                % modify specific param values here based on other
+                % properties
                 if ismember(thisField, {'c_kl_increase_steps', 'c_l2_increase_steps'}) && ...
                         p.scaleIncreaseStepsWithDatasets
+                    % omit the field, LFADS will set to data dimensionality automatically
+                    continue;
+                end
+                
+                if ismember(thisField, {'c_in_factors_dim'}) && ...
+                        p.setInFactorsMatchDataForSingleDataset && run.nDatasets == 1
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
                 end
