@@ -339,14 +339,13 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 % properties
                 if ismember(thisField, {'c_kl_increase_steps', 'c_l2_increase_steps'}) && ...
                         p.scaleIncreaseStepsWithDatasets
-                    % omit the field, LFADS will set to data dimensionality automatically
-                    continue;
+                    % scale thisVal by nDatasets
+                    thisVal = thisVal * run.nDatasets;
                 end
                 
                 if ismember(thisField, {'c_in_factors_dim'}) && ...
                         p.setInFactorsMatchDataForSingleDataset && run.nDatasets == 1
-                    % scale thisVal by nDatasets
-                    thisVal = thisVal * run.nDatasets;
+                    thisVal = zeros(1, 'like', thisVal); % to auto scale
                 end
                 
                 % argument formatted differently for each class
