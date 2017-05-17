@@ -17,7 +17,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         %       this data will be rebinned according to RunParams .spikeBinMs field.
         %   - `.y_time` provides a time vector corresponding to the time
         %       bins of `.y`, which should be identical on each trial
-        %   - `.params.dtMS` specifies the time bin width for `.y`
+        %   - `.binWidthMs` specifies the time bin width for `.y`
+        %   - optionally: `.conditionId` specifies the condition to which each trial 
+        %       belongs. This information isn't passed to LFADS. It is used
+        %       only when building the alignment matrices for multi-session
+        %       stitching, if trial-averaging is employed.
         %
         % Parameters
         % ------------
@@ -86,12 +90,27 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
     
     methods
-        function alignmentMatrices = prepareAlignmentMatrices(seqData)
+        function r = Run(varargin)
+
+        end
+        
+        function alignmentMatrices = prepareAlignmentMatrices(r, seqData)
             % Prepares alignment matrices to seed the stitching process when using multiple days of sequence data for
             % LFADS input file generation. Generate
             % alignment matrices which specify the initial guess at the encoder matrix that converts neural activity
             % from each dataset to a common set of factors (for stitching). Specify training and validation indices
-            % (subsets of trials) on each day.
+            % (subsets of trials) on each day. Each alignment matrix
+            % should be nNeurons (that session) x nFactors.
+            % 
+            % The default implementation computes trial-averages (averaging
+            % all trials with the same conditionId label) for each neuron
+            % in each session. The trial-averages are then assembled into a
+            % large nNeuronsTotal x (nConditions x time) matrix. The top
+            % nFactors PCs of this matrix are computed (as linear
+            % combinations of neurons). For each session, we then regress
+            % the nNeuronsThisSession neurons against the top nFactors PCs. 
+            % The alignment matrix is the matrix of regression
+            % coefficients.
             %
             % Parameters
             % ------------
@@ -100,17 +119,102 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %
             % Returns
             % ----------
-            % alignmentMatrices : `nDatasets` cell of `nNeurons` x `nFactors` matrices
-            %   For each dataset, an initial guess at the encoder matrices which maps `nNeurons` (for that dataset) to a
+            % alignmentMatrices : `nDatasets` cell of `nNeuronsThisSession` x `nFactors` matrices
+            %   For each dataset, an initial guess at the encoder matrices which maps `nNeuronsThisSession` (for that dataset) to a
             %   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,
             %   PC regression can provide a reasonable set of guesses.
             
-            alignmentMatrices = {};
-            error('You must override prepareAlignmentMatrices in your Run class if params.useAlignmentMatrices is set to true');
-        end
-        
-        function r = Run(varargin)
+            % tally up the total number of channels across all datasets
+            num_channels = 0;
             
+            % gather global unique conditions
+            condField = 'conditionId';
+            c = cell(r.nDatasets, 1);
+            for nd = 1:r.nDatasets
+               c{nd} = unique({seqData{nd}.(condField)}');
+            end
+            conditions = unique(cat(1, c{:}));
+            
+            % split each struct by condition
+            for nd = 1:r.nDatasets
+                datasetInfo(nd).seq = seqData{nd}; %#ok<AGROW>
+                
+                % we are going to make a big array that spans all days.
+                % store down the indices for this day
+                this_day_num_channels = size(datasetInfo(nd).seq(1).y,1);
+                datasetInfo(nd).this_day_inds = num_channels + (1 : this_day_num_channels); %#ok<AGROW>
+                num_channels = num_channels + this_day_num_channels; 
+            end
+            
+            % we are going to make a matrix that is
+            %       num_channels x (time_per_trial x total_num_trials)
+            bin_size = r.params.spikeBinMs;
+            time_per_trial = floor(size(datasetInfo(1).seq(1).y, 2) / ...
+                bin_size);
+            all_data = nan(num_channels, time_per_trial * numel(conditions), ...
+                'single');
+            
+            % fill up the data matrix with binned data
+            for nd = 1:numel(datasetInfo)
+                [~, ic] = ismember({datasetInfo(nd).seq.(condField)}, conditions);
+                
+                % start at the zero time point for each day
+                data_time_ind = 0;
+                for ncond = 1:numel(conditions)
+                    trials_to_use_this_condition = find(ic==ncond);
+                    n_trials_this_condition = numel(trials_to_use_this_condition);
+                    binned_data = nan(numel(datasetInfo(nd).this_day_inds),time_per_trial, n_trials_this_condition);
+                    for nt = 1:n_trials_this_condition
+                        trial = ...
+                            datasetInfo(nd).seq(trials_to_use_this_condition(nt));
+                        tmp = reshape(trial.y', ...
+                            [], time_per_trial, size(trial.y,1));
+                        binned_data(:, :, nt) = squeeze(sum(tmp))';                  
+                    end
+                    
+                    binned_data = nanmean(binned_data, 3);
+                    if any(isnan(binned_data(:))) && n_trials_this_condition > 0
+                        binned_data(isnan(binned_data)) = 0;
+                        warning('NaN data found on condition %d dataset %d', ncond, nd);
+                    end
+                    all_data(datasetInfo(nd).this_day_inds, data_time_ind ...
+                        + (1:time_per_trial)) = binned_data;
+                    data_time_ind = data_time_ind + time_per_trial;
+                end % loop over conditions
+            end % loop over datasets
+            
+            % apply PCA
+            try
+                keep_pcs = pca(all_data', 'Rows', 'pairwise', 'NumComponents', r.params.pcsKeep);
+            catch
+                keep_pcs = pca(all_data', 'Rows', 'complete', 'NumComponents', r.params.pcsKeep);
+            end
+            
+            % project all data into pca space
+            all_data_centered = bsxfun(@minus, all_data, nanmean(all_data, 2));
+            dim_reduced_data = keep_pcs' * all_data_centered;
+            
+            % get a mapping from each day to the lowD space
+            [this_day_data, this_data_predicted] = cellvec(numel(datasetInfo)); % each is nChannels x time x 
+            for nd = 1:numel(datasetInfo)
+                this_day_data{nd} = all_data(datasetInfo(nd).this_day_inds, :);
+                
+                % figure out which timepoints are valid
+                tMask = ~any(isnan(this_day_data{nd}), 1) & ~any(isnan(dim_reduced_data), 1);
+                dim_reduced_data_this = bsxfun(@minus, dim_reduced_data(:, tMask), ...
+                    nanmean(dim_reduced_data(:, tMask), 2));
+                this_data_centered = bsxfun(@minus, this_day_data{nd}(:, tMask), ...
+                    nanmean(this_day_data{nd}(:, tMask), 2));
+                
+                % regress this day's data against the global PCs
+                datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
+                if any(isnan(datasetInfo(nd).alignment_matrix_cxf(:)))
+                    error('NaNs in the the alignment matrix');
+                end
+                this_data_predicted{nd} = datasetInfo(nd).alignment_matrix_cxf' * this_data_centered;
+            end
+            
+            alignmentMatrices = {datasetInfo.alignment_matrix_cxf};
         end
         
         function tf = eq(a, b)
@@ -341,6 +445,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 % call user function
                 seq = r.convertDatasetToSequenceStruct(ds);
                 
+                % check the sequence struct
+                seq = r.checkSequenceStruct(seq);
+                
                 seqFile = fullfile(r.pathSequenceFiles, sequenceFileNames{iDS}); %#ok<PROP>
                 save(seqFile, 'seq');
             end
@@ -384,13 +491,31 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     error('Could not located sequence file for dataset %d: %s', nd, seqFiles{nd});
                 end
                 tmp = load(seqFiles{nd});
-                seq{nd} = tmp.seq;
+                
+                seq{nd} = r.checkSequenceStruct(tmp.seq);
             end
             prog.finish();
             
             r.sequenceData = r.modifySequenceDataPostLoading(seq);
         end
         
+        function seq = checkSequenceStruct(r, seq)
+            assert(isfield(seq, 'y'), 'Sequence struct missing y field');
+            assert(isfield(seq, 'y_time'), 'Sequence struct missing y_time field');
+                
+            % convert old params.dtMS --> binWidthMs 
+            if ~isfield(seq, 'binWidthMs') 
+                if isfield(seq, 'params') % convert params.dtMS to spikeBinWidthMs
+                    for iS = 1:numel(seq)
+                        seq(iS).binWidthMs = seq(iS).params.dtMS;
+                    end 
+                else
+                    error('Sequence struct missing binWidthMs field');
+                end
+            end
+            assert(numel(unique([seq.binWidthMs])) == 1, 'binWidthMs mismatch');
+        end
+            
         function seq = modifySequenceDataPostLoading(r, seq)
             % Optionally make any changes or do any post-processing of sequence data upon loading
             
@@ -434,9 +559,19 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 validInds{nd} = 1 : (r.params.trainToTestRatio+1) : numel(seqData{nd});
                 trainInds{nd} = setdiff(allInds, validInds{nd});
             end
+            
+            % support old .params.dtMS field
+            if isfield(seqData{1}(1), 'params') && isfield(seqData{1}(1).params, 'dtMS')
+                inputBinSizeMs = seqData{1}(1).params.dtMS;
+            elseif isfield(seqData{1}(1), 'binWidthMs')
+                inputBinSizeMs = seqData{1}(1).binWidthMs;
+            else
+                error('Sequence data lacks binWidthMs field');
+            end
+            
             % arguments for the 'seq_to_lfads' call below
             seqToLFADSArgs = {'binSizeMs', par.spikeBinMs,  ...
-                'inputBinSizeMs', seqData{1}(1).params.dtMS, ...
+                'inputBinSizeMs', inputBinSizeMs, ...
                 'trainInds', trainInds, 'testInds', validInds};
             
             if useAlignMatrices
