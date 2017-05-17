@@ -92,6 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.RunParams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StarterExample_drive_script.html">StarterExample.drive_script</a></li>
 </ul>
 
             
@@ -141,7 +142,7 @@
 <dl class="class">
 <dt id="+LFADS.RunParams">
 <em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">RunParams</code><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.Copyable</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
+<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
 <p>Collection of parameters which are common to all <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances in a <a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a>. You
 must create a subclass of RunParams in which you specify the serialized representation of the parameters that
 will be used in paths on disk.</p>
@@ -165,6 +166,18 @@ High-level params unrelated to LFADS internals</p></div><dl class="attribute">
 <dt id="+LFADS.RunParams.useAlignmentMatrix">
 <code class="descname">useAlignmentMatrix</code><em class="property"> (logical) = false</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.useAlignmentMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.useAlignmentMatrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to use an alignment matrix when stitching datasets together. Default = false.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.scaleIncreaseStepsWithDatasets">
+<code class="descname">scaleIncreaseStepsWithDatasets</code><em class="property"> (logical) = true</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.scaleIncreaseStepsWithDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.scaleIncreaseStepsWithDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.setInFactorsMatchDataForSingleDataset">
+<code class="descname">setInFactorsMatchDataForSingleDataset</code><em class="property"> (logical) = false</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.setInFactorsMatchDataForSingleDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.setInFactorsMatchDataForSingleDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>if true, in_factors_dim will be set to the dimensionality of the data when only a single dataset is used</p>
 </dd></dl>
 
 <div class="note admonition" id="+LFADS.RunParams.RunParams_member_group_1_+LFADS::RunParams.RunParams_member_group_1">
@@ -288,6 +301,30 @@ since the prefix will be stripped from the serialization</p></div><dl class="att
 <dt id="+LFADS.RunParams.c_learning_rate_stop">
 <code class="descname">c_learning_rate_stop</code><em class="property"> = 0.00001</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_learning_rate_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_learning_rate_stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>when the learning rate reaches this threshold, stop training</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_temporal_spike_jitter_width">
+<code class="descname">c_temporal_spike_jitter_width</code><em class="property"> (uint16) = 0</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_temporal_spike_jitter_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_temporal_spike_jitter_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>jittering spike times during training, in units of bin size</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_allow_gpu_growth">
+<code class="descname">c_allow_gpu_growth</code><em class="property"> (logical) = true</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_allow_gpu_growth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_allow_gpu_growth" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_kl_ic_weight">
+<code class="descname">c_kl_ic_weight</code><em class="property"> (double) = 1</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_kl_ic_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_kl_ic_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the generator l2 cost</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_kl_co_weight">
+<code class="descname">c_kl_co_weight</code><em class="property"> (double) = 1</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_kl_co_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_kl_co_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the controller l2 cost</p>
 </dd></dl>
 
 <div class="tip admonition" id="+LFADS.RunParams.RunParams_member_group_2_+LFADS::RunParams.RunParams_member_group_2">
@@ -460,6 +497,13 @@ which property</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="+LFADS.RunParams.eq">
+[<em>tf</em>] = <code class="descname">eq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded == operator to enable equality if name,
+datasetCollection, and datasets all match</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="+LFADS.RunParams.generateSummaryText">
 [<em>str</em>] = <code class="descname">generateSummaryText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateSummaryText" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -470,18 +514,27 @@ which property</li>
 <dt id="+LFADS.RunParams.generateCommandLineOptionsString">
 [<em>str</em>] = <code class="descname">generateCommandLineOptionsString</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateCommandLineOptionsString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateCommandLineOptionsString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a string of all the command line options to
-pass directly into run_lfads.py</p>
+pass directly into run_lfads.py. Also takes care of scaling
+c_kl_increase_steps and c_l2_increase_steps by the number of
+datasets in a Run when scaleIncreaseStepsWithDatasets == true</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">char</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>run</strong> (<em>LFADS.Run</em>) &#8211; run instance for which these options will</li>
+<li><strong>generated</strong> (<em>be</em>) &#8211; </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">char</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
 </tr>
 </tbody>
 </table>
-<p>get all the parameters</p>
 </dd></dl>
 
 </dd></dl>

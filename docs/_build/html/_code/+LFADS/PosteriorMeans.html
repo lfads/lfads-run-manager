@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../StarterExample_drive_script.html">StarterExample.drive_script</a></li>
 </ul>
 
             
@@ -253,47 +254,66 @@
 116
 117
 118
-119</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans">[docs]</a><span></span><span class="k">classdef</span> <span class="n">PosteriorMeans</span>
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans">[docs]</a><span></span><span class="k">classdef</span> <span class="n">PosteriorMeans</span>
     <span class="c">% Wrapper around loaded posterior mean sampling data performed on a</span>
     <span class="c">% trained LFADS model</span>
     
     <span class="k">properties</span>
-<a name="PosteriorMeans.time"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.time">[docs]</a>        <span class="n">controller_outputs</span> <span class="c">% `nControllerOutputs x T x nTrials` controller outputs to generator inputs</span>
-<a name="PosteriorMeans.controller_outputs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.controller_outputs">[docs]</a>               <span class="n">factors</span> <span class="c">% `nFactors x T x nTrials` factor trajectories</span>
-<a name="PosteriorMeans.factors"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.factors">[docs]</a>         <span class="n">generator_ics</span> <span class="c">% nGeneratorUnits x nTrials` generator initial conditions</span>
-<a name="PosteriorMeans.generator_ics"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.generator_ics">[docs]</a>      <span class="n">generator_states</span> <span class="c">% nGeneratorUnits x T x nTrials </span>
-<a name="PosteriorMeans.generator_states"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.generator_states">[docs]</a>                 <span class="n">rates</span> <span class="c">% nNeurons x T x nTrials</span>
-<a name="PosteriorMeans.rates"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.rates">[docs]</a>             <span class="n">validInds</span> <span class="c">% list of validation trial indices</span>
-<a name="PosteriorMeans.validInds"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.validInds">[docs]</a>             <span class="n">trainInds</span> <span class="c">% list of training trial indices</span>
-<a name="PosteriorMeans.trainInds"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.trainInds">[docs]</a>                <span class="n">params</span> <span class="c">% :ref:`LFADS_RunParams` instance</span>
-<a name="PosteriorMeans.params"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.params">[docs]</a>    <span class="k">end</span>
+<a name="PosteriorMeans.time"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.time">[docs]</a>        <span class="n">time</span> <span class="c">% nTime x 1 vector of times in ms for each of the timeseries below</span>
+<a name="PosteriorMeans.controller_outputs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.controller_outputs">[docs]</a>        <span class="n">controller_outputs</span> <span class="c">% `nControllerOutputs x T x nTrials` controller outputs to generator inputs</span>
+<a name="PosteriorMeans.factors"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.factors">[docs]</a>        <span class="n">factors</span> <span class="c">% `nFactors x T x nTrials` factor trajectories</span>
+<a name="PosteriorMeans.generator_ics"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.generator_ics">[docs]</a>        <span class="n">generator_ics</span> <span class="c">% nGeneratorUnits x nTrials` generator initial conditions</span>
+<a name="PosteriorMeans.generator_states"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.generator_states">[docs]</a>        <span class="n">generator_states</span> <span class="c">% nGeneratorUnits x T x nTrials </span>
+<a name="PosteriorMeans.rates"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.rates">[docs]</a>        <span class="n">rates</span> <span class="c">% nNeurons x T x nTrials</span>
+<a name="PosteriorMeans.validInds"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.validInds">[docs]</a>        <span class="n">validInds</span> <span class="c">% list of validation trial indices</span>
+<a name="PosteriorMeans.trainInds"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.trainInds">[docs]</a>        <span class="n">trainInds</span> <span class="c">% list of training trial indices</span>
+<a name="PosteriorMeans.params"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.params">[docs]</a>        <span class="n">params</span> <span class="c">% :ref:`LFADS_RunParams` instance</span>
+    <span class="k">end</span>
     
-    <span class="k">properties</span>
+    <span class="k">properties</span><span class="p">(</span><span class="n">Dependent</span><span class="p">)</span>
 <a name="PosteriorMeans.isValid"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.isValid">[docs]</a>        <span class="n">isValid</span> <span class="c">% contains valid, loaded data, false means empty</span>
-<a name="PosteriorMeans.isValid"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.isValid">[docs]</a>        <span class="n">nControllerOutputs</span>
-<a name="PosteriorMeans.nControllerOutputs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nControllerOutputs">[docs]</a>        <span class="n">nGeneratorUnits</span> <span class="c">% number of units in the generator RNN</span>
-<a name="PosteriorMeans.nGeneratorUnits"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nGeneratorUnits">[docs]</a>        <span class="n">nFactors</span> <span class="c">% number of output factors</span>
-<a name="PosteriorMeans.nFactors"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nFactors">[docs]</a>        <span class="n">nNeurons</span> <span class="c">% number of actual neurons as provided in the training and validation datasets</span>
-<a name="PosteriorMeans.nNeurons"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nNeurons">[docs]</a>        <span class="n">T</span> <span class="c">% number of timepoints </span>
-<a name="PosteriorMeans.T"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.T">[docs]</a>        <span class="n">nTrials</span>
-<a name="PosteriorMeans.nTrials"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nTrials">[docs]</a>    <span class="k">end</span>
+<a name="PosteriorMeans.nControllerOutputs"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nControllerOutputs">[docs]</a>        <span class="n">nControllerOutputs</span>
+<a name="PosteriorMeans.nGeneratorUnits"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nGeneratorUnits">[docs]</a>        <span class="n">nGeneratorUnits</span> <span class="c">% number of units in the generator RNN</span>
+<a name="PosteriorMeans.nFactors"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nFactors">[docs]</a>        <span class="n">nFactors</span> <span class="c">% number of output factors</span>
+<a name="PosteriorMeans.nNeurons"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nNeurons">[docs]</a>        <span class="n">nNeurons</span> <span class="c">% number of actual neurons as provided in the training and validation datasets</span>
+<a name="PosteriorMeans.T"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.T">[docs]</a>        <span class="n">T</span> <span class="c">% number of timepoints </span>
+<a name="PosteriorMeans.nTrials"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.nTrials">[docs]</a>        <span class="n">nTrials</span>
+    <span class="k">end</span>
     
     <span class="k">methods</span>
-<a name="PosteriorMeans.PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.PosteriorMeans">[docs]</a><span class="k">        function</span><span class="w"> </span>pm <span class="p">=</span><span class="w"> </span><span class="nf">PosteriorMeans</span><span class="p">(</span>pms, params<span class="p">)</span><span class="w"></span>
-<a name="PosteriorMeans.PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.PosteriorMeans">[docs]</a><span class="w">            </span><span class="c">% Construct instance by copying struct fields </span>
+<a name="PosteriorMeans.PosteriorMeans"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.PosteriorMeans">[docs]</a><span class="k">        function</span><span class="w"> </span>pm <span class="p">=</span><span class="w"> </span><span class="nf">PosteriorMeans</span><span class="p">(</span>pms, params, time<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% pm = PosteriorMeans(pms, params, seq)</span>
+            <span class="c">% Construct instance by copying struct fields </span>
             <span class="c">%</span>
             <span class="c">% Args:</span>
-            <span class="c">%   pms (struct) : Posterior mean struct loaded from disk</span>
-            <span class="c">%   params (ref:`LFADS_RunParams`) : Run parameters </span>
+            <span class="c">%   pms (struct): Posterior mean struct loaded from disk</span>
+            <span class="c">%   params (LFADS.RunParams): Run parameters </span>
+            <span class="c">%   time (vector): time vector for all timeseries</span>
             
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">0</span>
-                <span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">controller_outputs</span><span class="p">;</span>
+                <span class="k">if</span> <span class="n">isfield</span><span class="p">(</span><span class="n">pms</span><span class="p">,</span> <span class="s">&#39;controller_outputs&#39;</span><span class="p">)</span>
+                    <span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">controller_outputs</span><span class="p">;</span>
+                <span class="k">else</span>
+                    <span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span> <span class="p">=</span> <span class="p">[];</span>
+                <span class="k">end</span>
                 <span class="n">pm</span><span class="p">.</span><span class="n">factors</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">factors</span><span class="p">;</span>
                 <span class="n">pm</span><span class="p">.</span><span class="n">generator_ics</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">generator_ics</span><span class="p">;</span>
                 <span class="n">pm</span><span class="p">.</span><span class="n">generator_states</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">generator_states</span><span class="p">;</span>
-                <span class="n">pm</span><span class="p">.</span><span class="n">rates</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">rates</span><span class="p">;</span>
+                
+                <span class="c">% convert rates into spikes / sec</span>
+                <span class="n">pm</span><span class="p">.</span><span class="n">rates</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">rates</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">params</span><span class="p">.</span><span class="n">spikeBinMs</span><span class="p">;</span>
                 <span class="n">pm</span><span class="p">.</span><span class="n">validInds</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">validInds</span><span class="p">;</span>
                 <span class="n">pm</span><span class="p">.</span><span class="n">trainInds</span> <span class="p">=</span> <span class="n">pms</span><span class="p">.</span><span class="n">trainInds</span><span class="p">;</span>
+                <span class="n">pm</span><span class="p">.</span><span class="n">time</span> <span class="p">=</span> <span class="n">time</span><span class="p">;</span>
             <span class="k">end</span>
             <span class="k">if</span> <span class="n">nargin</span> <span class="o">&gt;</span> <span class="mi">1</span>
                 <span class="n">pm</span><span class="p">.</span><span class="n">params</span> <span class="p">=</span> <span class="n">params</span><span class="p">;</span>
@@ -303,7 +323,7 @@
     
     <span class="k">methods</span>
 <span class="k">        function</span><span class="w"> </span>tf <span class="p">=</span><span class="w"> </span><span class="nf">get.isValid</span><span class="p">(</span>pm<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">tf</span> <span class="p">=</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span><span class="p">);</span>
+<span class="w">            </span><span class="n">tf</span> <span class="p">=</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">factors</span><span class="p">);</span>
         <span class="k">end</span>
 <span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nControllerOutputs</span><span class="p">(</span>pm<span class="p">)</span><span class="w"></span>
@@ -327,26 +347,25 @@
         <span class="k">end</span>
 <span class="k">        </span>
 <span class="k">        function</span><span class="w"> </span>n <span class="p">=</span><span class="w"> </span><span class="nf">get.nTrials</span><span class="p">(</span>pm<span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="nb">size</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">controller_outputs</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<span class="w">            </span><span class="n">n</span> <span class="p">=</span> <span class="nb">size</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">factors</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
         <span class="k">end</span>
     <span class="k">end</span>
     
     
     <span class="k">methods</span>
 <a name="PosteriorMeans.getConditionAveragedFieldValues"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.getConditionAveragedFieldValues">[docs]</a><span class="k">        function</span><span class="w"> </span>avg <span class="p">=</span><span class="w"> </span><span class="nf">getConditionAveragedFieldValues</span><span class="p">(</span>pm, field, conditionIds<span class="p">)</span><span class="w"></span>
-<a name="PosteriorMeans.getConditionAveragedFieldValues"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.getConditionAveragedFieldValues">[docs]</a><span class="w">            </span><span class="c">% Using the conditionId values, average over trials (the last dim) within each</span>
+<span class="w">            </span><span class="c">% avg = getConditionAveragedFieldValues(field, conditionIds)</span>
+            <span class="c">% Using the conditionId values, average over trials (the last dim) within each</span>
             <span class="c">% condition for a particular field in this class.</span>
-<a name="PosteriorMeans.getConditionAveragedFieldValues"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.getConditionAveragedFieldValues">[docs]</a>            <span class="c">%</span>
+            <span class="c">%</span>
             <span class="c">% Args:</span>
-            <span class="c">%   field : string</span>
-<a name="PosteriorMeans.getConditionAveragedFieldValues"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_PosteriorMeans.html#+LFADS.PosteriorMeans.getConditionAveragedFieldValues">[docs]</a>            <span class="c">%      name of field in LFADS.PosteriorMeans class</span>
-            <span class="c">%   conditionIds : vector</span>
-            <span class="c">%      condition labels with size nTrials x 1. The results of</span>
+            <span class="c">%   field (string): name of field in LFADS.PosteriorMeans class</span>
+            <span class="c">%   conditionIds (vector) : condition labels with size nTrials x 1. The results of</span>
             <span class="c">%      unique(conditionIds) will determine the ordering of the</span>
             <span class="c">%      conditions within avg</span>
             <span class="c">%</span>
             <span class="c">% Returns:</span>
-            <span class="c">%   avg : numeric</span>
+            <span class="c">%   avg (numeric):</span>
             <span class="c">%     Averaged values, will have same size as the corresponding</span>
             <span class="c">%     field in PosteriorMeans, except the last dim&#39;s size will</span>
             <span class="c">%     be nConditions == numel(unique(conditionIds)) rather than</span>

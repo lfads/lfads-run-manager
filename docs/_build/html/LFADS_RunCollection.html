@@ -92,6 +92,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StarterExample_drive_script.html">StarterExample.drive_script</a></li>
 </ul>
 
             
@@ -232,6 +233,12 @@ dataset) and particular parameter settings.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="+LFADS.RunCollection.pathsForParams">
+<em class="property">Dependent</em><code class="descname">pathsForParams</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.pathsForParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.pathsForParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>cellstr of folders given by rootPath/name/{paramStr}</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.RunCollection.fileShellScriptTensorboard">
 <em class="property">Dependent</em><code class="descname">fileShellScriptTensorboard</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.fileShellScriptTensorboard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.fileShellScriptTensorboard" title="Permalink to this definition">¶</a></dt>
 <dd><p>path the location where a shell script to launch TensorBoard for all runs will be written</p>
@@ -241,6 +248,12 @@ dataset) and particular parameter settings.</p>
 <dt id="+LFADS.RunCollection.fileSummaryText">
 <em class="property">Dependent</em><code class="descname">fileSummaryText</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.fileSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.fileSummaryText" title="Permalink to this definition">¶</a></dt>
 <dd><p>path where summary text info will be written</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunCollection.fileShellScriptRunQueue">
+<em class="property">Dependent</em><code class="descname">fileShellScriptRunQueue</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.fileShellScriptRunQueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.fileShellScriptRunQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>path of shell script to launch lfadsqueue to train and sample all runs within</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -364,9 +377,29 @@ selection mask applied to <cite>.runs</cite></td>
 <code class="descname">generateRuns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.generateRuns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.generateRuns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="+LFADS.RunCollection.prepareForLFADS">
+<code class="descname">prepareForLFADS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.prepareForLFADS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.prepareForLFADS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.deleteLFADSOutput">
+<code class="descname">deleteLFADSOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.deleteLFADSOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.deleteLFADSOutput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunCollection.writeShellScriptRunQueue">
+<code class="descname">writeShellScriptRunQueue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.writeShellScriptRunQueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.writeShellScriptRunQueue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <div class="tip admonition" id="+LFADS.RunCollection.RunCollection_member_group_4_+LFADS::RunCollection.RunCollection_member_group_4">
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
+<dt id="+LFADS.RunCollection.runTensorboard">
+<code class="descname">runTensorboard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.runTensorboard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.runTensorboard" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="+LFADS.RunCollection.ismemberRunSpecs">
 [<em>tf, idx</em>] = <code class="descname">ismemberRunSpecs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunCollection.html#RunCollection.ismemberRunSpecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunCollection.ismemberRunSpecs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine if any run specs that match runSpecSearch are found in .runSpecs.

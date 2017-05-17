@@ -21,6 +21,8 @@ LFADS Run Manager Classes
    LFADS_RunCollection
    LFADS_RunParams
    LFADS_PosteriorMeans
+   
+   StarterExample_drive_script
 
 Index and Search
 -----------------

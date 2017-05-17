@@ -95,11 +95,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function alignmentMatrices = prepareAlignmentMatrices(r, seqData)
-            % Prepares alignment matrices to seed the stitching process when using multiple days of sequence data for
-            % LFADS input file generation. Generate
-            % alignment matrices which specify the initial guess at the encoder matrix that converts neural activity
-            % from each dataset to a common set of factors (for stitching). Specify training and validation indices
-            % (subsets of trials) on each day. Each alignment matrix
+            % Prepares alignment matrices to seed the stitching process when 
+            % using multiple days of sequence data for LFADS input file generation. 
+            % Generate alignment matrices which specify the initial guess at the 
+            % encoder matrix that converts neural activity from each dataset 
+            % to a common set of factors (for stitching). Each alignment matrix
             % should be nNeurons (that session) x nFactors.
             % 
             % The default implementation computes trial-averages (averaging
@@ -131,7 +131,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             condField = 'conditionId';
             c = cell(r.nDatasets, 1);
             for nd = 1:r.nDatasets
-               c{nd} = unique({seqData{nd}.(condField)}');
+               conds = {seqData{nd}.(condField)};
+               c{nd} = unique(conds');
             end
             conditions = unique(cat(1, c{:}));
             
@@ -147,7 +148,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             
             % we are going to make a matrix that is
-            %       num_channels x (time_per_trial x total_num_trials)
+            % num_channels x (time_per_trial x total_num_trials)
             bin_size = r.params.spikeBinMs;
             time_per_trial = floor(size(datasetInfo(1).seq(1).y, 2) / ...
                 bin_size);
@@ -156,7 +157,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             % fill up the data matrix with binned data
             for nd = 1:numel(datasetInfo)
-                [~, ic] = ismember({datasetInfo(nd).seq.(condField)}, conditions);
+                [uniq, ic] = ismember({datasetInfo(nd).seq.(condField)}, conditions);
                 
                 % start at the zero time point for each day
                 data_time_ind = 0;
@@ -165,8 +166,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     n_trials_this_condition = numel(trials_to_use_this_condition);
                     binned_data = nan(numel(datasetInfo(nd).this_day_inds),time_per_trial, n_trials_this_condition);
                     for nt = 1:n_trials_this_condition
-                        trial = ...
-                            datasetInfo(nd).seq(trials_to_use_this_condition(nt));
+                        trial = datasetInfo(nd).seq(trials_to_use_this_condition(nt));
                         tmp = reshape(trial.y', ...
                             [], time_per_trial, size(trial.y,1));
                         binned_data(:, :, nt) = squeeze(sum(tmp))';                  
@@ -180,8 +180,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     all_data(datasetInfo(nd).this_day_inds, data_time_ind ...
                         + (1:time_per_trial)) = binned_data;
                     data_time_ind = data_time_ind + time_per_trial;
-                end % loop over conditions
-            end % loop over datasets
+                end
+            end
             
             % apply PCA
             try
@@ -393,8 +393,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % Shortcut for generating and saving sequence files, LFADS input HD5 input files, and the shell script for running LFADS python code.
             r.makeSequenceFiles();
             r.makeLFADSInput();
-%             f = r.writeShellScriptLFADSTrain();
-%             fprintf('Shell script for training "%s": \n  %s\n', r.name, f);
         end
         
         function deleteLFADSOutput(r, varargin)

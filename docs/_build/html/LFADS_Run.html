@@ -92,6 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StarterExample_drive_script.html">StarterExample.drive_script</a></li>
 </ul>
 
             
@@ -171,7 +172,15 @@ this data will be rebinned according to RunParams .spikeBinMs field.</p>
 </dd>
 </dl>
 </li>
-<li><p class="first"><cite>.params.dtMS</cite> specifies the time bin width for <cite>.y</cite></p>
+<li><p class="first"><cite>.binWidthMs</cite> specifies the time bin width for <cite>.y</cite></p>
+</li>
+<li><dl class="first docutils">
+<dt>optionally: <cite>.conditionId</cite> specifies the condition to which each trial</dt>
+<dd><p class="first last">belongs. This information isn&#8217;t passed to LFADS. It is used
+only when building the alignment matrices for multi-session
+stitching, if trial-averaging is employed.</p>
+</dd>
+</dl>
 </li>
 </ul>
 </dd>
@@ -243,6 +252,12 @@ this data will be rebinned according to RunParams .spikeBinMs field.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="+LFADS.Run.inputInfo">
+<code class="descname">inputInfo</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.inputInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.inputInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>parameters used to train model</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.Run.params">
 <code class="descname">params</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.params" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a> instance shared by all runs in the collection, contains parameter settings</p>
@@ -287,6 +302,12 @@ this data will be rebinned according to RunParams .spikeBinMs field.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="+LFADS.Run.lfadsInputInfoFileName">
+<em class="property">Dependent</em><code class="descname">lfadsInputInfoFileName</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.lfadsInputInfoFileName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.lfadsInputInfoFileName" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of LFADS input info .mat files (sans path)</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.Run.pathLFADSOutput">
 <em class="property">Dependent</em><code class="descname">pathLFADSOutput</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.pathLFADSOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.pathLFADSOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Path on disk where LFADS output will be written</p>
@@ -305,6 +326,24 @@ this data will be rebinned according to RunParams .spikeBinMs field.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="+LFADS.Run.fileShellScriptLFADSWriteModelParams">
+<em class="property">Dependent</em><code class="descname">fileShellScriptLFADSWriteModelParams</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.fileShellScriptLFADSWriteModelParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.fileShellScriptLFADSWriteModelParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location on disk where shell script for LFADS write model params will be written</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.fileLFADSOutput">
+<em class="property">Dependent</em><code class="descname">fileLFADSOutput</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.fileLFADSOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.fileLFADSOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>output from training and sampling can be tee&#8217;d here</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.fileModelParams">
+<em class="property">Dependent</em><code class="descname">fileModelParams</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.fileModelParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.fileModelParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location on disk where model params will be written</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.Run.sessionNameTrain">
 <em class="property">Dependent</em><code class="descname">sessionNameTrain</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.sessionNameTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.sessionNameTrain" title="Permalink to this definition">¶</a></dt>
 <dd><p>name of tmux session that will be created if useSession = true is passed to writeShellScriptLFADSTrain</p>
@@ -317,9 +356,21 @@ this data will be rebinned according to RunParams .spikeBinMs field.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="+LFADS.Run.sessionNameWriteModelParams">
+<em class="property">Dependent</em><code class="descname">sessionNameWriteModelParams</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.sessionNameWriteModelParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.sessionNameWriteModelParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>name of tmux session that will be created if useTmuxSession = true is passed to writeShellScriptLFADSWriteModelParams</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="+LFADS.Run.path">
 <em class="property">Dependent</em><code class="descname">path</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unique folder within rootPath including paramStr/name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.Run.datasetIndsInCollection">
+<em class="property">Dependent</em><code class="descname">datasetIndsInCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/Run.html#Run.datasetIndsInCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.datasetIndsInCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>indices of each dataset into datasetCollection.datasets</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -337,39 +388,44 @@ this data will be rebinned according to RunParams .spikeBinMs field.</p>
 <div class="tip admonition" id="+LFADS.Run.Run_member_group_4_+LFADS::Run.Run_member_group_4">
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
+<dt id="+LFADS.Run.Run">
+[<em>r</em>] = <code class="descname">Run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.Run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="+LFADS.Run.prepareAlignmentMatrices">
 [<em>alignmentMatrices</em>] = <code class="descname">prepareAlignmentMatrices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.prepareAlignmentMatrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.prepareAlignmentMatrices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepares alignment matrices to seed the stitching process when using multiple days of sequence data for
-LFADS input file generation. Generate
-alignment matrices which specify the initial guess at the encoder matrix that converts neural activity
-from each dataset to a common set of factors (for stitching). Specify training and validation indices
-(subsets of trials) on each day.</p>
+<dd><p>Prepares alignment matrices to seed the stitching process when
+using multiple days of sequence data for LFADS input file generation.
+Generate alignment matrices which specify the initial guess at the
+encoder matrix that converts neural activity from each dataset
+to a common set of factors (for stitching). Each alignment matrix
+should be nNeurons (that session) x nFactors.</p>
+<p>The default implementation computes trial-averages (averaging
+all trials with the same conditionId label) for each neuron
+in each session. The trial-averages are then assembled into a
+large nNeuronsTotal x (nConditions x time) matrix. The top
+nFactors PCs of this matrix are computed (as linear
+combinations of neurons). For each session, we then regress
+the nNeuronsThisSession neurons against the top nFactors PCs.
+The alignment matrix is the matrix of regression
+coefficients.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seqData</strong> (<cite>nDatasets</cite> cell of struct arrays of sequence data) &#8211; Sequence data for each dataset as returned by <cite>convertDatasetToSequenceStruct</cite></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>alignmentMatrices</strong> &#8211; For each dataset, an initial guess at the encoder matrices which maps <cite>nNeurons</cite> (for that dataset) to a
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>alignmentMatrices</strong> (<cite>nDatasets</cite> cell of <cite>nNeuronsThisSession</cite> x <cite>nFactors</cite> matrices) &#8211; For each dataset, an initial guess at the encoder matrices which maps <cite>nNeuronsThisSession</cite> (for that dataset) to a
 common set of <cite>nFactors</cite> (up to you to pick this). Seeding this well helps the stitching process. Typically,
-PC regression can provide a reasonable set of guesses.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><cite>nDatasets</cite> cell of <cite>nNeurons</cite> x <cite>nFactors</cite> matrices</td>
+PC regression can provide a reasonable set of guesses.</li>
+<li><em>tally up the total number of channels across all datasets</em></li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="+LFADS.Run.Run">
-[<em>r</em>] = <code class="descname">Run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.Run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="+LFADS.Run.eq">
-[<em>tf</em>] = <code class="descname">eq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.eq" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overloaded == operator to enable equality if name, params,
-datasets, and runCollection fields all match.</p>
 </dd></dl>
 
 <dl class="method">
@@ -390,20 +446,30 @@ datasets, and runCollection fields all match.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="+LFADS.Run.eq">
+[<em>tf</em>] = <code class="descname">eq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded == operator to enable equality if name, params,
+datasets, and runCollection fields all match.</p>
+</dd></dl>
+
 <div class="tip admonition" id="+LFADS.Run.Run_member_group_7_+LFADS::Run.Run_member_group_7">
 <p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
 </div><dl class="method">
-<dt id="+LFADS.Run.prepareForLFADS">
-<code class="descname">prepareForLFADS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.prepareForLFADS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.prepareForLFADS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate all files needed to run LFADS.
-Shortcut for generating and saving sequence files, LFADS input HD5 input files, and the shell script for running LFADS python code.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="+LFADS.Run.makeSequenceFiles">
 <code class="descname">makeSequenceFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.makeSequenceFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.makeSequenceFiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate the seqence files and save them to disk</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.loadInputInfo">
+[<em>out</em>] = <code class="descname">loadInputInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadInputInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadInputInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.checkSequenceStruct">
+[<em>seq</em>] = <code class="descname">checkSequenceStruct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.checkSequenceStruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.checkSequenceStruct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.Run.modifySequenceDataPostLoading">
@@ -429,11 +495,14 @@ Shortcut for generating and saving sequence files, LFADS input HD5 input files, 
 <li><strong>cuda_visible_devices</strong> &#8211; int
 which GPUs to make visible to CUDA, e.g. 0 or 1</li>
 <li><strong>display</strong> &#8211; int
-which display to use for plot generation, e.g. 500 &#8211;&gt;
+which display to use for internal LFADS plot generation, e.g. 500 &#8211;&gt;
 DISPLAY=:500</li>
 <li><strong>useTmuxSession</strong> &#8211; bool
 if true, will prefix the command so that it runs within a
 new tmux session</li>
+<li><strong>appendPosteriorMeanSample</strong> &#8211; bool (false)
+if true, will append the command to run posterior mean
+sampling after training is finished</li>
 </ul>
 </td>
 </tr>
@@ -480,6 +549,24 @@ new tmux session</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="+LFADS.Run.buildCommandLFADSWriteModelParams">
+[<em>cmd</em>] = <code class="descname">buildCommandLFADSWriteModelParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.buildCommandLFADSWriteModelParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.buildCommandLFADSWriteModelParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the command string for LFADS write model params</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>cmd</strong> (<em>string</em>) &#8211; Shell command for running LFADS write model params</li>
+<li><em>use the RunParams to generate the params</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="+LFADS.Run.runLFADSPosteriorMeanCommand">
 <code class="descname">runLFADSPosteriorMeanCommand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.runLFADSPosteriorMeanCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.runLFADSPosteriorMeanCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>function runLFADSPosteriorMeanCommand(r)</p>
@@ -488,8 +575,40 @@ new tmux session</li>
 <dl class="method">
 <dt id="+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample">
 [<em>f</em>] = <code class="descname">writeShellScriptLFADSPosteriorMeanSample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSPosteriorMeanSample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSPosteriorMeanSample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write a shell script used for running the LFADS posterior mean sampling. This must be run after the LFADS
-training has been started.</p>
+<dd><p>Write a shell script used for running the LFADS posterior mean sampling.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cuda_visible_devices</strong> &#8211; int
+which GPUs to make visible to CUDA, e.g. 0 or 1</li>
+<li><strong>useTmuxSession</strong> &#8211; bool
+if true, will prefix the command so that it runs within a
+new tmux session</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>file</strong> &#8211; Full path to shell script which can be used to perform LFADS posterior mean sampling on the lowest
+validation error checkpoint</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.runLFADSWriteModelParamsCommand">
+<code class="descname">runLFADSWriteModelParamsCommand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.runLFADSWriteModelParamsCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.runLFADSWriteModelParamsCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.writeShellScriptLFADSWriteModelParams">
+[<em>f</em>] = <code class="descname">writeShellScriptLFADSWriteModelParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.writeShellScriptLFADSWriteModelParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.writeShellScriptLFADSWriteModelParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a shell script used for running the LFADS write model params.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -520,6 +639,23 @@ validation error checkpoint</p>
 <dd><p>returns a sequence that has posterior mean
 values integrated</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.loadReadoutMatricesByDataset">
+[<em>readouts</em>] = <code class="descname">loadReadoutMatricesByDataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.loadReadoutMatricesByDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.loadReadoutMatricesByDataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.prepareForLFADS">
+<code class="descname">prepareForLFADS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.prepareForLFADS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.prepareForLFADS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate all files needed to run LFADS.
+Shortcut for generating and saving sequence files, LFADS input HD5 input files, and the shell script for running LFADS python code.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.Run.deleteLFADSOutput">
+<code class="descname">deleteLFADSOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/Run.html#Run.deleteLFADSOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.Run.deleteLFADSOutput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="+LFADS.Run.loadSequenceData">

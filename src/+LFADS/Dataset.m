@@ -112,6 +112,11 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
                 ds = datestr(ds.datenum, 'yyyy-mm-dd'); %#ok<CPROP>
             end
         end
+        
+        function name = getSingleRunName(ds)
+           % generate a consise name for a run with only this dataset
+           name = sprintf('single_%s', ds.name); 
+        end
     end
     
     methods(Hidden)

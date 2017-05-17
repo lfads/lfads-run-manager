@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../StarterExample_drive_script.html">StarterExample.drive_script</a></li>
 </ul>
 
             
@@ -282,7 +283,19 @@
 145
 146
 147
-148</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunSpec"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunSpec</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="RunSpec"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec">[docs]</a><span></span><span class="k">classdef</span> <span class="n">RunSpec</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span>
     <span class="c">% Represents a set of specifications for an LFADS experiment on a specific subset of datasets</span>
     <span class="c">% within a :ref:`LFADS_DatasetCollection`. RunSpec instances are used to create</span>
     <span class="c">% instances, and all runs in a collection share the same parameter settings, which are represented by a shared</span>
@@ -341,6 +354,18 @@
 
             <span class="k">if</span> <span class="o">~</span><span class="nb">isempty</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">datasetIndicesOrNames</span><span class="p">)</span>
                 <span class="n">r</span><span class="p">.</span><span class="n">selectDatasets</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">Results</span><span class="p">.</span><span class="n">datasetIndicesOrNames</span><span class="p">);</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+<a name="RunSpec.eq"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_RunSpec.html#+LFADS.RunSpec.eq">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>tf <span class="p">=</span><span class="w"> </span><span class="nf">eq</span><span class="p">(</span>a, b<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Overloaded == operator to enable equality if name,</span>
+            <span class="c">% datasetCollection, and datasets all match</span>
+            
+            <span class="n">tf</span> <span class="p">=</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">bsxfun_object</span><span class="p">(@</span><span class="n">compare</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+<span class="k">                </span>
+<span class="k">            function</span><span class="w"> </span>tf <span class="p">=</span><span class="w"> </span><span class="nf">compare</span><span class="p">(</span>a,b<span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">tf</span> <span class="p">=</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">name</span><span class="p">)</span> <span class="c">...</span>
+                    <span class="o">&amp;&amp;</span> <span class="nb">isequal</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">datasets</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">datasets</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">isequal</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">datasetCollection</span><span class="p">);</span>
             <span class="k">end</span>
         <span class="k">end</span>
 

@@ -122,7 +122,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             %     if true, default value comes from the class definition,
             %     next to each property's definition. If false, the default
             %     values come from constructing a new class of the same
-            %     type with no arguments. Default true.
+            %     type with no arguments. Default true. 
             % Returns:
             %   differ (struct) : property names and values that differ
             

@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../StarterExample_drive_script.html">StarterExample.drive_script</a></li>
 </ul>
 
             
@@ -268,7 +269,12 @@
 131
 132
 133
-134</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Dataset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Dataset</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
+134
+135
+136
+137
+138
+139</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Dataset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Dataset</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
     <span class="c">% A single-day collection of raw data to be processed by LFADS</span>
 
     <span class="k">methods</span><span class="p">(</span><span class="n">Abstract</span><span class="p">)</span>
@@ -381,6 +387,11 @@
             <span class="k">else</span>
                 <span class="n">ds</span> <span class="p">=</span> <span class="n">datestr</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">datenum</span><span class="p">,</span> <span class="s">&#39;yyyy-mm-dd&#39;</span><span class="p">);</span> <span class="c">%#ok&lt;CPROP&gt;</span>
             <span class="k">end</span>
+        <span class="k">end</span>
+<a name="Dataset.getSingleRunName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.getSingleRunName">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>name <span class="p">=</span><span class="w"> </span><span class="nf">getSingleRunName</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">           </span><span class="c">% generate a consise name for a run with only this dataset</span>
+           <span class="n">name</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;single_%s&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">);</span> 
         <span class="k">end</span>
     <span class="k">end</span>
     
