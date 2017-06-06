@@ -2,7 +2,7 @@
 
 % build the dataset collection
 dataPath = '/path/to/datasets';
-dc = StarterExample.DatasetCollection(dataRoot);
+dc = StarterExample.DatasetCollection(dataPath);
 
 % add individual datasets
 StarterExample.Dataset(dc, 'dataset001.mat');
