@@ -221,6 +221,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser.addParameter('betweenPropValue', '=', @ischar);
             parser.addParameter('afterValue', '', @ischar);
             parser.addParameter('betweenProps', ' ', @ischar);
+            parser.addParameter('onlyDifferentFromDefault', false, @islogical);
             parser.KeepUnmatched = true;
             parser.parse(varargin{:});
             
