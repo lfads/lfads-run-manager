@@ -157,7 +157,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             % fill up the data matrix with binned data
             for nd = 1:numel(datasetInfo)
-                [uniq, ic] = ismember({datasetInfo(nd).seq.(condField)}, conditions);
+                [~, ic] = ismember({datasetInfo(nd).seq.(condField)}, conditions);
                 
                 % start at the zero time point for each day
                 data_time_ind = 0;

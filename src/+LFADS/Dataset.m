@@ -1,12 +1,45 @@
 classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     % A single-day collection of raw data to be processed by LFADS
 
-    methods(Abstract)
-        % These methods you must define in order to retrieve whatever metadata are needed from this dataset
+    methods
+        % These methods you should customize in order to access the data and
+        % metadata for this dataset.
+        
+        function data = loadData(ds)
+            % Load and return this Dataset's data. The default
+            % implementation calls Matlab's load on `.path` and returns the
+            % value of single variable within, or `data` if multiple
+            % variables are present.
+            
+            in = load(ds.path);
+            flds = fieldnames(in);
+            if numel(flds) == 1
+                fld = flds{1};
+            else
+                fld = 'data';
+            end
+            data = in.(fld);
+        end
 
-       loadInfoFromData(data);
-       % This method should load any metadata about the dataset. There are no specific requirements. This simply
-       % enables an easy way to ensure that this potentially time-consuming computation is performed only once.
+        function loadInfo(ds)
+            % Load this Dataset's metadata if not already loaded
+            % Override this method directly if you wish to manually load
+            % metadata without calling `loadData` first. If you need to
+            % load the data in order to determine the metadata, then
+            % override loadInfoFromData` below and extract the metadata.
+
+            if ds.infoLoaded, return; end
+            data = ds.loadData();
+            ds.loadInfoFromData(data);
+            ds.infoLoaded = true;
+        end
+
+        function loadInfoFromData(data)
+            % This method should load any metadata about the dataset from
+            % the loaded data. You should provide an implementation for
+            % this method yourself, or override loadInfo directly
+            error('Subclasses should provide their own implementation of this method unless loadInfo() is overridden directly');
+        end
     end
 
     properties
@@ -48,7 +81,6 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
 
         nTrials
         % Number of behavioral trials recorded in this dataset
-
     end
 
     properties(Dependent)
@@ -82,21 +114,6 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             else
                 p = fullfile(ds.collection.path, ds.relPath);
             end
-        end
-
-        function data = loadData(ds)
-            % Load this Dataset's data file from .path
-            in = load(ds.path);
-            data = in.data;
-        end
-
-        function loadInfo(ds)
-            % Load this Dataset's metadata if not already loaded
-
-            if ds.infoLoaded, return; end
-            data = ds.loadData();
-            ds.loadInfoFromData(data);
-            ds.infoLoaded = true;
         end
 
         function reloadInfo(ds)

@@ -105,6 +105,16 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
 
             dc.datasets = dc.datasets(mask);
         end
+        
+        function filterHavingMinimumTrials(dc, minTrials)
+            nTrials = cat(1, dc.datasets.nTrials);
+            dc.filterDatasets(nTrials >= minTrials);
+        end
+        
+        function filterHavingMinimumTrialsForBatchSize(dc, runParams)
+            minTrials = ceil(runParams.c_batch_size * (runParams.trainToTestRatio+1));
+            dc.filterHavingMinimumTrials(minTrials);
+        end
 
         function [datasets, idx] = matchDatasetsByName(dc, names)
             % Returns the subset of datasets in this collection matching a name in names.
@@ -128,11 +138,11 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
             dc.loadInfo();
             rowNames = arrayfun(@(ds) ds.name, dc.datasets, 'UniformOutput', false);
             date = arrayfun(@(ds) ds.datestr, dc.datasets, 'UniformOutput', false);
-            saveTags = arrayfun(@(ds) strjoin(ds.saveTags, ','), dc.datasets, 'UniformOutput', false);
+            saveTags = arrayfun(@(ds) LFADS.Utils.strjoin(ds.saveTags, ','), dc.datasets, 'UniformOutput', false);
             nChannels = arrayfun(@(ds) ds.nChannels, dc.datasets, 'UniformOutput', true);
             nTrials = arrayfun(@(ds) ds.nTrials, dc.datasets, 'UniformOutput', true);
 
-            t = table(date, saveTags, nTrials, nChannels, nChannelsHighSNR, 'RowNames', rowNames);
+            t = table(date, saveTags, nTrials, nChannels, 'RowNames', rowNames);
         end
     end
 
