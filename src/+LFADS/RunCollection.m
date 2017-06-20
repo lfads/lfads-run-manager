@@ -34,6 +34,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         
         nDatasets % number of datasets within the datasetCollection
         path % unique folder given by rootPath/name
+        pathsCommonDataForParams % cellstr of folders given by rootPath/name/{data_HASH} for each params
         pathsForParams % cellstr of folders given by rootPath/name/{paramStr}
         fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
         fileSummaryText % path where summary text info will be written
@@ -227,11 +228,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
         end
         
-        function prepareForLFADS(rc)
+        function prepareForLFADS(rc, regenerate)
+            if nargin < 2
+                regenerate = false;
+            end
             prog = LFADS.Utils.ProgressBar(rc.nRunsTotal, 'Generating input data for each run');
             for iR = 1:rc.nRunsTotal
                 prog.update(iR);
-                rc.runs(iR).prepareForLFADS();
+                rc.runs(iR).prepareForLFADS(regenerate);
             end
             prog.finish();
         end
@@ -330,6 +334,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function pcell = get.pathsForParams(rc)
             p = rc.path;
             pcell = arrayfun(@(par) fullfile(p, par.generateHashName()), rc.params, 'UniformOutput', false);
+        end
+        
+        function pcell = get.pathsCommonDataForParams(rc)
+            p = rc.path;
+            pcell = arrayfun(@(par) fullfile(p, par.generateInputDataHashName()), rc.params, 'UniformOutput', false);
         end
 
         function f = get.fileShellScriptTensorboard(r)
@@ -628,7 +637,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
              header = cat(2, header, sprintf('  Path: %s\n\n', rc.path));
              header = cat(2, header, sprintf('  %d parameter settings\n', rc.nParams));
              for p = 1:rc.nParams
-                 header = cat(2, header, sprintf('  [%d %s] %s %s\n', p, rc.params(p).generateHashName, class(rc.params(p)), rc.params(p).generateShortDifferencesString()));
+                 header = cat(2, header, sprintf('  [%d %s %s] %s %s\n', ...
+                     p, rc.params(p).generateHashName, rc.params(p).generateInputDataHashName, ...
+                     class(rc.params(p)), rc.params(p).generateShortDifferencesString()));
              end
              
              header = cat(2, header, sprintf('\n  %d run specifications\n', rc.nRunSpecs));

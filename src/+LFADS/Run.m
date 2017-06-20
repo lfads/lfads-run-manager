@@ -42,7 +42,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         comment char = '' % Textual comment for convenience
         
-        version uint32 = 3; % Internal versioning allowing for graceful evolution of path settings
+        version uint32 = 4; % Internal versioning allowing for graceful evolution of path settings
     end
     
     properties
@@ -66,13 +66,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         paramsString % string representation of params generated using .params.generateString()
         
-        pathSequenceFiles % Path on disk where sequence files will be saved
+        pathCommonData % Path on disk where original data files are saved, shared by all Runs in this collection
+        
+        pathSequenceFiles % Path on disk where sequence files may be saved
         sequenceFileNames % List of sequence file names (sans path)
         
-        pathLFADSInput % Path on disk where LFADS input hd5 files will be saved
+        pathLFADSInput % Path on disk where LFADS input hd5 files for this run will be symlinked into, from their true location in pathCommonData
         lfadsInputFileNames % List of LFADS input hd5 files (sans path)
 
-        lfadsInputInfoFileName % List of LFADS input info .mat files (sans path)
+        lfadsInputInfoFileNames % List of LFADS input info .mat files (sans path)
         
         pathLFADSOutput % Path on disk where LFADS output will be written
         
@@ -253,11 +255,21 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
         
-        function p = get.pathSequenceFiles(r)
+        function p = get.pathCommonData(r)
             if isempty(r.runCollection)
                 p = '';
             else
+                p = fullfile(r.runCollection.path, r.params.generateInputDataHashName());
+            end
+        end
+        
+        function p = get.pathSequenceFiles(r)
+            if isempty(r.runCollection)
+                p = '';
+            elseif r.version < 4
                 p = fullfile(r.path, 'seq');
+            else
+                p = fullfile(r.pathCommonData, 'seq');
             end
         end
         
@@ -272,8 +284,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
         
-        function name = get.lfadsInputInfoFileName(r)
-            name = 'lfadsInputInfo.mat';
+        function names = get.lfadsInputInfoFileNames(r)
+            names = arrayfun(@(ds) sprintf('inputInfo_%s.h5',  ds.name), ...
+                    r.datasets, 'UniformOutput', false);
         end
 
         function p = get.pathLFADSInput(r)
@@ -377,7 +390,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 header = getHeader@matlab.mixin.CustomDisplay(r);
             else
                 rc = r.runCollection;
-                header = sprintf('%s\n  Path: %s\n\n  %s "%s" : %s\n\n  %d datasets in "%s"\n', r.getFirstLineHeader(), r.path, ...
+                header = sprintf('%s\n  Path: %s\n  Data: %s\n  %s "%s" : %s\n\n  %d datasets in "%s"\n', ...
+                    r.getFirstLineHeader(), r.path, r.pathCommonData, ...
                     class(r.params), r.paramsString, r.params.generateShortDifferencesString, ...
                     r.nDatasets, r.datasetCollection.name);
                 for s = 1:r.nDatasets
@@ -388,11 +402,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
     
     methods
-        function prepareForLFADS(r)
+        function prepareForLFADS(r, regenerate)
             % Generate all files needed to run LFADS.
-            % Shortcut for generating and saving sequence files, LFADS input HD5 input files, and the shell script for running LFADS python code.
-            r.makeSequenceFiles();
-            r.makeLFADSInput();
+            if nargin < 2
+                regenerate = false;
+            end
+            r.makeLFADSInput(regenerate);
         end
         
         function deleteLFADSOutput(r, varargin)
@@ -426,42 +441,65 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         function makeSequenceFiles(r)
             % Generate the seqence files and save them to disk
+            
             if isempty(r.datasets)
                 fprintf('No datasets added to Run\n');
                 return;
             end
-            
-            LFADS.Utils.mkdirRecursive(r.pathSequenceFiles);
-            
-            sequenceFileNames = r.sequenceFileNames; %#ok<PROP>
-            
+             
             prog = LFADS.Utils.ProgressBar(numel(r.datasets), 'Generating sequence files');
             for iDS = 1:numel(r.datasets)
-                ds = r.datasets(iDS);
-                prog.update(iDS, 'Generating sequence files for %s', ds.name);
-                
-                % call user function
-                seq = r.convertDatasetToSequenceStruct(ds);
-                
-                % check the sequence struct
-                seq = r.checkSequenceStruct(seq);
-                
-                seqFile = fullfile(r.pathSequenceFiles, sequenceFileNames{iDS}); %#ok<PROP>
-                save(seqFile, 'seq');
+                prog.update(iDS, 'Generating sequence file for %s', ds.name);
+                r.generateSequenceStructForDataset(iDS, true);
             end
             prog.finish();
         end
         
-        function out = loadInputInfo(r)
-            fname = fullfile(r.path, r.lfadsInputInfoFileName);
-            r.inputInfo = load(fname);
-            out = r.inputInfo;
+        function deleteSequenceFiles(r)
+            % Delete the seqence files saved to disk
+            
+            if isempty(r.datasets)
+                fprintf('No datasets added to Run\n');
+            end
+             
+            for iDS = 1:numel(r.datasets)
+                seqFile = fullfile(r.pathSequenceFiles, r.sequenceFileNames{iDS});
+                if exist(seqFile, 'file')
+                    delete(seqFile); 
+                end
+            end
+        end
+        
+        function seq = generateSequenceStructForDataset(r, datasetIndex, saveToDisk)
+            if nargin < 3
+                saveToDisk = false;
+            end 
+            ds = r.datasets(datasetIndex);
+
+            % call user function on dataset
+            seq = r.convertDatasetToSequenceStruct(ds);
+
+            % check the sequence struct returned
+            seq = r.checkSequenceStruct(seq);
+                
+            if saveToDisk
+                LFADS.Utils.mkdirRecursive(r.pathSequenceFiles);
+                seqFile = fullfile(r.pathSequenceFiles, r.sequenceFileNames{datasetIndex});
+                save(seqFile, 'seq');
+            end
         end
 
-        function seq = loadSequenceData(r, reload)
+        function out = loadInputInfo(r)
+            fnames = arrayfun(@(x) fullfile(r.path, x), r.lfadsInputInfoFileNames, 'UniformOutput', false);
+            for iDS = 1:numel(fnames)
+                out(iDS) = load(fnames{iDS}); %#ok<AGROW>
+            end
+        end
+
+        function seqCell = loadSequenceData(r, reload)
             % seq = loadSequenceData([reload = True])
-            % Load the sequence files from disk, caches them in
-            % .sequenceData.
+            % Load the sequence files from disk if they exist, or generates
+            % them if not. Caches them in .sequenceData.
             %
             % Args:
             %   reload (bool) : Reload sequence data from disk even if already found in
@@ -469,32 +507,37 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %
             % Returns:
             %   seqData (cell of struct arrays) : nDatasets cell array of sequence structures loaded from sequence files on disk
-            
-            
+
             if nargin < 2
                 reload = false;
             end
             if ~reload && ~isempty(r.sequenceData)
-                seq = r.sequenceData;
+                seqCell = r.sequenceData;
                 return;
             end
             
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
             
-            prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading sequence files');
-            seq = cell(r.nDatasets, 1);
-            for nd = 1:r.nDatasets
-                prog.update(nd);
-                if ~exist(seqFiles{nd}, 'file')
-                    error('Could not located sequence file for dataset %d: %s', nd, seqFiles{nd});
-                end
-                tmp = load(seqFiles{nd});
-                
-                seq{nd} = r.checkSequenceStruct(tmp.seq);
+            if r.nDatasets > 1
+                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading/generating sequence data');
+            else
+                prog = [];
             end
-            prog.finish();
+            seqCell = cell(r.nDatasets, 1);
+            for iDS = 1:r.nDatasets
+                if ~isempty(prog), prog.update(iDS); end
+                if ~exist(seqFiles{iDS}, 'file')
+                    % generate on the fly
+                    seqCell{iDS} = r.generateSequenceStructForDataset(iDS, false);
+                else
+                    % load from disk
+                    tmp = load(seqFiles{iDS});
+                    seqCell{iDS} = r.checkSequenceStruct(tmp.seq);
+                end
+            end
+            if ~isempty(prog), prog.finish(); end
             
-            r.sequenceData = r.modifySequenceDataPostLoading(seq);
+            r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
         end
         
         function seq = checkSequenceStruct(r, seq)
@@ -519,71 +562,148 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
         end
         
-        function makeLFADSInput(r)
-            % Generate the LFADS input HD5 files and save them to disk
+        function deleteLFADSInputFiles(r)
+            % Delete the seqence files saved to disk
+            
+            if isempty(r.datasets)
+                fprintf('No datasets added to Run\n');
+            end
+             
+            fnames = r.lfadsInputFileNames;
+            fnamesInfo = r.lfadsInputInfoFileNames;
+            for iDS = 1:numel(r.datasets)
+                file = fullfile(r.pathCommonData, fnames{iDS});
+                if exist(file, 'file')
+                    delete(file); 
+                end
+                
+                file = fullfile(r.pathCommonData, fnamesInfo{iDS});
+                if exist(file, 'file')
+                    delete(file); 
+                end
+                
+                file = fullfile(r.pathLFADSInput, fnames{iDS});
+                if exist(file, 'file')
+                    delete(file); 
+                end
+                
+                file = fullfile(r.pathLFADSInput, fnamesInfo{iDS});
+                if exist(file, 'file')
+                    delete(file); 
+                end
+            end
+        end
+        
+        function makeLFADSInput(r, regenerate)
+            % Generate the LFADS input HD5 files and save them to disk in the pathCommonData folder. 
+            % If a file already exists, keep the existing file unless
+            % regenerate is true. Then symlink the HD5 files used by this
+            % run into pathLFADSInput.
+            %
+            % Args:
+            %   regenerate (bool) : Regenerate HD5 files on disk. If false,
+            %     the existing files will be left alone.
+            
+            if nargin < 2
+                regenerate = false;
+            end
             
             seqs = {};
             validInds = {};
             trainInds = {};
             
             par = r.params;
-            
-            % load sequence data
-            seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
-            
-            % load seq files
-            seqData = cell(r.nDatasets, 1);
-            prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading sequence files');
-            for nd = 1:r.nDatasets
-                prog.update(nd);
-                tmp = load(seqFiles{nd});
-                seqData{nd} = tmp.seq;
+            if regenerate
+                r.deleteSequenceFiles();
             end
-            prog.finish();
+            seqData = r.loadSequenceData(regenerate);
             
-            % if there are multiple datasets, we need an alignment matrix
-            if r.nDatasets > 1 && r.params.useAlignmentMatrix
-                % call out to abstract dataset specific method
-                useAlignMatrices = true;
-                alignmentMatrices= r.prepareAlignmentMatrices(seqData);
-            else
-                useAlignMatrices = false;
+            % check which files need to be regenerate
+            maskGenerate = true(r.nDatasets, 1);
+            fnames = r.lfadsInputFileNames;
+            if ~regenerate
+                for iDS = 1:r.nDatasets
+                    fname = fullfile(r.pathCommonData, fnames{iDS});
+                    if exist(fname, 'file')
+                        maskGenerate(iDS) = false;
+                    end
+                end
+            end
+                    
+            if any(maskGenerate)
+                % if there are multiple datasets, we need an alignment matrix
+                if r.nDatasets > 1 && r.params.useAlignmentMatrix
+                    % call out to abstract dataset specific method
+                    useAlignMatrices = true;
+                    alignmentMatrices= r.prepareAlignmentMatrices(seqData);
+                else
+                    useAlignMatrices = false;
+                end
+
+                % choose validation and training trial indices
+                [validIndsCell, trainIndsCell] = deal(cell(r.nDatasets, 1));
+                for nd = 1:r.nDatasets
+                    allInds = 1:numel(seqData{nd});
+                    validIndsCell{nd} = 1 : (r.params.trainToTestRatio+1) : numel(seqData{nd});
+                    trainIndsCell{nd} = setdiff(allInds, validIndsCell{nd});
+                end
+
+                % support old .params.dtMS field
+                if isfield(seqData{1}(1), 'params') && isfield(seqData{1}(1).params, 'dtMS')
+                    inputBinSizeMs = seqData{1}(1).params.dtMS;
+                elseif isfield(seqData{1}(1), 'binWidthMs')
+                    inputBinSizeMs = seqData{1}(1).binWidthMs;
+                else
+                    error('Sequence data lacks binWidthMs field');
+                end
+
+                % arguments for the 'seq_to_lfads' call below
+                seqToLFADSArgs = {'binSizeMs', par.spikeBinMs,  ...
+                    'inputBinSizeMs', inputBinSizeMs, ...
+                    'trainInds', trainIndsCell(maskGenerate), 'testInds', validIndsCell(maskGenerate)};
+
+                if useAlignMatrices
+                    seqToLFADSArgs{end+1} = 'alignment_matrix_cxf';
+                    seqToLFADSArgs{end+1} = alignmentMatrices(maskGenerate);
+                end
+
+                % write the actual lfads input file
+                LFADS.Utils.mkdirRecursive(r.pathCommonData);
+                LFADS.seq_to_lfads(seqData(maskGenerate), r.pathCommonData, r.lfadsInputFileNames, ...
+                    seqToLFADSArgs{:});
+                
+                % save input info file for each dataset generated
+                inputInfoNames = r.lfadsInputInfoFileNames;
+                for iDS = 1:r.nDatasets
+                    paramInputDataHash = r.params.generateInputDataHash(); %#ok<*NASGU>
+                    if maskGenerate(iDS)
+                        trainInds = trainIndsCell{iDS};
+                        validInds = validIndsCell{iDS};
+                        fname = fullfile(r.pathCommonData, inputInfoNames{iDS});
+                        save(fname, 'trainInds', 'validInds', 'paramInputDataHash');
+                    end
+                end
             end
             
-            % choose validation and training trial indices
-            [validInds, trainInds] = deal(cell(r.nDatasets, 1));
-            for nd = 1:r.nDatasets
-                allInds = 1:numel(seqData{nd});
-                validInds{nd} = 1 : (r.params.trainToTestRatio+1) : numel(seqData{nd});
-                trainInds{nd} = setdiff(allInds, validInds{nd});
+            % check which files need to be symlinked from pathCommonData
+            % into pathLFADSInput
+            LFADS.Utils.mkdirRecursive(r.pathLFADSInput);
+            maskLink = true(r.nDatasets, 1);
+            fnames = r.lfadsInputFileNames;
+            fnamesInputInfo = r.lfadsInputInfoFileNames;
+            for iDS = 1:r.nDatasets
+                origName = fullfile(r.pathCommonData, fnames{iDS});
+                linkName = fullfile(r.pathLFADSInput, fnames{iDS});
+                if ~exist(linkName, 'file') || regenerate
+                    LFADS.Utils.makeSymLink(origName, linkName);
+                end
+                
+                origName = fullfile(r.pathCommonData, fnamesInputInfo{iDS});
+                linkName = fullfile(r.pathLFADSInput, fnamesInputInfo{iDS});
+                if ~exist(linkName, 'file') || regenerate
+                    LFADS.Utils.makeSymLink(origName, linkName);
+                end
             end
-            
-            % support old .params.dtMS field
-            if isfield(seqData{1}(1), 'params') && isfield(seqData{1}(1).params, 'dtMS')
-                inputBinSizeMs = seqData{1}(1).params.dtMS;
-            elseif isfield(seqData{1}(1), 'binWidthMs')
-                inputBinSizeMs = seqData{1}(1).binWidthMs;
-            else
-                error('Sequence data lacks binWidthMs field');
-            end
-            
-            % arguments for the 'seq_to_lfads' call below
-            seqToLFADSArgs = {'binSizeMs', par.spikeBinMs,  ...
-                'inputBinSizeMs', inputBinSizeMs, ...
-                'trainInds', trainInds, 'testInds', validInds};
-            
-            if useAlignMatrices
-                seqToLFADSArgs{end+1} = 'alignment_matrix_cxf';
-                seqToLFADSArgs{end+1} = alignmentMatrices;
-            end
-            
-            % write the actual lfads input file
-            LFADS.seq_to_lfads(seqData, r.pathLFADSInput, r.lfadsInputFileNames, ...
-                seqToLFADSArgs{:});
-            
-            fname = fullfile(r.path, r.lfadsInputInfoFileName);
-            params = r.params; %#ok<*NASGU,PROP>
-            save(fname, 'trainInds', 'validInds', 'params');
         end
         
         function f = writeShellScriptLFADSTrain(r, varargin)
@@ -921,12 +1041,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             seq = r.loadSequenceData();
             
-            info = load(fullfile(r.path, r.lfadsInputInfoFileName));
-            
-            if ~isequal(info.params, r.params)
-                warning('Params saved for run in lfadsInputInfo.mat do not match. See params inside %s.', fullfile(r.path, r.lfadsInputInfoFileName));
+            info = r.loadInputInfo();
+            % check hashes actually match
+            thisHash = r.param.generateInputDataHash();
+            for iDS = 1:r.nDatasets
+                if ~isequal(info(iDS).paramInputDataHash, thisHash)
+                    error('Input data param hash saved for run %d in %s does not match', iDS, r.lfadsInputInfoFileNames{1});
+                end
             end
-                
+            
             [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
             for iDS = 1:r.nDatasets
@@ -944,14 +1067,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
-                    info.validInds{iDS}, info.trainInds{iDS});
+                    info(iDS).validInds, info(iDS).trainInds);
                 
                 dt_y = seq{iDS}(1).params.dtMS;
                 dt_pm = r.params.spikeBinMs;
                 rebin = dt_pm / dt_y;
                 time = seq{iDS}(1).y_time(1:rebin:end);
                 
-                pms(iDS) = LFADS.PosteriorMeans(pmData, info.params, time); %#ok<AGROW>
+                pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time); %#ok<AGROW>
             end
             prog.finish();
             
