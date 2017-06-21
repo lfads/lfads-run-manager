@@ -1,13 +1,18 @@
-function success = makeSymLink(src, link)
-% makeSymLink(src, linkDest)
+function success = makeSymLink(src, link, expandSource)
+% makeSymLink(src, linkDest, expandPaths)
 
-    src = LFADS.Utils.GetFullPath(src);
+    if nargin < 3
+        expandSource = true;
+    end
+
+    if expandSource % leave false for relative symlink
+        src = LFADS.Utils.GetFullPath(src);
+    end
+        
     link = LFADS.Utils.GetFullPath(link);
     LFADS.Utils.mkdirRecursive(fileparts(link));
-    if exist(link, 'file')
-        delete(link);
-    end
-    cmd = sprintf('ln -s "%s" "%s"', src, link);
+
+    cmd = sprintf('ln -sfn "%s" "%s"', src, link);
     [status, output] = unix(cmd);
     
     if status

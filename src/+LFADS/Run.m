@@ -692,13 +692,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             fnames = r.lfadsInputFileNames;
             fnamesInputInfo = r.lfadsInputInfoFileNames;
             for iDS = 1:r.nDatasets
-                origName = fullfile(r.pathCommonData, fnames{iDS});
+                % make link relative (from
+                % runCollection/param_HASH/runName/lfadsInput/ to
+                % runCollection/data_HASH/)
+                origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), fnames{iDS});
+                % origName = fullfile(r.pathCommonData, fnames{iDS});
+
                 linkName = fullfile(r.pathLFADSInput, fnames{iDS});
                 if ~exist(linkName, 'file') || regenerate
-                    LFADS.Utils.makeSymLink(origName, linkName);
+                    LFADS.Utils.makeSymLink(origName, linkName, false);
                 end
                 
-                origName = fullfile(r.pathCommonData, fnamesInputInfo{iDS});
+                % make link relative
+                origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), fnamesInputInfo{iDS});
+                % origName = fullfile(r.pathCommonData, fnamesInputInfo{iDS});
                 linkName = fullfile(r.pathLFADSInput, fnamesInputInfo{iDS});
                 if ~exist(linkName, 'file') || regenerate
                     LFADS.Utils.makeSymLink(origName, linkName);
