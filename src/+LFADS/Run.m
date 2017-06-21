@@ -490,7 +490,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
 
         function out = loadInputInfo(r)
-            fnames = arrayfun(@(x) fullfile(r.path, x), r.lfadsInputInfoFileNames, 'UniformOutput', false);
+            fnames = cellfun(@(x) fullfile(r.path, x), r.lfadsInputInfoFileNames, 'UniformOutput', false);
             for iDS = 1:numel(fnames)
                 out(iDS) = load(fnames{iDS}); %#ok<AGROW>
             end
@@ -616,7 +616,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if regenerate
                 r.deleteSequenceFiles();
             end
-            seqData = r.loadSequenceData(regenerate);
             
             % check which files need to be regenerate
             maskGenerate = true(r.nDatasets, 1);
@@ -631,6 +630,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
                     
             if any(maskGenerate)
+                seqData = r.loadSequenceData(regenerate);
+                
                 % if there are multiple datasets, we need an alignment matrix
                 if r.nDatasets > 1 && r.params.useAlignmentMatrix
                     % call out to abstract dataset specific method
@@ -708,7 +709,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 % origName = fullfile(r.pathCommonData, fnamesInputInfo{iDS});
                 linkName = fullfile(r.pathLFADSInput, fnamesInputInfo{iDS});
                 if ~exist(linkName, 'file') || regenerate
-                    LFADS.Utils.makeSymLink(origName, linkName);
+                    LFADS.Utils.makeSymLink(origName, linkName, false);
                 end
             end
         end
