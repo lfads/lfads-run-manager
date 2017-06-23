@@ -285,7 +285,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function names = get.lfadsInputInfoFileNames(r)
-            names = arrayfun(@(ds) sprintf('inputInfo_%s.h5',  ds.name), ...
+            names = arrayfun(@(ds) sprintf('inputInfo_%s.mat',  ds.name), ...
                     r.datasets, 'UniformOutput', false);
         end
 
@@ -490,7 +490,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
 
         function out = loadInputInfo(r)
-            fnames = cellfun(@(x) fullfile(r.path, x), r.lfadsInputInfoFileNames, 'UniformOutput', false);
+            fnames = cellfun(@(x) fullfile(r.pathLFADSInput, x), r.lfadsInputInfoFileNames, 'UniformOutput', false);
             for iDS = 1:numel(fnames)
                 out(iDS) = load(fnames{iDS}); %#ok<AGROW>
             end
@@ -618,13 +618,19 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             
             % check which files need to be regenerate
-            maskGenerate = true(r.nDatasets, 1);
+            maskGenerate = false(r.nDatasets, 1);
             fnames = r.lfadsInputFileNames;
+            inputInfoNames = r.lfadsInputInfoFileNames;
             if ~regenerate
                 for iDS = 1:r.nDatasets
                     fname = fullfile(r.pathCommonData, fnames{iDS});
-                    if exist(fname, 'file')
-                        maskGenerate(iDS) = false;
+                    if ~exist(fname, 'file')
+                        maskGenerate(iDS) = true;
+                    end
+                    
+                    fname = fullfile(r.pathCommonData, inputInfoNames{iDS});
+                    if ~exist(fname, 'file')
+                        maskGenerate(iDS) = true;
                     end
                 end
             end
@@ -1051,7 +1057,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             info = r.loadInputInfo();
             % check hashes actually match
-            thisHash = r.param.generateInputDataHash();
+            thisHash = r.params.generateInputDataHash();
             for iDS = 1:r.nDatasets
                 if ~isequal(info(iDS).paramInputDataHash, thisHash)
                     error('Input data param hash saved for run %d in %s does not match', iDS, r.lfadsInputInfoFileNames{1});
@@ -1065,22 +1071,29 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
                     warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
                         iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
-                    continue;
+                    pms = [];
+                    break;
                 end
                 if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
                     warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
-                    continue;
+                    pms = [];
+                    break;
                 end
                 
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info(iDS).validInds, info(iDS).trainInds);
                 
-                dt_y = seq{iDS}(1).params.dtMS;
+                if isfield(seq{iDS}, 'binWidthMs')
+                    dt_y = seq{iDS}(1).binWidthMs;
+                else
+                    dt_y = seq{iDS}(1).params.dtMS;
+                end
                 dt_pm = r.params.spikeBinMs;
                 rebin = dt_pm / dt_y;
                 time = seq{iDS}(1).y_time(1:rebin:end);
+                time = time(1:size(pmData.rates, 2));
                 
                 pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time); %#ok<AGROW>
             end
