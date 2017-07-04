@@ -17,6 +17,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run
     
         setInFactorsMatchDataForSingleDataset logical = false; % if true, in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
+        
+        memoryRequired = 2000;  % In MB, the GPU memory required for this Run
     end
     
     properties
@@ -33,6 +35,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_gen_dim uint16 = 100; % generator network size
         c_keep_prob double = 0.95; % randomly drop units during each training pass
         c_learning_rate_decay_factor double = 0.98; % how quickly to decrease the learning rate
+        c_early_stop_n_to_compare uint16 = 1000;  % number of epochs with unimproved smoothed validation recunstruction cost before deciting to stop
+        c_early_stop_smoother_coef = 0.7;  % smoother coefficient for smoothing the recunstruction cost
         c_device char = '/gpu:0'; % which visible GPU/CPU to use
         c_co_dim uint16 = 4;
         c_do_causal_controller logical = false; % restrict input encoder from seeing the future?
@@ -44,10 +48,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_controller_input_lag uint16 = 1;
         c_ic_dim uint16 = 64; % dimensionality of the initial conditions
         c_con_dim uint16 = 128; %controller dimensionality
-        
+        c_output_dist = 'poisson'; % Output Distribution: 'poisson' or 'gaussian'
+         
         c_learning_rate_stop = 0.00001; % when the learning rate reaches this threshold, stop training
         c_temporal_spike_jitter_width uint16 = 0; % jittering spike times during training, in units of bin size
-
+        
         c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
         c_kl_ic_weight double = 1; % how much to weight the generator l2 cost
         c_kl_co_weight double = 1; % how much to weight the controller l2 cost

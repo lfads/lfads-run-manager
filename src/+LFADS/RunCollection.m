@@ -25,6 +25,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         runs % `nRunSpecs` x `nParams` matrix of :ref:`LFADS_Run` instances
         params % array of RunParams instances
         runSpecs % array of :ref:`LFADS_RunSpec` instances used to specify the runs for each param setting
+        runResults % array of LFADS training results 
     end
 
     properties(Dependent)
@@ -78,6 +79,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function addRunSpec(rc, runSpecs)
             % Adds new RunSpec instance(s) to this RunCollection.
             % Automatically appends new runs to `.runs`.
+            % And saves this RunCollection into a .mat file in the current
+            % folder
             %
             % Args:
             %   runSpec : LFADS.RunSpec
@@ -105,6 +108,19 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             
             rc.generateRuns();
+            
+        end
+        
+        function saveRunCollection(rc, filepath)
+            % Saves the RunCollection Object to disk
+            
+            if ~exist('filepath', 'var')
+                filepath = [rc.path '/'];
+            end
+            Opt = struct('Format', 'hex', 'Method', 'MD5');
+            rcHash = LFADS.Utils.DataHash([rc.runs(:).paramsString], Opt);
+            mkdir(filepath);
+            save([ filepath 'RC_' rc.name '_' rcHash(1:8)], 'rc');
         end
         
         function clearRunSpecs(rc)
@@ -240,6 +256,39 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             prog.finish();
         end
         
+        function LoadRunResults(rc)
+            % Load LFADS training Results to this RunCollection.
+            % Under the field name `RunResults`.
+            %
+            numRuns = rc.nRunsTotal;
+            smootherParam = 0.6;
+            RunResults(numRuns).ReconVal = [];
+            for i = 1:numRuns
+                outlogfile = [rc.runs(i).pathLFADSOutput '/fitlog.csv'];
+                if ~exist(outlogfile, 'file')
+                    fprintf('Result file not found: %s\n', outlogfile)
+                    continue;
+                end
+                [total_tr, total_val, recon_tr, recon_val, kl_tr, kl_val, l2, kl_w, l2_w] = LFADS.Utils.readcostsfromcsv(outlogfile);
+                startIdx = max([rc.runs(i).params.c_kl_increase_steps, rc.runs(i).params.c_l2_increase_steps]) + 100;
+                %smoothReconVal = recon_val(startIdx:end); % Without Smoothing
+                smoothReconVal = smooth(recon_val(startIdx:end), 10, 'moving');
+                [minVal, minIdx] = min(smoothReconVal);
+                RunResults(i).ReconVal = recon_val;
+                RunResults(i).ReconTr = recon_tr;
+                RunResults(i).KlVal = kl_val;
+                RunResults(i).KlTr = kl_tr;
+                RunResults(i).L2 = l2;
+                RunResults(i).TotalVal = total_val;
+                RunResults(i).TotalTr = total_tr;
+                RunResults(i).KlW = kl_w;
+                RunResults(i).L2W = l2_w;
+                RunResults(i).IdxMinReconVal = minIdx + startIdx - 1;
+                RunResults(i).MinReconVal = minVal;
+            end
+            rc.runResults = RunResults;
+        end
+        
         function deleteLFADSOutput(rc, varargin)
             resp = input('Are you sure you want to delete EVERYTHING (type yes): ', 's');
             if ~strcmpi(resp, 'yes')
@@ -290,12 +339,15 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 prog.update(iR);
                 rc.runs(iR).writeShellScriptLFADSTrain('display', display, 'useTmuxSession', false, ...
                     'appendPosteriorMeanSample', true, 'teeOutput', true);
+                memory_req = rc.runs(iR).params.memoryRequired;
+                
                 outfile = rc.runs(iR).fileLFADSOutput;
                 donefile = fullfile(rc.runs(iR).path, 'lfads.done');
+                
 
                 name = sprintf('%s__%s', rc.runs(iR).paramsString, rc.runs(iR).name); %#ok<*PROPLC>
-                fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": 2000, "outfile": "%s", "donefile": "%s"}, \n', ... 
-                    name, rc.runs(iR).fileShellScriptLFADSTrain, ...
+                fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": %d, "outfile": "%s", "donefile": "%s"}, \n', ... 
+                    name, rc.runs(iR).fileShellScriptLFADSTrain, memory_req, ...
                     outfile, donefile);
             end
             prog.finish();

@@ -310,7 +310,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function f = get.fileShellScriptLFADSPosteriorMeanSample(r)
-            f = fullfile(r.path, 'lfads_posterior_mean_sample.sh');
+            f = fullfile(r.path, 'lfads_posterior_mean_sample_and_average.sh');
         end
         
         function f = get.fileShellScriptLFADSWriteModelParams(r)
@@ -350,14 +350,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   list of file names for validation posterior samples
             
             if r.version < 2
-                trainList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_train_posterior_sample',  [r.nameWithParams '_' ds.name]), ...
+                trainList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_train_posterior_sample_and_average',  [r.nameWithParams '_' ds.name]), ...
                     r.datasets, 'UniformOutput', false);
-                validList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_valid_posterior_sample',  [r.nameWithParams '_' ds.name]), ...
+                validList = arrayfun(@(ds) sprintf('model_runs_%s_spikes.h5_valid_posterior_sample_and_average',  [r.nameWithParams '_' ds.name]), ...
                     r.datasets, 'UniformOutput', false);
             else
-                trainList = arrayfun(@(ds) sprintf('model_runs_%s.h5_train_posterior_sample', ds.name), ...
+                trainList = arrayfun(@(ds) sprintf('model_runs_%s.h5_train_posterior_sample_and_average', ds.name), ...
                     r.datasets, 'UniformOutput', false);
-                validList = arrayfun(@(ds) sprintf('model_runs_%s.h5_valid_posterior_sample', ds.name), ...
+                validList = arrayfun(@(ds) sprintf('model_runs_%s.h5_valid_posterior_sample_and_average', ds.name), ...
                     r.datasets, 'UniformOutput', false);
             end
         end
@@ -676,8 +676,16 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
                 % write the actual lfads input file
                 LFADS.Utils.mkdirRecursive(r.pathCommonData);
-                LFADS.seq_to_lfads(seqData(maskGenerate), r.pathCommonData, r.lfadsInputFileNames, ...
+                
+                % call the relavant routins for writing the spikes or
+                % continuous time-series data 
+                if strcmp(r.params.c_output_dist, 'gaussian')   % Gaussian distribution
+                    LFADS.cont_seq_to_lfads(seqData(maskGenerate), r.pathCommonData, r.lfadsInputFileNames, ...
                     seqToLFADSArgs{:});
+                else        % Poission distribution
+                    LFADS.seq_to_lfads(seqData(maskGenerate), r.pathCommonData, r.lfadsInputFileNames, ...
+                    seqToLFADSArgs{:});
+                end
                 
                 % save input info file for each dataset generated
                 inputInfoNames = r.lfadsInputInfoFileNames;
@@ -896,7 +904,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     optstr = strcat(optstr, sprintf(' --%s=%s',f{nf}, fval));
                 end
 
-                optstr = strcat(optstr, sprintf(' --kind=posterior_sample'));
+                optstr = strcat(optstr, sprintf(' --kind=posterior_sample_and_average'));
 
                 % put the command together
                 cmd = sprintf('%s $(which run_lfads.py) %s', execstr, optstr);
@@ -905,7 +913,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width', 'batch_size'});
                 
                 cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
-                '--lfads_save_dir=%s --kind=posterior_sample --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
+                '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
                 r.pathLFADSInput, r.pathLFADSOutput, batchSize, paramsString);
             end        
             
@@ -1090,11 +1098,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 else
                     dt_y = seq{iDS}(1).params.dtMS;
                 end
-                dt_pm = r.params.spikeBinMs;
-                rebin = dt_pm / dt_y;
-                time = seq{iDS}(1).y_time(1:rebin:end);
-                time = time(1:size(pmData.rates, 2));
-                
+                if strcmp(r.params.c_output_dist, 'poisson')
+                    dt_pm = r.params.spikeBinMs;
+                    rebin = dt_pm / dt_y;
+                    time = seq{iDS}(1).y_time(1:rebin:end);
+                    time = time(1:size(pmData.rates, 2));
+                else        % if gaussian
+                    time = seq{iDS}(1).y_time;
+                end
                 pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time); %#ok<AGROW>
             end
             prog.finish();

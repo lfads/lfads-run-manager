@@ -45,7 +45,10 @@ classdef PosteriorMeans
                 pm.generator_states = pms.generator_states;
                 
                 % convert rates into spikes / sec
-                pm.rates = pms.rates * 1000 / params.spikeBinMs;
+                if strcmp(params.c_output_dist, 'poisson')
+                    pm.rates = pms.rates * 1000 / params.spikeBinMs;
+                end
+                
                 pm.validInds = pms.validInds;
                 pm.trainInds = pms.trainInds;
                 pm.time = time;
