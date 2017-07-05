@@ -1,4 +1,7 @@
 classdef HyperParamsSet < handle
+    % Create the HyperParamsSet object
+    % For setting a parameter as the copy of another one set: DistrType = 'copy',
+    % DistrParam = <name of the source parameter to be copied>
     properties
         ParamsSet
         ParamsSamples

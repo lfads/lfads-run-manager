@@ -32,9 +32,10 @@ classdef HyperParam < handle
                         % For setting a parameter as the copy of another one set: 
                         % DistrType = 'copy',
                         % DistrParam = <name of the source parameter to be copied>
+                    
                     case 'constant'
                         V = HP.ParamValueVec;
-                        if length(V) > 1
+                        if length(V) > 1 || isempty(nsample)
                            Samples = V; % use the input vector by the user
                         else
                             Samples = V * ones(1, nsample);
@@ -42,9 +43,13 @@ classdef HyperParam < handle
                         
                     case 'grid'
                         numGrids = HP.ParamDistrParams;
-                        Vmin = HP.ParamValueVec(1);
-                        Vmax = HP.ParamValueVec(2);
-                        Samples = linspace(Vmin, Vmax, numGrids);
+                        if ~isempty(numGrids) % the grid points are equally spaced
+                            Vmin = HP.ParamValueVec(1);
+                            Vmax = HP.ParamValueVec(2);
+                            Samples = linspace(Vmin, Vmax, numGrids);
+                        else % we specify the grid points
+                            Samples = HP.ParamValueVec;
+                        end
                         
                     case 'uniform'
                         Vmin = HP.ParamValueVec(1);

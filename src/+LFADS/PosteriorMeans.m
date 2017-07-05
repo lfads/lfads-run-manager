@@ -47,6 +47,8 @@ classdef PosteriorMeans
                 % convert rates into spikes / sec
                 if strcmp(params.c_output_dist, 'poisson')
                     pm.rates = pms.rates * 1000 / params.spikeBinMs;
+                else
+                    pm.rates = pms.rates;
                 end
                 
                 pm.validInds = pms.validInds;

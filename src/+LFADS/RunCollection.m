@@ -256,12 +256,12 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             prog.finish();
         end
         
-        function LoadRunResults(rc)
+        function loadRunResults(rc)
             % Load LFADS training Results to this RunCollection.
             % Under the field name `RunResults`.
             %
             numRuns = rc.nRunsTotal;
-            smootherParam = 0.6;
+            smootherParam = 10;
             RunResults(numRuns).ReconVal = [];
             for i = 1:numRuns
                 outlogfile = [rc.runs(i).pathLFADSOutput '/fitlog.csv'];
@@ -269,20 +269,25 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     fprintf('Result file not found: %s\n', outlogfile)
                     continue;
                 end
-                [total_tr, total_val, recon_tr, recon_val, kl_tr, kl_val, l2, kl_w, l2_w] = LFADS.Utils.readcostsfromcsv(outlogfile);
+                % read costs from csv 
+                fid = fopen(outlogfile);
+                lfadslog = textscan(fid , '%s %f %s %f %s %f %f %s %f %f %s %f %f  %s %f %s %f %s %f' , 'Delimiter' , ',');
+                fclose(fid);
+                % construct the results struct
                 startIdx = max([rc.runs(i).params.c_kl_increase_steps, rc.runs(i).params.c_l2_increase_steps]) + 100;
                 %smoothReconVal = recon_val(startIdx:end); % Without Smoothing
-                smoothReconVal = smooth(recon_val(startIdx:end), 10, 'moving');
+                recon_val = lfadslog{10};
+                smoothReconVal = smooth(recon_val(startIdx:end), smootherParam, 'moving');
                 [minVal, minIdx] = min(smoothReconVal);
-                RunResults(i).ReconVal = recon_val;
-                RunResults(i).ReconTr = recon_tr;
-                RunResults(i).KlVal = kl_val;
-                RunResults(i).KlTr = kl_tr;
-                RunResults(i).L2 = l2;
-                RunResults(i).TotalVal = total_val;
-                RunResults(i).TotalTr = total_tr;
-                RunResults(i).KlW = kl_w;
-                RunResults(i).L2W = l2_w;
+                RunResults(i).ReconVal = lfadslog{10}; % recon valididation cost
+                RunResults(i).ReconTr =  lfadslog{9}; % recon training cost
+                RunResults(i).KlVal = lfadslog{13}; % 
+                RunResults(i).KlTr = lfadslog{12};
+                RunResults(i).L2 = lfadslog{15};
+                RunResults(i).TotalVal = lfadslog{7};
+                RunResults(i).TotalTr = lfadslog{6};
+                RunResults(i).KlW = lfadslog{17};
+                RunResults(i).L2W = lfadslog{19};
                 RunResults(i).IdxMinReconVal = minIdx + startIdx - 1;
                 RunResults(i).MinReconVal = minVal;
             end
@@ -366,6 +371,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             fprintf(fid, 'tasks = lq.run_lfads_queue(queue_name, tensorboard_script, task_specs%s%s)\n\n', maxStr, donefileStr);
             fclose(fid);
+        end
+        
+        function runLFADSQueueShellCommand(rc)
+            tmuxSessionName = sprintf('runQueue_%s', rc.name);
+            system( sprintf('tmux new-session -d -s %s %s', tmuxSessionName, rc.fileShellScriptRunQueue) );
         end
     end
         
