@@ -380,11 +380,24 @@ def run_command_in_tmux_session_no_monitoring(session_name, command):
     return subp
 
 def get_open_port():
-    """Use bind(0) to get a free open port"""
+    """Open a port in range 5050-5080,
+       if no free port found, Use bind(0) to get a free open port"""
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(("",0))
-    port = s.getsockname()[1]
+    p = 5049
+    portOp = 1
+    while ((p < 5080) and (portOp==1)) :
+       p += 1
+       try:
+          s.bind(("127.0.0.1", p))
+          portOp = 0
+       except socket.error as e:
+          portOp = 1
+    if portOp == 0:
+       port = p
+    else:
+       s.bind(("",0))    
+       port = s.getsockname()[1]
     s.close()
     return port
 
@@ -418,7 +431,7 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
         print('Queue: ' + x.rstrip('\n'))
         
     # launch the tensorboard on an open port in a tmux session
-    port = 5758 #get_open_port()
+    port = get_open_port()
     tensorboard_session = '{}_tensorboard_port{}'.format(queue_name, port)
     print_status('Launching TensorBoard on port {} in tmux session {}'.format(port, tensorboard_session))
     launch_tensorboard_in_tmux(tensorboard_session, tensorboard_script_path, port)
