@@ -39,8 +39,10 @@ classdef HyperParamsSet < handle
         function makeGrid(HPs)
             i = 0;
             for hp = HPs.ParamsSet(:)'
-                i = i + 1;
-                hpVals{i} = hp.sample([]);
+                if ~strcmp(hp.ParamDistrType, 'copy')
+                    i = i + 1;
+                    hpVals{i} = hp.sample([]);
+                end
             end
             
             cmdStr = '';
@@ -56,8 +58,14 @@ classdef HyperParamsSet < handle
             for hp = HPs.ParamsSet(:)'
                 j = j + 1;
                 paramSamp(nSamp).(hp.ParamName) = [];     % initialize the array
+                if strcmp(hp.ParamDistrType, 'copy')     % If the param is a copy of another param
+                    hpVals = [paramSamp(:).(hp.ParamDistrParams)];
+                else                                % Else sample from params vector
+                    hpVals = paramVecSamp(j, :);
+                end
+                
                 for i = 1:nSamp
-                    paramSamp(i).(hp.ParamName) = paramVecSamp(j, i);
+                    paramSamp(i).(hp.ParamName) = hpVals(i);
                 end
             end
             HPs.ParamsSamples = paramSamp;

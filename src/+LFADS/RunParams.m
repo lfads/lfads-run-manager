@@ -35,8 +35,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_gen_dim uint16 = 100; % generator network size
         c_keep_prob double = 0.95; % randomly drop units during each training pass
         c_learning_rate_decay_factor double = 0.98; % how quickly to decrease the learning rate
-        c_early_stop_n_to_compare uint16 = 1000;  % number of epochs with unimproved smoothed validation recunstruction cost before deciting to stop
-        c_early_stop_smoother_coef = 0.7;  % smoother coefficient for smoothing the recunstruction cost
+        %c_early_stop_n_to_compare uint16 = 1000;  % number of epochs with unimproved smoothed validation recunstruction cost before deciting to stop
+        %c_early_stop_smoother_coef = 0.7;  % smoother coefficient for smoothing the recunstruction cost
         c_device char = '/gpu:0'; % which visible GPU/CPU to use
         c_co_dim uint16 = 4;
         c_do_causal_controller logical = false; % restrict input encoder from seeing the future?

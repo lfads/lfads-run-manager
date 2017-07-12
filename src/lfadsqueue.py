@@ -362,7 +362,9 @@ def print_task_status_summary(tasks):
 
 def run_command_in_tmux_session_no_monitoring(session_name, command):
     """Run command in tmux session in a detached way, no monitoring of output"""
-    
+    # workaround for tmux bug, creating a dummy tmux session:
+    os.system('tmux new-session -d -s dummy')
+
     # wrap in tmux session and wait for completion
     tmux_command = generate_tmux_command(session_name, command)
 
@@ -416,7 +418,7 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
         print('Queue: ' + x.rstrip('\n'))
         
     # launch the tensorboard on an open port in a tmux session
-    port = get_open_port()
+    port = 5758 #get_open_port()
     tensorboard_session = '{}_tensorboard_port{}'.format(queue_name, port)
     print_status('Launching TensorBoard on port {} in tmux session {}'.format(port, tensorboard_session))
     launch_tensorboard_in_tmux(tensorboard_session, tensorboard_script_path, port)

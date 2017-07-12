@@ -374,8 +374,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         end
         
         function runLFADSQueueShellCommand(rc)
-            tmuxSessionName = sprintf('runQueue_%s', rc.name);
-            system( sprintf('tmux new-session -d -s %s %s', tmuxSessionName, rc.fileShellScriptRunQueue) );
+            %tmuxSessionName = sprintf('runQueue_%s', rc.name);
+            %system( sprintf('tmux new-session -d -s %s %s', tmuxSessionName, rc.fileShellScriptRunQueue) );
+            system( sprintf('sh %s', rc.fileShellScriptRunQueue) );
         end
     end
         
