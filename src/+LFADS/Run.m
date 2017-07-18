@@ -6,7 +6,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     methods(Abstract)
         % These methods will need to be implemented in a subclass that provides the custom behavior for your application
         
-        seq = convertDatasetToSequenceStruct(r, dataset, data);
+        seq = convertDatasetToSequenceStruct(r, dataset, mode, varargin);
         % Converts the loaded data within a dataset into a sequence struct. The sequence data returned will be a
         % struct array where each element corresponds to a trial. You can include any metadata or information fields
         % that you like for future reference or analysis. At a minimum, you must include field `.y`, `.y_time`, and `.params.dtMS`
@@ -27,8 +27,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         % ------------
         % dataset : :ref:`LFADS_Dataset`
         %   The :ref:`LFADS_Dataset` instance from which data were loaded
-        % data : typically struct array
-        %   data contents of Dataset as returned by `loadData`
+        % mode (string) : typically 'export' indicating sequence struct
+        %   will be exported for LFADS, or 'alignment' indicating that this
+        %   struct will be used to generate alignment matrices
         %
         % Returns
         % ----------
@@ -96,6 +97,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         end
         
+        function tf = usesDifferentSequenceDataForAlignment(r) 
+            % tf = usesDifferentSequenceDataForAlignment() 
+            %
+            % Returns true if you would like the Run to call your
+            % convertDatasetToSequenceStruct with a mode == 'alignment'
+            % argument when constructing the alignment matrices. This
+            % allows you to specify a different set of trials used for
+            % constructing alignment matrices, e.g. only correct trials.
+            
+            tf = false;
+        end
+        
         function alignmentMatrices = prepareAlignmentMatrices(r, seqData)
             % Prepares alignment matrices to seed the stitching process when 
             % using multiple days of sequence data for LFADS input file generation. 
@@ -113,6 +126,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % the nNeuronsThisSession neurons against the top nFactors PCs. 
             % The alignment matrix is the matrix of regression
             % coefficients.
+            %
+            % If you wish to exclude a trial from the alignment matrix
+            % calculations, set conditionId to NaN or ''
             %
             % Parameters
             % ------------
@@ -132,11 +148,23 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % gather global unique conditions
             condField = 'conditionId';
             c = cell(r.nDatasets, 1);
+            conditionsEachTrial = cell(r.nDatasets, 1);
             for nd = 1:r.nDatasets
-               conds = {seqData{nd}.(condField)};
-               c{nd} = unique(conds');
+               conditionsEachTrial{nd} = {seqData{nd}.(condField)}';
+               if isscalar(conditionsEachTrial{nd}{1})
+                   conditionsEachTrial{nd} = cell2mat(conditionsEachTrial{nd});
+               end
+                   
+               c{nd} = unique(conditionsEachTrial{nd});
             end
             conditions = unique(cat(1, c{:}));
+            if isnumeric(conditions)
+                conditions = conditions(~isnan(conditions));
+            elseif iscellstr(conditions)
+                conditions = conditions(~cellfun(@isempty, conditions));
+            else
+                error('conditionId field must contain numeric or string values');
+            end
             
             % split each struct by condition
             for nd = 1:r.nDatasets
@@ -159,7 +187,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             % fill up the data matrix with binned data
             for nd = 1:numel(datasetInfo)
-                [~, ic] = ismember({datasetInfo(nd).seq.(condField)}, conditions);
+                [~, ic] = ismember(conditionsEachTrial{nd}, conditions);
                 
                 % start at the zero time point for each day
                 data_time_ind = 0;
@@ -169,11 +197,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     binned_data = nan(numel(datasetInfo(nd).this_day_inds),time_per_trial, n_trials_this_condition);
                     for nt = 1:n_trials_this_condition
                         trial = datasetInfo(nd).seq(trials_to_use_this_condition(nt));
-                        tmp = reshape(trial.y', ...
+                        tmp = reshape(trial.y(:, 1:(bin_size*time_per_trial))', ...
                             [], time_per_trial, size(trial.y,1));
                         binned_data(:, :, nt) = squeeze(sum(tmp))';                  
                     end
                     
+                    % average over trials in the condition
                     binned_data = nanmean(binned_data, 3);
                     if any(isnan(binned_data(:))) && n_trials_this_condition > 0
                         binned_data(isnan(binned_data)) = 0;
@@ -187,9 +216,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             % apply PCA
             try
-                keep_pcs = pca(all_data', 'Rows', 'pairwise', 'NumComponents', r.params.pcsKeep);
+                keep_pcs = pca(all_data', 'Rows', 'pairwise', 'NumComponents', r.params.c_in_factors_dim);
             catch
-                keep_pcs = pca(all_data', 'Rows', 'complete', 'NumComponents', r.params.pcsKeep);
+                keep_pcs = pca(all_data', 'Rows', 'complete', 'NumComponents', r.params.c_in_factors_dim);
             end
             
             % project all data into pca space
@@ -208,11 +237,23 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 this_data_centered = bsxfun(@minus, this_day_data{nd}(:, tMask), ...
                     nanmean(this_day_data{nd}(:, tMask), 2));
                 
-                % regress this day's data against the global PCs
-                datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
+                % TEMPORARY to deal with bias, TODO remove this when LFADS
+                % has bias term
+                if false
+                    % regress this day's data against the global PCs
+                    datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
+                else
+                    % regress uncentered data onto the centered PCs,
+                    % assumes last row of this_day_data is all ones so it
+                    % can provide the bias that cancel's the mean of the
+                    % data on this day
+                    this_data_notCentered = this_day_data{nd}(:, tMask);
+                    datasetInfo(nd).alignment_matrix_cxf = (this_data_notCentered' \ dim_reduced_data_this');
+                end
                 if any(isnan(datasetInfo(nd).alignment_matrix_cxf(:)))
                     error('NaNs in the the alignment matrix');
                 end
+                    
                 this_data_predicted{nd} = datasetInfo(nd).alignment_matrix_cxf' * this_data_centered;
             end
             
@@ -470,14 +511,17 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
         
-        function seq = generateSequenceStructForDataset(r, datasetIndex, saveToDisk)
+        function seq = generateSequenceStructForDataset(r, datasetIndex, saveToDisk, mode)
             if nargin < 3
                 saveToDisk = false;
             end 
+            if nargin < 4
+                mode = 'export';
+            end
             ds = r.datasets(datasetIndex);
 
             % call user function on dataset
-            seq = r.convertDatasetToSequenceStruct(ds);
+            seq = r.convertDatasetToSequenceStruct(ds, mode);
 
             % check the sequence struct returned
             seq = r.checkSequenceStruct(seq);
@@ -496,7 +540,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
 
-        function seqCell = loadSequenceData(r, reload)
+        function seqCell = loadSequenceData(r, reload, mode)
             % seq = loadSequenceData([reload = True])
             % Load the sequence files from disk if they exist, or generates
             % them if not. Caches them in .sequenceData.
@@ -504,6 +548,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % Args:
             %   reload (bool) : Reload sequence data from disk even if already found in
             %     .sequenceData. Default = false
+            %   mode (string) : Either 'export' if data is destined for
+            %     LFADS as the raw spike data it will operate on. Or
+            %     'alignment' if destined for building alignment matrices,
+            %     which may be a subset of the trials (e.g., if only correct
+            %     trials should be used for this purpose).
             %
             % Returns:
             %   seqData (cell of struct arrays) : nDatasets cell array of sequence structures loaded from sequence files on disk
@@ -511,26 +560,31 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if nargin < 2
                 reload = false;
             end
-            if ~reload && ~isempty(r.sequenceData)
+            if nargin < 3
+                mode = 'export';
+            end
+            if strcmp(mode, 'export') && ~reload && ~isempty(r.sequenceData)
                 seqCell = r.sequenceData;
                 return;
             end
             
+            % we will try to load the files from disk if already generated
+            % (only on mode == 'export')
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
             
             if r.nDatasets > 1
-                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading/generating sequence data');
-            else
+                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading/generating sequence data for %s', mode);            else
                 prog = [];
             end
             seqCell = cell(r.nDatasets, 1);
             for iDS = 1:r.nDatasets
                 if ~isempty(prog), prog.update(iDS); end
-                if ~exist(seqFiles{iDS}, 'file')
-                    % generate on the fly
-                    seqCell{iDS} = r.generateSequenceStructForDataset(iDS, false);
+                if ~exist(seqFiles{iDS}, 'file') || ~strcmp(mode, 'export')
+                    % generate on the fly if file not found or mode !=
+                    % export
+                    seqCell{iDS} = r.generateSequenceStructForDataset(iDS, false, mode);
                 else
-                    % load from disk
+                    % load from disk if exists and mode == export
                     tmp = load(seqFiles{iDS});
                     seqCell{iDS} = r.checkSequenceStruct(tmp.seq);
                 end
@@ -642,7 +696,17 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 if r.nDatasets > 1 && r.params.useAlignmentMatrix
                     % call out to abstract dataset specific method
                     useAlignMatrices = true;
-                    alignmentMatrices= r.prepareAlignmentMatrices(seqData);
+                    
+                    % ask for specific dataset for building the alignment
+                    % matrices, which may be a subset of all trials, e.g.
+                    % correct trials only. If return is empty, use the full
+                    % seqData
+                    if r.usesDifferentSequenceDataForAlignment()
+                        seqDataForAlignmentMatrices = r.loadSequenceData(regenerate, 'alignment');
+                    else
+                        seqDataForAlignmentMatrices = seqData;
+                    end
+                    alignmentMatrices= r.prepareAlignmentMatrices(seqDataForAlignmentMatrices);
                 else
                     useAlignMatrices = false;
                 end
