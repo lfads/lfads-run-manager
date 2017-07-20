@@ -120,7 +120,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             Opt = struct('Format', 'hex', 'Method', 'MD5');
             rcHash = LFADS.Utils.DataHash([rc.runs(:).paramsString], Opt);
             mkdir(filepath);
-            save([ filepath 'RC_' rc.name '_' rcHash(1:8)], 'rc');
+            save([ filepath 'RC_' rc.name '_' rcHash(1:8) '.mat'], 'rc');
         end
         
         function clearRunSpecs(rc)
