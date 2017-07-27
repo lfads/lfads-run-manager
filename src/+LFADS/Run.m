@@ -241,9 +241,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 
                 % regress this day's data against the global PCs
                 datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
-                % and set bias to negative mean to center this days data
-                % before projecting into PC space
-                datasetInfo(nd).bias_subtract = squeeze(-this_day_means);
+                % and set mean as it will be subtracted from the data
+                % before projecting by the alignment matrix
+                datasetInfo(nd).bias_subtract = squeeze(this_day_means);
                 
                 if any(isnan(datasetInfo(nd).alignment_matrix_cxf(:)))
                     error('NaNs in the the alignment matrix');
