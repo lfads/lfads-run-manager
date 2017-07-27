@@ -50,11 +50,18 @@ function lfadsi_export_spikes(outfile, ytrain, ytest, varargin)
             end
 
             data = varargin{nv+1};
-            %% permute to deal with matlab v python (column-major v row-major)
-            ndim = numel(size(data));
-            data = permute(data,[ndim:-1:1]);
             
-            h5create(outfile, sprintf('/%s', varargin{nv}), size(data));
+            if isvector(data)
+                data = LFADS.Utils.makecol(squeeze(data));
+                sz = size(data, 1);
+            else
+              %% permute to deal with matlab v python (column-major v row-major)
+                ndim = numel(size(data));
+                data = permute(data,[ndim:-1:1]);
+                sz = size(data);
+            end
+            
+            h5create(outfile, sprintf('/%s', varargin{nv}), sz);
             h5write(outfile, sprintf('/%s', varargin{nv}), data);
             nv = nv+2;
         end

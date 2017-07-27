@@ -109,7 +109,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             tf = false;
         end
         
-        function alignmentMatrices = prepareAlignmentMatrices(r, seqData)
+        function [alignmentMatrices, alignmentBiases] = prepareAlignmentMatrices(r, seqData)
             % Prepares alignment matrices to seed the stitching process when 
             % using multiple days of sequence data for LFADS input file generation. 
             % Generate alignment matrices which specify the initial guess at the 
@@ -222,13 +222,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             
             % project all data into pca space
-            all_data_centered = bsxfun(@minus, all_data, nanmean(all_data, 2));
+            all_data_means = nanmean(all_data, 2);
+            all_data_centered = bsxfun(@minus, all_data, all_data_means);
             dim_reduced_data = keep_pcs' * all_data_centered;
             
             % get a mapping from each day to the lowD space
             [this_day_data, this_data_predicted] = cellvec(numel(datasetInfo)); % each is nChannels x time x 
             for nd = 1:numel(datasetInfo)
                 this_day_data{nd} = all_data(datasetInfo(nd).this_day_inds, :);
+                this_day_means = all_data_means(datasetInfo(nd).this_day_inds);
                 
                 % figure out which timepoints are valid
                 tMask = ~any(isnan(this_day_data{nd}), 1) & ~any(isnan(dim_reduced_data), 1);
@@ -237,19 +239,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 this_data_centered = bsxfun(@minus, this_day_data{nd}(:, tMask), ...
                     nanmean(this_day_data{nd}(:, tMask), 2));
                 
-                % TEMPORARY to deal with bias, TODO remove this when LFADS
-                % has bias term
-                if false
-                    % regress this day's data against the global PCs
-                    datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
-                else
-                    % regress uncentered data onto the centered PCs,
-                    % assumes last row of this_day_data is all ones so it
-                    % can provide the bias that cancel's the mean of the
-                    % data on this day
-                    this_data_notCentered = this_day_data{nd}(:, tMask);
-                    datasetInfo(nd).alignment_matrix_cxf = (this_data_notCentered' \ dim_reduced_data_this');
-                end
+                % regress this day's data against the global PCs
+                datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
+                % and set bias to negative mean to center this days data
+                % before projecting into PC space
+                datasetInfo(nd).bias_subtract = squeeze(-this_day_means);
+                
                 if any(isnan(datasetInfo(nd).alignment_matrix_cxf(:)))
                     error('NaNs in the the alignment matrix');
                 end
@@ -257,7 +252,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 this_data_predicted{nd} = datasetInfo(nd).alignment_matrix_cxf' * this_data_centered;
             end
             
-            alignmentMatrices = {datasetInfo.alignment_matrix_cxf};
+            alignmentMatrices = {datasetInfo.alignment_matrix_cxf}';
+            alignmentBiases = {datasetInfo.bias_subtract}';
         end
         
         function tf = eq(a, b)
@@ -687,6 +683,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         maskGenerate(iDS) = true;
                     end
                 end
+            else
+                maskGenerate = true(r.nDatasets, 1);
             end
                     
             if any(maskGenerate)
@@ -706,7 +704,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     else
                         seqDataForAlignmentMatrices = seqData;
                     end
-                    alignmentMatrices= r.prepareAlignmentMatrices(seqDataForAlignmentMatrices);
+                    [alignmentMatrices, alignmentBiases] = r.prepareAlignmentMatrices(seqDataForAlignmentMatrices);
                 else
                     useAlignMatrices = false;
                 end
@@ -736,6 +734,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 if useAlignMatrices
                     seqToLFADSArgs{end+1} = 'alignment_matrix_cxf';
                     seqToLFADSArgs{end+1} = alignmentMatrices(maskGenerate);
+                    seqToLFADSArgs{end+1} = 'alignment_bias_c';
+                    seqToLFADSArgs{end+1} = alignmentBiases(maskGenerate);
                 end
 
                 % write the actual lfads input file
