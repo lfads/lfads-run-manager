@@ -960,7 +960,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     optstr = strcat(optstr, sprintf(' --%s=%s',f{nf}, fval));
                 end
 
-                optstr = strcat(optstr, sprintf(' --kind=posterior_sample'));
+                optstr = strcat(optstr, sprintf(' --kind=posterior_sample_and_average'));
 
                 % put the command together
                 cmd = sprintf('%s $(which run_lfads.py) %s', execstr, optstr);
@@ -969,7 +969,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width', 'batch_size'});
                 
                 cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
-                '--lfads_save_dir=%s --kind=posterior_sample --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
+                '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
                 r.pathLFADSInput, r.pathLFADSOutput, batchSize, paramsString);
             end        
             
