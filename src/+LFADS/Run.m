@@ -530,10 +530,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
 
         function out = loadInputInfo(r)
+            % loads fields saved into inputInfo.mat which are essentially
+            % cached things needed for post-processing, e.g. training vs.
+            % validation trial inds, posterior mean time vectors
+            % 
+            % Returns:
+            %   out (nDatasets x 1 struct array)
+            
             fnames = cellfun(@(x) fullfile(r.pathLFADSInput, x), r.lfadsInputInfoFileNames, 'UniformOutput', false);
             for iDS = 1:numel(fnames)
                 out(iDS) = load(fnames{iDS}); %#ok<AGROW>
             end
+            out = out';
         end
 
         function seqCell = loadSequenceData(r, reload, mode)
@@ -750,8 +758,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     if maskGenerate(iDS)
                         trainInds = trainIndsCell{iDS};
                         validInds = validIndsCell{iDS};
+                        
+                        % save time vectors used in the sequence files to
+                        % facilitate fast loading of posterior means sampling
+                        seq_timeVector = seqData{nd}.y_time;
+                        seq_binSizeMs = inputBinSizeMs;
+                        
                         fname = fullfile(r.pathCommonData, inputInfoNames{iDS});
-                        save(fname, 'trainInds', 'validInds', 'paramInputDataHash');
+                        save(fname, 'trainInds', 'validInds', 'paramInputDataHash', 'seq_timeVector', 'seq_binSizeMs');
                     end
                 end
             end
@@ -1117,14 +1131,27 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 return;
             end
             
-            seq = r.loadSequenceData();
-            
             info = r.loadInputInfo();
             % check hashes actually match
             thisHash = r.params.generateInputDataHash();
             for iDS = 1:r.nDatasets
                 if ~isequal(info(iDS).paramInputDataHash, thisHash)
                     error('Input data param hash saved for run %d in %s does not match', iDS, r.lfadsInputInfoFileNames{1});
+                end
+            end
+            
+            % determine whether we need to load the sequence data. if the
+            % cached field pm_timeVector is prsent in info, we don't need
+            % them
+            if ~isfield(info, 'seq_timeVector') || ~isfield(info, 'seq_binSizeMs')
+                seq = r.loadSequenceData();
+                for iDS = 1:r.nDatasets
+                    if isfield(seq{iDS}, 'binWidthMs')
+                        info(iDS).seq_binSizeMs = seq{iDS}(1).binWidthMs;
+                    else
+                        info(iDS).seq_binSizeMs = seq{iDS}(1).params.dtMS;
+                    end
+                    info(iDS).seq_timeVector = seq{iDS}(1).y_time;
                 end
             end
             
@@ -1149,14 +1176,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info(iDS).validInds, info(iDS).trainInds);
                 
-                if isfield(seq{iDS}, 'binWidthMs')
-                    dt_y = seq{iDS}(1).binWidthMs;
-                else
-                    dt_y = seq{iDS}(1).params.dtMS;
-                end
                 dt_pm = r.params.spikeBinMs;
+                dt_y = info(iDS).seq_binSizeMs;
                 rebin = dt_pm / dt_y;
-                time = seq{iDS}(1).y_time(1:rebin:end);
+                time = info(iDS).seq_timeVector(1:rebin:end);
                 time = time(1:size(pmData.rates, 2));
                 
                 pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time); %#ok<AGROW>
