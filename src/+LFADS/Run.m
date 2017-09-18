@@ -756,6 +756,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('keepSessionAlive', true, @islogical);
             p.addParameter('header', '#!/bin/bash', @ischar);
             p.addParameter('appendPosteriorMeanSample', false, @islogical);
+            p.addParameter('batchSizePosteriorMeans', 512, @isscalar);
+            
             p.addParameter('teeOutput', false, @islogical);
             p.parse(varargin{:});
             
@@ -774,6 +776,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     'cuda_visible_devices', p.Results.cuda_visible_devices, ...
                     'useTmuxSession', p.Results.useTmuxSession, ...
                     'keepSessionAlive', p.Results.keepSessionAlive, ...
+                    'batchSize', p.Results.batchSizePosteriorMeans, ...
                     'teeOutput', false); % teeify later
                 if p.Results.teeOutput
                     trainString = sprintf('(%s && %s)', trainString, pmString);

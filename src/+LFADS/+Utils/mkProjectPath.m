@@ -1,4 +1,4 @@
-function [ outPath] = mkProjectPath(runsRootPath, projectName, runName, dateTimeVec)
+function [ outPath, projPath] = mkProjectPath(runsRootPath, projectName, runName, dateTimeVec)
 % function [ outPath] = mkProjectPath(runsRootPath, projectName, dateTimeVec)
 % create a path based on the project name with added date/time 
 % runRootPath, top path to where the lfads runs are stored

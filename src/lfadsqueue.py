@@ -130,13 +130,21 @@ def find_gpu_ready_for_task(gpu_status, task):
     """
     
     # of the set of GPUs with sufficient memory
-    gpu_eligible = [gpu for gpu in gpu_status if gpu.memfree >= task.memory_req] 
-    if not gpu_eligible:
-        return None
-    
+    # choose the GPU with largest free memory
+    gpu_memfree = [gpu.memfree for gpu in gpu_status]
+    max_memfree = max(gpu_memfree)
+    if max_memfree >= task.memory_req:
+         return gpu_memfree.index(max_memfree)
+    else:
+         return None
+    # gpu_eligible = [gpu for gpu in gpu_status if gpu.memfree >= task.memory_req] 
+    #if not gpu_eligible:
+    #    return None
+        
+
     # and the fewest running tasks
-    gpu = sorted(gpu_eligible, key = lambda gpu: gpu.num_tasks)[0]    
-    return gpu.index
+    #gpu = sorted(gpu_eligible, key = lambda gpu: gpu.num_tasks)[0]    
+    #return gpu.index
 
 def find_gpu_by_index(gpu_list, index):
     return [gpu for gpu in gpu_list if gpu.index == index][0]

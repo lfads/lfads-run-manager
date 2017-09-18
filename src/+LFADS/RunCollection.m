@@ -263,6 +263,18 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             numRuns = rc.nRunsTotal;
             smootherParam = 10;
             RunResults(numRuns).ReconVal = [];
+            RunResults(numRuns).ReconVal = [];
+            RunResults(numRuns).ReconTr = [];
+            RunResults(numRuns).KlVal = [];
+            RunResults(numRuns).KlTr = [];
+            RunResults(numRuns).L2 = [];
+            RunResults(numRuns).TotalVal = [];
+            RunResults(numRuns).TotalTr = [];
+            RunResults(numRuns).KlW = [];
+            RunResults(numRuns).L2W = [];
+            RunResults(numRuns).IdxMinReconVal = [];
+            RunResults(numRuns).MinReconVal = [];
+            RunResults(numRuns).PMexist = [];
             for i = 1:numRuns
                 outlogfile = [rc.runs(i).pathLFADSOutput '/fitlog.csv'];
                 if ~exist(outlogfile, 'file')
@@ -274,11 +286,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 lfadslog = textscan(fid , '%s %f %s %f %s %f %f %s %f %f %s %f %f  %s %f %s %f %s %f' , 'Delimiter' , ',');
                 fclose(fid);
                 % construct the results struct
-                startIdx = max([rc.runs(i).params.c_kl_increase_steps, rc.runs(i).params.c_l2_increase_steps]) + 100;
+                KlW = lfadslog{17};
+                L2W = lfadslog{19};
+                startIdx = max(find(KlW == max(KlW), 1), find(L2W == max(L2W), 1)) + 1;
                 %smoothReconVal = recon_val(startIdx:end); % Without Smoothing
                 recon_val = lfadslog{10};
                 smoothReconVal = smooth(recon_val(startIdx:end), smootherParam, 'moving');
                 [minVal, minIdx] = min(smoothReconVal);
+                if isempty(minIdx), minIdx = nan; end
                 RunResults(i).ReconVal = lfadslog{10}; % recon valididation cost
                 RunResults(i).ReconTr =  lfadslog{9}; % recon training cost
                 RunResults(i).KlVal = lfadslog{13}; % 
@@ -290,6 +305,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 RunResults(i).L2W = lfadslog{19};
                 RunResults(i).IdxMinReconVal = minIdx + startIdx - 1;
                 RunResults(i).MinReconVal = minVal;
+                RunResults(i).PMexist = ~isempty(dir(fullfile(rc.runs(i).pathLFADSOutput,'*posterior_sample_and_average*')));
             end
             rc.runResults = RunResults;
         end
@@ -311,6 +327,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             p.addParameter('gpuList', [], @(x) isempty(x) || isvector(x));
             p.addParameter('display', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('maxTasksSimultaneously', [], @(x) isempty(x) || isscalar(x));
+            p.addParameter('batchSizePosteriorMeans', 512, @isscalar);
             p.parse(varargin{:});
             
             rc.writeTensorboardShellScript();
@@ -343,7 +360,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             for iR = 1:rc.nRunsTotal
                 prog.update(iR);
                 rc.runs(iR).writeShellScriptLFADSTrain('display', display, 'useTmuxSession', false, ...
-                    'appendPosteriorMeanSample', true, 'teeOutput', true);
+                    'appendPosteriorMeanSample', true, 'batchSizePosteriorMeans', p.Results.batchSizePosteriorMeans, 'teeOutput', true);
                 memory_req = rc.runs(iR).params.memoryRequired;
                 
                 outfile = rc.runs(iR).fileLFADSOutput;
