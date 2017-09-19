@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LFADS.RunSpec &mdash; LFADS Run Manager 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="LFADS Run Manager 0.5.1 documentation" href="index.html"/>
+        <link rel="next" title="LFADS.Run" href="LFADS_Run.html"/>
+        <link rel="prev" title="LFADS.Dataset" href="LFADS_Dataset.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> LFADS Run Manager
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.RunSpec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Run.html">LFADS.Run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunCollection.html">LFADS.RunCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunParams.html">LFADS.RunParams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StarterExample_drive_script.html">StarterExample.drive_script</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">LFADS Run Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>LFADS.RunSpec</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/LFADS_RunSpec.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-+LFADS">
+<span id="id1"></span><span id="lfads-runspec"></span><h1>LFADS.RunSpec<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="+LFADS.RunSpec">
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">RunSpec</code><span class="sig-paren">(</span><em>name</em>, <em>runClassName</em>, <em>datasetCollection</em><span class="optional">[</span>, <em>datasetIndicesOrNames</em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">handle</span></code>, <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
+<p>Represents a set of specifications for an LFADS experiment on a specific subset of datasets
+within a <a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a>. RunSpec instances are used to create
+instances, and all runs in a collection share the same parameter settings, which are represented by a shared
+<a class="reference internal" href="LFADS_RunParams.html#lfads-runparams"><em>LFADS.RunParams</em></a> instance.</p>
+<div class="note admonition" id="+LFADS.RunSpec.RunSpec_member_group_0_+LFADS::RunSpec.RunSpec_member_group_0">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
+</div><dl class="attribute">
+<dt id="+LFADS.RunSpec.runClassName">
+<code class="descname">runClassName</code><em class="property"> = ''</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.runClassName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.runClassName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class name that will be used to create LFADS.Run instances. Or function_handle to class constructor</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunSpec.name">
+<code class="descname">name</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of this run unique within its RunCollection, will be used as subfolder on disk</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunSpec.comment">
+<code class="descname">comment</code><em class="property"> (char) = ''</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Textual comment for convenience</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunSpec.version">
+<code class="descname">version</code><em class="property"> (uint32) = 2</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal versioning allowing for graceful evolution of path settings</p>
+</dd></dl>
+
+<div class="note admonition" id="+LFADS.RunSpec.RunSpec_member_group_1_+LFADS::RunSpec.RunSpec_member_group_1">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
+</div><dl class="attribute">
+<dt id="+LFADS.RunSpec.datasets">
+<code class="descname">datasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.datasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Array of <a class="reference internal" href="LFADS_Dataset.html#lfads-dataset"><em>LFADS.Dataset</em></a> instances which this particular Run will utilize</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunSpec.datasetIndsInCollection">
+<code class="descname">datasetIndsInCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.datasetIndsInCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.datasetIndsInCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>indices of each dataset into datasetCollection.datasets</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunSpec.datasetCollection">
+<code class="descname">datasetCollection</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.datasetCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.datasetCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset collection used by this run (and all runs in the same RunCollection)</p>
+</dd></dl>
+
+<div class="note admonition" id="+LFADS.RunSpec.RunSpec_member_group_2_+LFADS::RunSpec.RunSpec_member_group_2">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Dependent Properties</p>
+</div><dl class="attribute">
+<dt id="+LFADS.RunSpec.nDatasets">
+<em class="property">Dependent</em><code class="descname">nDatasets</code><em class="property"> = None</em><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.nDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.nDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of datasets used by this run</p>
+</dd></dl>
+
+<div class="tip admonition" id="+LFADS.RunSpec.RunSpec_member_group_3_+LFADS::RunSpec.RunSpec_member_group_3">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.RunSpec.RunSpec">
+[<em>run</em>] = <code class="descname">RunSpec</code><span class="sig-paren">(</span><em>name</em>, <em>runClassName</em>, <em>datasetCollection</em><span class="optional">[</span>, <em>datasetIndicesOrNames</em><span class="optional">]</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.RunSpec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.RunSpec" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>string</em>) &#8211; Unique name for this run within the collection</li>
+<li><strong>runClassName</strong> (<em>string</em>) &#8211; Class name that will be used to create LFADS.Run instances using</li>
+<li><strong>datasetCollection</strong> (<a class="reference internal" href="LFADS_DatasetCollection.html#lfads-datasetcollection"><em>LFADS.DatasetCollection</em></a> instance) &#8211; DatasetCollection in which this run will find its datasets</li>
+<li><strong>datasetIndicesOrNames</strong> (<em>vector of integers or cellstr</em>) &#8211; if numeric vector, will select datasets by index in datasetCollection. If cellstr of names, will
+search for datasets by name within datasetCollection.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunSpec.eq">
+[<em>tf</em>] = <code class="descname">eq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded == operator to enable equality if name,
+datasetCollection, and datasets all match</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunSpec.selectDatasets">
+<code class="descname">selectDatasets</code><span class="sig-paren">(</span><em>datasetIndicesOrNames</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.selectDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.selectDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>datasetIndicesOrNames</strong> (<em>vector of integers or cellstr</em>) &#8211; if numeric vector, will select datasets by index in datasetCollection. If cellstr of names, will
+search for datasets by name within datasetCollection.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunSpec.selectDatasetsByIndex">
+<code class="descname">selectDatasetsByIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.selectDatasetsByIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.selectDatasetsByIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the datasets that this Run should use from the set of datasets in its DatasetCollection by indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<em>logical mask or indices</em>) &#8211; Selection applied to this run&#8217;s DatasetCollection&#8217;s array of datasets</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunSpec.selectDatasetsByName">
+<code class="descname">selectDatasetsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.selectDatasetsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.selectDatasetsByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the datasets that this Run should use from the set of datasets in its DatasetCollection using name matching</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<em>string or cellstr</em>) &#8211; Name or names to search for within this run&#8217;s DatasetCollection&#8217;s array of datasets</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunSpec.generateSummaryText">
+[<em>text</em>] = <code class="descname">generateSummaryText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunSpec.html#RunSpec.generateSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunSpec.generateSummaryText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a string representation of this Run Spec&#8217;s info</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">text</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="LFADS_Run.html" class="btn btn-neutral float-right" title="LFADS.Run" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="LFADS_Dataset.html" class="btn btn-neutral" title="LFADS.Dataset" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Dan O&#39;Shea, Chethan Pandarinath.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

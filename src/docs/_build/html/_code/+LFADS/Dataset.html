@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dataset &mdash; LFADS Run Manager 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="LFADS Run Manager 0.5.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LFADS Run Manager
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunSpec.html">LFADS.RunSpec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_Run.html">LFADS.Run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunCollection.html">LFADS.RunCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_RunParams.html">LFADS.RunParams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../StarterExample_drive_script.html">StarterExample.drive_script</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">LFADS Run Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>Dataset</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for +LFADS.Dataset</h1><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139</pre></div></td><td class="code"><div class="highlight"><pre style="max-width: 680px; overflow-x: scroll;"><a name="Dataset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset">[docs]</a><span></span><span class="k">classdef</span> <span class="n">Dataset</span> <span class="o">&lt;</span> <span class="n">handle</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span> <span class="o">&amp;</span> <span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">Copyable</span>
+    <span class="c">% A single-day collection of raw data to be processed by LFADS</span>
+
+    <span class="k">methods</span><span class="p">(</span><span class="n">Abstract</span><span class="p">)</span>
+        <span class="c">% These methods you must define in order to retrieve whatever metadata are needed from this dataset</span>
+
+<a name="Dataset.loadInfoFromData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.loadInfoFromData">[docs]</a>       <span class="n">loadInfoFromData</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+       <span class="c">% This method should load any metadata about the dataset. There are no specific requirements. This simply</span>
+       <span class="c">% enables an easy way to ensure that this potentially time-consuming computation is performed only once.</span>
+    <span class="k">end</span>
+
+    <span class="k">properties</span>
+        <span class="c">% Information about the dataset&#39;s name and location</span>
+
+<a name="Dataset.name"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.name">[docs]</a>        <span class="n">name</span> <span class="p">=</span> <span class="s">&#39;&#39;</span>
+        <span class="c">% Unique, semi-permanent identifier for the dataset. This will be used for paths and filenames and</span>
+        <span class="c">% variables within the LFADS model, so it&#39;s best to pick a scheme and stick to it.</span>
+
+<a name="Dataset.comment"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.comment">[docs]</a>        <span class="n">comment</span> <span class="p">=</span> <span class="s">&#39;&#39;</span>
+        <span class="c">% Textual comment for convenience</span>
+
+<a name="Dataset.relPath"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.relPath">[docs]</a>        <span class="n">relPath</span> <span class="p">=</span> <span class="s">&#39;&#39;</span>
+        <span class="c">% Path to the Matlab data file that will be loaded when loadData is called, relative to the path of the</span>
+        <span class="c">% :ref:`LFADS_DatasetCollection` to which this Dataset belongs. If you override loadData, this can be left blank.</span>
+
+<a name="Dataset.collection"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.collection">[docs]</a>        <span class="n">collection</span>
+        <span class="c">% :ref:`LFADS_DatasetCollection` to which this Dataset belongs</span>
+    <span class="k">end</span>
+
+    <span class="k">properties</span>
+        <span class="c">% Useful metadata about this dataset to be loaded by loadInfoFromData. These are not used explicitly</span>
+        <span class="c">% and can be left blank.</span>
+
+<a name="Dataset.infoLoaded"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.infoLoaded">[docs]</a>        <span class="n">infoLoaded</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+        <span class="c">% Has loadInfo already been called and the info fields populated?</span>
+
+<a name="Dataset.subject"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.subject">[docs]</a>        <span class="n">subject</span> <span class="p">=</span> <span class="s">&#39;&#39;</span>
+        <span class="c">% Dataset subject or participant name</span>
+
+<a name="Dataset.saveTags"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.saveTags">[docs]</a>        <span class="n">saveTags</span>
+        <span class="c">% Data grouping identifiers</span>
+
+<a name="Dataset.datenum"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.datenum">[docs]</a>        <span class="n">datenum</span>
+        <span class="c">% Matlab datenum identifying the collection time of this dataset</span>
+
+<a name="Dataset.nChannels"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.nChannels">[docs]</a>        <span class="n">nChannels</span>
+        <span class="c">% Number of spike channels recorded in this dataset</span>
+
+<a name="Dataset.nTrials"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.nTrials">[docs]</a>        <span class="n">nTrials</span>
+        <span class="c">% Number of behavioral trials recorded in this dataset</span>
+
+    <span class="k">end</span>
+
+    <span class="k">properties</span><span class="p">(</span><span class="n">Dependent</span><span class="p">)</span>
+<a name="Dataset.path"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.path">[docs]</a>        <span class="n">path</span>
+        <span class="c">% Full path to data which will be loaded by load data, a concatenation of the DatasetCollection path and relPath</span>
+
+<a name="Dataset.datestr"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.datestr">[docs]</a>        <span class="n">datestr</span>
+        <span class="c">% a string version of datenum</span>
+    <span class="k">end</span>
+
+    <span class="k">methods</span>
+<a name="Dataset.Dataset"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.Dataset">[docs]</a><span class="k">        function</span><span class="w"> </span>ds <span class="p">=</span><span class="w"> </span><span class="nf">Dataset</span><span class="p">(</span>collection, relPath<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% ds = Dataset(collection, relPath)</span>
+            <span class="c">% Parameters</span>
+            <span class="c">% ------------</span>
+            <span class="c">% collection : :ref:`LFADS_DatasetCollection`</span>
+            <span class="c">%   DatasetCollection to which this Dataset belongs</span>
+            <span class="c">%</span>
+            <span class="c">% relPath : string</span>
+            <span class="c">%   Relative path to data from `collection.path`</span>
+
+            <span class="p">[</span><span class="o">~</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">]</span> <span class="p">=</span> <span class="n">fileparts</span><span class="p">(</span><span class="n">relPath</span><span class="p">);</span>
+            <span class="n">ds</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">strrep</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">);</span>
+            <span class="n">ds</span><span class="p">.</span><span class="n">relPath</span> <span class="p">=</span> <span class="n">relPath</span><span class="p">;</span>
+            <span class="n">collection</span><span class="p">.</span><span class="n">addDataset</span><span class="p">(</span><span class="n">ds</span><span class="p">);</span>
+        <span class="k">end</span>
+
+<span class="k">        function</span><span class="w"> </span>p <span class="p">=</span><span class="w"> </span><span class="nf">get.path</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">collection</span><span class="p">)</span>
+                <span class="n">p</span> <span class="p">=</span> <span class="n">ds</span><span class="p">.</span><span class="n">relPath</span><span class="p">;</span>
+            <span class="k">else</span>
+                <span class="n">p</span> <span class="p">=</span> <span class="n">fullfile</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">collection</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">relPath</span><span class="p">);</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+<a name="Dataset.loadData"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.loadData">[docs]</a>
+<span class="k">        function</span><span class="w"> </span>data <span class="p">=</span><span class="w"> </span><span class="nf">loadData</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Load this Dataset&#39;s data file from .path</span>
+            <span class="n">in</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">path</span><span class="p">);</span>
+            <span class="n">data</span> <span class="p">=</span> <span class="n">in</span><span class="p">.</span><span class="n">data</span><span class="p">;</span>
+        <span class="k">end</span>
+<a name="Dataset.loadInfo"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.loadInfo">[docs]</a>
+<span class="k">        function</span><span class="w"> </span><span class="nf">loadInfo</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Load this Dataset&#39;s metadata if not already loaded</span>
+
+            <span class="k">if</span> <span class="n">ds</span><span class="p">.</span><span class="n">infoLoaded</span><span class="p">,</span> <span class="k">return</span><span class="p">;</span> <span class="k">end</span>
+            <span class="n">data</span> <span class="p">=</span> <span class="n">ds</span><span class="p">.</span><span class="n">loadData</span><span class="p">();</span>
+            <span class="n">ds</span><span class="p">.</span><span class="n">loadInfoFromData</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+            <span class="n">ds</span><span class="p">.</span><span class="n">infoLoaded</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+        <span class="k">end</span>
+<a name="Dataset.reloadInfo"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.reloadInfo">[docs]</a>
+<span class="k">        function</span><span class="w"> </span><span class="nf">reloadInfo</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="c">% Load or reload this Dataset&#39;s metadata even if already loaded</span>
+            <span class="n">ds</span><span class="p">.</span><span class="n">infoLoaded</span> <span class="p">=</span> <span class="n">false</span><span class="p">;</span>
+            <span class="n">ds</span><span class="p">.</span><span class="n">loadInfo</span><span class="p">();</span>
+        <span class="k">end</span>
+
+<span class="k">        function</span><span class="w"> </span>ds <span class="p">=</span><span class="w"> </span><span class="nf">get.datestr</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span> <span class="nb">isempty</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">datenum</span><span class="p">)</span>
+                <span class="n">ds</span> <span class="p">=</span> <span class="s">&#39;&#39;</span><span class="p">;</span>
+            <span class="k">else</span>
+                <span class="n">ds</span> <span class="p">=</span> <span class="n">datestr</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">datenum</span><span class="p">,</span> <span class="s">&#39;yyyy-mm-dd&#39;</span><span class="p">);</span> <span class="c">%#ok&lt;CPROP&gt;</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+<a name="Dataset.getSingleRunName"></a><a class="viewcode-back" style="background-color: white; padding-left: 0; z-index: 1000; position: relative;"href="../../LFADS_Dataset.html#+LFADS.Dataset.getSingleRunName">[docs]</a><span class="k">        </span>
+<span class="k">        function</span><span class="w"> </span>name <span class="p">=</span><span class="w"> </span><span class="nf">getSingleRunName</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">           </span><span class="c">% generate a consise name for a run with only this dataset</span>
+           <span class="n">name</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;single_%s&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">);</span> 
+        <span class="k">end</span>
+    <span class="k">end</span>
+    
+    <span class="k">methods</span><span class="p">(</span><span class="n">Hidden</span><span class="p">)</span>
+<span class="k">        function</span><span class="w"> </span>h <span class="p">=</span><span class="w"> </span><span class="nf">getFirstLineHeader</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">className</span> <span class="p">=</span> <span class="n">class</span><span class="p">(</span><span class="n">ds</span><span class="p">);</span>
+            <span class="n">h</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s &quot;%s&quot;&#39;</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">methods</span> <span class="p">(</span><span class="n">Access</span> <span class="p">=</span> <span class="n">protected</span><span class="p">)</span>
+<span class="k">       function</span><span class="w"> </span>header <span class="p">=</span><span class="w"> </span><span class="nf">getHeader</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">          </span><span class="k">if</span> <span class="o">~</span><span class="nb">isscalar</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+             <span class="n">header</span> <span class="p">=</span> <span class="n">getHeader</span><span class="p">@</span><span class="n">matlab</span><span class="p">.</span><span class="n">mixin</span><span class="p">.</span><span class="n">CustomDisplay</span><span class="p">(</span><span class="n">ds</span><span class="p">);</span>
+          <span class="k">else</span>
+             <span class="n">header</span> <span class="p">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="s">&#39;%s\n&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">.</span><span class="n">getFirstLineHeader</span><span class="p">());</span>
+          <span class="k">end</span>
+       <span class="k">end</span>
+    <span class="k">end</span>
+
+<span class="k">end</span>
+</pre></div>
+</td></tr></table>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Dan O&#39;Shea, Chethan Pandarinath.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

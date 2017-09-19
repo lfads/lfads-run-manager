@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LFADS.RunParams &mdash; LFADS Run Manager 0.5.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="LFADS Run Manager 0.5.1 documentation" href="index.html"/>
+        <link rel="next" title="LFADS.PosteriorMeans" href="LFADS_PosteriorMeans.html"/>
+        <link rel="prev" title="LFADS.RunCollection" href="LFADS_RunCollection.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> LFADS Run Manager
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="LFADS_DatasetCollection.html">LFADS.DatasetCollection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Dataset.html">LFADS.Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunSpec.html">LFADS.RunSpec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_Run.html">LFADS.Run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_RunCollection.html">LFADS.RunCollection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LFADS.RunParams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LFADS_PosteriorMeans.html">LFADS.PosteriorMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StarterExample_drive_script.html">StarterExample.drive_script</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">LFADS Run Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>LFADS.RunParams</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/LFADS_RunParams.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-+LFADS">
+<span id="id1"></span><span id="lfads-runparams"></span><h1>LFADS.RunParams<a class="headerlink" href="#module-+LFADS" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="+LFADS.RunParams">
+<em class="property">class</em><code class="descclassname">LFADS.</code><code class="descname">RunParams</code><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref mat mat-class docutils literal"><span class="pre">matlab.mixin.CustomDisplay</span></code></p>
+<p>Collection of parameters which are common to all <a class="reference internal" href="LFADS_Run.html#lfads-run"><em>LFADS.Run</em></a> instances in a <a class="reference internal" href="LFADS_RunCollection.html#lfads-runcollection"><em>LFADS.RunCollection</em></a>. You
+must create a subclass of RunParams in which you specify the serialized representation of the parameters that
+will be used in paths on disk.</p>
+<div class="note admonition" id="+LFADS.RunParams.RunParams_member_group_0_+LFADS::RunParams.RunParams_member_group_0">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
+<p class="last">
+
+High-level params unrelated to LFADS internals</p></div><dl class="attribute">
+<dt id="+LFADS.RunParams.spikeBinMs">
+<code class="descname">spikeBinMs</code><em class="property"> (double) = 2</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.spikeBinMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.spikeBinMs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spike bin width in ms</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.trainToTestRatio">
+<code class="descname">trainToTestRatio</code><em class="property"> (uint16) = 4</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.trainToTestRatio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.trainToTestRatio" title="Permalink to this definition">¶</a></dt>
+<dd><p>how many train v. test trials, defaults to 4:1 ratio</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.useAlignmentMatrix">
+<code class="descname">useAlignmentMatrix</code><em class="property"> (logical) = false</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.useAlignmentMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.useAlignmentMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to use an alignment matrix when stitching datasets together. Default = false.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.scaleIncreaseStepsWithDatasets">
+<code class="descname">scaleIncreaseStepsWithDatasets</code><em class="property"> (logical) = true</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.scaleIncreaseStepsWithDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.scaleIncreaseStepsWithDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.setInFactorsMatchDataForSingleDataset">
+<code class="descname">setInFactorsMatchDataForSingleDataset</code><em class="property"> (logical) = false</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.setInFactorsMatchDataForSingleDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.setInFactorsMatchDataForSingleDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>if true, in_factors_dim will be set to the dimensionality of the data when only a single dataset is used</p>
+</dd></dl>
+
+<div class="note admonition" id="+LFADS.RunParams.RunParams_member_group_1_+LFADS::RunParams.RunParams_member_group_1">
+<p class="first" style="background-color: #6ab0de; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Properties</p>
+<p class="last">
+
+Subset of the command-line params to run_lfads.py
+Each starts with c_ so it can be differentiated from other params
+Avoid naming other parameters the same as these without the c_
+since the prefix will be stripped from the serialization</p></div><dl class="attribute">
+<dt id="+LFADS.RunParams.c_cell_clip_value">
+<code class="descname">c_cell_clip_value</code><em class="property"> (double) = 5</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_cell_clip_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_cell_clip_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>used to avoid stepping too far during training</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_factors_dim">
+<code class="descname">c_factors_dim</code><em class="property"> (uint16) = 50</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_factors_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_factors_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_in_factors_dim">
+<code class="descname">c_in_factors_dim</code><em class="property"> (uint16) = 50</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_in_factors_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_in_factors_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_ic_enc_dim">
+<code class="descname">c_ic_enc_dim</code><em class="property"> (uint16) = 128</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_ic_enc_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_ic_enc_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>network size for IC encoder</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_ci_enc_dim">
+<code class="descname">c_ci_enc_dim</code><em class="property"> (uint16) = 128</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_ci_enc_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_ci_enc_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>network size for controller input encoder</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_gen_dim">
+<code class="descname">c_gen_dim</code><em class="property"> (uint16) = 100</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_gen_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_gen_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>generator network size</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_keep_prob">
+<code class="descname">c_keep_prob</code><em class="property"> (double) = 0.95</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_keep_prob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_keep_prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>randomly drop units during each training pass</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_learning_rate_decay_factor">
+<code class="descname">c_learning_rate_decay_factor</code><em class="property"> (double) = 0.98</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_learning_rate_decay_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_learning_rate_decay_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>how quickly to decrease the learning rate</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_device">
+<code class="descname">c_device</code><em class="property"> (char) = '/gpu:0'</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>which visible GPU/CPU to use</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_co_dim">
+<code class="descname">c_co_dim</code><em class="property"> (uint16) = 4</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_co_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_co_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_do_causal_controller">
+<code class="descname">c_do_causal_controller</code><em class="property"> (logical) = false</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_do_causal_controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_do_causal_controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>restrict input encoder from seeing the future?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_l2_gen_scale">
+<code class="descname">c_l2_gen_scale</code><em class="property"> (double) = 500</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_l2_gen_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_l2_gen_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the generator l2 cost</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_l2_con_scale">
+<code class="descname">c_l2_con_scale</code><em class="property"> (double) = 500</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_l2_con_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_l2_con_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the controller l2 cost</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_batch_size">
+<code class="descname">c_batch_size</code><em class="property"> (uint16) = 256</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_batch_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of trials to use during each training pass</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_kl_increase_steps">
+<code class="descname">c_kl_increase_steps</code><em class="property"> (uint16) = 900</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_kl_increase_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_kl_increase_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of steps over which the kl costs increase</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_l2_increase_steps">
+<code class="descname">c_l2_increase_steps</code><em class="property"> (uint16) = 900</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_l2_increase_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_l2_increase_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of steps over which the l2 costs increase</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_controller_input_lag">
+<code class="descname">c_controller_input_lag</code><em class="property"> (uint16) = 1</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_controller_input_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_controller_input_lag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_ic_dim">
+<code class="descname">c_ic_dim</code><em class="property"> (uint16) = 64</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_ic_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_ic_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>dimensionality of the initial conditions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_con_dim">
+<code class="descname">c_con_dim</code><em class="property"> (uint16) = 128</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_con_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_con_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>controller dimensionality</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_learning_rate_stop">
+<code class="descname">c_learning_rate_stop</code><em class="property"> = 0.00001</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_learning_rate_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_learning_rate_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>when the learning rate reaches this threshold, stop training</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_temporal_spike_jitter_width">
+<code class="descname">c_temporal_spike_jitter_width</code><em class="property"> (uint16) = 0</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_temporal_spike_jitter_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_temporal_spike_jitter_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>jittering spike times during training, in units of bin size</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_allow_gpu_growth">
+<code class="descname">c_allow_gpu_growth</code><em class="property"> (logical) = true</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_allow_gpu_growth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_allow_gpu_growth" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_kl_ic_weight">
+<code class="descname">c_kl_ic_weight</code><em class="property"> (double) = 1</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_kl_ic_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_kl_ic_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the generator l2 cost</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="+LFADS.RunParams.c_kl_co_weight">
+<code class="descname">c_kl_co_weight</code><em class="property"> (double) = 1</em><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.c_kl_co_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.c_kl_co_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>how much to weight the controller l2 cost</p>
+</dd></dl>
+
+<div class="tip admonition" id="+LFADS.RunParams.RunParams_member_group_2_+LFADS::RunParams.RunParams_member_group_2">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.RunParams.listNonTransientProperties">
+[<em>props, propMeta</em>] = <code class="descname">listNonTransientProperties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.listNonTransientProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.listNonTransientProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of properties in this class that are not
+Dependent, Constant, Transient, or Hidden</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ignoreProperties</strong> &#8211; cellstr
+list of properties to ignore</li>
+<li><strong>onlyRootClassProperties</strong> &#8211; bool (False)
+if true, only include properties declared in
+LFADS.RunParams. if false, include properties declared in
+subclasses.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>cellstr</dt>
+<dd><p class="first last">list of properties</p>
+</dd>
+<dt>propMeta</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">meta.property array</span><dd><p class="first last">meta.property list from metaclass</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">props</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.getPropertyValueSubset">
+[<em>out</em>] = <code class="descname">getPropertyValueSubset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.getPropertyValueSubset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.getPropertyValueSubset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a struct of non-transient property values that
+differ from their default values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ignoreProperties</strong> (<em>cellstr</em>) &#8211; list of properties to ignore</li>
+<li><strong>filterDiffersFromDefault</strong> (<em>bool=true</em>) &#8211; if true, only properties whose value differs from the
+default value</li>
+<li><strong>onlyRootClassProperties</strong> (<em>bool = false</em>) &#8211; if true, only include properties declared in
+LFADS.RunParams. if false, include properties declared in
+subclasses.</li>
+<li><strong>defaultsFromClassDefinition</strong> (<em>bool = true</em>) &#8211; if true, default value comes from the class definition,
+next to each property&#8217;s definition. If false, the default
+values come from constructing a new class of the same
+type with no arguments. Default true.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>differ</strong> &#8211; property names and values that differ</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">struct</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.generateHash">
+[<em>hash</em>] = <code class="descname">generateHash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateHash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateHash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a short hash of this RunParams non-transient
+properties that can be used in a directory name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>length</strong> (<em>int</em>) &#8211; number of characters to truncate the hash value to</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>hash</strong> &#8211; hash string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.generateHashName">
+[<em>str</em>] = <code class="descname">generateHashName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateHashName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateHashName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a short hash name like &#8216;param_HASH&#8217; where HASH is
+generated by generateHash()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.generateString">
+[<em>str</em>] = <code class="descname">generateString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a string representation of all parameters, with custom
+strings inserted between property names and values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>beforeProp</strong> &#8211; char
+default &#8216;&#8217;</li>
+<li><strong>betweenPropValue</strong> &#8211; char
+default &#8216;=&#8217;</li>
+<li><strong>afterValue</strong> &#8211; char
+default &#8216;&#8217;</li>
+<li><strong>betweenProps</strong> &#8211; char
+default &#8216; &#8216;</li>
+<li><strong>ignoreProperties</strong> &#8211; cellstr
+list of properties to ignore</li>
+<li><strong>onlyRootClassProperties</strong> &#8211; bool (False)
+if true, only include properties declared in
+LFADS.RunParams. if false, include properties declared in
+subclasses.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Also accepts arguments for getPropertyValueSubset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>string</dt>
+<dd>serialized string suffix suitable for inclusion in file paths</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.generateShortDifferencesString">
+[<em>str</em>] = <code class="descname">generateShortDifferencesString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateShortDifferencesString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateShortDifferencesString" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.serializePropertyValue">
+[<em>valstr</em>] = <code class="descname">serializePropertyValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.serializePropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.serializePropertyValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a string representation like name_value
+Strips &#8220;c_&#8221; from beginnning of name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>prop</strong> &#8211; string
+which property</li>
+<li><strong>value</strong> &#8211; Matlab built in type</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.eq">
+[<em>tf</em>] = <code class="descname">eq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded == operator to enable equality if name,
+datasetCollection, and datasets all match</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="+LFADS.RunParams.generateSummaryText">
+[<em>str</em>] = <code class="descname">generateSummaryText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateSummaryText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateSummaryText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="tip admonition" id="+LFADS.RunParams.RunParams_member_group_3_+LFADS::RunParams.RunParams_member_group_3">
+<p class="first" style="background-color: #1abc9c; font-weight:bold; display:block; margin:-12px; padding:6px 12px; color:white;">Methods</p>
+</div><dl class="method">
+<dt id="+LFADS.RunParams.generateCommandLineOptionsString">
+[<em>str</em>] = <code class="descname">generateCommandLineOptionsString</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_code/+LFADS/RunParams.html#RunParams.generateCommandLineOptionsString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#+LFADS.RunParams.generateCommandLineOptionsString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a string of all the command line options to
+pass directly into run_lfads.py. Also takes care of scaling
+c_kl_increase_steps and c_l2_increase_steps by the number of
+datasets in a Run when scaleIncreaseStepsWithDatasets == true</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>run</strong> (<em>LFADS.Run</em>) &#8211; run instance for which these options will</li>
+<li><strong>generated</strong> (<em>be</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">char</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="LFADS_PosteriorMeans.html" class="btn btn-neutral float-right" title="LFADS.PosteriorMeans" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="LFADS_RunCollection.html" class="btn btn-neutral" title="LFADS.RunCollection" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Dan O&#39;Shea, Chethan Pandarinath.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
