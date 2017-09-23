@@ -177,91 +177,48 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 num_channels = num_channels + this_day_num_channels; 
             end
             
-            if strcmp(r.params.c_output_dist, 'poisson')
-                % we are going to make a matrix that is
-                % num_channels x (time_per_trial x total_num_trials)
-                bin_size = r.params.spikeBinMs;
-                time_per_trial = floor(size(datasetInfo(1).seq(1).y, 2) / ...
-                    bin_size);
-                all_data = nan(num_channels, time_per_trial * numel(conditions), ...
-                    'single');
-
-                % fill up the data matrix with binned data
-                for nd = 1:numel(datasetInfo)
-                    [~, ic] = ismember(conditionsEachTrial{nd}, conditions);
-
-                    % start at the zero time point for each day
-                    data_time_ind = 0;
-                    for ncond = 1:numel(conditions)
-                        trials_to_use_this_condition = find(ic==ncond);
-                        n_trials_this_condition = numel(trials_to_use_this_condition);
-                        binned_data = nan(numel(datasetInfo(nd).this_day_inds),time_per_trial, n_trials_this_condition);
-                        for nt = 1:n_trials_this_condition
-                            trial = datasetInfo(nd).seq(trials_to_use_this_condition(nt));
-                            tmp = reshape(trial.y(:, 1:(bin_size*time_per_trial))', ...
-                                [], time_per_trial, size(trial.y,1));
-                            binned_data(:, :, nt) = squeeze(sum(tmp))';                  
-                        end
-
-                        % average over trials in the condition
-                        binned_data = nanmean(binned_data, 3);
-                        if any(isnan(binned_data(:))) && n_trials_this_condition > 0
-                            binned_data(isnan(binned_data)) = 0;
-                            warning('NaN data found on condition %d dataset %d', ncond, nd);
-                        end
-                        all_data(datasetInfo(nd).this_day_inds, data_time_ind ...
-                            + (1:time_per_trial)) = binned_data;
-                        data_time_ind = data_time_ind + time_per_trial;
-                    end
-                end
-            else % if Gaussian
-                % we are going to make a matrix that is
-                % num_channels x (time_per_trial x total_num_trials)
-                time_per_trial = floor(size(datasetInfo(1).seq(1).y, 2));
-                all_data = nan(num_channels, time_per_trial * numel(conditions), ...
-                    'single');
-
-                % fill up the data matrix with binned data
-                for nd = 1:numel(datasetInfo)
-                    [~, ic] = ismember(conditionsEachTrial{nd}, conditions);
-
-                    % start at the zero time point for each day
-                    data_time_ind = 0;
-                    for ncond = 1:numel(conditions)
-                        trials_to_use_this_condition = find(ic==ncond);
-                        n_trials_this_condition = numel(trials_to_use_this_condition);
-                        binned_data = nan(numel(datasetInfo(nd).this_day_inds),time_per_trial, n_trials_this_condition);
-                        for nt = 1:n_trials_this_condition
-                            trial = datasetInfo(nd).seq(trials_to_use_this_condition(nt));
-                            tmp = reshape(trial.y(:, 1:time_per_trial)', ...
-                                [], time_per_trial, size(trial.y,1));
-                            binned_data(:, :, nt) = squeeze(tmp)';                  
-                        end
-
-                        % average over trials in the condition
-                        binned_data = nanmean(binned_data, 3);
-                        if any(isnan(binned_data(:))) && n_trials_this_condition > 0
-                            binned_data(isnan(binned_data)) = 0;
-                            warning('NaN data found on condition %d dataset %d', ncond, nd);
-                        end
-                        all_data(datasetInfo(nd).this_day_inds, data_time_ind ...
-                            + (1:time_per_trial)) = binned_data;
-                        data_time_ind = data_time_ind + time_per_trial;
-                    end
-                end
+            % we are going to make a matrix that is
+            % num_channels x (time_per_trial x total_num_trials)
+            bin_size = r.params.spikeBinMs;
+            time_per_trial = floor(size(datasetInfo(1).seq(1).y, 2) / ...
+                bin_size);
+            all_data = nan(num_channels, time_per_trial * numel(conditions), ...
+                'single');
+            
+            % fill up the data matrix with binned data
+            for nd = 1:numel(datasetInfo)
+                [~, ic] = ismember(conditionsEachTrial{nd}, conditions);
                 
+                % start at the zero time point for each day
+                data_time_ind = 0;
+                for ncond = 1:numel(conditions)
+                    trials_to_use_this_condition = find(ic==ncond);
+                    n_trials_this_condition = numel(trials_to_use_this_condition);
+                    binned_data = nan(numel(datasetInfo(nd).this_day_inds),time_per_trial, n_trials_this_condition);
+                    for nt = 1:n_trials_this_condition
+                        trial = datasetInfo(nd).seq(trials_to_use_this_condition(nt));
+                        tmp = reshape(trial.y(:, 1:(bin_size*time_per_trial))', ...
+                            [], time_per_trial, size(trial.y,1));
+                        binned_data(:, :, nt) = squeeze(sum(tmp))';                  
+                    end
+                    
+                    % average over trials in the condition
+                    binned_data = nanmean(binned_data, 3);
+                    if any(isnan(binned_data(:))) && n_trials_this_condition > 0
+                        binned_data(isnan(binned_data)) = 0;
+                        warning('NaN data found on condition %d dataset %d', ncond, nd);
+                    end
+                    all_data(datasetInfo(nd).this_day_inds, data_time_ind ...
+                        + (1:time_per_trial)) = binned_data;
+                    data_time_ind = data_time_ind + time_per_trial;
+                end
             end
             
             % apply PCA
-            if isfield(r.params, 'c_in_factors_dim')
-                inFacDim = r.params.c_in_factors_dim;
-            else
-                inFacDim = r.params.c_factors_dim;
-            end
             try
-                keep_pcs = pca(all_data', 'Rows', 'pairwise', 'NumComponents', inFacDim);
+                keep_pcs = pca(all_data', 'Rows', 'pairwise', 'NumComponents', r.params.c_in_factors_dim);
             catch
-                keep_pcs = pca(all_data', 'Rows', 'complete', 'NumComponents', inFacDim);
+                keep_pcs = pca(all_data', 'Rows', 'complete', 'NumComponents', r.params.c_in_factors_dim);
             end
             
             % project all data into pca space
@@ -270,7 +227,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             dim_reduced_data = keep_pcs' * all_data_centered;
             
             % get a mapping from each day to the lowD space
-            %[this_day_data, this_data_predicted] = cellvec(numel(datasetInfo)); % each is nChannels x time x 
+            [this_day_data, this_data_predicted] = cellvec(numel(datasetInfo)); % each is nChannels x time x 
             for nd = 1:numel(datasetInfo)
                 this_day_data{nd} = all_data(datasetInfo(nd).this_day_inds, :);
                 this_day_means = all_data_means(datasetInfo(nd).this_day_inds);
@@ -1230,15 +1187,28 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info(iDS).validInds, info(iDS).trainInds);
                 
+<<<<<<< HEAD
+                if isfield(seq{iDS}, 'binWidthMs')
+                    dt_y = seq{iDS}(1).binWidthMs;
+                else
+                    dt_y = seq{iDS}(1).params.dtMS;
+                end
                 if strcmp(r.params.c_output_dist, 'poisson')
                     dt_pm = r.params.spikeBinMs;
-                    dt_y = info(iDS).seq_binSizeMs;
                     rebin = dt_pm / dt_y;
-                    time = info(iDS).seq_timeVector(1:rebin:end);
+                    time = seq{iDS}(1).y_time(1:rebin:end);
                     time = time(1:size(pmData.rates, 2));
                 else        % if gaussian
-                    time = info{iDS}.seq_timeVector;
+                    time = seq{iDS}(1).y_time;
                 end
+=======
+                dt_pm = r.params.spikeBinMs;
+                dt_y = info(iDS).seq_binSizeMs;
+                rebin = dt_pm / dt_y;
+                time = info(iDS).seq_timeVector(1:rebin:end);
+                time = time(1:size(pmData.rates, 2));
+                
+>>>>>>> master
                 pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time); %#ok<AGROW>
             end
             prog.finish();

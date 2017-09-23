@@ -25,6 +25,7 @@ p.addParameter('binSizeMs', 5, @isscalar);
 p.addParameter('inputBinSizeMs', 1, @isscalar);
 p.addParameter('conversion_factor', 0.5, @isscalar);
 p.addParameter('alignment_matrix_cxf', {}, @isvector);
+p.addParameter('alignment_bias_c', {}, @iscell);
 p.parse(varargin{:});
 trainInds = p.Results.trainInds;
 testInds = p.Results.testInds;
@@ -32,6 +33,7 @@ binSizeMS = p.Results.binSizeMs;
 inputBinSizeMS = p.Results.inputBinSizeMs;
 conversion_factor = p.Results.conversion_factor;
 alignment_matrix_cxf = p.Results.alignment_matrix_cxf;
+alignment_bias_c = p.Results.alignment_bias_c;
 
 % rem = assignopts({'trainInds', 'testInds', 'binSizeMS', 'inputBinSizeMS', ...
 %                  'conversion_factor', 'alignment_matrix_cxf', 'whichChannels'}, varargin);
@@ -191,10 +193,15 @@ for ndset = 1:numel(seqs)
         varout{end+1} = conversion_factor;
     end
 
-    % send out an alignment matrix if defined
-    if exist('alignment_matrix_cxf','var') & ~isempty(alignment_matrix_cxf)
+   
+        % send out an alignment matrix (and bias) if defined
+    if exist('alignment_matrix_cxf','var') && ~isempty(alignment_matrix_cxf)
         varout{end+1} = 'alignment_matrix_cxf';
         varout{end+1} = alignment_matrix_cxf{ndset};
+    end
+    if exist('alignment_bias_c','var') && ~isempty(alignment_bias_c)
+        varout{end+1} = 'alignment_bias_c';
+        varout{end+1} = LFADS.Utils.makecol(alignment_bias_c{ndset});
     end
 
     % also store down the train and test inds, for posterity
