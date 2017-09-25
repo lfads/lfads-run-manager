@@ -291,7 +291,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 if any(isnan(datasetInfo(nd).alignment_matrix_cxf(:)))
                     error('NaNs in the the alignment matrix');
                 end
-                    
+
+                if any(isnan(datasetInfo(nd).bias_subtract(:)))
+                    error('NaNs in the the bias terms');
+                end
+                
                 this_data_predicted{nd} = datasetInfo(nd).alignment_matrix_cxf' * this_data_centered;
             end
             
