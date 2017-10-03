@@ -2,12 +2,14 @@ classdef Dataset < LFADS.Dataset
     methods
         function ds = Dataset(collection, relPath)
             ds = ds@LFADS.Dataset(collection, relPath);
+            % you might also wish to set ds.name here,
+            % possibly by adding a third argument to the constructor
+            % and assigning it to ds.name
         end
 
         function data = loadData(ds)
             % load this dataset's data file from .path
-            in = load(ds.path);
-            data = in.data;
+            data = load(ds.path);
         end
 
         function loadInfo(ds)
@@ -16,12 +18,12 @@ classdef Dataset < LFADS.Dataset
             if ds.infoLoaded, return; end
 
             % modify this to extract the metadata loaded from the data file
-            % data = ds.loadData();
-            % ds.subject = data.subject;
-            % ds.saveTags = data.saveTags;
-            % ds.datenum  = data.datenum;
-            % ds.nChannels = data.nChannels;
-            % ds.nTrials = numel(data.trials);
+            data = ds.loadData();
+            ds.subject = data.subject;
+            ds.saveTags = 1;
+            ds.datenum  = datenum(data.datetime);
+            ds.nChannels = size(data.spikes, 2);
+            ds.nTrials = size(data.spikes, 1);
 
             ds.infoLoaded = true;
         end

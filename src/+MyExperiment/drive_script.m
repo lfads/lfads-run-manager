@@ -1,49 +1,53 @@
-%% Locate and specify the datasets
+%% Generate synthetic Lorenz datasets
 
 % build the dataset collection
-dataPath = '/path/to/datasets';
-dc = StarterExample.DatasetCollection(dataPath);
+datasetPath = '~/lorenz_example/datasets';
+nDatasets = 4;
+
+% generate demo datasets
+if ~exist(fullfile(datasetPath, sprintf('dataset%03d.mat', nDatasets)), 'file')
+    LFADS.Utils.generateDemoDatasets(datasetPath, nDatasets);
+end
+
+%% Locate and specify the datasets
+dc = MyExperiment.DatasetCollection(datasetPath);
 
 % add individual datasets
-StarterExample.Dataset(dc, 'dataset001.mat');
-StarterExample.Dataset(dc, 'dataset002.mat');
-StarterExample.Dataset(dc, 'dataset003.mat');
-StarterExample.Dataset(dc, 'dataset004.mat');
-StarterExample.Dataset(dc, 'dataset005.mat');
+MyExperiment.Dataset(dc, 'dataset001.mat');
+MyExperiment.Dataset(dc, 'dataset002.mat');
+MyExperiment.Dataset(dc, 'dataset003.mat');
+MyExperiment.Dataset(dc, 'dataset004.mat');
 
 % load metadata from the datasets to populate the dataset collection
 dc.loadInfo;
 
 %% Set parameters for the entire run collection
 
-par = StarterExample.RunParams;
+par = MyExperiment.RunParams;
 par.useAlignmentMatrix = true;
 par.scaleIncreaseStepsWithDatasets = true;
-par.pcsKeep = 16;
-par.c_in_factors_dim = 16;
-par.c_factors_dim = 16;
+par.c_in_factors_dim = 8;
+par.c_factors_dim = 8;
 
 %% Build RunCollection
 % Run a single model for each dataset, and one stitched run with all datasets
 
-runRoot = '/path/to/runs/';
-rc = PierreEricLFADS.RunCollection(runRoot, 'exampleRun', dc);
+runRoot = '~/lorenz_example/runs';
+rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
  
 % add a single set of parameters to this run collection. Additional
 % parameters can be added. LFADS.RunParams is a value class, unlike the other objects
 % which are handle classes, so you can modify par freely.
 rc.addParams(par);
 
-runClass = 'StarterExample.Run';
-
 % add each individual run
 for iR = 1:dc.nDatasets
-    rc.addRunSpec(LFADS.RunSpec(dc.datasets(iR).getSingleRunName(), ...
-        cls, dc, dc.datasets(iR).name));
+    runSpec = MyExperiment.RunSpec(dc.datasets(iR).getSingleRunName(), dc, dc.datasets(iR).name);
+    rc.addRunSpec(runSpec);
 end
 
 % add the final stitching run with all datasets
-rc.addRunSpec(LFADS.RunSpec('all', cls, dc, 1:dc.nDatasets));
+rc.addRunSpec(MyExperiment.RunSpec('all', dc, 1:dc.nDatasets));
 
 % adding a return here allows you to call this script to recreate all of
 % the objects here for subsequent analysis after the actual LFADS models

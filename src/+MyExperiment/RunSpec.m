@@ -20,7 +20,7 @@ classdef RunSpec < LFADS.RunSpec
             %   search for datasets by name within datasetCollection.
 
             runClassName = sprintf('%s.Run', LFADS.Utils.getPackage());
-            r = LFADS.RunSpec(name, runClassName, datasetCollection, datasetIndicesOrNames);
+            r = r@LFADS.RunSpec(name, runClassName, datasetCollection, datasetIndicesOrNames);
         end
     end
 end
