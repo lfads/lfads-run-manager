@@ -7,18 +7,16 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         
         function data = loadData(ds)
             % Load and return this Dataset's data. The default
-            % implementation calls Matlab's load on `.path` and returns the
-            % value of single variable within, or `data` if multiple
-            % variables are present.
+            % implementation calls Matlab's load on `.path`
             
-            in = load(ds.path);
-            flds = fieldnames(in);
-            if numel(flds) == 1
-                fld = flds{1};
-            else
-                fld = 'data';
-            end
-            data = in.(fld);
+            data = load(ds.path);
+%             flds = fieldnames(in);
+%             if numel(flds) == 1
+%                 fld = flds{1};
+%             else
+%                 fld = 'data';
+%             end
+%             data = in.(fld);
         end
 
         function loadInfo(ds)
@@ -45,14 +43,14 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     properties
         % Information about the dataset's name and location
 
-        name = ''
+        name char = '';
         % Unique, semi-permanent identifier for the dataset. This will be used for paths and filenames and
         % variables within the LFADS model, so it's best to pick a scheme and stick to it.
 
-        comment = ''
+        comment char = '';
         % Textual comment for convenience
 
-        relPath = ''
+        relPath char = '';
         % Path to the Matlab data file that will be loaded when loadData is called, relative to the path of the
         % :ref:`LFADS_DatasetCollection` to which this Dataset belongs. If you override loadData, this can be left blank.
 
@@ -64,22 +62,22 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         % Useful metadata about this dataset to be loaded by loadInfoFromData. These are not used explicitly
         % and can be left blank.
 
-        infoLoaded = false;
+        infoLoaded(1,1) logical = false;
         % Has loadInfo already been called and the info fields populated?
 
-        subject = ''
+        subject char = ''
         % Dataset subject or participant name
 
         saveTags
         % Data grouping identifiers
 
-        datenum
+        datenum double = NaN;
         % Matlab datenum identifying the collection time of this dataset
 
-        nChannels
+        nChannels(1,1) = NaN;
         % Number of spike channels recorded in this dataset
 
-        nTrials
+        nTrials(1,1) = NaN;
         % Number of behavioral trials recorded in this dataset
     end
 
@@ -123,7 +121,7 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         end
 
         function ds = get.datestr(ds)
-            if isempty(ds.datenum)
+            if isempty(ds.datenum) || isnan(ds.datenum)
                 ds = '';
             else
                 ds = datestr(ds.datenum, 'yyyy-mm-dd'); %#ok<CPROP>

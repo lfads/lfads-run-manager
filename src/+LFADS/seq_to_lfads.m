@@ -236,7 +236,7 @@ for ndset = 1:numel(seqs)
     varout{end+1} = testInds;
 
     %% export the spikes
-    lfadsi_export_spikes(outfile, ytrain, ytest, varout{:})
+    LFADS.Interface.export_spikes(outfile, ytrain, ytest, varout{:})
 end
 prog.finish();
 

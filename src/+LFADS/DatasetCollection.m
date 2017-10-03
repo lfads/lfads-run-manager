@@ -137,7 +137,7 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
 
             dc.loadInfo();
             rowNames = arrayfun(@(ds) ds.name, dc.datasets, 'UniformOutput', false);
-            date = arrayfun(@(ds) ds.datestr, dc.datasets, 'UniformOutput', false);
+            date = arrayfun(@(ds) datetime(ds.datenum, 'ConvertFrom','datenum'), dc.datasets, 'UniformOutput', false);
             saveTags = arrayfun(@(ds) LFADS.Utils.strjoin(ds.saveTags, ','), dc.datasets, 'UniformOutput', false);
             nChannels = arrayfun(@(ds) ds.nChannels, dc.datasets, 'UniformOutput', true);
             nTrials = arrayfun(@(ds) ds.nTrials, dc.datasets, 'UniformOutput', true);

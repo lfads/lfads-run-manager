@@ -3,38 +3,40 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     % instances, and all runs in a collection share the same parameter settings, which are represented by a shared
     % :ref:`LFADS_RunParams` instance.
     
-    methods(Abstract)
+    methods
         % These methods will need to be implemented in a subclass that provides the custom behavior for your application
         
-        seq = convertDatasetToSequenceStruct(r, dataset, mode, varargin);
-        % Converts the loaded data within a dataset into a sequence struct. The sequence data returned will be a
-        % struct array where each element corresponds to a trial. You can include any metadata or information fields
-        % that you like for future reference or analysis. At a minimum, you must include field `.y`, `.y_time`, and `.params.dtMS`
-        %
-        % For each trial:
-        %   - `.y` will contain spike data as an `nNeurons` x `nTimeBins` array of spike counts. The spike binning is
-        %       for this is determined by you, and can be left at 1 ms. Later,
-        %       this data will be rebinned according to RunParams .spikeBinMs field.
-        %   - `.y_time` provides a time vector corresponding to the time
-        %       bins of `.y`, which should be identical on each trial
-        %   - `.binWidthMs` specifies the time bin width for `.y`
-        %   - optionally: `.conditionId` specifies the condition to which each trial 
-        %       belongs. This information isn't passed to LFADS. It is used
-        %       only when building the alignment matrices for multi-session
-        %       stitching, if trial-averaging is employed.
-        %
-        % Parameters
-        % ------------
-        % dataset : :ref:`LFADS_Dataset`
-        %   The :ref:`LFADS_Dataset` instance from which data were loaded
-        % mode (string) : typically 'export' indicating sequence struct
-        %   will be exported for LFADS, or 'alignment' indicating that this
-        %   struct will be used to generate alignment matrices
-        %
-        % Returns
-        % ----------
-        % seq : struct Array
-        %   sequence formatted data. A struct array where each elemnt corresponds to a specific trial.
+        function [counts, timeVecMs] = generateRatesForDataset(r, dataset, mode, varargin) %#ok<STOUT,INUSD>
+            % Generate binned spike count tensor for a single dataset.
+            %
+            % Parameters
+            % ------------
+            % dataset : :ref:`LFADS_Dataset`
+            %   The :ref:`LFADS_Dataset` instance from which data were loaded
+            % mode (string) : typically 'export' indicating sequence struct
+            %   will be exported for LFADS, or 'alignment' indicating that this
+            %   struct will be used to generate alignment matrices. You can
+            %   include a different subset of the data (or different time
+            %   windows) for the alignment process separately from the actual
+            %   data exported to LFADS, or return the same for both. Alignment
+            %   is only relevant for multi-dataset models. If you wish to use
+            %   separate data for alignment, override the method usesDifferentSequenceDataForAlignment
+            %   to return true as well. 
+            %
+            % Returns
+            % ----------
+            % counts : nTrials x nChannels x nTime tensor
+            %   spike counts in time bins in trials x channels x time. These
+            %   should be total counts, not normalized rates, as they will be
+            %   added during rebinning.
+            % timeVecMs: nTime x 1 vector 
+            %   of timepoints in milliseconds associated with each time bin. You can start this
+            %   wherever you like, but timeVecMs(2) - timeVecMs(1) will be
+            %   treated as the spike bin width used when the data are later
+            %   rebinned to match run.params.spikeBinMs
+            
+            error('Implement generateRatesForDataset in your subclass');
+        end
         
     end
     
@@ -43,7 +45,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         comment char = '' % Textual comment for convenience
         
-        version uint32 = 4; % Internal versioning allowing for graceful evolution of path settings
+        version uint32 = 5; % Internal versioning allowing for graceful evolution of path settings
     end
     
     properties
@@ -97,7 +99,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         end
         
-        function tf = usesDifferentSequenceDataForAlignment(r) 
+        function tf = usesDifferentSequenceDataForAlignment(r)  %#ok<MANU>
             % tf = usesDifferentSequenceDataForAlignment() 
             %
             % Returns true if you would like the Run to call your
@@ -107,6 +109,51 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % constructing alignment matrices, e.g. only correct trials.
             
             tf = false;
+        end
+        
+        function seq = convertDatasetToSequenceStruct(r, dataset, mode, varargin)
+            % Converts the loaded data within a dataset into a sequence struct. The sequence data returned will be a
+            % struct array where each element corresponds to a trial. You can include any metadata or information fields
+            % that you like for future reference or analysis. At a minimum, you must include field `.y`, `.y_time`, and `.params.dtMS`
+            %
+            % For each trial:
+            %   - `.y` will contain spike data as an `nNeurons` x `nTimeBins` array of spike counts. The spike binning is
+            %       for this is determined by you, and can be left at 1 ms. Later,
+            %       this data will be rebinned according to RunParams .spikeBinMs field.
+            %   - `.y_time` provides a time vector corresponding to the time
+            %       bins of `.y`, which should be identical on each trial
+            %   - `.binWidthMs` specifies the time bin width for `.y`
+            %   - optionally: `.conditionId` specifies the condition to which each trial 
+            %       belongs. This information isn't passed to LFADS. It is used
+            %       only when building the alignment matrices for multi-session
+            %       stitching, if trial-averaging is employed.
+            %
+            % Parameters
+            % ------------
+            % dataset : :ref:`LFADS_Dataset`
+            %   The :ref:`LFADS_Dataset` instance from which data were loaded
+            % mode (string) : typically 'export' indicating sequence struct
+            %   will be exported for LFADS, or 'alignment' indicating that this
+            %   struct will be used to generate alignment matrices
+            %
+            % Returns
+            % ----------
+            % seq : struct Array
+            %   sequence formatted data. A struct array where each elemnt corresponds to a specific trial.
+        
+            [counts, timeVecMs] = r.generateRatesForDataset(dataset, mode, varargin{:});
+            assert(isnumeric(counts) && ndims(counts) == 3 && isnumeric(timeVecMs) && isvector(timeVecMs));
+            assert(size(counts, 3) == numel(timeVecMs));
+            
+            nTrials = size(counts, 1);
+            
+            binWidthMs = timeVecMs(2) - timeVecMs(1);
+            
+            for iTrial = nTrials:-1:1
+                seq(iTrial).y = squeeze(counts(iTrial, :, :)); % nChannels x nTime
+                seq(iTrial).y_time = timeVecMs;
+                seq(iTrial).binWidthMs = binWidthMs;
+            end
         end
         
         function [alignmentMatrices, alignmentBiases] = prepareAlignmentMatrices(r, seqData)
@@ -598,7 +645,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
         end
         
-        function seq = checkSequenceStruct(r, seq)
+        function seq = checkSequenceStruct(r, seq) %#ok<INUSL>
             assert(isfield(seq, 'y'), 'Sequence struct missing y field');
             assert(isfield(seq, 'y_time'), 'Sequence struct missing y_time field');
                 
@@ -615,7 +662,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             assert(numel(unique([seq.binWidthMs])) == 1, 'binWidthMs mismatch');
         end
             
-        function seq = modifySequenceDataPostLoading(r, seq)
+        function seq = modifySequenceDataPostLoading(r, seq) %#ok<INUSL>
             % Optionally make any changes or do any post-processing of sequence data upon loading
             
         end
@@ -930,7 +977,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 lfdir = r.pathLFADSOutput;
 
                 % load the params that were used for training            
-                params = lfadsi_read_parameters(lfdir); %#ok<*PROPLC>
+                params = LFADS.Interface.read_parameters(lfdir); %#ok<*PROPLC>
 
                 % make sure these are up to date
                 params.data_dir = r.pathLFADSInput;
