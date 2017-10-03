@@ -3,8 +3,8 @@ classdef RunCollection < LFADS.RunCollection
     % and properties as useful
     
     methods
-        function rc = RunCollection(varargin)
-            rc@LFADS.RunCollection(varargin{:});
+        function rc = RunCollection(rootPath, name, datasetCollection, varargin)
+            rc@LFADS.RunCollection(rootPath, name, datasetCollection, varargin{:});
         end
     end
 end

@@ -3,6 +3,9 @@ classdef RunSpec < LFADS.RunSpec
     methods
         function r = RunSpec(name, datasetCollection, datasetIndicesOrNames)
             % run = RunSpec(name, datasetCollection, datasetIndicesOrNames)
+            % Passes along to LFADS.RunSpec constructor but inserts
+            % automatically determined Run class name, e.g.
+            % 'StarterExample.Run'
             %
             % Parameters
             % ------------

@@ -16,12 +16,12 @@ classdef Dataset < LFADS.Dataset
             if ds.infoLoaded, return; end
 
             % modify this to extract the metadata loaded from the data file
-            data = ds.loadData();
-            ds.subject = data.subject;
-            ds.saveTags = data.saveTags;
-            ds.datenum  = data.datenum;
-            ds.nChannels = data.nChannels;
-            ds.nTrials = numel(data.trials);
+            % data = ds.loadData();
+            % ds.subject = data.subject;
+            % ds.saveTags = data.saveTags;
+            % ds.datenum  = data.datenum;
+            % ds.nChannels = data.nChannels;
+            % ds.nTrials = numel(data.trials);
 
             ds.infoLoaded = true;
         end
