@@ -1,4 +1,4 @@
-function lfadsi_run_posterior_mean_sample(lfdir, varargin)
+function write_model_parameters(lfdir, varargin)
 % function lfadsi_run_posterior_mean_sample(lfdir, varargin)
 %  calls the python script to sample the posterior and generate parameter estimates
 %  arguments
@@ -6,8 +6,7 @@ function lfadsi_run_posterior_mean_sample(lfdir, varargin)
 %
 %    varargin: overloads the parameters used to fit the model, e.g.
 %     (..., 'checkpoint_pb_load_name', 'checkpoint_lve',
-%     'batch_size', 512, 'device', NDEVICE,
-%     'ps_nexamples_to_process', num_trials_to_process)
+%     'batch_size', 512, 'device', NDEVICE)
 %
 %   checkpoint_pb_load_name selects which file to use for
 %   checkpoints
@@ -16,27 +15,8 @@ function lfadsi_run_posterior_mean_sample(lfdir, varargin)
 %   posterior average
 %
 %   device specifies which gpu to run this on
-%
-%   defaults (overwrites hyperparams file with these):
-%       batch_size: 512
-%       checkpoint_pb_load_name: 'checkpoint_lve'
 
-
-% set some default parameters
-if ~exist('varargin','var'), varargin ={}; end
-keys = varargin(1:2:end);
-
-default_keys = {'batch_size', 'checkpoint_pb_load_name'};
-default_values = {512, 'checkpoint_lve'};
-for nkey = 1:numel(default_keys)
-    % if this key is not defined, set it to the default value
-    if ~any(strcmp(keys, default_keys{nkey}))
-        keys{end+1} = default_keys{nkey};
-        keys{end+1} = default_values{nkey};
-    end
-end
-
-params = lfadsi_read_parameters(lfdir);
+params = LFADS.Interface.read_parameters(lfdir);
 
 % need to remove "dataset_names" and "dataset_dims"
 fields2remove = {'dataset_names', 'dataset_dims'};
@@ -54,6 +34,8 @@ if ~use_controller
 else
     lfpath = fullfile(tmp.path, tmp.lf);
 end
+
+if ~exist('varargin','var'), varargin ={}; end
 
 execstr = ' python';
 
@@ -79,7 +61,7 @@ for nf = 1:numel(f)
 end
 
 
-optstr = strcat(optstr, sprintf(' --kind=posterior_sample',f{nf}, fval));
+optstr = strcat(optstr, sprintf(' --kind=write_model_params',f{nf}, fval));
 
 % put the command together
 cmd = sprintf('%s %s %s', execstr, lfpath, optstr);

@@ -1,4 +1,4 @@
-function lfads_compare_two_fits(fs, ylims, labels, minEpoch)
+function compare_fits(fs, ylims, labels, minEpoch)
 % function lfads_compare_two_fits(fs, ylims, labels, minEpoch)
 
 clf;
@@ -12,7 +12,7 @@ for nn = 1:numel(fs)
         error(sprintf('Can''t find file: %s', fs{nn}));
     end
 
-    y1 = lfadsi_read_fitlog(fs{nn});
+    y1 = LFADS.Interface.read_fitlog(fs{nn});
     ep{nn} = str2double(y1(:,2));
     trcost{nn} = str2double(y1(:,9));
     vacost{nn} = str2double(y1(:,10));

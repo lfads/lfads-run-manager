@@ -1,4 +1,4 @@
-function log = lfadsi_read_fitlog(filename)
+function log = read_fitlog(filename)
 % function log = lfadsi_read_fitlog(filename)
     fh = fopen(filename ,'r');
     lc=linecount(fh);
@@ -7,7 +7,7 @@ function log = lfadsi_read_fitlog(filename)
     log = textread(filename,'%s','whitespace',',');
     log = reshape(log,[],lc)';
 
-
+end
 
 function n = linecount(fid)
 n = 0;

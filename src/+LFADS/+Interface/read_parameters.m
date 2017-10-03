@@ -1,4 +1,4 @@
-function out = lfadsi_read_parameters(lfdir)
+function out = read_parameters(lfdir)
 
 f = fullfile(lfdir,'hyperparameters-0.txt');
 s = warning('off', 'MATLAB:namelengthmaxexceeded');

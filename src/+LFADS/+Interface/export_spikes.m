@@ -1,4 +1,4 @@
-function lfadsi_export_spikes(outfile, ytrain, ytest, varargin)
+function export_spikes(outfile, ytrain, ytest, varargin)
 %% function lfads_export_spikes(outfile, ytrain, ytest, varargin)
 %
 % exports spikes to an hdf5 file that can be easily read by python
@@ -30,6 +30,8 @@ function lfadsi_export_spikes(outfile, ytrain, ytest, varargin)
 
     ndim = numel(size(ytest));
     ytest = permute(ytest,[ndim:-1:1]);
+    
+    outfile = LFADS.Utils.GetFullPath(outfile);
 
     %% create an hdf5 file and add the variables
     h5create(outfile, '/train_data', size(ytrain), 'Datatype','int64');
@@ -37,7 +39,7 @@ function lfadsi_export_spikes(outfile, ytrain, ytest, varargin)
     h5create(outfile, '/valid_data', size(ytest),'Datatype','int64');
     h5write(outfile, '/valid_data', ytest);
 
-    if exist('varargin','var') & ~isempty(varargin)
+    if exist('varargin','var') && ~isempty(varargin)
         %% assign the rest of the variables
         if mod(numel(varargin),2) ~= 0
             error('varargin should be name-value pairs')
