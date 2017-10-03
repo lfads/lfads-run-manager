@@ -53,6 +53,47 @@ classdef RunParams < matlab.mixin.CustomDisplay
     end
     
     methods
+        function paramArray = generateSweep(p, varargin)
+            % Generates an array of RunParams objects that sweep the
+            % specified parameter values.
+            % 
+            % Usage: params = p.generateSweep('prop1', valueList1, 'prop2', valueList2, ...);
+            
+            assert(mod(numel(varargin), 2) == 0, 'Inputs must be ''propertyName'', value pairs');
+            
+            nProp = numel(varargin) / 2;
+            props = varargin(1:2:end);
+            vals = varargin(2:2:end);
+            outSz = cellfun(@numel, vals);
+            if nProp == 1
+                outSz(2) = 1;
+            end
+            
+            % check for valid properties
+            assert(iscellstr(props),  'Inputs must be ''propertyName'', value pairs');
+            allProps = properties(p);
+            for iProp = 1:nProp
+                assert(ismember(props{iProp}, allProps), '%s is not a valid property of %s', props{iProp}, class(p));
+                assert(isvector(vals{iProp}), 'Value list for %s is not a vector', props{iProp});
+            end
+            
+            paramArray = repmat(p, outSz);
+            
+            valInds = cell(nProp, 1);
+            
+            for iParam = 1:numel(paramArray)
+                [valInds{:}] = ind2sub(outSz, iParam);
+                for iProp = 1:nProp
+                    if iscell(vals{iProp})
+                        val = vals{iProp}{valInds{iProp}};
+                    else
+                        val = vals{iProp}(valInds{iProp});
+                    end
+                    paramArray(iParam).(props{iProp}) = val;
+                end
+            end
+        end
+        
         function tf = eq(a, b)
             % Overloaded == operator to enable equality if name,
             % datasetCollection, and datasets all match
@@ -415,7 +456,6 @@ classdef RunParams < matlab.mixin.CustomDisplay
             
         end
     end
-    
     
     methods(Hidden)
         function p = copy(p)
