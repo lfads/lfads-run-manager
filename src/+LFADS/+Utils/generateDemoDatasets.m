@@ -11,8 +11,8 @@ function generateDemoDatasets(datasetPath, nDatasets)
     maxChannels = 30;
 
     nConditions = 50;
-    minTrialsC = 15;
-    maxTrialsC = 25;
+    minTrialsC = 20;
+    maxTrialsC = 30;
     T = 1000;
 
     nTrialsCByDataset = randi([minTrialsC, maxTrialsC], nDatasets);
