@@ -11,6 +11,7 @@ end
 
 %% Locate and specify the datasets
 dc = MyExperiment.DatasetCollection(datasetPath);
+dc.name = 'lorenz_example';
 
 % add individual datasets
 MyExperiment.Dataset(dc, 'dataset001.mat');
@@ -21,24 +22,30 @@ MyExperiment.Dataset(dc, 'dataset004.mat');
 % load metadata from the datasets to populate the dataset collection
 dc.loadInfo;
 
-%% Set parameters for the entire run collection
-
-par = MyExperiment.RunParams;
-par.useAlignmentMatrix = true;
-par.scaleIncreaseStepsWithDatasets = true;
-par.c_in_factors_dim = 8;
-par.c_factors_dim = 8;
-
 %% Build RunCollection
 % Run a single model for each dataset, and one stitched run with all datasets
 
 runRoot = '~/lorenz_example/runs';
 rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
- 
+
+%% Set parameters for the entire run collection
+
+par = MyExperiment.RunParams;
+par.c_in_factors_dim = 8;
+par.c_factors_dim = 8;
+par.c_co_dim = 64;
+
+% for stitching of multiple datasets
+par.useAlignmentMatrix = true;
+
 % add a single set of parameters to this run collection. Additional
 % parameters can be added. LFADS.RunParams is a value class, unlike the other objects
 % which are handle classes, so you can modify par freely.
 rc.addParams(par);
+
+%% Add RunSpecs
+
+% Run a single model for each dataset, and one stitched run with all datasets
 
 % add each individual run
 for iR = 1:dc.nDatasets
@@ -54,15 +61,12 @@ rc.addRunSpec(MyExperiment.RunSpec('all', dc, 1:dc.nDatasets));
 % have been trained. The code below will setup the LFADS runs in the first
 % place.
 
-return; 
+return;
 
 %% Prepare LFADS input
 
 % generate all of the data files LFADS needs to run everything
 rc.prepareForLFADS();
-
-% write a text file summarizing the run specs and parameters used
-rc.writeSummaryText();
 
 % write a python script that will train all of the LFADS runs using a
 % load-balancer against the available CPUs and GPUs

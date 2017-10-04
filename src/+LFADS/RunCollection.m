@@ -17,7 +17,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         rootPath char = ''; % Root path on disk under which individual Runs will be stored
 
         version uint32 = 3; % version used for backwards compatibility
-        
+
         datasetCollection % DatasetCollection instance
     end
 
@@ -29,16 +29,16 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
     properties(Dependent)
         nParams % number of parameter settings in `params`
-        nRunSpecs % number of run specifications 
+        nRunSpecs % number of run specifications
         nRunsTotal % number of runs total (equal to `nParams` * `nRunsEachParam`
-        
+
         nDatasets % number of datasets within the datasetCollection
         path % unique folder given by rootPath/name
         pathsCommonDataForParams % cellstr of folders given by rootPath/name/{data_HASH} for each params
         pathsForParams % cellstr of folders given by rootPath/name/{paramStr}
         fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
         fileSummaryText % path where summary text info will be written
-        
+
         fileShellScriptRunQueue % path of shell script to launch lfadsqueue to train and sample all runs within
     end
 
@@ -67,14 +67,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             p.addOptional('runParams', [], @(x) isa(x, 'LFADS.RunParams'));
             p.addOptional('runSpecs', [], @(x) isa(x, 'LFADS.DatasetCollection'));
             p.parse(varargin{:});
-            
+
             rc.rootPath = p.Results.rootPath;
             rc.name = p.Results.name;
             rc.datasetCollection = p.Results.datasetCollection;
             rc.params = p.Results.runParams;
             rc.runSpecs = p.Results.runSpecs;
         end
-        
+
         function addRunSpec(rc, runSpecs)
             % Adds new RunSpec instance(s) to this RunCollection.
             % Automatically appends new runs to `.runs`.
@@ -84,14 +84,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %     new RunSpec instances describing the names and datasets
             %     included. Each of these new RunSpecs will
             %     be run on each of the parameter settings in `.params`
-            
+
             assert(isa(runSpecs, 'LFADS.RunSpec'), 'Must be LFADS.RunSpec instance(s)');
             runSpecs = LFADS.Utils.makecol(runSpecs(:));
-            
+
             for i = 1:numel(runSpecs)
                 assert(isequal(runSpecs(i).datasetCollection, rc.datasetCollection), 'DatasetCollection of added RunSpecs must match RunCollection');
             end
-            
+
             if isempty(rc.runSpecs)
                 rc.runSpecs = runSpecs;
             else
@@ -103,10 +103,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 end
                 rc.runSpecs = cat(1, rc.runSpecs, runSpecs(~tf));
             end
-            
+
             rc.generateRuns();
         end
-        
+
         function clearRunSpecs(rc)
             % Flush list of run specs
 
@@ -120,11 +120,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Parameters:
             %   mask : logical or indices
             %     selection mask applied to `.runSpecs`
-            
+
             rc.runSpecs = rc.runSpecs(mask);
             rc.generateRuns();
         end
-        
+
         function addParams(rc, params)
             % Adds new LFADS.RunParams instance(s) to this RunCollection.
             % Automatically appends new runs to `.runs`.
@@ -132,7 +132,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Args:
             %   params : :ref:`LFADS_RunParams`
             %     array of parameter settings to run each RunSpec on
-            
+
             assert(isa(params, 'LFADS.RunParams'), 'Must be LFADS.RunParams instance(s)');
             params = LFADS.Utils.makecol(params(:));
             if isempty(rc.params)
@@ -146,14 +146,14 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 end
                 rc.params = cat(1, rc.params, params(~tf));
             end
-            
-            if rc.version < 3 && numel(rc.params) > 1 
+
+            if rc.version < 3 && numel(rc.params) > 1
                 error('Multiple params not supported for version < 3');
             end
-                
+
             rc.generateRuns();
         end
-        
+
         function clearParams(rc)
             % Flush list of run params
 
@@ -163,30 +163,30 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
         function filterParams(rc, mask)
             % Apply selection mask to .params
-            % 
+            %
             % Parameters:
             %   mask : logical or indices
             %     selection mask applied to `.runs`
-            
+
             rc.params = rc.params(mask);
             rc.generateRuns();
         end
-        
+
         function clearAll(rc)
             rc.runSpecs = [];
             rc.params = [];
             rc.generateRuns();
         end
-        
+
         function generateRuns(rc)
             assert(~isempty(rc.datasetCollection), 'DatasetCollection is empty');
             assert(~isempty(rc.rootPath), 'rootPath is empty');
             assert(~isempty(rc.name), 'name is empty');
-            
+
             if rc.nRunsTotal > 0
                 % start with existing matrix
                 matOrig = rc.runs;
-                
+
                 for iS = rc.nRunSpecs:-1:1
                     spec = rc.runSpecs(iS);
                     if ischar(spec.runClassName)
@@ -207,7 +207,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                         new.params = rc.params(iP);
                         new.paramIndexInRunCollection = iP;
                         new.datasets = spec.datasets;
-                        
+
                         % check whether the old run matches, keep it if so,
                         % so that we don't break references unless
                         % something has changed
@@ -217,8 +217,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                                 new = orig;
                             end
                         end
-                        
-                        mat(iS, iP) = new;                        
+
+                        mat(iS, iP) = new;
                     end
                 end
 
@@ -227,7 +227,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 rc.runs = [];
             end
         end
-        
+
         function prepareForLFADS(rc, regenerate)
             if nargin < 2
                 regenerate = false;
@@ -238,29 +238,32 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 rc.runs(iR).prepareForLFADS(regenerate);
             end
             prog.finish();
+
+            rc.writeSummaryText();
         end
-        
+
         function deleteLFADSOutput(rc, varargin)
             resp = input('Are you sure you want to delete EVERYTHING (type yes): ', 's');
             if ~strcmpi(resp, 'yes')
                 return;
             end
-            
+
             for iR = 1:rc.nRunsTotal
                 rc.runs(iR).deleteLFADSOutput('confirmed', true);
             end
         end
-        
-        function writeShellScriptRunQueue(rc, varargin)
+
+        function out_file = writeShellScriptRunQueue(rc, varargin)
             p = inputParser();
             p.addParameter('rerun', false, @islogical);
             p.addParameter('gpuList', [], @(x) isempty(x) || isvector(x));
             p.addParameter('display', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('maxTasksSimultaneously', [], @(x) isempty(x) || isscalar(x));
+            p.addParameter('gpuMemoryRequired', 2000, @isscalar); % in MB
             p.parse(varargin{:});
-            
+
             rc.writeTensorboardShellScript();
-            
+
             if isempty(p.Results.display)
                 display = LFADS.Utils.getDisplay();
                 if isempty(display)
@@ -269,9 +272,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             else
                 display = p.Results.display;
             end
-            
+
             out_file = rc.fileShellScriptRunQueue;
-            
+
             fid = fopen(out_file, 'w');
             fprintf(fid, 'import lfadsqueue as lq\n\n');
             fprintf(fid, 'queue_name = "%s"\n', rc.name);
@@ -294,19 +297,19 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 donefile = fullfile(rc.runs(iR).path, 'lfads.done');
 
                 name = sprintf('%s__%s', rc.runs(iR).paramsString, rc.runs(iR).name); %#ok<*PROPLC>
-                fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": 2000, "outfile": "%s", "donefile": "%s"}, \n', ... 
+                fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": %d, "outfile": "%s", "donefile": "%s"}, \n', ...
                     name, rc.runs(iR).fileShellScriptLFADSTrain, ...
-                    outfile, donefile);
+                    p.Results.gpuMemoryRequired, outfile, donefile);
             end
             prog.finish();
             fprintf(fid, ']\n\n');
-            
+
             if p.Results.rerun
                 donefileStr = ', ignore_donefile=True';
             else
                 donefileStr = '';
             end
-            
+
             if ~isempty(p.Results.maxTasksSimultaneously)
                 maxStr = sprintf(', max_tasks_simultaneously=%d', p.Results.maxTasksSimultaneously);
             else
@@ -316,7 +319,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             fclose(fid);
         end
     end
-        
+
     methods
         function p = get.path(rc)
             if rc.version >= 3
@@ -330,12 +333,12 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 p = fullfile(rc.rootPath, [rc.name paramSuffix]);
             end
         end
-        
+
         function pcell = get.pathsForParams(rc)
             p = rc.path;
             pcell = arrayfun(@(par) fullfile(p, par.generateHashName()), rc.params, 'UniformOutput', false);
         end
-        
+
         function pcell = get.pathsCommonDataForParams(rc)
             p = rc.path;
             pcell = arrayfun(@(par) fullfile(p, par.generateInputDataHashName()), rc.params, 'UniformOutput', false);
@@ -344,7 +347,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function f = get.fileShellScriptTensorboard(r)
             f = fullfile(r.path, 'launch_tensorboard.sh');
         end
-        
+
         function runTensorboard(r)
             system( sprintf('sh %s', r.fileShellScriptTensorboard) );
         end
@@ -352,11 +355,11 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function f = get.fileSummaryText(r)
             f = fullfile(r.path, 'summary.txt');
         end
-        
+
         function f = get.fileShellScriptRunQueue(rc)
             f = fullfile(rc.path, 'run_lfadsqueue.py');
         end
-        
+
         function n = get.nParams(rc)
             n = numel(rc.params);
         end
@@ -364,7 +367,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function n = get.nRunsTotal(rc)
             n = rc.nRunSpecs * rc.nParams;
         end
-        
+
         function n = get.nRunSpecs(rc)
             n = numel(rc.runSpecs);
         end
@@ -372,7 +375,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function n = get.nDatasets(rc)
             n = rc.datasetCollection.nDatasets;
         end
-        
+
         function [tf, idx] = ismemberRunSpecs(rc, runSpecSearch)
             % Determine if any run specs that match runSpecSearch are found in .runSpecs.
             % If runSpecSearch is string or cellstr, matches by
@@ -389,16 +392,16 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %   idx : indices
             %     which index in .runSpecs
             %
-            
+
             if ischar(runSpecSearch)
                 runSpecSearch = {runSpecSearch};
             end
             if iscellstr(runSpecSearch)
                 [tf, idx] = ismember(runSpecSearch, {rc.runSpecs.name});
-                
+
             elseif isa(runSpecSearch, 'LFADS.RunSpec')
                 [tf, idx] = ismember(runSpecSearch, rc.runSpecs);
-                
+
             else
                 % assume is selection
                 idx = runSpecSearch;
@@ -406,7 +409,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             idx = LFADS.Utils.makecol(idx(:));
         end
-           
+
         function [runSpecs, idx] = findRunSpecs(rc, runSpecSearch)
             % Find run specs that match runSpecSearch. Throws an error if any run is not
             % found. If runSpecSearch is string or cellstr, matches by
@@ -420,15 +423,15 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % Returns:
             %   runs : LFADS.Run
             %     matching runs
-            %   idx : vector of indices 
+            %   idx : vector of indices
             %     vector of indices into `.runSpecs` of matching run
             %     instances
-            
+
             [tf, idx] = rc.ismemberRunSpecs(runSpecSearch);
             assert(all(tf), 'Some run spec names could not be found in this RunCollection');
             runSpecs = rc.runSpecs(idx);
         end
-        
+
         function [tf, idx] = ismemberParams(rc, paramSearch)
             % Determine if any run params that match paramSearch are found in .params.
             % If paramSearch is an array of RunParams instances,
@@ -440,19 +443,19 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %
             % Returns:
             %   params : LFADS.RunParams
-            %     matching params 
-            %   idx : vector of indices 
+            %     matching params
+            %   idx : vector of indices
             %     selection into `.params` of matches
-            
+
             if isa(paramSearch, 'LFADS.RunParams')
                 if ~strcmp(class(paramSearch), class(rc.params))
                     % if classes don't match, cannot be member
                     tf = false(size(rc.params));
                     idx = [];
-                else                    
+                else
                     [tf, idx] = ismember(paramSearch, rc.params);
                 end
-                
+
             else
                 % assume is selection
                 idx = paramSearch;
@@ -460,7 +463,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             idx = LFADS.Utils.makecol(idx(:));
         end
-        
+
         function [params, idx] = findParams(rc, paramSearch)
             % Find run params that match paramSearch. Throws an error if any RunParams is not
             % found. If paramSearch is an array of RunParams instances,
@@ -472,17 +475,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %
             % Returns:
             %   params : LFADS.RunParams
-            %     matching params 
-            %   idx : vector of indices 
+            %     matching params
+            %   idx : vector of indices
             %     selection into `.params` of matches
-            
+
             [tf, idx] = rc.ismemberParams(paramSearch);
             assert(all(tf), 'Some run params could not be found in this RunCollection');
             params = rc.params(idx);
         end
-        
+
         function [runs, rowIdx, colIdx] = findRuns(rc, runSpecSearch, paramSearch)
-            % Returns a subset of the .runs matrix for a certain subset of RunSpecs and RunParams. 
+            % Returns a subset of the .runs matrix for a certain subset of RunSpecs and RunParams.
             % Throws an error if any run is not found.
             %
             % Args:
@@ -496,7 +499,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %     vector of indices matching into `.runSpecs`
             %   colIdx : vector of indices
             %     vector of indices matching into .params
-            
+
             if isempty(runSpecSearch)
                 rowIdx = 1:rc.nRunSpecs;
             else
@@ -507,7 +510,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             else
                 colIdx = 1:rc.nParams;
             end
-            
+
             runs = rc.runs(rowIdx, colIdx);
         end
 
@@ -539,7 +542,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             else
                 portStr = '';
             end
-                
+
             str = sprintf('tensorboard --logdir=%s %s', LFADS.Utils.strjoin(runEntry, ','), portStr);
 
             if ip.Results.useTmuxSession
@@ -562,7 +565,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
-        
+
         function text = generateSummaryText(rc)
             newline = sprintf('\n');
             text = sprintf('%s "%s" (%d runs total)\n', ...
@@ -570,19 +573,19 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             text = cat(2, text, sprintf('  Path: %s\n', rc.path));
             text = cat(2, text, sprintf('  Dataset Collection "%s" (%d datasets) in %s\n\n', ...
                  rc.datasetCollection.name, rc.nDatasets, rc.datasetCollection.path));
-             
+
             sep = sprintf('------------------------\n');
             text = cat(2, text, sprintf('  %s\n  %d Run Specifications:\n\n', sep, rc.nRunSpecs));
             for s = 1:rc.nRunSpecs
                 text = cat(2, text, rc.runSpecs(s).generateSummaryText(4, s), newline);
             end
-            
+
             text = cat(2, text, sprintf('  %s\n  %d Parameter Settings:\n\n', sep, rc.nParams));
             for p = 1:rc.nParams
                text = cat(2, text, rc.params(p).generateSummaryText(4, p), newline);
-            end 
+            end
         end
-        
+
         function f = writeSummaryText(rc)
             % Generates a text file sumamrizing the details of the RunSpecs and RunParams
             % within this run collection.
@@ -596,7 +599,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
-        
+
         function loadSequenceData(rc, reload)
             % Call `loadSequenceData` on each run in this collection
 
@@ -610,7 +613,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             prog.finish();
         end
-        
+
         function loadPosteriorMeans(rc, reload)
             % Call `loadPosteriorMeans` on each run in this collection
 
@@ -641,7 +644,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                      p, rc.params(p).generateHashName, rc.params(p).generateInputDataHashName, ...
                      class(rc.params(p)), rc.params(p).generateShortDifferencesString()));
              end
-             
+
              header = cat(2, header, sprintf('\n  %d run specifications\n', rc.nRunSpecs));
              for s = 1:rc.nRunSpecs
                  header = cat(2, header, sprintf('  [%2d] %s\n', s, rc.runSpecs(s).getFirstLineHeader()));

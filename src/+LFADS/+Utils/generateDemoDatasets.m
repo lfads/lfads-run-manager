@@ -20,6 +20,8 @@ function generateDemoDatasets(datasetPath, nDatasets)
 
     meanFr = 5;
     D = 3;
+    
+    initialConditions = randn(3, nDatasets) * 2; % random IC per condition, but constant across datasets for stitching
 
     for iDS = 1:nDatasets
         nTrC = nTrialsCByDataset(iDS);
@@ -34,7 +36,7 @@ function generateDemoDatasets(datasetPath, nDatasets)
 
         for iC = 1:nConditions
             % generate rates via lorenz
-            x0 = randn(3, 1) * 2; % random IC per condition
+            x0 = initialConditions(:, iDS);
             X = lorenz(T, x0); % 3 x T
 
             rates = W*X + b; % N x T
