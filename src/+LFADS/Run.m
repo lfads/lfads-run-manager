@@ -941,7 +941,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
                 '--lfads_save_dir=%s'], ...
-                r.pathLFADSInput, r.pathLFADSOutput);
+                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput));
             
             % use the method from +LFADS/RunParams.m
             optionsString = r.params.generateCommandLineOptionsString(r);
@@ -997,8 +997,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 params = LFADS.Interface.read_parameters(lfdir); %#ok<*PROPLC>
 
                 % make sure these are up to date
-                params.data_dir = r.pathLFADSInput;
-                params.lfads_save_dir = r.pathLFADSOutput;
+                params.data_dir = LFADS.Utils.GetFullPath(r.pathLFADSInput);
+                params.lfads_save_dir = LFADS.Utils.GetFullPath(r.pathLFADSOutput);
 
                 params.batch_size = batchSize; % this is the number of samples used to calculate the posterior mean
                 params.checkpoint_pb_load_name = 'checkpoint_lve';
@@ -1048,7 +1048,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 
                 cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
                 '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
-                r.pathLFADSInput, r.pathLFADSOutput, batchSize, paramsString);
+                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), batchSize, paramsString);
             end        
             
             % set cuda visible devices
@@ -1081,7 +1081,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
                 '--lfads_save_dir=%s --kind=write_model_params --checkpoint_pb_load_name=checkpoint_lve %s'], ...
-                r.pathLFADSInput, r.pathLFADSOutput, parstr);
+                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), parstr);
         end
         
         function runLFADSPosteriorMeanCommand(r)
