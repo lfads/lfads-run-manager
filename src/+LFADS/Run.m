@@ -874,7 +874,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('header', '#!/bin/bash', @ischar);
             p.addParameter('appendPosteriorMeanSample', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
+            p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
+            p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
             p.parse(varargin{:});
+            
+            runLFADSPath = LFADS.Utils.find_run_lfads_py();
             
             f = r.fileShellScriptLFADSTrain;
             fid = fopen(f, 'w');
@@ -903,7 +907,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 trainString = LFADS.Utils.teeify_string(trainString, r.fileLFADSOutput, false);
             end
             
-            fprintf(fid, '%s\n%s\n', p.Results.header, trainString);
+            fprintf(fid, '%s\n', p.Results.header);
+            
+            if ~isempty(p.Results.virtualenv)
+                fprintf(fid, 'source activate %s\n', p.Results.virtualenv);
+            end
+            
+            if p.Results.prependPathToLFADS
+                folder = LFADS.Utils.find_run_lfads_py(false);
+                if ~isempty(folder)
+                    fprintf(fid, 'export PATH="%s:$PATH"\n', folder);
+                end
+            end
+            
+            fprintf(fid, '%s\n', trainString);
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end

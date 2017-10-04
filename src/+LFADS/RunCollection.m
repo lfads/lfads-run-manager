@@ -260,6 +260,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             p.addParameter('display', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('maxTasksSimultaneously', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('gpuMemoryRequired', 2000, @isscalar); % in MB
+            
+            p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
+            p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
+            
             p.parse(varargin{:});
 
             rc.writeTensorboardShellScript();
@@ -276,6 +280,15 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             out_file = rc.fileShellScriptRunQueue;
 
             fid = fopen(out_file, 'w');
+            
+            if p.Results.prependPathToLFADS
+                folder = LFADS.Utils.find_lfadsqueue_py();
+                if ~isempty(folder)
+                    fprintf(fid, 'import sys\n');
+                    fprintf(fid, 'sys.path.append("%s")\n', folder);
+                end
+            end
+            
             fprintf(fid, 'import lfadsqueue as lq\n\n');
             fprintf(fid, 'queue_name = "%s"\n', rc.name);
             fprintf(fid, 'tensorboard_script = "%s"\n', rc.fileShellScriptTensorboard);
@@ -292,7 +305,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             for iR = 1:rc.nRunsTotal
                 prog.update(iR);
                 rc.runs(iR).writeShellScriptLFADSTrain('display', display, 'useTmuxSession', false, ...
-                    'appendPosteriorMeanSample', true, 'teeOutput', true);
+                    'appendPosteriorMeanSample', true, 'teeOutput', true, ...
+                    'prependPathToLFADS', p.Results.prependPathToLFADS, ...
+                    'virtualenv', p.Results.virtualenv);
+                
                 outfile = rc.runs(iR).fileLFADSOutput;
                 donefile = fullfile(rc.runs(iR).path, 'lfads.done');
 
