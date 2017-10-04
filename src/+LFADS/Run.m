@@ -699,6 +699,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
         
+        function assertParamsOkayForSequenceData(r, seqData)
+            % Checks parameter settings against the sequence data.
+            % 1. are there enough trials given the batch size and
+            % trainTestRatio
+           
+            nTrials = cellfun(@numel, seqData);
+            nRequired = r.params.c_batch_size * (1+r.params.trainToTestRatio);
+            
+            idxTooFew = find(nTrials < nRequired);
+            
+            assert(isempty(idxTooFew), 'Issue with Run %s: %d trials are required for c_batch_size=%d and trainToTestRatio=%d. Datasets %s have too few trials', ...
+                r.name, nRequired, r.params.c_batch_size, r.params.trainToTestRatio, vec2str(idxTooFew));
+        end
+        
         function makeLFADSInput(r, regenerate)
             % Generate the LFADS input HD5 files and save them to disk in the pathCommonData folder. 
             % If a file already exists, keep the existing file unless
@@ -744,6 +758,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     
             if any(maskGenerate)
                 seqData = r.loadSequenceData(regenerate);
+                
+                r.assertParamsOkayForSequenceData(seqData);
                 
                 % if there are multiple datasets, we need an alignment matrix
                 if r.nDatasets > 1 && r.params.useAlignmentMatrix

@@ -34,6 +34,7 @@ par = MyExperiment.RunParams;
 par.c_in_factors_dim = 8;
 par.c_factors_dim = 8;
 par.c_co_dim = 64;
+par.c_batch_size = 150;
 
 % for stitching of multiple datasets
 par.useAlignmentMatrix = true;
