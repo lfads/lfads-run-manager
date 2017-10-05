@@ -6,13 +6,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     methods
         % These methods will need to be implemented in a subclass that provides the custom behavior for your application
         
-        function [counts, timeVecMs] = generateRatesForDataset(r, dataset, mode, varargin) %#ok<STOUT,INUSD>
+        function [counts, timeVecMs, conditionId] = generateRatesForDataset(r, dataset, mode, varargin) %#ok<STOUT,INUSD>
             % Generate binned spike count tensor for a single dataset.
+            %% Generate binned spike count tensor for a single dataset.
             %
             % Parameters
             % ------------
             % dataset : :ref:`LFADS_Dataset`
             %   The :ref:`LFADS_Dataset` instance from which data were loaded
+            %
             % mode (string) : typically 'export' indicating sequence struct
             %   will be exported for LFADS, or 'alignment' indicating that this
             %   struct will be used to generate alignment matrices. You can
@@ -29,11 +31,47 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   spike counts in time bins in trials x channels x time. These
             %   should be total counts, not normalized rates, as they will be
             %   added during rebinning.
+            %
             % timeVecMs: nTime x 1 vector 
             %   of timepoints in milliseconds associated with each time bin. You can start this
             %   wherever you like, but timeVecMs(2) - timeVecMs(1) will be
             %   treated as the spike bin width used when the data are later
             %   rebinned to match run.params.spikeBinMs
+            %
+            % conditionId: nTrials x 1 vector
+            %   of unique conditionIds. Can be cell array of strings or
+            %   vector of unique integers.
+            % Parameters
+            % ------------
+            % dataset : :ref:`LFADS_Dataset`
+            %   The :ref:`LFADS_Dataset` instance from which data were loaded
+            %
+            % mode (string) : typically 'export' indicating sequence struct
+            %   will be exported for LFADS, or 'alignment' indicating that this
+            %   struct will be used to generate alignment matrices. You can
+            %   include a different subset of the data (or different time
+            %   windows) for the alignment process separately from the actual
+            %   data exported to LFADS, or return the same for both. Alignment
+            %   is only relevant for multi-dataset models. If you wish to use
+            %   separate data for alignment, override the method usesDifferentSequenceDataForAlignment
+            %   to return true as well. 
+            %
+            % Returns
+            % ----------
+            % counts : nTrials x nChannels x nTime tensor
+            %   spike counts in time bins in trials x channels x time. These
+            %   should be total counts, not normalized rates, as they will be
+            %   added during rebinning.
+            %
+            % timeVecMs: nTime x 1 vector 
+            %   of timepoints in milliseconds associated with each time bin. You can start this
+            %   wherever you like, but timeVecMs(2) - timeVecMs(1) will be
+            %   treated as the spike bin width used when the data are later
+            %   rebinned to match run.params.spikeBinMs
+            %
+            % conditionId: nTrials x 1 vector
+            %   of unique conditionIds. Can be cell array of strings or
+            %   vector of unique integers.
             
             error('Implement generateRatesForDataset in your subclass');
         end
@@ -58,6 +96,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
 
         inputInfo % parameters used to train model
+        
+        multisessionAlignmentTool % LFADS.MultisessionAlignmentTool instance used to generate alignment matrices and visualize results
     end
     
     properties(Dependent)
@@ -141,9 +181,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % seq : struct Array
             %   sequence formatted data. A struct array where each elemnt corresponds to a specific trial.
         
-            [counts, timeVecMs] = r.generateRatesForDataset(dataset, mode, varargin{:});
+            [counts, timeVecMs, conditionId] = r.generateRatesForDataset(dataset, mode, varargin{:});
             assert(isnumeric(counts) && ndims(counts) == 3 && isnumeric(timeVecMs) && isvector(timeVecMs));
             assert(size(counts, 3) == numel(timeVecMs));
+            assert(isempty(conditionId) || numel(conditionId) == size(counts, 1));
             
             nTrials = size(counts, 1);
             
@@ -153,7 +194,32 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 seq(iTrial).y = squeeze(counts(iTrial, :, :)); % nChannels x nTime
                 seq(iTrial).y_time = timeVecMs;
                 seq(iTrial).binWidthMs = binWidthMs;
+                if ~isempty(conditionId)
+                    if iscell(conditionId)
+                        seq(iTrial).conditionId = conditionId{iTrial};
+                    else
+                        seq(iTrial).conditionId = conditionId(iTrial);
+                    end
+                end
             end
+        end
+        
+        function [alignmentMatrices, alignmentBiases] = doMultisessionAlignment(r, regenerate)
+            if nargin < 2
+                regenerate = false;
+            end
+            assert(r.nDatasets > 1 && r.params.useAlignmentMatrix, 'Alignment matrices can only be built for multi-session datasets where useAlignmentMatrix is true');
+
+            % ask for specific dataset for building the alignment
+            % matrices, which may be a subset of all trials, e.g.
+            % correct trials only. If return is empty, use the full
+            % seqData
+            if r.usesDifferentSequenceDataForAlignment()
+                seqDataForAlignmentMatrices = r.loadSequenceData(regenerate, 'alignment');
+            else
+                seqDataForAlignmentMatrices = r.loadSequenceData(regenerate);
+            end
+            [alignmentMatrices, alignmentBiases] = r.prepareAlignmentMatrices(seqDataForAlignmentMatrices);
         end
         
         function [alignmentMatrices, alignmentBiases] = prepareAlignmentMatrices(r, seqData)
@@ -189,118 +255,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,
             %   PC regression can provide a reasonable set of guesses.
             
-            % tally up the total number of channels across all datasets
-            num_channels = 0;
-            
-            % gather global unique conditions
-            condField = 'conditionId';
-            c = cell(r.nDatasets, 1);
-            conditionsEachTrial = cell(r.nDatasets, 1);
-            for nd = 1:r.nDatasets
-               conditionsEachTrial{nd} = {seqData{nd}.(condField)}';
-               if isscalar(conditionsEachTrial{nd}{1})
-                   conditionsEachTrial{nd} = cell2mat(conditionsEachTrial{nd});
-               end
-                   
-               c{nd} = unique(conditionsEachTrial{nd});
-            end
-            conditions = unique(cat(1, c{:}));
-            if isnumeric(conditions)
-                conditions = conditions(~isnan(conditions));
-            elseif iscellstr(conditions)
-                conditions = conditions(~cellfun(@isempty, conditions));
-            else
-                error('conditionId field must contain numeric or string values');
+            if r.nDatasets == 1
+                error('Alignment matrices can only be generated when number of datasets > 1');
             end
             
-            % split each struct by condition
-            for nd = 1:r.nDatasets
-                datasetInfo(nd).seq = seqData{nd}; %#ok<AGROW>
-                
-                % we are going to make a big array that spans all days.
-                % store down the indices for this day
-                this_day_num_channels = size(datasetInfo(nd).seq(1).y,1);
-                datasetInfo(nd).this_day_inds = num_channels + (1 : this_day_num_channels); %#ok<AGROW>
-                num_channels = num_channels + this_day_num_channels; 
+            r.multisessionAlignmentTool = LFADS.MultisessionAlignmentTool(r, seqData);
+            [alignmentMatrices, alignmentBiases] = r.multisessionAlignmentTool.computeAlignmentMatricesUsingTrialAveragedPCR();
+        end
+        
+        function visualizeAlignmentMatrixReconstructions(r, nFactorsOrFactorIdx, nConditionsOrConditionIdx)
+            if isempty(r.multisessionAlignmentTool)
+                r.doMultisessionAlignment();
             end
             
-            % we are going to make a matrix that is
-            % num_channels x (time_per_trial x total_num_trials)
-            bin_size = r.params.spikeBinMs;
-            time_per_trial = floor(size(datasetInfo(1).seq(1).y, 2) / ...
-                bin_size);
-            all_data = nan(num_channels, time_per_trial * numel(conditions), ...
-                'single');
-            
-            % fill up the data matrix with binned data
-            for nd = 1:numel(datasetInfo)
-                [~, ic] = ismember(conditionsEachTrial{nd}, conditions);
-                
-                % start at the zero time point for each day
-                data_time_ind = 0;
-                for ncond = 1:numel(conditions)
-                    trials_to_use_this_condition = find(ic==ncond);
-                    n_trials_this_condition = numel(trials_to_use_this_condition);
-                    binned_data = nan(numel(datasetInfo(nd).this_day_inds),time_per_trial, n_trials_this_condition);
-                    for nt = 1:n_trials_this_condition
-                        trial = datasetInfo(nd).seq(trials_to_use_this_condition(nt));
-                        tmp = reshape(trial.y(:, 1:(bin_size*time_per_trial))', ...
-                            [], time_per_trial, size(trial.y,1));
-                        binned_data(:, :, nt) = squeeze(sum(tmp))';                  
-                    end
-                    
-                    % average over trials in the condition
-                    binned_data = nanmean(binned_data, 3);
-                    if any(isnan(binned_data(:))) && n_trials_this_condition > 0
-                        binned_data(isnan(binned_data)) = 0;
-                        warning('NaN data found on condition %d dataset %d', ncond, nd);
-                    end
-                    all_data(datasetInfo(nd).this_day_inds, data_time_ind ...
-                        + (1:time_per_trial)) = binned_data;
-                    data_time_ind = data_time_ind + time_per_trial;
-                end
-            end
-            
-            % apply PCA
-            try
-                keep_pcs = pca(all_data', 'Rows', 'pairwise', 'NumComponents', r.params.c_in_factors_dim);
-            catch
-                keep_pcs = pca(all_data', 'Rows', 'complete', 'NumComponents', r.params.c_in_factors_dim);
-            end
-            
-            % project all data into pca space
-            all_data_means = nanmean(all_data, 2);
-            all_data_centered = bsxfun(@minus, all_data, all_data_means);
-            dim_reduced_data = keep_pcs' * all_data_centered;
-            
-            % get a mapping from each day to the lowD space
-            [this_day_data, this_data_predicted] = cellvec(numel(datasetInfo)); % each is nChannels x time x 
-            for nd = 1:numel(datasetInfo)
-                this_day_data{nd} = all_data(datasetInfo(nd).this_day_inds, :);
-                this_day_means = all_data_means(datasetInfo(nd).this_day_inds);
-                
-                % figure out which timepoints are valid
-                tMask = ~any(isnan(this_day_data{nd}), 1) & ~any(isnan(dim_reduced_data), 1);
-                dim_reduced_data_this = bsxfun(@minus, dim_reduced_data(:, tMask), ...
-                    nanmean(dim_reduced_data(:, tMask), 2));
-                this_data_centered = bsxfun(@minus, this_day_data{nd}(:, tMask), ...
-                    nanmean(this_day_data{nd}(:, tMask), 2));
-                
-                % regress this day's data against the global PCs
-                datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
-                % and set mean as it will be subtracted from the data
-                % before projecting by the alignment matrix
-                datasetInfo(nd).bias_subtract = squeeze(this_day_means);
-                
-                if any(isnan(datasetInfo(nd).alignment_matrix_cxf(:)))
-                    error('NaNs in the the alignment matrix');
-                end
-                    
-                this_data_predicted{nd} = datasetInfo(nd).alignment_matrix_cxf' * this_data_centered;
-            end
-            
-            alignmentMatrices = {datasetInfo.alignment_matrix_cxf}';
-            alignmentBiases = {datasetInfo.bias_subtract}';
+            r.multisessionAlignmentTool.plotAlignmentReconstruction(nFactorsOrFactorIdx, nConditionsOrConditionIdx);
         end
         
         function tf = eq(a, b)
@@ -707,7 +675,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             nTrials = cellfun(@numel, seqData);
             nRequired = r.params.c_batch_size * (1+r.params.trainToTestRatio);
             
-            idxTooFew = find(nTrials < nRequired);
+            idxTooFew = find(nTrials <= nRequired); % lfads code uses a > rather than >=, so we must do the same
             
             assert(isempty(idxTooFew), 'Issue with Run %s: %d trials are required for c_batch_size=%d and trainToTestRatio=%d. Datasets %s have too few trials', ...
                 r.name, nRequired, r.params.c_batch_size, r.params.trainToTestRatio, vec2str(idxTooFew));
@@ -765,17 +733,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 if r.nDatasets > 1 && r.params.useAlignmentMatrix
                     % call out to abstract dataset specific method
                     useAlignMatrices = true;
-                    
-                    % ask for specific dataset for building the alignment
-                    % matrices, which may be a subset of all trials, e.g.
-                    % correct trials only. If return is empty, use the full
-                    % seqData
-                    if r.usesDifferentSequenceDataForAlignment()
-                        seqDataForAlignmentMatrices = r.loadSequenceData(regenerate, 'alignment');
-                    else
-                        seqDataForAlignmentMatrices = seqData;
-                    end
-                    [alignmentMatrices, alignmentBiases] = r.prepareAlignmentMatrices(seqDataForAlignmentMatrices);
+
+                    r.doMultisessionAlignment(regenerate);
                 else
                     useAlignMatrices = false;
                 end

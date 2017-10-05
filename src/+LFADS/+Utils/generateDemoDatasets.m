@@ -7,10 +7,10 @@ function generateDemoDatasets(datasetPath, nDatasets)
     end
 
     %% Generate datasets
-    minChannels = 20;
-    maxChannels = 30;
+    minChannels = 25;
+    maxChannels = 35;
 
-    nConditions = 50;
+    nConditions = 65;
     minTrialsC = 20;
     maxTrialsC = 30;
     T = 1000;
@@ -21,13 +21,17 @@ function generateDemoDatasets(datasetPath, nDatasets)
     meanFr = 5;
     D = 3;
     
-    initialConditions = randn(3, nDatasets) * 2; % random IC per condition, but constant across datasets for stitching
-
+    initialConditions = randn(3, nConditions) * 2; % random IC per condition, but constant across datasets for stitching
+    lorenz_trajectories = nan(3, T, nConditions);
+    for iC = 1:nConditions
+        lorenz_trajectories(:, :, iC) = lorenz(T, initialConditions(:, iC));
+    end
+    
     for iDS = 1:nDatasets
         nTrC = nTrialsCByDataset(iDS);
         nCh = nChannelsByDataset(iDS);
 
-        W = (rand(nCh, D)+1) .* sign(randn(nCh, D)); % N x 3
+        W = sort((rand(nCh, D)+1) .* sign(randn(nCh, D)), 1); % N x 3
         b = log(meanFr / 1000) * ones(nCh, 1); % N x 1
 
         trialIdx = 1;
@@ -36,13 +40,12 @@ function generateDemoDatasets(datasetPath, nDatasets)
 
         for iC = 1:nConditions
             % generate rates via lorenz
-            x0 = initialConditions(:, iDS);
-            X = lorenz(T, x0); % 3 x T
-
-            rates = W*X + b; % N x T
-
+            X = lorenz_trajectories(:, :, iC); % 3 X T
+            log_rates = W*X + b; % Nx3 x 3xT = N x T
+            rates = exp(clip(log_rates, -20, 20));
+            
             for iTr = 1:nTrC
-                spikes(trialIdx, :, :) = poissonSpike(rates);
+                spikes(trialIdx, :, :) = poissrnd(rates) > 0;
                 conditionId(trialIdx) = iC;
                 trialIdx = trialIdx + 1;
             end
@@ -68,12 +71,9 @@ end
 
 %% Utility functions
 
-function spikes = poissonSpike(rates)
-    exprates = exp(rates);
-    exprates(exprates < -20) = -20;
-    exprates(exprates >  20) =  20;
-    
-    spikes = poissrnd(exprates) > 0;
+function x = clip(x, lo, hi)
+    x(x < lo) = lo;
+    x(x > hi) = hi;
 end
 
 function X = lorenz(T, x0)
