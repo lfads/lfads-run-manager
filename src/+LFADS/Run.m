@@ -415,12 +415,17 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
         
         function sess = get.sessionNameTrain(r)
-            sess = sprintf('train_%s_%s', r.name, r.paramsString);
+            sess = sprintf('train_%s__%s', r.name, r.paramsString);
             sess = strrep(sess, '.', '_');
         end
         
         function sess = get.sessionNamePosteriorMean(r)
-            sess = sprintf('pm_%s_%s', r.name, r.paramsString);
+            sess = sprintf('pm_%s__%s', r.name, r.paramsString);
+            sess = strrep(sess, '.', '_');
+        end
+        
+        function sess = get.sessionNameWriteModelParams(r)
+            sess = sprintf('writeParams_%s_%s', r.name, r.paramsString);
             sess = strrep(sess, '.', '_');
         end
         
@@ -848,6 +853,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('keepSessionAlive', true, @islogical);
             p.addParameter('header', '#!/bin/bash', @ischar);
             p.addParameter('appendPosteriorMeanSample', false, @islogical);
+            p.addParameter('appendWriteModelParams', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
             p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
@@ -860,26 +866,43 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             trainString = r.buildLFADSTrainingCommand(...
                 'cuda_visible_devices', p.Results.cuda_visible_devices, ...
                 'display', p.Results.display, ...
-                'useTmuxSession', p.Results.useTmuxSession, ...
-                'keepSessionAlive', p.Results.keepSessionAlive, ...
+                'useTmuxSession', false, ...
                 'teeOutput', false); % teeify later
             
             if p.Results.appendPosteriorMeanSample
                 % run only if train succeeds
                 pmString = r.buildCommandLFADSPosteriorMeanSample(...
                     'cuda_visible_devices', p.Results.cuda_visible_devices, ...
-                    'useTmuxSession', p.Results.useTmuxSession, ...
-                    'keepSessionAlive', p.Results.keepSessionAlive, ...
+                    'useTmuxSession', false, ...
                     'teeOutput', false); % teeify later
-                if p.Results.teeOutput
-                    trainString = sprintf('(%s && %s)', trainString, pmString);
+                
+                if p.Results.appendWriteModelParams
+                    % run only if train succeeds
+                    writeParamsString = r.buildCommandLFADSWriteModelParams(...
+                        'cuda_visible_devices', p.Results.cuda_visible_devices, ...
+                        'useTmuxSession', false, ...
+                        'teeOutput', false); % teeify later
+                    if p.Results.teeOutput
+                        trainString = sprintf('(%s && %s && %s)', trainString, pmString, writeParamsString);
+                    else
+                        trainString = sprintf('%s && %s && %s', trainString, pmString, writeParamsString);
+                    end
                 else
-                    trainString = sprintf('%s && %s', trainString, pmString);
+                    if p.Results.teeOutput
+                        trainString = sprintf('(%s && %s)', trainString, pmString);
+                    else
+                        trainString = sprintf('%s && %s', trainString, pmString);
+                    end
                 end
             end
             
             if p.Results.teeOutput
                 trainString = LFADS.Utils.teeify_string(trainString, r.fileLFADSOutput, false);
+            end
+            
+            % we do all of the tmux at once on the combined commands
+             if p.Results.useTmuxSession
+                trainString = LFADS.Utils.tmuxify_string(trainString, r.sessionNameTrain, 'keepSessionAlive', p.Results.keepSessionAlive);
             end
             
             fprintf(fid, '%s\n', p.Results.header);
@@ -1043,7 +1066,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
         
-        function cmd = buildCommandLFADSWriteModelParams(r)
+        function cmd = buildCommandLFADSWriteModelParams(r, varargin)
+            p = inputParser();
+            p.addParameter('cuda_visible_devices', [], @(x) isempty(x) || isscalar(x));
+            p.addParameter('useTmuxSession', false, @islogical);
+            p.addParameter('keepSessionAlive', false, @islogical);
+            p.addParameter('teeOutput', false, @islogical);
+            p.parse(varargin{:});
+            
             % Generates the command string for LFADS write model params
             %
             % Returns
@@ -1051,12 +1081,29 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % cmd : string
             %   Shell command for running LFADS write model params
 
+            
             % use the RunParams to generate the params
-            parstr = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width'});
+            paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width'});
 
             cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
-                '--lfads_save_dir=%s --kind=write_model_params --checkpoint_pb_load_name=checkpoint_lve %s'], ...
-                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), parstr);
+            '--lfads_save_dir=%s --kind=write_model_params --checkpoint_pb_load_name=checkpoint_lve %s'], ...
+            LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), paramsString);
+            
+            % set cuda visible devices
+            if ~isempty(p.Results.cuda_visible_devices)
+                cmd = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
+                    p.Results.cuda_visible_devices, cmd);
+            end
+            
+            if p.Results.teeOutput
+                cmd = LFADS.Utils.teeify_string(cmd, r.fileLFADSOutput, true);
+            end
+            
+            % if requested, tmux-ify the command
+            if p.Results.useTmuxSession
+                cmd = LFADS.Utils.tmuxify_string(cmd, r.sessionNamePosteriorMean, 'keepSessionAlive', p.Results.keepSessionAlive );
+                fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNameWriteModelParams, r.sessionNameWriteModelParams);
+            end
         end
         
         function runLFADSPosteriorMeanCommand(r)
@@ -1117,29 +1164,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   validation error checkpoint
            
             p = inputParser();
-            p.addOptional('cuda_visible_devices', [], @isscalar);
-            p.addParameter('useTmuxSession', false, @islogical);
-            p.addParameter('keepSessionAlive', false, @islogical);
             p.addParameter('header', '#!/bin/bash\n', @ischar);
+            p.KeepUnmatched = true;
             p.parse(varargin{:});
             
             f = r.fileShellScriptLFADSWriteModelParams;
             fid = fopen(f, 'w');
             
-            outputString = r.buildCommandLFADSWriteModelParams();
+            outputString = r.buildCommandLFADSWriteModelParams(p.Unmatched);
 
-            % set cuda visible devices
-            if ~isempty(p.Results.cuda_visible_devices)
-                outputString = sprintf('CUDA_VISIBLE_DEVICES=%i %s', ...
-                    p.Results.cuda_visible_devices, outputString);
-            end
-            
-            % if requested, tmux-ify the command
-            if p.Results.useTmuxSession
-                outputString = LFADS.Utils.tmuxify_string( outputString, r.sessionNameWriteModelParams, 'keepSessionAlive', p.Results.keepSessionAlive );
-                fprintf('Tmux Session is %s\n  tmux a -t %s\n\n', r.sessionNameWriteModelParams, r.sessionNameWriteModelParams);
-            end
-            
             fprintf(fid, [p.Results.header outputString]);
             fclose(fid);
             LFADS.Utils.chmod('ug+rx', f);
