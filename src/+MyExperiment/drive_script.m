@@ -17,7 +17,6 @@ dc.name = 'lorenz_example';
 MyExperiment.Dataset(dc, 'dataset001.mat');
 MyExperiment.Dataset(dc, 'dataset002.mat');
 MyExperiment.Dataset(dc, 'dataset003.mat');
-MyExperiment.Dataset(dc, 'dataset004.mat');
 
 % load metadata from the datasets to populate the dataset collection
 dc.loadInfo;
@@ -31,13 +30,19 @@ rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
 %% Set parameters for the entire run collection
 
 par = MyExperiment.RunParams;
-par.c_in_factors_dim = 8;
-par.c_factors_dim = 8;
-par.c_co_dim = 64;
-par.c_batch_size = 150;
+par.spikeBinMs = 2; % rebin the data at 2 ms
+par.c_co_dim = 0; % no controller --> no inputs to generator
+par.c_batch_size = 150; % must be < 1/5 of the min trial count
 
-% for stitching of multiple datasets
-par.useAlignmentMatrix = true;
+par.setInFactorsMatchDataForSingleDataset = true;  % automatically change c_in_factors_dim to match the number of channels in a single dataset 
+par.c_in_factors_dim = 8; % and manually set it for multisession stitched models
+par.c_factors_dim = 8;
+par.useAlignmentMatrix = true; % use alignment matrices initial guess for multisession stitching
+
+par.c_gen_dim = 64; % number of units in generator RNN
+par.c_ic_enc_dim = 64; % number of units in encoder RNN
+
+par.c_learning_rate_stop = 1e-3; % we can stop really early for the demo
 
 % add a single set of parameters to this run collection. Additional
 % parameters can be added. LFADS.RunParams is a value class, unlike the other objects
