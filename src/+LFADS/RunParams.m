@@ -15,7 +15,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run
     
-        setInFactorsMatchDataForSingleDataset logical = false; % if true, in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
+        setInFactorsMatchDataForSingleDataset logical = false; % if true, c_in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
     end
     
     properties

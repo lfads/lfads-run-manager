@@ -291,7 +291,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             
             fprintf(fid, 'import lfadsqueue as lq\n\n');
             fprintf(fid, 'queue_name = "%s"\n', rc.name);
-            fprintf(fid, 'tensorboard_script = "%s"\n', rc.fileShellScriptTensorboard);
+            fprintf(fid, 'tensorboard_script = "%s"\n', LFADS.Utils.GetFullPath(rc.fileShellScriptTensorboard));
 
             if ~isempty(p.Results.gpuList)
                 gpuListStr = ['[', LFADS.Utils.strjoin(p.Results.gpuList, ', '), ']'];
@@ -309,8 +309,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     'prependPathToLFADS', p.Results.prependPathToLFADS, ...
                     'virtualenv', p.Results.virtualenv);
                 
-                outfile = rc.runs(iR).fileLFADSOutput;
-                donefile = fullfile(rc.runs(iR).path, 'lfads.done');
+                outfile = LFADS.Utils.GetFullPath(rc.runs(iR).fileLFADSOutput);
+                donefile = LFADS.Utils.GetFullPath(fullfile(rc.runs(iR).path, 'lfads.done'));
 
                 name = sprintf('%s__%s', rc.runs(iR).paramsString, rc.runs(iR).name); %#ok<*PROPLC>
                 fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": %d, "outfile": "%s", "donefile": "%s"}, \n', ...
@@ -549,7 +549,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     runEntry{s,p} = sprintf('%s/%s:"%s"', ...
                         rc.runs(s, p).params.generateHashName(), ...
                         rc.runs(s,p).name, ...
-                        rc.runs(s,p).pathLFADSOutput);
+                        LFADS.Utils.GetFullPath(rc.runs(s,p).pathLFADSOutput));
                 end
             end
 
@@ -562,7 +562,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             str = sprintf('tensorboard --logdir=%s %s', LFADS.Utils.strjoin(runEntry, ','), portStr);
 
             if ip.Results.useTmuxSession
-                str = LFADS.Utils.tmuxify_string( str, ip.Results.tmuxName );
+                str = LFADS.Utils.tmuxify_string(str, ip.Results.tmuxName);
             end
         end
 
@@ -583,7 +583,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         end
 
         function text = generateSummaryText(rc)
-            newline = sprintf('\n');
+            newline = sprintf('\n'); %#ok<SPRINTFN>
             text = sprintf('%s "%s" (%d runs total)\n', ...
                  class(rc), rc.name, rc.nRunsTotal);
             text = cat(2, text, sprintf('  Path: %s\n', rc.path));
@@ -628,6 +628,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 rc.runs(i).loadSequenceData(reload);
             end
             prog.finish();
+        end
+        
+        function tf = checkPosteriorMeansExist(rc, verbose)
+            if nargin < 2
+                verbose = false;
+            end
+            tf = false(rc.nRunSpecs, rc.nParams);
+            
+            for iR = 1:rc.nRunsTotal
+                tf(iR) = rc.runs(iR).checkPosteriorMeansExist(verbose);
+            end
         end
 
         function loadPosteriorMeans(rc, reload)

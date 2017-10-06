@@ -1199,16 +1199,16 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             for iDS = 1:r.nDatasets
                 prog.update(iDS);
                 if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
-                    warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
-                        iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
+%                     warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
+%                         iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
                     pms = [];
-                    break;
+                    return;
                 end
                 if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
-                    warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
-                        iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
+%                     warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
+%                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
                     pms = [];
-                    break;
+                    return;
                 end
                 
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
@@ -1227,6 +1227,35 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             pms = LFADS.Utils.makecol(pms);
             r.posteriorMeans = pms;
+        end
+        
+        function tf = checkPosteriorMeansExist(r, verbose)
+            if nargin < 2
+                verbose = false;
+            end
+            tf = true;
+            
+            [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
+             for iDS = 1:r.nDatasets
+                if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
+                    tf = false;
+                    if verbose
+                        fprintf('LFADS train file not found %s\n', trainList{iDS});
+                        continue;
+                    else 
+                        return;
+                    end
+                end
+                if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
+                    tf = false;
+                    if verbose
+                        fprintf('LFADS valid file not found %s\n', validList{iDS});
+                        continue;
+                    else 
+                        return;
+                    end
+                end
+             end
         end
         
         function seqs = addPosteriorMeansToSeq(r)
