@@ -312,7 +312,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 outfile = LFADS.Utils.GetFullPath(rc.runs(iR).fileLFADSOutput);
                 donefile = LFADS.Utils.GetFullPath(fullfile(rc.runs(iR).path, 'lfads.done'));
 
-                name = sprintf('%s__%s', rc.runs(iR).paramsString, rc.runs(iR).name); %#ok<*PROPLC>
+                name = sprintf('lfads_%s__%s', rc.runs(iR).paramsString, rc.runs(iR).name); %#ok<*PROPLC>
                 fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": %d, "outfile": "%s", "donefile": "%s"}, \n', ...
                     name, rc.runs(iR).fileShellScriptLFADSTrain, ...
                     p.Results.gpuMemoryRequired, outfile, donefile);
