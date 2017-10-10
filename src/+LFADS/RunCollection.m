@@ -457,7 +457,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             % indices, selects from runParams directly.
             %
             % Args:
-            %   paramSearch : array of LFADS.RunParams or indices into .params
+            %   paramSearch : array of LFADS.RunParams, or indices into
+            %   .params, or string or cell of strings like param_HASH or
+            %   HASH
             %
             % Returns:
             %   params : LFADS.RunParams
@@ -474,6 +476,18 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     [tf, idx] = ismember(paramSearch, rc.params);
                 end
 
+            elseif ischar(paramSearch) || iscellstr(paramSearch)
+                if ischar(paramSearch)
+                    paramSearch = {paramSearch}; 
+                end
+                
+                for i = 1:numel(paramSearch)
+                    if ~strncmp(paramSearch{i}, 'param_', 6)
+                        paramSearch{i} = ['param_' paramSearch{i}];
+                    end
+                end
+                [tf, idx] = ismember(paramSearch, {rc.params.paramHashString});
+                
             else
                 % assume is selection
                 idx = paramSearch;

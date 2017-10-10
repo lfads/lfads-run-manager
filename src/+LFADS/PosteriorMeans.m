@@ -12,6 +12,9 @@ classdef PosteriorMeans
         validInds % list of validation trial indices
         trainInds % list of training trial indices
         params % :ref:`LFADS_RunParams` instance
+        
+        conditionIds % nTrials x 1 vector of condition ids
+        rawCounts % nNeurons x T x nTrials array of raw spike counts
     end
     
     properties(Dependent)
@@ -25,7 +28,7 @@ classdef PosteriorMeans
     end
     
     methods
-        function pm = PosteriorMeans(pms, params, time)
+        function pm = PosteriorMeans(pms, params, time, conditionIds, rawCounts)
             % pm = PosteriorMeans(pms, params, seq)
             % Construct instance by copying struct fields 
             %
@@ -49,9 +52,16 @@ classdef PosteriorMeans
                 pm.validInds = pms.validInds;
                 pm.trainInds = pms.trainInds;
                 pm.time = time;
+                
             end
             if nargin > 1
                 pm.params = params;
+            end
+            if nargin > 3
+                pm.conditionIds = conditionIds;
+            end
+            if nargin > 4
+                pm.rawCounts = rawCounts;
             end
         end
     end

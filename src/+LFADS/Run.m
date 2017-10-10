@@ -739,17 +739,17 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     % call out to abstract dataset specific method
                     useAlignMatrices = true;
 
-                    r.doMultisessionAlignment(regenerate);
+                    [alignmentMatrices, alignmentBiases] = r.doMultisessionAlignment(regenerate);
                 else
                     useAlignMatrices = false;
                 end
 
                 % choose validation and training trial indices
                 [validIndsCell, trainIndsCell] = deal(cell(r.nDatasets, 1));
-                for nd = 1:r.nDatasets
-                    allInds = 1:numel(seqData{nd});
-                    validIndsCell{nd} = 1 : (r.params.trainToTestRatio+1) : numel(seqData{nd});
-                    trainIndsCell{nd} = setdiff(allInds, validIndsCell{nd});
+                for iDS = 1:r.nDatasets
+                    allInds = 1:numel(seqData{iDS});
+                    validIndsCell{iDS} = 1 : (r.params.trainToTestRatio+1) : numel(seqData{iDS});
+                    trainIndsCell{iDS} = setdiff(allInds, validIndsCell{iDS});
                 end
 
                 % support old .params.dtMS field
@@ -788,11 +788,16 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         
                         % save time vectors used in the sequence files to
                         % facilitate fast loading of posterior means sampling
-                        seq_timeVector = seqData{nd}.y_time;
+                        seq_timeVector = seqData{iDS}.y_time;
                         seq_binSizeMs = inputBinSizeMs;
                         
+                        % save the rebinned spike counts and condition ids
+                        % too
+                        counts = cat(3, seqData{iDS}.y); % nNeurons x nTime x nChannels
+                        conditionId = cat(1, seqData{iDS}.conditionId);
+                        
                         fname = fullfile(r.pathCommonData, inputInfoNames{iDS});
-                        save(fname, 'trainInds', 'validInds', 'paramInputDataHash', 'seq_timeVector', 'seq_binSizeMs');
+                        save(fname, 'trainInds', 'validInds', 'paramInputDataHash', 'seq_timeVector', 'seq_binSizeMs', 'conditionId', 'counts');
                     end
                 end
             end
@@ -1244,6 +1249,17 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     return;
                 end
                 
+                if isfield(info, 'conditionId')
+                    conditionIds = info(iDS).conditionId;
+                else
+                    conditionIds = [];
+                end
+                if isfield(info, 'counts')
+                    rawCounts = info(iDS).counts;
+                else
+                    rawCounts = [];
+                end
+                
                 pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
                     fullfile(r.pathLFADSOutput, trainList{iDS}), ...
                     info(iDS).validInds, info(iDS).trainInds);
@@ -1254,7 +1270,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 time = info(iDS).seq_timeVector(1:rebin:end);
                 time = time(1:size(pmData.rates, 2));
                 
-                pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time); %#ok<AGROW>
+                pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time, conditionIds, rawCounts); %#ok<AGROW>
             end
             prog.finish();
             

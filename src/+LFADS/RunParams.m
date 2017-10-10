@@ -52,6 +52,13 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_kl_co_weight double = 1; % how much to weight the controller l2 cost
     end
     
+    properties(Dependent)
+        paramHash
+        paramHashString
+        dataHash
+        dataHashString
+    end
+    
     methods
         function paramArray = generateSweep(p, varargin)
             % Generates an array of RunParams objects that sweep the
@@ -454,6 +461,22 @@ classdef RunParams < matlab.mixin.CustomDisplay
                     fieldstr);
             end
             
+        end
+        
+        function str = get.paramHash(p)
+            str = p.generateHash();
+        end
+        
+        function str = get.dataHash(p)
+            str = p.generateInputDataHash();
+        end
+        
+        function str = get.paramHashString(p)
+            str = ['param_' p.generateHash()];
+        end
+        
+        function str = get.dataHashString(p)
+            str = ['data_' p.generateInputDataHash()];
         end
     end
     

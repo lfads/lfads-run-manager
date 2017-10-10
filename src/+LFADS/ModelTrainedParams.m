@@ -1,0 +1,4 @@
+classdef ModelTrainedParams
+
+    
+end
