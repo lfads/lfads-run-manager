@@ -4,7 +4,7 @@ classdef Run < LFADS.Run
            r@LFADS.Run(varargin{:});
         end
 
-        function [counts, timeVecMs, conditionId] = generateRatesForDataset(r, dataset, mode, varargin) %#ok<INUSL,INUSD>
+        function [counts, timeVecMs, conditionId] = generateCountsForDataset(r, dataset, mode, varargin) %#ok<INUSL,INUSD>
             % Generate binned spike count tensor for a single dataset.
             %
             % Parameters
@@ -20,7 +20,7 @@ classdef Run < LFADS.Run
             %   data exported to LFADS, or return the same for both. Alignment
             %   is only relevant for multi-dataset models. If you wish to use
             %   separate data for alignment, override the method usesDifferentSequenceDataForAlignment
-            %   to return true as well. 
+            %   to return true as well.
             %
             % Returns
             % ----------
@@ -29,7 +29,7 @@ classdef Run < LFADS.Run
             %   should be total counts, not normalized rates, as they will be
             %   added during rebinning.
             %
-            % timeVecMs: nTime x 1 vector 
+            % timeVecMs: nTime x 1 vector
             %   of timepoints in milliseconds associated with each time bin. You can start this
             %   wherever you like, but timeVecMs(2) - timeVecMs(1) will be
             %   treated as the spike bin width used when the data are later
@@ -38,9 +38,9 @@ classdef Run < LFADS.Run
             % conditionId: nTrials x 1 vector
             %   of unique conditionIds. Can be cell array of strings or
             %   vector of unique integers.
-            
+
             data = dataset.loadData();
-            
+
             counts = data.spikes;
             timeVecMs = data.timeMs;
             conditionId = data.conditionId;

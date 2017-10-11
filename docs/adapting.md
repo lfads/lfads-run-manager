@@ -157,7 +157,7 @@ end
 Edit the file `+MyExperiment/Run.m`. Recall that a `Run` represents a specific LFADS model training run. The main function you will need to provide a definition for is `convertDatasetToSequenceStruct`. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:
 
 ```matlab
-function [counts, timeVecMs, conditionId] = generateRatesForDataset(r, dataset, mode, varargin)
+function [counts, timeVecMs, conditionId] = generateCountsForDataset(r, dataset, mode, varargin)
 ```
 
 Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly helpful to refer to the `RunParams` instance assigned to this run via `r.params`, especially if you have defined any additional hyperparameters that affect the way in which neural data should be extracted, e.g. which trials and what time window are included.
