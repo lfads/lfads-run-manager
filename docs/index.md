@@ -1,6 +1,10 @@
 # LFADS Run Manager for Matlab Documentation
 
-LFADS Run Manager is a set of tools, written in Matlab, that work with the Python+Tensorflow LFADS code to accomplish the following:
+LFADS Run Manager is a set of tools, written in Matlab, that work with the [Python+Tensorflow LFADS code](https://github.com/tensorflow/models/tree/master/research/lfads) to accomplish the following. LFADS, or Latent Factor Analysis via Dynamical Systems, is a deep learning method to infer latent dynamics from single-trial neural spiking data. LFADS uses a nonlinear dynamical system (a recurrent neural network) to infer the dynamics underlying observed population activity and to extract ‘de-noised’ single-trial firing rates from neural spiking data.
+
+Read the [LFADS pre-print](https://www.biorxiv.org/content/early/2017/06/20/152884) for more details.
+
+LFADS Run Manager helps you to:
 
 * Organize your spiking neural datasets that will be used to train LFADS models.
 * Setup a collection of training runs that vary in hyperparameter settings and the particular datasets included. The latter is particularly useful when generating _stitched_ multisession LFADS models.

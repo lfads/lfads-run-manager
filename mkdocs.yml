@@ -1,4 +1,6 @@
 site_name: LFADS Run Manager
+site_description: Documentation of LFADS Run Manager for Matlab
+site_author: Daniel J. O'Shea
 theme: 'material'
 
 repo_name: 'djoshea/lfads-run-manager'
@@ -37,4 +39,8 @@ pages:
   - Analyzing LFADS Posterior Means: analysis.md
   - Loading the trained model parameters: trained_params.md
 
-copyright: 'Copyright &copy; 2017 &mdash; Daniel O&#39;Shea'
+copyright: 'Copyright &copy; 2017 &mdash; Daniel J. O&#39;Shea'
+
+google_analytics:
+  - 'UA-322693-7'
+  - 'djoshea.github.io'
