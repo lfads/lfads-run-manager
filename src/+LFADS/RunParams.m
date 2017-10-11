@@ -26,7 +26,6 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         c_cell_clip_value double = 5; % used to avoid stepping too far during training
         c_factors_dim uint16 = 50;
-        c_in_factors_dim uint16 = 50;
         c_ic_enc_dim uint16 = 128; % network size for IC encoder
         c_ci_enc_dim uint16 = 128; % network size for controller input encoder
         c_gen_dim uint16 = 100; % generator network size
@@ -50,6 +49,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
         c_kl_ic_weight double = 1; % how much to weight the generator l2 cost
         c_kl_co_weight double = 1; % how much to weight the controller l2 cost
+    end
+    
+    % Retired properties that should be kept around for hash value purposes
+    % but no longer output to LFADS
+    properties(Hidden)
+        c_in_factors_dim uint16 = 50;
     end
     
     properties(Dependent)
@@ -129,6 +134,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser = inputParser();
             parser.addParameter('ignoreProperties', {}, @iscellstr);
             parser.addParameter('onlyRootClassProperties', false, @islogical);
+            parser.addParameter('ignoreHidden', false, @islogical);
+            
             parser.parse(varargin{:});
             
             if parser.Results.onlyRootClassProperties
@@ -148,7 +155,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 end
                 % skip properties that are Dependent, Constant, Transient,
                 % or Hidden. Serialize the value if it differes from the 
-                if ~prop.Dependent && ~prop.Constant && ~prop.Transient && ~prop.Hidden
+                if ~prop.Dependent && ~prop.Constant && ~prop.Transient && (~parser.Results.ignoreHidden || ~prop.Hidden)
                     mask(i) = true;
                 end
             end
@@ -182,10 +189,14 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser.addParameter('ignoreProperties', {}, @iscellstr);
             parser.addParameter('onlyRootClassProperties', false, @islogical);
             parser.addParameter('defaultsFromClassDefinition', true, @islogical);
+            parser.addParameter('ignoreHidden', false, @islogical);
+            parser.addParameter('omitFields', {}, @iscellstr);
+            
             parser.parse(varargin{:});
             
             [props, propMeta] = p.listNonTransientProperties('ignoreProperties', parser.Results.ignoreProperties, ...
-                'onlyRootClassProperties', parser.Results.onlyRootClassProperties);
+                'onlyRootClassProperties', parser.Results.onlyRootClassProperties, ...
+                'ignoreHidden', parser.Results.ignoreHidden);
             
             if ~parser.Results.defaultsFromClassDefinition
                 defaultInstance = eval(class(p));
@@ -313,10 +324,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser.addParameter('afterValue', '', @ischar);
             parser.addParameter('betweenProps', ' ', @ischar);
             parser.addParameter('onlyDifferentFromDefault', false, @islogical);
+            parser.addParameter('ignoreHidden', true, @islogical);
             parser.KeepUnmatched = true;
             parser.parse(varargin{:});
             
-            data = p.getPropertyValueSubset('onlyDifferentFromDefault', parser.Results.onlyDifferentFromDefault, parser.Unmatched);
+            data = p.getPropertyValueSubset('onlyDifferentFromDefault', parser.Results.onlyDifferentFromDefault, ...
+                'ignoreHidden', parser.Results.ignoreHidden, parser.Unmatched);
             
             props = fieldnames(data);
             
@@ -407,8 +420,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser.addParameter('omitFields', {}, @iscellstr);
             parser.parse(varargin{:});
             
+            values = p.getPropertyValueSubset('ignoreProperties', parser.Results.omitFields, ...
+                'ignoreHidden', true);
+            
             % get all the parameters except the fields which are skipped
-            f = setdiff(fields(p), parser.Results.omitFields);
+            f = fieldnames(values);
             
             % only keep the command line params
             %  these begin with 'c_'
