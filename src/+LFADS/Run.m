@@ -98,10 +98,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         inputInfo % parameters used to train model
         
         multisessionAlignmentTool % LFADS.MultisessionAlignmentTool instance used to generate alignment matrices and visualize results
+        modelTrainedParams % LFADS.ModelTrainedParams instance holding the learned LFADS network parameters
     end
     
     properties(Dependent)
         nDatasets % Number of datasets used by this run
+        datasetNames % nDatasets x 1 cell array of names
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
         path % Unique folder within rootPath including paramStr/name
         
@@ -259,7 +261,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 error('Alignment matrices can only be generated when number of datasets > 1');
             end
             
-            r.multisessionAlignmentTool = LFADS.MultisessionAlignmentTool(r, seqData);
+            r.multisessionAlignmentTool = LFADS.MultisessionAlignmentTool(r, seqData, {r.datasets.name}');
             [alignmentMatrices, alignmentBiases] = r.multisessionAlignmentTool.computeAlignmentMatricesUsingTrialAveragedPCR();
         end
         
@@ -379,6 +381,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         
         function n = get.nDatasets(r)
             n = numel(r.datasets);
+        end
+        
+        function names = get.datasetNames(r)
+            names = {r.datasets.name}';
         end
         
         function names = get.sequenceFileNames(r)
@@ -1339,6 +1345,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             
             r.sequenceData = seqs;
+        end
+        
+        function mtp = loadModelTrainedParams(r, varargin)
+            fname = r.fileModelParams;
+            assert(exist(fname, 'file') > 1, 'model_params file not found. Ensure that runCommandLFADSWriteModelParams has been run');
+           
+            r.modelTrainedParams = LFADS.ModelTrainedParams(fname, r.datasetNames, varargin{:});
+            mtp = r.modelTrainedParams;
         end
         
         function readouts = loadReadoutMatricesByDataset(r)
