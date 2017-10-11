@@ -1,0 +1,655 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <link rel="shortcut icon" href="../assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.10.1">
+    
+    
+      
+        <title>File Organization - LFADS Run Manager</title>
+      
+    
+    
+      <script src="../assets/javascripts/modernizr-e826f8942a.js"></script>
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application-a20f419c8e.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-23f75ab9c7.palette.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="LFADS Run Manager" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon md-icon--home"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+            
+            File Organization
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="" data-md-lang-tokenizer="[\s\-]+">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <div class="md-nav__button md-logo">
+      
+        <i class="md-icon md-icon--home"></i>
+      
+    </div>
+    LFADS Run Manager
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../matlab/" title="Matlab Classes and Packages" class="md-nav__link">
+      Matlab Classes and Packages
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../concepts/" title="Key Concepts" class="md-nav__link">
+      Key Concepts
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../adapting/" title="Interfacing to your Datasets" class="md-nav__link">
+      Interfacing to your Datasets
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../drive/" title="Preparing for LFADS" class="md-nav__link">
+      Preparing for LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        File Organization
+      </label>
+    
+    <a href="./" title="File Organization" class="md-nav__link md-nav__link--active">
+      File Organization
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#run-collection-organization" title="Run collection organization" class="md-nav__link">
+    Run collection organization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#individual-run-folders" title="Individual run folders" class="md-nav__link">
+    Individual run folders
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clearing-lfads-output" title="Clearing LFADS Output" class="md-nav__link">
+    Clearing LFADS Output
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../multisession/" title="Multi-sesion Stitched Models" class="md-nav__link">
+      Multi-sesion Stitched Models
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../running/" title="Running LFADS" class="md-nav__link">
+      Running LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../analysis/" title="Analyzing LFADS Posterior Means" class="md-nav__link">
+      Analyzing LFADS Posterior Means
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../trained_params/" title="Loading the trained model parameters" class="md-nav__link">
+      Loading the trained model parameters
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#run-collection-organization" title="Run collection organization" class="md-nav__link">
+    Run collection organization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#individual-run-folders" title="Individual run folders" class="md-nav__link">
+    Individual run folders
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clearing-lfads-output" title="Clearing LFADS Output" class="md-nav__link">
+    Clearing LFADS Output
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="file-organization-used-by-lfads-run-manager">File organization used by LFADS Run Manager<a class="headerlink" href="#file-organization-used-by-lfads-run-manager" title="Permanent link">&para;</a></h1>
+<p>You won&rsquo;t likely need to dive into the raw files produced by lfads-run-manager and LFADS, but we include a brief overview here to help understand what&rsquo;s stored where. You can safely skip to <a href="../running/">running your model</a>.</p>
+<h2 id="run-collection-organization">Run collection organization<a class="headerlink" href="#run-collection-organization" title="Permanent link">&para;</a></h2>
+<p>After running <code class="codehilite">MyExperiment.drive_script</code> and calling <code class="codehilite">rc.prepareForLFADS()</code>, you&rsquo;ll see the following directory tree on your hard drive:</p>
+<div class="codehilite"><pre><span></span>$ tree -L <span class="m">4</span> ~/lorenz_example/
+.
+├── datasets
+│   ├── dataset001.mat
+│   ├── dataset002.mat
+│   ├── dataset003.mat
+│   └── dataset004.mat
+└── runs
+    └── exampleRun
+        ├── data_IR3OQV
+        │   ├── inputInfo_dataset001.mat
+        │   ├── inputInfo_dataset002.mat
+        │   ├── inputInfo_dataset003.mat
+        │   ├── lfads_dataset001.h5
+        │   ├── lfads_dataset002.h5
+        │   └── lfads_dataset003.h5
+        ├── launch_tensorboard.sh
+        ├── param_pqQbzB
+        │   ├── all
+        │   ├── single_dataset001
+        │   ├── single_dataset002
+        │   └── single_dataset003
+        ├── run_lfadsqueue.py
+        └── summary.txt
+
+<span class="m">9</span> directories, <span class="m">13</span> files
+</pre></div>
+
+<dl>
+<dt><strong><code class="codehilite">datasets</code></strong>:</dt>
+<dd>Inside live the raw datasets, unrelated to lfads-run-manager. These were created by you when you called <code class="codehilite">LFADS.Utils.generateDemoDatasets(...)</code>.</dd>
+<dt><strong><code class="codehilite">runs</code></strong>:</dt>
+<dd>
+<p>The root runs folder you specified in the constructor to <code class="codehilite">RunCollection</code>.
+<div class="codehilite"><pre><span></span><span class="n">runRoot</span> <span class="p">=</span> <span class="s">&#39;~/lorenz_example/runs&#39;</span><span class="p">;</span>
+<span class="n">rc</span> <span class="p">=</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">runRoot</span><span class="p">,</span> <span class="s">&#39;exampleRun&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">);</span>
+</pre></div></p>
+<dl>
+<dt><strong><code class="codehilite">exampleRun</code></strong>:</dt>
+<dd>
+<p>The location of this specific <code class="codehilite">RunCollection</code>, based on the name you passed to constructor of <code class="codehilite">RunCollection</code>
+<div class="codehilite"><pre><span></span><span class="n">rc</span> <span class="p">=</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">runRoot</span><span class="p">,</span> <span class="s">&#39;exampleRun&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">);</span>
+</pre></div></p>
+<dl>
+<dt><strong><code class="codehilite">data_IR3OQV</code></strong>:</dt>
+<dd>
+<p>The location of the exported datasets for <code class="codehilite">RunParams</code> whose data hash is <code class="codehilite">IR3OQV</code>. The data hash includes properties of <code class="codehilite">RunParams</code> that affect the exported data, as described <a href="../drive/#runparams-data-and-param-hashes">here</a>.</p>
+<dl>
+<dt><strong><code class="codehilite">inputInfo_datasetName.mat</code></strong></dt>
+<dd>Contains data collected when generating the LFADS input, including the raw spike counts, condition ids, time vector, and trial indices assigned to the training and validation sets.</dd>
+<dt><strong><code class="codehilite">lfads_datasetName.h5</code></strong>:</dt>
+<dd>The spike counts data directly read by LFADS</dd>
+</dl>
+</dd>
+</dl>
+<p><strong><code class="codehilite">param_pqQbzB</code></strong>:
+    :   Location of the individual runs generated with the <code class="codehilite">RunParams</code> instance whose param hash is <code class="codehilite">pqQbzB</code>. The subfolders correspond to the run names passed to <code class="codehilite">RunSpec</code>, and their contents will be discussed below.
+        <div class="codehilite"><pre><span></span><span class="n">rc</span><span class="p">.</span><span class="n">addRunSpec</span><span class="p">(</span><span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunSpec</span><span class="p">(</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">));</span>
+</pre></div></p>
+<dl>
+<dt><strong><code class="codehilite">launch_tensorboard.sh</code></strong>:</dt>
+<dd>Shell script which will launch TensorBoard, optionally on a specific port
+<div class="codehilite"><pre><span></span>./launch_tensorboard.sh <span class="m">50000</span>
+</pre></div></dd>
+<dt><strong><code class="codehilite">run_lfadsqueue.py</code></strong>:</dt>
+<dd>Python script which will launch the LFADS Run Queue on all runs within the <code class="codehilite">exampleRun</code> <code class="codehilite">RunCollection</code>:
+<div class="codehilite"><pre><span></span>python run_lfadsqueue.py
+</pre></div></dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<h2 id="individual-run-folders">Individual run folders<a class="headerlink" href="#individual-run-folders" title="Permanent link">&para;</a></h2>
+<p>Within an run folder, we find:</p>
+<div class="codehilite"><pre><span></span>$ tree ~/lorenz_example/runs/exampleRuns/param_pqQbzB/all
+.
+├── lfads.done
+├── lfads.out
+├── lfadsInput
+│   ├── inputInfo_dataset001.mat -&gt; ../../../data_IR3OQV/inputInfo_dataset001.mat
+│   ├── inputInfo_dataset002.mat -&gt; ../../../data_IR3OQV/inputInfo_dataset002.mat
+│   ├── inputInfo_dataset003.mat -&gt; ../../../data_IR3OQV/inputInfo_dataset003.mat
+│   ├── lfads_dataset001.h5 -&gt; ../../../data_IR3OQV/lfads_dataset001.h5
+│   ├── lfads_dataset002.h5 -&gt; ../../../data_IR3OQV/lfads_dataset002.h5
+│   └── lfads_dataset003.h5 -&gt; ../../../data_IR3OQV/lfads_dataset003.h5
+├── lfadsOutput
+│   ├── checkpoint
+│   ├── checkpoint_lve
+│   ├── fitlog.csv
+│   ├── hyperparameters-0.txt
+│   ├── hyperparameters-38740.txt
+│   ├── lfads_log
+│   │   └── events.out.tfevents.1507613307.photon
+│   ├── lfads_vae.ckpt-37206.data-00000-of-00001
+│   ├── lfads_vae.ckpt-37206.index
+│   ├── lfads_vae.ckpt-37206.meta
+│   ├── ...
+│   ├── model_params
+│   ├── model_runs_dataset001.h5_train_posterior_sample_and_average
+│   ├── model_runs_dataset001.h5_valid_posterior_sample_and_average
+│   ├── model_runs_dataset002.h5_train_posterior_sample_and_average
+│   ├── model_runs_dataset002.h5_valid_posterior_sample_and_average
+│   ├── model_runs_dataset003.h5_train_posterior_sample_and_average
+│   └── model_runs_dataset003.h5_valid_posterior_sample_and_average
+└── lfads_train.sh
+</pre></div>
+
+<dl>
+<dt><strong><code class="codehilite">lfadsInput</code></strong>:</dt>
+<dd>Contains relative symbolic links to the contents of <code class="codehilite">data_IR3OQV</code>, enabling multiple runs to share data without duplication. The <code class="codehilite"><span class="na">.h5</span></code> files will be read in by LFADS.</dd>
+<dt><strong><code class="codehilite">lfadsOutput</code></strong>:</dt>
+<dd>
+<p>The directory to which LFADS will write generated output. Some of the key files within are:</p>
+<dl>
+<dt><strong><code class="codehilite">checkpoint_lve</code></strong>:</dt>
+<dd>Contains the saved checkpoint with the lowest validation error.</dd>
+<dt><strong><code class="codehilite">fitlog.csv</code></strong>:</dt>
+<dd>Contains information about the various costs through training</dd>
+<dt><strong><code class="codehilite">hyperparameters-0.txt</code></strong>:</dt>
+<dd>Records the hyperparameters used by LFADS</dd>
+<dt><strong><code class="codehilite">model_runs_datasetName.h5_train_posterior_sample_and_average</code></strong>:</dt>
+<dd>Contains the posterior mean samples and averages for the training trials</dd>
+<dt><strong><code class="codehilite">model_runs_datasetName.h5_valid_posterior_sample_and_average</code></strong>:</dt>
+<dd>Contains the posterior mean samples and averages for the validation trials</dd>
+</dl>
+</dd>
+<dt><strong><code class="codehilite">lfads_train.sh</code></strong>:</dt>
+<dd>Shell script which will launch LFADS to train the model. This script may potentially chain performing posterior mean sampling and writing the model parameters, depending on how it was generated by lfads-run-manager.</dd>
+<dt><strong><code class="codehilite">lfads.done</code></strong>:</dt>
+<dd>Empty text file indicating to the LFADS Run Queue that this model has already completed successfully</dd>
+<dt><strong><code class="codehilite">lfads.out</code></strong>:</dt>
+<dd>Logged output of LFADS generated by the LFADS Run Queue</dd>
+</dl>
+<h2 id="clearing-lfads-output">Clearing LFADS Output<a class="headerlink" href="#clearing-lfads-output" title="Permanent link">&para;</a></h2>
+<p>If you wanted to re-train a model from scratch, you can call <code class="codehilite">run.deleteLFADSOutput()</code> from Matlab, or you could manually delete the <code class="codehilite">lfadsOutput</code> folder, <code class="codehilite">lfads.done</code>, and <code class="codehilite">lfads.out</code>.</p>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../drive/" title="Preparing for LFADS" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Preparing for LFADS
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../multisession/" title="Multi-sesion Stitched Models" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Multi-sesion Stitched Models
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 &mdash; Daniel O&#39;Shea
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/djoshea" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/djoshea" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application-f3ab9e5ff8.js"></script>
+      
+      
+      <script>app.initialize({url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

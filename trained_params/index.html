@@ -1,0 +1,1121 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <link rel="shortcut icon" href="../assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.10.1">
+    
+    
+      
+        <title>Loading the trained model parameters - LFADS Run Manager</title>
+      
+    
+    
+      <script src="../assets/javascripts/modernizr-e826f8942a.js"></script>
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application-a20f419c8e.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-23f75ab9c7.palette.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="LFADS Run Manager" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon md-icon--home"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+            
+            Loading the trained model parameters
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="" data-md-lang-tokenizer="[\s\-]+">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <div class="md-nav__button md-logo">
+      
+        <i class="md-icon md-icon--home"></i>
+      
+    </div>
+    LFADS Run Manager
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../matlab/" title="Matlab Classes and Packages" class="md-nav__link">
+      Matlab Classes and Packages
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../concepts/" title="Key Concepts" class="md-nav__link">
+      Key Concepts
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../adapting/" title="Interfacing to your Datasets" class="md-nav__link">
+      Interfacing to your Datasets
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../drive/" title="Preparing for LFADS" class="md-nav__link">
+      Preparing for LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../files/" title="File Organization" class="md-nav__link">
+      File Organization
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../multisession/" title="Multi-sesion Stitched Models" class="md-nav__link">
+      Multi-sesion Stitched Models
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../running/" title="Running LFADS" class="md-nav__link">
+      Running LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../analysis/" title="Analyzing LFADS Posterior Means" class="md-nav__link">
+      Analyzing LFADS Posterior Means
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Loading the trained model parameters
+      </label>
+    
+    <a href="./" title="Loading the trained model parameters" class="md-nav__link md-nav__link--active">
+      Loading the trained model parameters
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-model_params" title="Loading the model_params" class="md-nav__link">
+    Loading the model_params
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#list-of-model-trained-parameters" title="List of model trained parameters" class="md-nav__link">
+    List of model trained parameters
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#read-in-from-spikes-to-input-factors" title="Read-in from spikes to input factors" class="md-nav__link">
+    Read-in from spikes to input factors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-condition-encoder-forward" title="Initial condition encoder (forward)" class="md-nav__link">
+    Initial condition encoder (forward)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-condition-encoder-reverse" title="Initial condition encoder (reverse)" class="md-nav__link">
+    Initial condition encoder (reverse)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-condition-g0" title="Initial condition g0" class="md-nav__link">
+    Initial condition g0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller-encoder-forward" title="Controller encoder (forward)" class="md-nav__link">
+    Controller encoder (forward)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller-encoder-reverse" title="Controller encoder (reverse)" class="md-nav__link">
+    Controller encoder (reverse)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlller-rnn" title="Controlller RNN" class="md-nav__link">
+    Controlller RNN
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller-output-co" title="Controller output co" class="md-nav__link">
+    Controller output co
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generator-rnn" title="Generator RNN" class="md-nav__link">
+    Generator RNN
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generator-output" title="Generator output" class="md-nav__link">
+    Generator output
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-model_params-for-lorenz-example" title="Loading model_params for Lorenz example" class="md-nav__link">
+    Loading model_params for Lorenz example
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-model_params" title="Loading the model_params" class="md-nav__link">
+    Loading the model_params
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#list-of-model-trained-parameters" title="List of model trained parameters" class="md-nav__link">
+    List of model trained parameters
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#read-in-from-spikes-to-input-factors" title="Read-in from spikes to input factors" class="md-nav__link">
+    Read-in from spikes to input factors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-condition-encoder-forward" title="Initial condition encoder (forward)" class="md-nav__link">
+    Initial condition encoder (forward)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-condition-encoder-reverse" title="Initial condition encoder (reverse)" class="md-nav__link">
+    Initial condition encoder (reverse)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initial-condition-g0" title="Initial condition g0" class="md-nav__link">
+    Initial condition g0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller-encoder-forward" title="Controller encoder (forward)" class="md-nav__link">
+    Controller encoder (forward)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller-encoder-reverse" title="Controller encoder (reverse)" class="md-nav__link">
+    Controller encoder (reverse)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlller-rnn" title="Controlller RNN" class="md-nav__link">
+    Controlller RNN
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller-output-co" title="Controller output co" class="md-nav__link">
+    Controller output co
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generator-rnn" title="Generator RNN" class="md-nav__link">
+    Generator RNN
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generator-output" title="Generator output" class="md-nav__link">
+    Generator output
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-model_params-for-lorenz-example" title="Loading model_params for Lorenz example" class="md-nav__link">
+    Loading model_params for Lorenz example
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="loading-the-trained-lfads-model-parameters">Loading the trained LFADS model parameters<a class="headerlink" href="#loading-the-trained-lfads-model-parameters" title="Permanent link">&para;</a></h1>
+<h2 id="loading-the-model_params">Loading the <code class="codehilite">model_params</code><a class="headerlink" href="#loading-the-model_params" title="Permanent link">&para;</a></h2>
+<p>After the LFADS run has finished, you will need to have LFADS write the model parameters to disk in a file called <code class="codehilite">lfadsOutput/model_params</code>, as described <a href="../running/#writing-the-model-parameters">here</a>. If you used the <a href="../running/#lfads-queue-automatically-queueing-many-runs">run queue</a> to automatically launch all of your runs, you can skip this step as it was taken care of for you after training was completed.</p>
+<p><code class="codehilite">model_params</code> is an HD5 file that contains all of the model parameters. To load these, each <code class="codehilite">LFADS.Run</code> provides a method <code class="codehilite">run.loadModelTrainedParams()</code> that will return an instance of <code class="codehilite">LFADS.ModelTrainedParameters</code>. This instance will have many fields, corresponding to the set of parameters learned by LFADS.</p>
+<h2 id="list-of-model-trained-parameters">List of model trained parameters<a class="headerlink" href="#list-of-model-trained-parameters" title="Permanent link">&para;</a></h2>
+<p>Below is an annotated list of the properties found within the <code class="codehilite">ModelTrainedParameters</code> instance, along with the size of each parameter relative to hyperparameters specified in the corresponding <code class="codehilite">RunParams</code>.</p>
+<p>For reference, here is the schematic of an LFADS model:</p>
+<p><img alt="LFADS Schematic" src="../images/full_schematic.png" /></p>
+<h3 id="read-in-from-spikes-to-input-factors">Read-in from spikes to input factors<a class="headerlink" href="#read-in-from-spikes-to-input-factors" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x_to_infac_W</td>
+<td>readin alignment weights, mapping from counts to input factors</td>
+<td><code class="codehilite">nDatasets</code> x 1 cell of <code class="codehilite">nNeuronsThisDataset</code> x <code class="codehilite">c_factors_dim</code></td>
+</tr>
+<tr>
+<td>x_to_infac_b</td>
+<td>readin alignment biases to input factors</td>
+<td><code class="codehilite">nDatasets</code> x 1 cell of 1 x <code class="codehilite">c_factors_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="initial-condition-encoder-forward">Initial condition encoder (forward)<a class="headerlink" href="#initial-condition-encoder-forward" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ic_enc_fwd_t0</td>
+<td>forward IC encoder prior on t0</td>
+<td>1 x <code class="codehilite">c_ic_enc_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_fwd_gru_xh_to_gates_ru_W</td>
+<td>forward IC encoder GRU, mapping input+hiddens to gates r and u, weights</td>
+<td>(<code class="codehilite">c_ic_enc_dim</code> + factors_dim) x (2 * <code class="codehilite">c_ic_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ic_enc_fwd_gru_xh_to_gates_ru_b</td>
+<td>forward IC encoder GRU bmapping input+hiddens to gates r and u, biases</td>
+<td>1 x (2*<code class="codehilite">c_ic_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ic_enc_fwd_gru_xrh_to_c_W</td>
+<td>forward IC encoder GRU mapping input, r, and hidden to candidates (weights)</td>
+<td>(<code class="codehilite">c_ic_enc_dim</code> + <code class="codehilite">c_factors_dim</code>) x <code class="codehilite">c_ic_enc_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_fwd_gru_xrh_to_c_b</td>
+<td>forward IC encoder GRU mapping input, r, and hidden to candidates (bias)</td>
+<td>1 x <code class="codehilite">c_ic_enc_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="initial-condition-encoder-reverse">Initial condition encoder (reverse)<a class="headerlink" href="#initial-condition-encoder-reverse" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ic_enc_rev_t0</td>
+<td>reverse IC encoder prior on t0</td>
+<td>1 x <code class="codehilite">c_ic_enc_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_rev_gru_xh_to_gates_ru_W</td>
+<td>reverse IC encoder GRU, mapping input+hidden to gates r and u, weights</td>
+<td>(<code class="codehilite">c_factors_dim</code> + <code class="codehilite">c_ic_enc_dim</code>) x (2*<code class="codehilite">c_ic_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ic_enc_rev_gru_xh_to_gates_ru_b</td>
+<td>reverse IC encoder GRU bmapping input+hidden to gates r and u, biases</td>
+<td>1 x (2*<code class="codehilite">c_ic_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ic_enc_rev_gru_xrh_to_c_W</td>
+<td>reverse IC encoder GRU mapping input+r+hidden to candidates (weights)</td>
+<td>(<code class="codehilite">c_ic_enc_dim</code> + <code class="codehilite">c_factors_dim</code>) x <code class="codehilite">c_ic_enc_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_rev_gru_xrh_to_c_b</td>
+<td>reverse IC encoder GRU mapping input+r+hidden to candidates (bias)</td>
+<td>1 x <code class="codehilite">c_ic_enc_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="initial-condition-g0">Initial condition g0<a class="headerlink" href="#initial-condition-g0" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prior_g0_mean</td>
+<td>Mean parameter in prior on initial condition g0</td>
+<td>1 x <code class="codehilite">c_ic_dim</code></td>
+</tr>
+<tr>
+<td>prior_g0_logvar</td>
+<td>Logvar parameter in prior on initial condition g0</td>
+<td>1 x <code class="codehilite">c_ic_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_to_posterior_g0_mean_W</td>
+<td>Weights for mean parameter in posterior of the initial condition g0</td>
+<td>(2*<code class="codehilite">c_ic_enc_dim</code>) x <code class="codehilite">c_ic_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_to_posterior_g0_mean_b</td>
+<td>Bias for mean parameter in posterior of the initial condition g0</td>
+<td>1 x <code class="codehilite">c_ic_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_to_posterior_g0_logvar_W</td>
+<td>Weights for logvar parameter in posterior of the initial condition g0</td>
+<td>(2*<code class="codehilite">c_ic_enc_dim</code>) x <code class="codehilite">c_ic_dim</code></td>
+</tr>
+<tr>
+<td>ic_enc_to_posterior_g0_logvar_b</td>
+<td>Bias for logvar parameter in posterior of the initial condition g0</td>
+<td>1 x <code class="codehilite">c_ic_dim</code></td>
+</tr>
+<tr>
+<td>g0_to_gen_ic_W</td>
+<td>mapping from g0 to generator initial condition, weights</td>
+<td><code class="codehilite">c_ic_dim</code> x <code class="codehilite">c_gen_dim</code></td>
+</tr>
+<tr>
+<td>g0_to_gen_ic_b</td>
+<td>mapping from g0 to generator initial condition, bias</td>
+<td>1 x <code class="codehilite">c_gen_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="controller-encoder-forward">Controller encoder (forward)<a class="headerlink" href="#controller-encoder-forward" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ci_enc_fwd_t0</td>
+<td>forward controller prior on t0</td>
+<td>1 x <code class="codehilite">c_ci_enc_dim</code></td>
+</tr>
+<tr>
+<td>ci_enc_fwd_gru_xh_to_ru_W</td>
+<td>forward controller encoder GRU, mapping input+hidden to gates r and u, weights</td>
+<td>(<code class="codehilite">ci_enc_dim</code> + <code class="codehilite">c_factors_dim</code>) x (2*<code class="codehilite">c_ci_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ci_enc_fwd_gru_xh_to_ru_b</td>
+<td>forward controller encoder GRU, mapping input+hidden to gates r and u, bias</td>
+<td>1 x (2*<code class="codehilite">c_ci_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ci_enc_fwd_gru_xrh_to_c_W</td>
+<td>forward controller encoder GRU mapping input, r, and hidden to candidates (weights)</td>
+<td>(<code class="codehilite">c_ci_enc_dim</code> + <code class="codehilite">c_factors_dim</code>) x <code class="codehilite">c_ci_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ci_enc_fwd_gru_xrh_to_c_b</td>
+<td>forward controller encoder GRU mapping input, r, and hidden to candidates (bias)</td>
+<td>1 x <code class="codehilite">c_ci_enc_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="controller-encoder-reverse">Controller encoder (reverse)<a class="headerlink" href="#controller-encoder-reverse" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ci_enc_rev_t0</td>
+<td>reverse controller prior on t0</td>
+<td>1 x <code class="codehilite">c_ci_enc_dim</code></td>
+</tr>
+<tr>
+<td>ci_enc_rev_gru_xh_to_ru_W</td>
+<td>reverse controller encoder GRU, mapping input+hidden to gates r and u, weights</td>
+<td>(ci_enc_dim + factors_dim) x (2*<code class="codehilite">c_ci_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ci_enc_rev_gru_xh_to_ru_b</td>
+<td>reverse controller encoder GRU, mapping input+hidden to gates r and u, bias</td>
+<td>1 x (2*<code class="codehilite">c_ci_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ci_enc_rev_gru_xrh_to_c_W</td>
+<td>reverse controller encoder GRU mapping input, r, and hidden to candidates (weights)</td>
+<td>(<code class="codehilite">c_ci_enc_dim</code> + <code class="codehilite">c_factors_dim</code>) x <code class="codehilite">c_ci_enc_dim</code>)</td>
+</tr>
+<tr>
+<td>ci_enc_rev_gru_xrh_to_c_b</td>
+<td>reverse controller encoder GRU mapping input, r, and hidden to candidates (bias)</td>
+<td>1 x <code class="codehilite">c_ci_enc_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="controlller-rnn">Controlller RNN<a class="headerlink" href="#controlller-rnn" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>con_gengru_x_to_ru_W</td>
+<td>controller GenGRU, mapping input to gates r+u, weights</td>
+<td>(<code class="codehilite">c_ci_enc_dim</code> * 2 + <code class="codehilite">c_factors_dim</code>) x (2*<code class="codehilite">c_con_dim</code>)</td>
+</tr>
+<tr>
+<td>con_gengru_h_to_ru_W</td>
+<td>controller GenGRU, mapping hidden to gates r+u, weights</td>
+<td><code class="codehilite">c_con_dim</code> x (2*<code class="codehilite">c_con_dim</code>)</td>
+</tr>
+<tr>
+<td>con_gengru_h_to_ru_b</td>
+<td>controller GenGRU, mapping hidden to gates r+u, weights</td>
+<td>1 x (2*<code class="codehilite">c_con_dim</code>)</td>
+</tr>
+<tr>
+<td>con_gengru_x_to_c_W</td>
+<td>controller GenGRU, mapping input to candidates, weights</td>
+<td>(<code class="codehilite">c_ci_enc_dim</code> * 2 + <code class="codehilite">c_factors_dim</code>) x <code class="codehilite">c_con_dim</code></td>
+</tr>
+<tr>
+<td>con_gengru_rh_to_c_b</td>
+<td>controller GenGRU, mapping r+hidden to candidates, bias</td>
+<td>1 x <code class="codehilite">c_con_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="controller-output-co">Controller output co<a class="headerlink" href="#controller-output-co" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prior_ar1_logevars</td>
+<td>autoregressive prior on controller outputs</td>
+<td>1 x <code class="codehilite">c_co_dim</code></td>
+</tr>
+<tr>
+<td>prior_ar1_logatau</td>
+<td>autoregressive time constant prior on controller outputs</td>
+<td>1 x <code class="codehilite">c_co_dim</code></td>
+</tr>
+<tr>
+<td>con_co</td>
+<td>prior on controller output</td>
+<td>1 x <code class="codehilite">c_con_dim</code></td>
+</tr>
+<tr>
+<td>con_to_posterior_co_mean_W</td>
+<td>mapping from controller to mean parameter of co, weights</td>
+<td><code class="codehilite">c_con_dim</code> x <code class="codehilite">c_co_dim</code></td>
+</tr>
+<tr>
+<td>con_to_posterior_co_mean_b</td>
+<td>mapping from controller to mean parameter of co, biases</td>
+<td>1 x <code class="codehilite">c_co_dim</code></td>
+</tr>
+<tr>
+<td>con_to_posterior_co_logvar_W</td>
+<td>mapping from controller to logvar parameter of co, weights</td>
+<td><code class="codehilite">c_con_dim</code> x <code class="codehilite">c_co_dim</code></td>
+</tr>
+<tr>
+<td>con_to_posterior_co_logvar_b</td>
+<td>mapping from controller to logvar parameter of co, biases</td>
+<td>1 x <code class="codehilite">c_co_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="generator-rnn">Generator RNN<a class="headerlink" href="#generator-rnn" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gen_gengru_x_to_ru_W</td>
+<td>generator GRU, mapping from input to gates r+u, weights</td>
+<td><code class="codehilite">c_co_dim</code> x (2*<code class="codehilite">c_gen_dim</code>)</td>
+</tr>
+<tr>
+<td>gen_gengru_h_to_ru_W</td>
+<td>generator GRU, mapping from input to gates r+u, weights</td>
+<td><code class="codehilite">c_gen_dim</code> x (2*<code class="codehilite">c_gen_dim</code>)</td>
+</tr>
+<tr>
+<td>gen_gengru_h_to_ru_b</td>
+<td>generator GRU, mapping from input to gates r+u, biases</td>
+<td>1 x (2*<code class="codehilite">c_gen_dim</code>)</td>
+</tr>
+<tr>
+<td>gen_gengru_x_to_c_W</td>
+<td>generator GRU, mapping from input to candidates, weights</td>
+<td><code class="codehilite">c_co_dim</code> x <code class="codehilite">c_gen_dim</code></td>
+</tr>
+<tr>
+<td>gen_gengru_rh_to_c_W</td>
+<td>generator GRU, mapping from r+hidden to candidates, weights</td>
+<td><code class="codehilite">c_gen_dim</code> x <code class="codehilite">c_gen_dim</code></td>
+</tr>
+<tr>
+<td>gen_gengru_rh_to_c_b</td>
+<td>generator GRU, mapping from r+hidden to candidates, biases</td>
+<td>1 x <code class="codehilite">c_gen_dim</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="generator-output">Generator output<a class="headerlink" href="#generator-output" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gen_to_factors_W</td>
+<td>mapping from generator to factors, weights</td>
+<td><code class="codehilite">c_gen_dim</code> x <code class="codehilite">c_factors_dim</code></td>
+</tr>
+<tr>
+<td>factors_to_logrates_W</td>
+<td>readout alignment weights</td>
+<td><code class="codehilite">nDatasets</code> x 1 cell of <code class="codehilite">c_factors_dim</code> x <code class="codehilite">nNeuronsThisDataset</code></td>
+</tr>
+<tr>
+<td>factors_to_logrates_b</td>
+<td>readout alignment biases</td>
+<td><code class="codehilite">nDatasets</code> x 1 cell of 1 x <code class="codehilite">nNeuronsThisDataset</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="loading-model_params-for-lorenz-example">Loading <code class="codehilite">model_params</code> for Lorenz example<a class="headerlink" href="#loading-model_params-for-lorenz-example" title="Permanent link">&para;</a></h2>
+<p>We can load the model trained parameters for our multi-dataset stitching run as follows. Note that all of the entries associated with the controller and inferred inputs to the generator are missing, as we trained without inferred inputs with <code class="codehilite">c_co_dim == 0</code>.</p>
+<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">mtp</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findRuns</span><span class="p">(</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="n">loadModelTrainedParams</span><span class="p">()</span>
+
+<span class="nb">ans</span> <span class="p">=</span>
+
+  <span class="n">ModelTrainedParams</span> <span class="n">with</span> <span class="k">properties</span><span class="p">:</span>
+
+   <span class="n">Read</span><span class="o">-</span><span class="n">in</span> <span class="n">from</span> <span class="n">spikes</span> <span class="n">to</span> <span class="n">input</span> <span class="n">factors</span>
+                       <span class="n">x_to_infac_W</span><span class="p">:</span> <span class="p">{</span><span class="mi">3</span><span class="n">x1</span> <span class="n">cell</span><span class="p">}</span>
+                       <span class="n">x_to_infac_b</span><span class="p">:</span> <span class="p">{</span><span class="mi">3</span><span class="n">x1</span> <span class="n">cell</span><span class="p">}</span>
+
+   <span class="n">Initial</span> <span class="n">condition</span> <span class="n">encoder</span> <span class="p">(</span><span class="n">forward</span><span class="p">)</span>
+                      <span class="n">ic_enc_fwd_t0</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+    <span class="n">ic_enc_fwd_gru_xh_to_gates_ru_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="n">x72</span> <span class="n">single</span><span class="p">]</span>
+    <span class="n">ic_enc_fwd_gru_xh_to_gates_ru_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+          <span class="n">ic_enc_fwd_gru_xrh_to_c_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x72</span> <span class="n">single</span><span class="p">]</span>
+          <span class="n">ic_enc_fwd_gru_xrh_to_c_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+
+   <span class="n">Initial</span> <span class="n">condition</span> <span class="n">encoder</span> <span class="p">(</span><span class="n">reverse</span><span class="p">)</span>
+                      <span class="n">ic_enc_rev_t0</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+    <span class="n">ic_enc_rev_gru_xh_to_gates_ru_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="n">x72</span> <span class="n">single</span><span class="p">]</span>
+    <span class="n">ic_enc_rev_gru_xh_to_gates_ru_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+          <span class="n">ic_enc_rev_gru_xrh_to_c_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x72</span> <span class="n">single</span><span class="p">]</span>
+          <span class="n">ic_enc_rev_gru_xrh_to_c_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+
+   <span class="n">Initial</span> <span class="n">condition</span> <span class="n">g0</span>
+                      <span class="n">prior_g0_mean</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+                    <span class="n">prior_g0_logvar</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+      <span class="n">ic_enc_to_posterior_g0_mean_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x128</span> <span class="n">single</span><span class="p">]</span>
+      <span class="n">ic_enc_to_posterior_g0_mean_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+    <span class="n">ic_enc_to_posterior_g0_logvar_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x128</span> <span class="n">single</span><span class="p">]</span>
+    <span class="n">ic_enc_to_posterior_g0_logvar_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+                     <span class="n">g0_to_gen_ic_W</span><span class="p">:</span> <span class="p">[]</span>
+                     <span class="n">g0_to_gen_ic_b</span><span class="p">:</span> <span class="p">[]</span>
+
+   <span class="n">Controller</span> <span class="n">encoder</span> <span class="p">(</span><span class="n">forward</span><span class="p">)</span>
+                      <span class="n">ci_enc_fwd_t0</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_fwd_gru_xh_to_ru_W</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_fwd_gru_xh_to_ru_b</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_fwd_gru_xrh_to_c_W</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_fwd_gru_xrh_to_c_b</span><span class="p">:</span> <span class="p">[]</span>
+
+   <span class="n">Controller</span> <span class="n">encoder</span> <span class="p">(</span><span class="n">reverse</span><span class="p">)</span>
+                      <span class="n">ci_enc_rev_t0</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_rev_gru_xh_to_ru_W</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_rev_gru_xh_to_ru_b</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_rev_gru_xrh_to_c_W</span><span class="p">:</span> <span class="p">[]</span>
+          <span class="n">ci_enc_rev_gru_xrh_to_c_b</span><span class="p">:</span> <span class="p">[]</span>
+
+   <span class="n">Controlller</span> <span class="n">RNN</span>
+               <span class="n">con_gengru_x_to_ru_W</span><span class="p">:</span> <span class="p">[]</span>
+               <span class="n">con_gengru_h_to_ru_W</span><span class="p">:</span> <span class="p">[]</span>
+               <span class="n">con_gengru_h_to_ru_b</span><span class="p">:</span> <span class="p">[]</span>
+                <span class="n">con_gengru_x_to_c_W</span><span class="p">:</span> <span class="p">[]</span>
+               <span class="n">con_gengru_rh_to_c_W</span><span class="p">:</span> <span class="p">[]</span>
+               <span class="n">con_gengru_rh_to_c_b</span><span class="p">:</span> <span class="p">[]</span>
+
+   <span class="n">Controller</span> <span class="n">output</span> <span class="n">co</span>
+                 <span class="n">prior_ar1_logevars</span><span class="p">:</span> <span class="p">[]</span>
+                  <span class="n">prior_ar1_logatau</span><span class="p">:</span> <span class="p">[]</span>
+                             <span class="n">con_co</span><span class="p">:</span> <span class="p">[]</span>
+         <span class="n">con_to_posterior_co_mean_W</span><span class="p">:</span> <span class="p">[]</span>
+         <span class="n">con_to_posterior_co_mean_b</span><span class="p">:</span> <span class="p">[]</span>
+       <span class="n">con_to_posterior_co_logvar_W</span><span class="p">:</span> <span class="p">[]</span>
+       <span class="n">con_to_posterior_co_logvar_b</span><span class="p">:</span> <span class="p">[]</span>
+
+   <span class="n">Generator</span> <span class="n">RNN</span>
+               <span class="n">gen_gengru_x_to_ru_W</span><span class="p">:</span> <span class="p">[]</span>
+               <span class="n">gen_gengru_h_to_ru_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="n">x64</span> <span class="n">single</span><span class="p">]</span>
+               <span class="n">gen_gengru_h_to_ru_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+                <span class="n">gen_gengru_x_to_c_W</span><span class="p">:</span> <span class="p">[]</span>
+               <span class="n">gen_gengru_rh_to_c_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x64</span> <span class="n">single</span><span class="p">]</span>
+               <span class="n">gen_gengru_rh_to_c_b</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1</span> <span class="n">single</span><span class="p">]</span>
+
+   <span class="n">Generator</span> <span class="n">output</span>
+                   <span class="n">gen_to_factors_W</span><span class="p">:</span> <span class="p">[</span><span class="mi">8</span><span class="n">x64</span> <span class="n">single</span><span class="p">]</span>
+              <span class="n">factors_to_logrates_W</span><span class="p">:</span> <span class="p">{</span><span class="mi">3</span><span class="n">x1</span> <span class="n">cell</span><span class="p">}</span>
+              <span class="n">factors_to_logrates_b</span><span class="p">:</span> <span class="p">{</span><span class="mi">3</span><span class="n">x1</span> <span class="n">cell</span><span class="p">}</span>
+</pre></div>
+
+<p>The recurrent connectivity weight matrix of the <code class="codehilite">c_gen_dim==64</code> GRU generator RNN is given by <code class="codehilite">mtp.gen_gengru_rh_to_c_W</code>:</p>
+<p><img alt="Generator recurrent weight matrix" src="../images/generator_W.png" /></p>
+<p>And the per-dataset readout matrices mapping factors to neurons&rsquo; log(rates) are given by <code class="codehilite">mtp.factors_to_logrates_W</code>:</p>
+<p><img alt="Factor readout matrices" src="../images/readout_matrices.png" /></p>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../analysis/" title="Analyzing LFADS Posterior Means" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Analyzing LFADS Posterior Means
+              </span>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 &mdash; Daniel O&#39;Shea
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/djoshea" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/djoshea" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application-f3ab9e5ff8.js"></script>
+      
+      
+      <script>app.initialize({url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

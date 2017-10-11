@@ -1,0 +1,776 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <link rel="shortcut icon" href="../assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.10.1">
+    
+    
+      
+        <title>Interfacing to your Datasets - LFADS Run Manager</title>
+      
+    
+    
+      <script src="../assets/javascripts/modernizr-e826f8942a.js"></script>
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application-a20f419c8e.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-23f75ab9c7.palette.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="LFADS Run Manager" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon md-icon--home"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+            
+            Interfacing to your Datasets
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="" data-md-lang-tokenizer="[\s\-]+">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <div class="md-nav__button md-logo">
+      
+        <i class="md-icon md-icon--home"></i>
+      
+    </div>
+    LFADS Run Manager
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../matlab/" title="Matlab Classes and Packages" class="md-nav__link">
+      Matlab Classes and Packages
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../concepts/" title="Key Concepts" class="md-nav__link">
+      Key Concepts
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Interfacing to your Datasets
+      </label>
+    
+    <a href="./" title="Interfacing to your Datasets" class="md-nav__link md-nav__link--active">
+      Interfacing to your Datasets
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#copying-the-starterexample-code" title="Copying the StarterExample code" class="md-nav__link">
+    Copying the StarterExample code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#editing-the-core-classes" title="Editing the core classes" class="md-nav__link">
+    Editing the core classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#editing-datasetcollectionm-optional" title="Editing DatasetCollection.m (Optional)" class="md-nav__link">
+    Editing DatasetCollection.m (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-datasetm-required" title="Editing Dataset.m (Required)" class="md-nav__link">
+    Editing Dataset.m (Required)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-runparamsm-optional" title="Editing RunParams.m (Optional)" class="md-nav__link">
+    Editing RunParams.m (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-runcollectionm-optional" title="Editing RunCollection.m (Optional)" class="md-nav__link">
+    Editing RunCollection.m (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-runm-required" title="Editing Run.m (Required)" class="md-nav__link">
+    Editing Run.m (Required)
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inputs" title="Inputs:" class="md-nav__link">
+    Inputs:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outputs" title="Outputs:" class="md-nav__link">
+    Outputs:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../drive/" title="Preparing for LFADS" class="md-nav__link">
+      Preparing for LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../files/" title="File Organization" class="md-nav__link">
+      File Organization
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../multisession/" title="Multi-sesion Stitched Models" class="md-nav__link">
+      Multi-sesion Stitched Models
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../running/" title="Running LFADS" class="md-nav__link">
+      Running LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../analysis/" title="Analyzing LFADS Posterior Means" class="md-nav__link">
+      Analyzing LFADS Posterior Means
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../trained_params/" title="Loading the trained model parameters" class="md-nav__link">
+      Loading the trained model parameters
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#copying-the-starterexample-code" title="Copying the StarterExample code" class="md-nav__link">
+    Copying the StarterExample code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#editing-the-core-classes" title="Editing the core classes" class="md-nav__link">
+    Editing the core classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#editing-datasetcollectionm-optional" title="Editing DatasetCollection.m (Optional)" class="md-nav__link">
+    Editing DatasetCollection.m (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-datasetm-required" title="Editing Dataset.m (Required)" class="md-nav__link">
+    Editing Dataset.m (Required)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-runparamsm-optional" title="Editing RunParams.m (Optional)" class="md-nav__link">
+    Editing RunParams.m (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-runcollectionm-optional" title="Editing RunCollection.m (Optional)" class="md-nav__link">
+    Editing RunCollection.m (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-runm-required" title="Editing Run.m (Required)" class="md-nav__link">
+    Editing Run.m (Required)
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inputs" title="Inputs:" class="md-nav__link">
+    Inputs:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outputs" title="Outputs:" class="md-nav__link">
+    Outputs:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="using-lfads-run-manager-with-your-datasets">Using LFADS Run Manager with your datasets<a class="headerlink" href="#using-lfads-run-manager-with-your-datasets" title="Permanent link">&para;</a></h1>
+<h2 id="copying-the-starterexample-code">Copying the <code class="codehilite">StarterExample</code> code<a class="headerlink" href="#copying-the-starterexample-code" title="Permanent link">&para;</a></h2>
+<p>Below we describe how to use the run manager code with datasets from a specific experiment. The recommended way to begin this process is to copy the folder <code class="codehilite">+StarterExample</code> inside the<code class="codehilite">lfads-run-manager</code> repository to some other folder on your Matlab path, and then to rename it to something related to the experiment. Below, we&rsquo;ll use the name <code class="codehilite">MyExperiment</code>, which requires renaming the folder to <code class="codehilite">+MyExperiment</code>.</p>
+<p>Each of the classes you have just created are defined to inherit from the corresponding <code class="codehilite">LFADS.ClassName</code> inside the <code class="codehilite">lfads-run-manager</code> repo. Consequently, only a small amount of code is present in each file; the rest of the properties and methods for each class are define inside the <code class="codehilite">+LFADS</code> folder in the repo.</p>
+<h2 id="editing-the-core-classes">Editing the core classes<a class="headerlink" href="#editing-the-core-classes" title="Permanent link">&para;</a></h2>
+<p>Here we walk through each of the classes that you&rsquo;ve just copied. Most of the classes can be left as is to get started, but you may find it helpful to add utility methods and addtional metadata in certain locations. However, the only required edits are:</p>
+<ul>
+<li><code class="codehilite">loadData</code> in <code class="codehilite">Dataset.m</code> - specify how to load a dataset from disk. The default implementation assumes that the data live in a <code class="codehilite"><span class="na">.mat</span></code> file that can be loaded using <code class="codehilite">load</code>.</li>
+<li><code class="codehilite">convertDatasetToSequenceStruct</code> in <code class="codehilite">Run.m</code>  - preprocess data and perform spike binning</li>
+</ul>
+<h3 id="editing-datasetcollectionm-optional">Editing <code class="codehilite">DatasetCollection.m</code> <em>(Optional)</em><a class="headerlink" href="#editing-datasetcollectionm-optional" title="Permanent link">&para;</a></h3>
+<p>Edit the file <code class="codehilite">+MyExperiment/DatasetCollection.m</code>. Recall that a dataset collection refers to a set of multiple individual datasets. Note the definition of the constructor:</p>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span>ds <span class="p">=</span><span class="w"> </span><span class="nf">DatasetCollection</span><span class="p">(</span>path<span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">ds</span> <span class="p">=</span> <span class="n">ds</span><span class="p">@</span><span class="n">LFADS</span><span class="p">.</span><span class="n">DatasetCollection</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>You may edit this to fit your needs, but the default approach is to create a new dataset collection by specifying a path on disk where the data live. For example, you could run:</p>
+<div class="codehilite"><pre><span></span><span class="n">dc</span> <span class="p">=</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">DatasetCollection</span><span class="p">(</span><span class="s">&#39;/path/to/experimentData&#39;</span><span class="p">);</span>
+</pre></div>
+
+<p>This path will then be used as the parent folder by all of the datasets that are added to this collection.</p>
+<p>Below is a function included as an example of how to filter or down-select datasets within a collection. A typical approach might be to add all of the datasets that were collected, and then filter by those having a sufficiently high trial count (or satisfying some other set of criteria). You can use the utility function <code class="codehilite">filterDatasets</code> to specify the indices or mask over datasets to keep.</p>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span><span class="nf">filterHavingMinimumTrials</span><span class="p">(</span>dc, minTrials<span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="c">% example of a function that will filter down datasets based on</span>
+    <span class="c">% their metadata.</span>
+    <span class="n">nTrials</span> <span class="p">=</span> <span class="nb">cat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">.</span><span class="n">nTrials</span><span class="p">);</span>
+
+    <span class="c">% filterDatasets is provided by DatasetCollection</span>
+    <span class="n">dc</span><span class="p">.</span><span class="n">filterDatasets</span><span class="p">(</span><span class="n">nTrials</span> <span class="o">&gt;</span><span class="p">=</span> <span class="n">minTrials</span><span class="p">);</span>
+<span class="k">end</span>
+</pre></div>
+
+<p><strong>No edits are necessary to <code class="codehilite">DatasetCollection.m</code> to get up and running</strong>, but feel free to add any additional methods or properties as needed for your application.</p>
+<h3 id="editing-datasetm-required">Editing <code class="codehilite">Dataset.m</code> <em>(Required)</em><a class="headerlink" href="#editing-datasetm-required" title="Permanent link">&para;</a></h3>
+<p>Edit the file <code class="codehilite">+MyExperiment/Dataset.m</code>. Recall that a dataset encapsulates a collection of trials with simultaneously recorded neural data from an individual experimental session. Here, we will make a few light edits to specify metadata about each dataset.</p>
+<p>First, look at the constructor.</p>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span>ds <span class="p">=</span><span class="w"> </span><span class="nf">Dataset</span><span class="p">(</span>collection, relPath<span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">ds</span> <span class="p">=</span> <span class="n">ds</span><span class="p">@</span><span class="n">LFADS</span><span class="p">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">relPath</span><span class="p">);</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>In order to encapsulate a particular dataset on disk, you will create a new <code class="codehilite">MyExperiment.Dataset</code> instance in Matlab. The first argument <code class="codehilite">collection</code> is the DatasetCollection to add this dataset to, which will provide the parent path. The second argument <code class="codehilite">relPath</code> specifies the path to this dataset relative to the collection. For example, if the dataset were stored in <code class="codehilite">/path/to/experimentalData/dataset001.mat</code>, you might run:</p>
+<div class="codehilite"><pre><span></span><span class="n">ds1</span> <span class="p">=</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dc</span><span class="p">,</span> <span class="s">&#39;dataset001.mat&#39;</span><span class="p">);</span>
+</pre></div>
+
+<p>You may need to specify how to load the actual data into Matlab in order to facilitate preprocessing. The default simply calls Matlab&rsquo;s <code class="codehilite">load</code> method and assumes that <code class="codehilite">ds.path</code> points to a <code class="codehilite"><span class="na">.mat</span></code> file. <code class="codehilite">ds.path</code> will be equal to the dataset collection path joined to <code class="codehilite">relPath</code>. If your data is stored differently, you will need to replace the implementation of <code class="codehilite">loadData</code>:</p>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span>data <span class="p">=</span><span class="w"> </span><span class="nf">loadData</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="c">% load this dataset&#39;s data file from .path</span>
+    <span class="n">in</span> <span class="p">=</span> <span class="n">load</span><span class="p">(</span><span class="n">ds</span><span class="p">.</span><span class="n">path</span><span class="p">);</span>
+    <span class="n">data</span> <span class="p">=</span> <span class="n">in</span><span class="p">.</span><span class="n">data</span><span class="p">;</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>You can then specify how to determine certain metadata about the dataset, simply for display and organizational purposes. These metadata will then be assigned into specific properties of the <code class="codehilite">Dataset</code> class. The simplest approach is to simply load the data and copy or compute the values from the data. However, if loading the data is expensive, you might store the metadata in a separate file to save time. This implementation is up to you, and you can simply specify empty values for metadata fields you do not care about. Note that the logical property <code class="codehilite">infoLoaded</code> can be used to determine if the metadata has already been loaded, since this method will be called several times to ensure the metadata is loaded when needed.</p>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span><span class="nf">loadInfo</span><span class="p">(</span>ds<span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="c">% Load this Dataset&#39;s metadata if not already loaded</span>
+
+    <span class="k">if</span> <span class="n">ds</span><span class="p">.</span><span class="n">infoLoaded</span><span class="p">,</span> <span class="k">return</span><span class="p">;</span> <span class="k">end</span>
+
+    <span class="c">% modify this to extract the metadata loaded from the data file</span>
+    <span class="n">data</span> <span class="p">=</span> <span class="n">ds</span><span class="p">.</span><span class="n">loadData</span><span class="p">();</span>
+    <span class="n">ds</span><span class="p">.</span><span class="n">subject</span> <span class="p">=</span> <span class="n">data</span><span class="p">.</span><span class="n">subject</span><span class="p">;</span>
+    <span class="n">ds</span><span class="p">.</span><span class="n">saveTags</span> <span class="p">=</span> <span class="n">data</span><span class="p">.</span><span class="n">saveTags</span><span class="p">;</span>
+    <span class="n">ds</span><span class="p">.</span><span class="n">datenum</span>  <span class="p">=</span> <span class="n">data</span><span class="p">.</span><span class="n">datenum</span><span class="p">;</span>
+    <span class="n">ds</span><span class="p">.</span><span class="n">nChannels</span> <span class="p">=</span> <span class="n">data</span><span class="p">.</span><span class="n">nChannels</span><span class="p">;</span>
+    <span class="n">ds</span><span class="p">.</span><span class="n">nTrials</span> <span class="p">=</span> <span class="nb">numel</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">trials</span><span class="p">);</span>
+
+    <span class="n">ds</span><span class="p">.</span><span class="n">infoLoaded</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>The metadata fields you might assign are as follows:</p>
+<ul>
+<li><code class="codehilite">subject</code> - Dataset subject or participant name</li>
+<li><code class="codehilite">datenum</code> - a Matlab datenum identifying the collection time of the dataset</li>
+<li><code class="codehilite">nChannels</code> - the number of unique spiking channels recorded in this dataset</li>
+<li><code class="codehilite">nTrials</code> - the number of trials included in this dataset</li>
+<li><code class="codehilite">saveTags</code> - a vector of numbers indicating within-day blocks of trials included</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Metadata are optional</p>
+<p>We note that none of these fields is used for subsequent processing, and are defined only for convenience and consistency. Feel free to ignore these, and to add additional fields as properties directly to your <code class="codehilite">Dataset</code> class.</p>
+</div>
+<h3 id="editing-runparamsm-optional">Editing <code class="codehilite">RunParams.m</code> <em>(Optional)</em><a class="headerlink" href="#editing-runparamsm-optional" title="Permanent link">&para;</a></h3>
+<p>Edit the file <code class="codehilite">+MyExperiment/RunParams.m</code>. Recall that <code class="codehilite">RunParams</code> encapsulates all of the hyperparameters used by LFADS but can also be used to specify any experiment specific hyperparameters you wish to add.</p>
+<p>You can add these additional properties anywhere in the file:
+<div class="codehilite"><pre><span></span><span class="k">classdef</span> <span class="n">RunParams</span> <span class="o">&lt;</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">RunParams</span>
+   <span class="k">properties</span>
+       <span class="c">% Add additional custom parameters here. The default you assign to</span>
+       <span class="c">% them will be used when computing the hash value. Any params whose value</span>
+       <span class="c">% differs from the default will be included in the hash value, to allow new</span>
+       <span class="c">% parameters to be added without invalidating old hashes. So choose</span>
+       <span class="c">% the default once and don&#39;t change it. If you decide to use another</span>
+       <span class="c">% value later by default, override it in the constructor instead.</span>
+   <span class="k">end</span>
+</pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>The default values you assign next to each property should be chosen carefully and never changed once added.</strong> The reason for this is that when generating the hash of the hyperparameters (which specifies where LFADS-related files live on disk), each property is compared against this default value. The current value of a particular property is only included in the hashing process if it differs from this default value. This design ensures that it is always safe to add new hyperparameters; previously performed LFADS runs will still have the same hash value and will be assigned the default hyperparameter. However, if you change the default value here, all of the hash values for all previously performed runs will change, which will require directories to be manually renamed on disk and symbolic links to be corrected. If you wish to change the default value that a property takes for new runs, you can change its value in the <code class="codehilite">RunParams</code> constructor without affecting the hash. However, you will then want to manually assign this property to its <em>old value</em> in any drive scripts you used to setup previous LFADS runs, in order to correctly specify the hyperparameters used and the corresponding hash values.</p>
+</div>
+<p><strong>No changes are required to <code class="codehilite">RunParams.m</code> to get up and running.</strong></p>
+<h3 id="editing-runcollectionm-optional">Editing <code class="codehilite">RunCollection.m</code> <em>(Optional)</em><a class="headerlink" href="#editing-runcollectionm-optional" title="Permanent link">&para;</a></h3>
+<p>Edit the file <code class="codehilite">+MyExperiment/RunCollection.m</code>. Recall that a <code class="codehilite">RunCollection</code> specifies a set of individual LFADS runs defined by an array of <code class="codehilite">RunSpec</code>s crossed with an array of <code class="codehilite">RunParams</code>.</p>
+<div class="codehilite"><pre><span></span><span class="k">classdef</span> <span class="n">RunCollection</span> <span class="o">&lt;</span> <span class="n">LFADS</span><span class="p">.</span><span class="n">RunCollection</span>
+    <span class="c">% no need to modify anything here, but feel free to add useful methods</span>
+    <span class="c">% and properties as useful</span>
+
+    <span class="k">methods</span>
+<span class="k">        function</span><span class="w"> </span>rc <span class="p">=</span><span class="w"> </span><span class="nf">RunCollection</span><span class="p">(</span>varargin<span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">rc</span><span class="p">@</span><span class="n">LFADS</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">varargin</span><span class="p">{:});</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<p><strong>No changes are required to <code class="codehilite">RunCollection.m</code> to get up and running</strong>, but you can add any utility methods to facilitate analysis for your specific application.</p>
+<h3 id="editing-runm-required">Editing <code class="codehilite">Run.m</code> <em>(Required)</em><a class="headerlink" href="#editing-runm-required" title="Permanent link">&para;</a></h3>
+<p>Edit the file <code class="codehilite">+MyExperiment/Run.m</code>. Recall that a <code class="codehilite">Run</code> represents a specific LFADS model training run. The main function you will need to provide a definition for is <code class="codehilite">convertDatasetToSequenceStruct</code>. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:</p>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span>[counts, timeVecMs, conditionId] <span class="p">=</span><span class="w"> </span><span class="nf">generateRatesForDataset</span><span class="p">(</span>r, dataset, mode, varargin<span class="p">)</span><span class="w"></span>
+</pre></div>
+
+<p>Here, <code class="codehilite">r</code> refers to the <code class="codehilite">MyExperiment.Run</code> instance. It may be particularly helpful to refer to the <code class="codehilite">RunParams</code> instance assigned to this run via <code class="codehilite">r.params</code>, especially if you have defined any additional hyperparameters that affect the way in which neural data should be extracted, e.g. which trials and what time window are included.</p>
+<h4 id="inputs">Inputs:<a class="headerlink" href="#inputs" title="Permanent link">&para;</a></h4>
+<dl>
+<dt><strong><code class="codehilite">r</code></strong>:</dt>
+<dd>The <code class="codehilite">Run</code> instance. The current <code class="codehilite">RunParams</code> instance can be accessed through <code class="codehilite">r.params</code>.</dd>
+<dt><strong><code class="codehilite">dataset</code></strong>:</dt>
+<dd><code class="codehilite">MyExperiment.Dataset</code> instance that is to be processed. If this is a single-dataset run, this will be the dataset used. If this is a multi-dataset stitched run, <code class="codehilite">convertDatasetToSequenceStruct</code> will be called once for each dataset, one at a time. You might use <code class="codehilite">dataset.loadData()</code> to load the actual data, as you defined above.</dd>
+<dt><strong><code class="codehilite">mode</code></strong>:</dt>
+<dd>
+<p>string that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:</p>
+<ul>
+<li><code class="codehilite">export</code> - indicates that the sequence data will exported as the input to the actual Python+Tensorflow LFADS run</li>
+<li><code class="codehilite">alignment</code> - for multi-dataset stitched runs, indicates that the output data will be used only to construct the alignment matrices that translate between the spiking channels across different datasets. For example, you might wish to include a subset of trials or a different time window for fitting the alignment matrices, but include all trials for the actual LFADS run.</li>
+</ul>
+</dd>
+<dt><strong><code class="codehilite">varargin</code></strong>:</dt>
+<dd>Currently not being used, but this enables additional arguments to be passed as named-parameter value pairs (e.g. <code class="codehilite"><span class="s">&#39;paramName&#39;</span><span class="p">,</span> <span class="n">paramValue</span><span class="p">,</span> <span class="c">...</span></code>) in the future without breaking existing implementations.</dd>
+</dl>
+<h4 id="outputs">Outputs:<a class="headerlink" href="#outputs" title="Permanent link">&para;</a></h4>
+<dl>
+<dt><strong><code class="codehilite">counts</code></strong>:</dt>
+<dd>A tensor of binned spike counts (not rates) with size <code class="codehilite">nTrials</code> x <code class="codehilite">nChannels</code> x <code class="codehilite">nTime</code>. These should be total counts, not normalized rates, as they will be added togeher during rebinning.</dd>
+<dt><strong><code class="codehilite">timeVecMs</code></strong>:</dt>
+<dd>A vector of timepoints with length <code class="codehilite">nTime</code> in milliseconds associated with each time bin in <code class="codehilite">counts</code>. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the <em>raw</em> spike bin width used when the data are later rebinned to match <code class="codehilite">r.params.spikeBinMs</code>.</dd>
+<dt><strong><code class="codehilite">conditionId</code></strong>:</dt>
+<dd>Vector with length <code class="codehilite">nTrials</code> identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">A note on bin widths</p>
+<p>There are two different bin widths in <code class="codehilite">lfads-run-manager</code>. First is this <code class="codehilite">binWidthMs</code> within <code class="codehilite">seq</code>, which is the spike binning that you will do to the data inside <code class="codehilite">convertDatasetToSequenceStruct</code>. <strong>We recommend binning here at 1 ms or the smallest bin width you might wish to use.</strong> Second is the field <code class="codehilite">spikeBinMs</code> inside the <code class="codehilite">RunParams</code> class. The expectation is that you will bin using a very small bin width inside <code class="codehilite">convertDatasetToSequenceStruct</code>, and then <strong>the run manager code will automatically re-bin the data at the larger bin width set by <code class="codehilite">r.params.spikeBinMs</code></strong> for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.</p>
+</div>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../concepts/" title="Key Concepts" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Key Concepts
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../drive/" title="Preparing for LFADS" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Preparing for LFADS
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 &mdash; Daniel O&#39;Shea
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/djoshea" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/djoshea" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application-f3ab9e5ff8.js"></script>
+      
+      
+      <script>app.initialize({url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

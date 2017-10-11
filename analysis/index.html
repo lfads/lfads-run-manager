@@ -1,0 +1,658 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <link rel="shortcut icon" href="../assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.10.1">
+    
+    
+      
+        <title>Analyzing LFADS Posterior Means - LFADS Run Manager</title>
+      
+    
+    
+      <script src="../assets/javascripts/modernizr-e826f8942a.js"></script>
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application-a20f419c8e.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-23f75ab9c7.palette.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="LFADS Run Manager" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon md-icon--home"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+            
+            Analyzing LFADS Posterior Means
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="" data-md-lang-tokenizer="[\s\-]+">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <div class="md-nav__button md-logo">
+      
+        <i class="md-icon md-icon--home"></i>
+      
+    </div>
+    LFADS Run Manager
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      djoshea/lfads-run-manager
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../matlab/" title="Matlab Classes and Packages" class="md-nav__link">
+      Matlab Classes and Packages
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../concepts/" title="Key Concepts" class="md-nav__link">
+      Key Concepts
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../adapting/" title="Interfacing to your Datasets" class="md-nav__link">
+      Interfacing to your Datasets
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../drive/" title="Preparing for LFADS" class="md-nav__link">
+      Preparing for LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../files/" title="File Organization" class="md-nav__link">
+      File Organization
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../multisession/" title="Multi-sesion Stitched Models" class="md-nav__link">
+      Multi-sesion Stitched Models
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../running/" title="Running LFADS" class="md-nav__link">
+      Running LFADS
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Analyzing LFADS Posterior Means
+      </label>
+    
+    <a href="./" title="Analyzing LFADS Posterior Means" class="md-nav__link md-nav__link--active">
+      Analyzing LFADS Posterior Means
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reusing-the-drive_script" title="Reusing the drive_script" class="md-nav__link">
+    Reusing the drive_script
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-posterior-means" title="Loading the posterior means" class="md-nav__link">
+    Loading the posterior means
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualizing-the-factors" title="Visualizing the factors" class="md-nav__link">
+    Visualizing the factors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparing-factor-trajectories-across-datasets" title="Comparing factor trajectories across datasets" class="md-nav__link">
+    Comparing factor trajectories across datasets
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-dataset-models" title="Single-dataset models" class="md-nav__link">
+    Single-dataset models
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stitched-multi-session-model" title="Stitched multi-session model" class="md-nav__link">
+    Stitched multi-session model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../trained_params/" title="Loading the trained model parameters" class="md-nav__link">
+      Loading the trained model parameters
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reusing-the-drive_script" title="Reusing the drive_script" class="md-nav__link">
+    Reusing the drive_script
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-posterior-means" title="Loading the posterior means" class="md-nav__link">
+    Loading the posterior means
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualizing-the-factors" title="Visualizing the factors" class="md-nav__link">
+    Visualizing the factors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparing-factor-trajectories-across-datasets" title="Comparing factor trajectories across datasets" class="md-nav__link">
+    Comparing factor trajectories across datasets
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-dataset-models" title="Single-dataset models" class="md-nav__link">
+    Single-dataset models
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stitched-multi-session-model" title="Stitched multi-session model" class="md-nav__link">
+    Stitched multi-session model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="loading-and-analyzing-lfads-posterior-means">Loading and Analyzing LFADS Posterior Means<a class="headerlink" href="#loading-and-analyzing-lfads-posterior-means" title="Permanent link">&para;</a></h1>
+<h2 id="reusing-the-drive_script">Reusing the <code class="codehilite">drive_script</code><a class="headerlink" href="#reusing-the-drive_script" title="Permanent link">&para;</a></h2>
+<p>The <code class="codehilite">LFADS.Run</code> instances you created earlier with the <code class="codehilite">drive_script</code> uniquely specify the location of all LFADS related files on disk. In addition to enabling you to generate the inputs and scripts required to train LFADS, these objects also make it straightforward to load the results of LFADS back into Matlab for subsequent analysis. These results include the estimates of the posterior mean of the LFADS generator units, factors, and rates for each trial, as well as the learned model parameters.</p>
+<p>Using your <code class="codehilite">RunCollection</code> <code class="codehilite">rc</code>, you can access individual runs by indexing directly into <code class="codehilite">rc.runs</code> which has size <code class="codehilite">rc.nRunSpecs</code> x <code class="codehilite">rc.nParams</code>. You can also search for a specific run using <code class="codehilite">rc.findRun</code></p>
+<div class="codehilite"><pre><span></span><span class="n">run1</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findRuns</span><span class="p">(</span><span class="s">&#39;single_dataset001&#39;</span><span class="p">,</span> <span class="s">&#39;param_pqQbzB&#39;</span><span class="p">);</span>
+</pre></div>
+
+<p>The first argument searches over the <code class="codehilite">RunSpec</code>s by name, the second searches over the <code class="codehilite">RunParams</code> by hash value.</p>
+<h2 id="loading-the-posterior-means">Loading the posterior means<a class="headerlink" href="#loading-the-posterior-means" title="Permanent link">&para;</a></h2>
+<p>Using the <code class="codehilite">Run</code> instance, you can verify that its posterior means have been written to disk (indicating that the model has finished training successfully):</p>
+<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">run1</span><span class="p">.</span><span class="n">checkPosteriorMeansExist</span><span class="p">()</span>
+
+  <span class="n">logical</span>
+
+   <span class="mi">1</span>
+</pre></div>
+
+<p>And then load the posterior means using:
+<div class="codehilite"><pre><span></span><span class="n">pm</span> <span class="p">=</span> <span class="n">run1</span><span class="p">.</span><span class="n">loadPosteriorMeans</span><span class="p">();</span>
+</pre></div></p>
+<p>Or alternatively, load all of your runs&rsquo; posterior means by calling <code class="codehilite">rc.loadPosteriorMeans()</code>. Then you can access the cached posterior means in each run&rsquo;s <code class="codehilite"><span class="na">.posteriorMeans</span></code> property.</p>
+<p><code class="codehilite">pm</code> will be an instance of <code class="codehilite">LFADS.PosteriorMeans</code>:</p>
+<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">pm</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">posteriorMeans</span>
+
+<span class="n">pm</span> <span class="p">=</span>
+
+  <span class="n">PosteriorMeans</span> <span class="n">with</span> <span class="k">properties</span><span class="p">:</span>
+
+                  <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mi">500</span><span class="n">x1</span> <span class="n">double</span><span class="p">]</span>
+    <span class="n">controller_outputs</span><span class="p">:</span> <span class="p">[]</span>
+               <span class="n">factors</span><span class="p">:</span> <span class="p">[</span><span class="mi">8</span><span class="n">x500x1560</span> <span class="n">double</span><span class="p">]</span>
+         <span class="n">generator_ics</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x1560</span> <span class="n">double</span><span class="p">]</span>
+      <span class="n">generator_states</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="n">x500x1560</span> <span class="n">double</span><span class="p">]</span>
+                 <span class="n">rates</span><span class="p">:</span> <span class="p">[</span><span class="mi">29</span><span class="n">x500x1560</span> <span class="n">double</span><span class="p">]</span>
+             <span class="n">validInds</span><span class="p">:</span> <span class="p">[</span><span class="mi">312</span><span class="n">x1</span> <span class="n">uint16</span><span class="p">]</span>
+             <span class="n">trainInds</span><span class="p">:</span> <span class="p">[</span><span class="mi">1248</span><span class="n">x1</span> <span class="n">double</span><span class="p">]</span>
+                <span class="n">params</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="n">x1</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunParams</span><span class="p">]</span>
+               <span class="n">isValid</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="n">nControllerOutputs</span><span class="p">:</span> <span class="mi">0</span>
+       <span class="n">nGeneratorUnits</span><span class="p">:</span> <span class="mi">64</span>
+              <span class="n">nFactors</span><span class="p">:</span> <span class="mi">8</span>
+              <span class="n">nNeurons</span><span class="p">:</span> <span class="mi">29</span>
+                     <span class="n">T</span><span class="p">:</span> <span class="mi">500</span>
+               <span class="n">nTrials</span><span class="p">:</span> <span class="mi">1560</span>
+</pre></div>
+
+<p>Whose key properties are:</p>
+<dl>
+<dt><strong><code class="codehilite">time</code></strong>:</dt>
+<dd><code class="codehilite">nTime</code> x <code class="codehilite">1</code> time vector associated with each of the output fields, which you provided in your <code class="codehilite">generateRatesForDataset()</code> implementation</dd>
+<dt><strong><code class="codehilite">controller_outputs</code></strong>:</dt>
+<dd><code class="codehilite">nControllerOutputs</code> x <code class="codehilite">nTime</code>. Inferred inputs to the generator network. Or empty, if no controller is used (<code class="codehilite"><span class="n">c_co_dim</span> <span class="o">==</span> <span class="mi">0</span></code>)</dd>
+</dl>
+<p><strong><code class="codehilite">factors</code></strong>:
+:<code class="codehilite">nFactors</code> x <code class="codehilite">nTime</code> x <code class="codehilite">nTrials</code>. Factor outputs from the generator network.</p>
+<dl>
+<dt><strong><code class="codehilite">generator_ics</code></strong>:</dt>
+<dd><code class="codehilite">nGeneratorUnits</code> x <code class="codehilite">nTrials</code>. Initial conditions for the generator units.</dd>
+<dt><strong><code class="codehilite">generator_states</code></strong>:</dt>
+<dd><code class="codehilite">nGeneratorUnits</code> x <code class="codehilite">nTime</code> x <code class="codehilite">nTrials</code>. Trajectories of the generator units.</dd>
+<dt><strong><code class="codehilite">rates</code></strong>:</dt>
+<dd><code class="codehilite">nNeurons</code> x <code class="codehilite">nTime</code> x <code class="codehilite">nTrials</code>. Inferred firing rates of the neurons</dd>
+<dt><strong><code class="codehilite">validInds</code></strong>:</dt>
+<dd>List of trial indices used in the validation set</dd>
+<dt><strong><code class="codehilite">trainInds</code></strong>:</dt>
+<dd>List of trial indices used in the training set</dd>
+</dl>
+<p>If the run stitches together multiple datasets, then the <code class="codehilite">posteriorMeans</code> will be an <code class="codehilite">nDatasets</code> x 1 vector of <code class="codehilite">LFADS.PosteriorMeans</code> instances, each corresponding to an included dataset.</p>
+<h2 id="visualizing-the-factors">Visualizing the factors<a class="headerlink" href="#visualizing-the-factors" title="Permanent link">&para;</a></h2>
+<p>Single trial plot of factor 1 on first 10 conditions (color-coded), i.e. <code class="codehilite"><span class="n">pm</span><span class="p">.</span><span class="n">factors</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">pm</span><span class="p">.</span><span class="n">conditionId</span> <span class="o">&lt;</span><span class="p">=</span> <span class="mi">10</span><span class="p">)</span></code>.</p>
+<p><img alt="Factor 1, single trials" src="../images/factor1_pm.png" /></p>
+<p>Condition-average plot of factor 1 on all conditions, flanked by standard error of the mean.</p>
+<p><img alt="Factor 1, condition averaged" src="../images/factor1_pm_means.png" /></p>
+<h2 id="comparing-factor-trajectories-across-datasets">Comparing factor trajectories across datasets<a class="headerlink" href="#comparing-factor-trajectories-across-datasets" title="Permanent link">&para;</a></h2>
+<h3 id="single-dataset-models">Single-dataset models<a class="headerlink" href="#single-dataset-models" title="Permanent link">&para;</a></h3>
+<p>Looking at the 3 single-dataset model runs, we can plot single trials from the first 10 conditions for each of the 3 datasets. Note that the initial condition and subsequent 3 dimensional Lorenz atractor trajectory that defines each of the conditions is fixed and constant across datasets. However, we find that the factor 1 trajectories differ across the 3 datasets. As these factor trajectories are independently generated by 3 separate LFADS models</p>
+<div class="codehilite"><pre><span></span><span class="n">pmSingleRuns</span> <span class="p">=</span> <span class="p">[</span><span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">loadPosteriorMeans</span><span class="p">();</span> <span class="c">...</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="n">loadPosteriorMeans</span><span class="p">();</span> <span class="c">...</span>
+                <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">loadPosteriorMeans</span><span class="p">()];</span>
+</pre></div>
+
+<p><img alt="Factor 1 single trial, across datasets, single models" src="../images/factor1_compareSingleRuns.png" /></p>
+<h3 id="stitched-multi-session-model">Stitched multi-session model<a class="headerlink" href="#stitched-multi-session-model" title="Permanent link">&para;</a></h3>
+<p>However, if we load the posterior means for the stitched multi-session model (named <code class="codehilite">all</code>). we find that these same factor trajectories are now highly similar across datasets.</p>
+<p><img alt="Factor 1 single trial, across datasets, stitched models" src="../images/factor1_compareStitchedRuns.png" /></p>
+<p>We can then take all 8 factors, average within conditions, and perform dimensionality reduction using PCA to visualize the factor trajectories in the top 2 principal components. Here are the factor trajectories from all 65 conditions from the first dataset. The initial conditions are marked with a black dot.</p>
+<p><img alt="PCA Factor, dataset 1 stitched model" src="../images/pca_stitched1.png" /></p>
+<p>We can also plot the condition-averaged factor trajectories from all 3 datasets in the same PC space. Here are 10 conditions (color coded by condition). Note the similarity of each of the sets of 3 traces of the same color, which indicates that LFADS has successfully stitched these datasets together using the</p>
+<p><img alt="PCA Factor, 10 conditions, all 3 datasets" src="../images/pca_stitched_conditionsAcrossDatasets.png" /></p>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../running/" title="Running LFADS" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Running LFADS
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../trained_params/" title="Loading the trained model parameters" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Loading the trained model parameters
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 &mdash; Daniel O&#39;Shea
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/djoshea" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/djoshea" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application-f3ab9e5ff8.js"></script>
+      
+      
+      <script>app.initialize({url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>
