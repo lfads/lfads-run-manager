@@ -8,8 +8,8 @@ repo_url: 'https://github.com/djoshea/lfads-run-manager'
 
 extra:
   palette:
-    primary: 'blue'
-    accent: 'indigo'
+    primary: 'red'
+    accent: 'red'
 
   social:
     - type: 'github'
