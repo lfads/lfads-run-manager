@@ -16,6 +16,7 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
 
     properties(Dependent)
         nDatasets % Number of datasets in this collection
+        datasetNames % nDatasets x 1 cellstr of dataset names
     end
 
     methods
@@ -71,6 +72,10 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
 
         function n = get.nDatasets(dc)
             n = numel(dc.datasets);
+        end
+        
+        function names = get.datasetNames(dc)
+            names = {dc.datasets.name}';
         end
         
         function reloadInfo(dc)

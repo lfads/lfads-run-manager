@@ -33,6 +33,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         nRunsTotal % number of runs total (equal to `nParams` * `nRunsEachParam`
 
         nDatasets % number of datasets within the datasetCollection
+        datasetNames % nDatasets x 1 cell array of dataset names
+        
         path % unique folder given by rootPath/name
         pathsCommonDataForParams % cellstr of folders given by rootPath/name/{data_HASH} for each params
         pathsForParams % cellstr of folders given by rootPath/name/{paramStr}
@@ -392,6 +394,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
         function n = get.nDatasets(rc)
             n = rc.datasetCollection.nDatasets;
+        end
+        
+        function names = get.datasetNames(r)
+            names = {r.datasetCollection.datasets.name}';
         end
 
         function [tf, idx] = ismemberRunSpecs(rc, runSpecSearch)
