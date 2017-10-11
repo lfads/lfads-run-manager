@@ -1,4 +1,7 @@
-function generateDemoDatasets(datasetPath, nDatasets)
+function datasets = generateDemoDatasets(datasetPath, nDatasets)
+    % generates a set of demo datasets for LFADS based on generating
+    % spikes via a chaotic Lorenz attractor
+    
     rng(1);
 
     %% Create temp directory for datasets
@@ -56,6 +59,10 @@ function generateDemoDatasets(datasetPath, nDatasets)
         datasets(iDS).conditionId = conditionId;
         datasets(iDS).datetime = datetime('today') - nDatasets + iDS;
         datasets(iDS).subject = 'lorenz_example';
+        
+        datasets(iDS).W = W;
+        datasets(iDS).b = b;
+        datasets(iDS).lorenz_trajectories = lorenz_trajectories;
     end
 
     %% Save datasets to disk

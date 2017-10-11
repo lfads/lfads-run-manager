@@ -23,7 +23,7 @@ function h=subtightplot(m,n,p,gap,marg_h,marg_w,varargin)
 
 if (nargin<4) || isempty(gap),    gap=0.01;  end
 if (nargin<5) || isempty(marg_h),  marg_h=0.05;  end
-if (nargin<5) || isempty(marg_w),  marg_w=marg_h;  end
+if (nargin<6) || isempty(marg_w),  marg_w=marg_h;  end
 if isscalar(gap),   gap(2)=gap;  end
 if isscalar(marg_h),  marg_h(2)=marg_h;  end
 if isscalar(marg_w),  marg_w(2)=marg_w;  end
