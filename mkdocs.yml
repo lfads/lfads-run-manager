@@ -34,7 +34,7 @@ pages:
   - Interfacing to your Datasets : adapting.md
   - Preparing for LFADS: drive.md
   - File Organization: files.md
-  - Multi-sesion Stitched Models: multisession.md
+  - multisession Stitched Models: multisession.md
   - Running LFADS: running.md
   - Analyzing LFADS Posterior Means: analysis.md
   - Loading the trained model parameters: trained_params.md
@@ -44,4 +44,3 @@ copyright: 'Copyright &copy; 2017 &mdash; Daniel J. O&#39;Shea'
 google_analytics:
   - 'UA-322693-7'
   - 'auto'
-
