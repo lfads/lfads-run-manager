@@ -57,7 +57,7 @@ git clone https://github.com/djoshea/lfads-run-manager.git
 You'll need to have Matlab installed. Then you can add the root folder of the lfads-run-manager to your Matlab path, either using `pathtool` or by running:
 
 ```matlab
-addpath('/path/to/lfads-run-manager')
+addpath('/path/to/lfads-run-manager/src')
 ```
 
-No need to add path recursively.
+No need to add the subfolders to the path recursively.
