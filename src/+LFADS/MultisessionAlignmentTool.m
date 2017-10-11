@@ -13,6 +13,8 @@ classdef MultisessionAlignmentTool < handle
         nTime
         conditionAvgsByDataset % nDatasets x 1 cell of nChannels_ds x nTimepoints x nConditions tensors of condition averages
         
+        datasetNames % nDatasets x 1 cell of dataset names
+        
         alignmentMatrices % nDatasets x 1 cell of nChannelsByDataset(iDS) x nFactors      
         alignmentBiases % nDatasets x 1 cell of nChannelsByDataset(iDS) x 1
         
@@ -22,7 +24,7 @@ classdef MultisessionAlignmentTool < handle
     end
 
     methods
-        function tool = MultisessionAlignmentTool(run, seqData)
+        function tool = MultisessionAlignmentTool(run, seqData, datasetNames)
             %
             % Parameters
             % ------------
@@ -35,6 +37,8 @@ classdef MultisessionAlignmentTool < handle
             assert(tool.nDatasets > 1, 'LFADS.MultisessionAlignmentTool can only be used when number of datasets is > 1');
             
             tool.nFactors = run.params.c_in_factors_dim;
+            
+            tool.datasetNames = LFADS.Utils.makecol(datasetNames);
             
             % compute all unique conditions across datasets
             condField = 'conditionId';
@@ -195,7 +199,7 @@ classdef MultisessionAlignmentTool < handle
                 % nChannelsByDataset(iDS) x 1
                alignmentBiases{iDS} = squeeze(this_dataset_means);
                 
-                if any(isnan(alignmentMatrices{iDS}(:)))
+                if any(isnan(alignmentMatrices{iDS}(:)))f
                     error('NaNs in the the alignment matrix');
                 end
                     
@@ -209,45 +213,70 @@ classdef MultisessionAlignmentTool < handle
         end
     
         function plotAlignmentReconstruction(tool, factorIdx, conditionIdx)
+            clf;
             if isempty(tool.pcAvg_allDatasets) || isempty(tool.pcAvg_reconstructionByDataset)
                 tool.computeAlignmentMatricesUsingTrialAveragedPCR();
             end
             
-            if isscalar(factorIdx)
+            if nargin < 2
+                factorIdx = 1:tool.nFactors;
+            elseif isscalar(factorIdx)
                 factorIdx = 1:factorIdx;
             end
-            if isscalar(conditionIdx)
+            
+            if nargin < 3
+                conditionIdx = 1:min(tool.nConditions, 6);
+            elseif isscalar(conditionIdx)
                 conditionIdx = 1:conditionIdx;
             end
+            
             nFactorsPlot = numel(factorIdx);
             nConditionsPlot = numel(conditionIdx);
 
+            cmap = LFADS.Utils.hslmap(tool.nDatasets);
+            
             iSub = 1;
             for iF = 1:nFactorsPlot
                 f = factorIdx(iF);
                 for iC = 1:nConditionsPlot
                     c = conditionIdx(iC);
-                    LFADS.Utils.subtightplot(nFactorsPlot, nConditionsPlot, iSub, 0.01);
+                    LFADS.Utils.subtightplot(nFactorsPlot, nConditionsPlot, iSub, 0.01, [0.01 0.05], [0.05 0.01]);
                     iSub = iSub + 1;
 
                     % plot single dataset reconstructions
-                    data = squeeze(tool.pcAvg_reconstructionByDataset(f, :, c, :));
-                    plot(data);
-                    hold on;
                     target = squeeze(tool.pcAvg_allDatasets(f, :, c));
-                    plot(target, 'k-', 'LineWidth', 2);
+                    data = squeeze(tool.pcAvg_reconstructionByDataset(f, :, c, :));
+                    
+                    for iDS = 1:tool.nDatasets
+                        h = plot(data(:, iDS), 'LineWidth', 0.5, 'Color', cmap(iDS, :));
+                        %LFADS.Utils.setLineOpacity(h, 0.5); 
+                        LFADS.Utils.showInLegend(h, tool.datasetNames{iDS});
+                        hold on;
+                    end
+                    
+                    hTarget = plot(target, 'k-', 'LineWidth', 0.5);
+                    LFADS.Utils.showInLegend(hTarget, 'Global');
+                    
+                    hold on;
+
                     axis tight;
                     box off;
+                    set(gca, 'YTick', [], 'XTick', []);
                     axis off;
                     
                     if iF == 1
                         h = title(sprintf('Condition %d', c)); 
                         h.Visible = 'on';
+                        h.FontWeight = 'normal';
                     end
                     if iC == 1
                         h = ylabel(sprintf('Factor %d', f));
                         h.Visible = 'on';
-                        h.FontWeight = 'bold';
+                    end
+                    
+                    if iF == 1 && iC == nConditionsPlot
+                        legend(gca, 'show', 'Location', 'Best');
+                        legend boxoff;
                     end
                 end
             end
