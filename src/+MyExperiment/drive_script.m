@@ -33,10 +33,7 @@ par = MyExperiment.RunParams;
 par.spikeBinMs = 2; % rebin the data at 2 ms
 par.c_co_dim = 0; % no controller --> no inputs to generator
 par.c_batch_size = 150; % must be < 1/5 of the min trial count
-
-par.setInFactorsMatchDataForSingleDataset = true;  % automatically change c_in_factors_dim to match the number of channels in a single dataset 
-par.c_in_factors_dim = 8; % and manually set it for multisession stitched models
-par.c_factors_dim = 8;
+par.c_factors_dim = 8; % and manually set it for multisession stitched models
 par.useAlignmentMatrix = true; % use alignment matrices initial guess for multisession stitching
 
 par.c_gen_dim = 64; % number of units in generator RNN

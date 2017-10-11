@@ -11,11 +11,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         % High-level params unrelated to LFADS internals
         spikeBinMs double = 2; % Spike bin width in ms
         trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio    
-        useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together. Default = false.
-        
+        useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together. Default = false.     
         scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run
-    
-        setInFactorsMatchDataForSingleDataset logical = false; % if true, c_in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
     end
     
     properties
@@ -55,6 +52,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
     % but no longer output to LFADS
     properties(Hidden)
         c_in_factors_dim uint16 = 50;
+        setInFactorsMatchDataForSingleDataset logical = false; % if true, c_in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
     end
     
     properties(Dependent)
@@ -451,10 +449,10 @@ classdef RunParams < matlab.mixin.CustomDisplay
                     thisVal = thisVal * run.nDatasets;
                 end
                 
-                if ismember(thisField, {'c_in_factors_dim'}) && ...
-                        p.setInFactorsMatchDataForSingleDataset && run.nDatasets == 1
-                    thisVal = zeros(1, 'like', thisVal); % to auto scale
-                end
+%                 if ismember(thisField, {'c_in_factors_dim'}) && ...
+%                         p.setInFactorsMatchDataForSingleDataset && run.nDatasets == 1
+%                     thisVal = zeros(1, 'like', thisVal); % to auto scale
+%                 end
                 
                 % argument formatted differently for each class
                 switch class(thisVal)
