@@ -7,7 +7,11 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
+        <meta name="description" content="Documentation of LFADS Run Manager for Matlab">
       
+      
+      
+        <meta name="author" content="Daniel J. O'Shea">
       
       
         <link rel="shortcut icon" href="./assets/images/favicon.png">
@@ -45,7 +49,7 @@
   
   
   
-    <body data-md-color-primary="blue" data-md-color-accent="indigo">
+    <body data-md-color-primary="red" data-md-color-accent="red">
   
     <svg class="md-svg">
       <defs>
@@ -392,7 +396,9 @@
                 
                 
                 <h1 id="lfads-run-manager-for-matlab-documentation">LFADS Run Manager for Matlab Documentation<a class="headerlink" href="#lfads-run-manager-for-matlab-documentation" title="Permanent link">&para;</a></h1>
-<p>LFADS Run Manager is a set of tools, written in Matlab, that work with the Python+Tensorflow LFADS code to accomplish the following:</p>
+<p>LFADS Run Manager is a set of tools, written in Matlab, that work with the <a href="https://github.com/tensorflow/models/tree/master/research/lfads">Python+Tensorflow LFADS code</a> to accomplish the following. LFADS, or Latent Factor Analysis via Dynamical Systems, is a deep learning method to infer latent dynamics from single-trial neural spiking data. LFADS uses a nonlinear dynamical system (a recurrent neural network) to infer the dynamics underlying observed population activity and to extract ‘de-noised’ single-trial firing rates from neural spiking data.</p>
+<p>Read the <a href="https://www.biorxiv.org/content/early/2017/06/20/152884">LFADS pre-print</a> for more details.</p>
+<p>LFADS Run Manager helps you to:</p>
 <ul>
 <li>Organize your spiking neural datasets that will be used to train LFADS models.</li>
 <li>Setup a collection of training runs that vary in hyperparameter settings and the particular datasets included. The latter is particularly useful when generating <em>stitched</em> multisession LFADS models.</li>
@@ -535,7 +541,7 @@
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2017 &mdash; Daniel O&#39;Shea
+            Copyright &copy; 2017 &mdash; Daniel J. O&#39;Shea
           </div>
         
         powered by
@@ -570,6 +576,8 @@
       
     
     
+      
+      <script>!function(e,t,a,n,o,c,i){e.GoogleAnalyticsObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,c=t.createElement(a),i=t.getElementsByTagName(a)[0],c.async=1,c.src=n,i.parentNode.insertBefore(c,i)}(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-322693-7","djoshea.github.io"),ga("set","anonymizeIp",!0),ga("send","pageview");var links=document.getElementsByTagName("a");Array.prototype.map.call(links,function(e){e.host!=document.location.host&&e.addEventListener("click",function(){var t=e.getAttribute("data-md-action")||"follow";ga("send","event","outbound",t,e.href)})});var query=document.forms.search.query;query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})</script>
       
     
   </body>
