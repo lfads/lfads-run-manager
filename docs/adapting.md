@@ -1,7 +1,7 @@
 # Using LFADS Run Manager with your datasets
 
-## Copying the `StarterExample` code
-Below we describe how to use the run manager code with datasets from a specific experiment. The recommended way to begin this process is to copy the folder `+StarterExample` inside the` lfads-run-manager` repository to some other folder on your Matlab path, and then to rename it to something related to the experiment. Below, we'll use the name `MyExperiment`, which requires renaming the folder to `+MyExperiment`.
+## Copying the `MyExperiment` working example code
+Below we describe how to use the run manager code with datasets from a specific experiment. The recommended way to begin this process is to copy the folder `+MyExperiment` inside the` lfads-run-manager` repository to some other folder on your Matlab path, and then to rename it to something related to the experiment. Below, we'll use the name `MyExperiment`, which requires renaming the folder to `+MyExperiment`.
 
 Each of the classes you have just created are defined to inherit from the corresponding `LFADS.ClassName` inside the `lfads-run-manager` repo. Consequently, only a small amount of code is present in each file; the rest of the properties and methods for each class are define inside the `+LFADS` folder in the repo.
 
