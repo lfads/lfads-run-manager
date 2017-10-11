@@ -49,7 +49,7 @@ rc.addParams(parSet);
 
 % Setup which datasets are included in each run, 1 for each dataset individually
 for iR = 1:dc.nDatasets
-    rc.addRunSpec(MyExperiment.RunSpec(dc.datasets(iR).getSingleRunName(), dc, dc.datasets(iR).name));
+    rc.addRunSpec(MyExperiment.RunSpec(dc.datasets(iR).getSingleRunName(), dc, iR));
 end
 % and the final stitching run with all datasets
 rc.addRunSpec(MyExperiment.RunSpec('all', dc, 1:dc.nDatasets));
@@ -59,7 +59,7 @@ rc.prepareForLFADS();
 
 % Write a python script that will train all of the LFADS runs using a
 % load-balancer against the available CPUs and GPUs
-rc.writeShellScriptRunQueue('display', 50, 'maxTasksSimultaneously', 4, 'gpuList', [0 1], 'virtualenv', tensorflow);
+rc.writeShellScriptRunQueue('display', 50, 'maxTasksSimultaneously', 4, 'gpuList', [0 1], 'virtualenv', 'tensorflow');
 ```
 
 You've now setup a 4 x 4 grid of LFADS runs, spanning 4 different hyperparameter settings and 4 different dataset subsets (3 with one dataset, 1 stitching together all datasets).
