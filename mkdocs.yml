@@ -34,7 +34,7 @@ pages:
   - Interfacing to your Datasets : adapting.md
   - Preparing for LFADS: drive.md
   - File Organization: files.md
-  - multisession Stitched Models: multisession.md
+  - Multisession Stitched Models: multisession.md
   - Running LFADS: running.md
   - Analyzing LFADS Posterior Means: analysis.md
   - Loading the trained model parameters: trained_params.md
