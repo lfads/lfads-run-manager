@@ -407,8 +407,7 @@
 <li>Facilitate analysis, visualization, and comparison of the learned LFADS model generated factors, rates, etc.</li>
 </ul>
 <p>The code within the run manager helps organize LFADS runs and facilitate analysis, but ultimately calls the Python+Tensorflow LFADS code available on <a href="https://github.com/tensorflow/models/tree/master/research/lfads">Github</a>.</p>
-<p>To use the run manager, you will need to author a few functions that perform specific data processing steps that are specific to your datasets, such as extracting spike times. We note that to use LFADS in any context, one would need to author this dataset specific code anyway.</p>
-<p>The goal of the run manager is to facilitate the above common tasks in a fairly dataset agnostic way, sparing you the need to hand-generate many one-off scripts to export data to HD5 in the right locations, drive the Tensorflow training, and to load the results from disk.</p>
+<p>To use the run manager, you will need to author a few functions that perform specific data processing steps that are specific to your datasets, such as extracting spike times. The goal of the run manager is to facilitate the above common tasks in a fairly dataset agnostic way, sparing you the need to hand-generate many one-off scripts to export data to HD5 in the right locations, drive the Tensorflow training, and to load the results from disk.</p>
 <h2 id="quick-example">Quick example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h2>
 <p>We&rsquo;ll walkthrough this example in more detail in this documentation, but to give you an idea of how the run manager works, here&rsquo;s the Matlab code you&rsquo;d use to launch a couple of runs.</p>
 <div class="codehilite"><pre><span></span><span class="c">% Identify the datasets you&#39;ll be using</span>
