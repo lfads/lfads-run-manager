@@ -35,7 +35,7 @@ dc = MyExperiment.DatasetCollection(dataPath);
 dc.name = 'lorenz_example';
 ```
 
-Then, we can add the individual datasets within based on their individual paths. Note that when a new dataset instance
+Then, we can add the individual datasets within based on their individual paths. Note that when a new dataset instance is created, it is automatically added to the `DatasetCollection` and will replace any dataset that has the same name if present.
 
 ```matlab
 MyExperiment.Dataset(dc, 'dataset001.mat');

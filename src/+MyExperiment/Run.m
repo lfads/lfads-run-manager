@@ -19,7 +19,7 @@ classdef Run < LFADS.Run
             %   windows) for the alignment process separately from the actual
             %   data exported to LFADS, or return the same for both. Alignment
             %   is only relevant for multi-dataset models. If you wish to use
-            %   separate data for alignment, override the method usesDifferentSequenceDataForAlignment
+            %   separate data for alignment, override the method usesDifferentDataForAlignment
             %   to return true as well.
             %
             % Returns

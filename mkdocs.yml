@@ -31,13 +31,13 @@ pages:
   - Installation: install.md
   - Matlab Classes and Packages: matlab.md
   - Key Concepts: concepts.md
-  - Interfacing to your Datasets : adapting.md
+  - Interfacing with your Datasets : adapting.md
   - Preparing for LFADS: drive.md
   - File Organization: files.md
   - Multisession Stitched Models: multisession.md
   - Running LFADS: running.md
   - Analyzing LFADS Posterior Means: analysis.md
-  - Loading the trained model parameters: trained_params.md
+  - Loading the Model Trained Parameters: trained_params.md
 
 copyright: 'Copyright &copy; 2017 &mdash; Daniel J. O&#39;Shea'
 

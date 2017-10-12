@@ -14,9 +14,7 @@ LFADS Run Manager helps you to:
 
 The code within the run manager helps organize LFADS runs and facilitate analysis, but ultimately calls the Python+Tensorflow LFADS code available on [Github](https://github.com/tensorflow/models/tree/master/research/lfads).
 
-To use the run manager, you will need to author a few functions that perform specific data processing steps that are specific to your datasets, such as extracting spike times. We note that to use LFADS in any context, one would need to author this dataset specific code anyway.
-
-The goal of the run manager is to facilitate the above common tasks in a fairly dataset agnostic way, sparing you the need to hand-generate many one-off scripts to export data to HD5 in the right locations, drive the Tensorflow training, and to load the results from disk.
+To use the run manager, you will need to author a few functions that perform specific data processing steps that are specific to your datasets, such as extracting spike times. The goal of the run manager is to facilitate the above common tasks in a fairly dataset agnostic way, sparing you the need to hand-generate many one-off scripts to export data to HD5 in the right locations, drive the Tensorflow training, and to load the results from disk.
 
 ## Quick example
 
@@ -104,9 +102,9 @@ MyExperiment.RunCollection "exampleRun" (16 runs total)
        fileShellScriptRunQueue: '~/lorenz_example/runs/exampleRun/run_lfadsqueue.py'
 ```
 
-Then you can simply run `python run_lfadsqueue.py`, a script which was automatically genrated to fire off all the LFADS jobs in parallel, load-balancing as many as your system can handle across available GPUs. Then wait a few hours/days...
+Then you can simply run `python run_lfadsqueue.py`, a script which was automatically generated to fire off all the LFADS jobs in parallel, load-balancing as many as your system can handle across available GPUs. Then wait a few hours/days...
 
-As they finish, you can load and visualize the results easily in Matlab. Here we plot the smoothed rates
+As they finish, you can load and visualize the results easily in Matlab. Here we plot the inferred, single-trial firing rates of the first neuron:
 
 ```matlab
 run = rc.runs('single_dataset001', 1);

@@ -95,7 +95,7 @@ end
 
 The metadata fields you might assign are as follows:
 
-* `subject` - Dataset subject or participant name
+* `subject` - dataset subject or participant name
 * `datenum` - a Matlab datenum identifying the collection time of the dataset
 * `nChannels` - the number of unique spiking channels recorded in this dataset
 * `nTrials` - the number of trials included in this dataset
@@ -157,7 +157,8 @@ end
 Edit the file `+MyExperiment/Run.m`. Recall that a `Run` represents a specific LFADS model training run. The main function you will need to provide a definition for is `convertDatasetToSequenceStruct`. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:
 
 ```matlab
-function [counts, timeVecMs, conditionId] = generateCountsForDataset(r, dataset, mode, varargin)
+function [counts, timeVecMs, conditionId] = ...
+    generateCountsForDataset(r, dataset, mode, varargin)
 ```
 
 Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly helpful to refer to the `RunParams` instance assigned to this run via `r.params`, especially if you have defined any additional hyperparameters that affect the way in which neural data should be extracted, e.g. which trials and what time window are included.
@@ -171,10 +172,19 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 : `MyExperiment.Dataset` instance that is to be processed. If this is a single-dataset run, this will be the dataset used. If this is a multi-dataset stitched run, `convertDatasetToSequenceStruct` will be called once for each dataset, one at a time. You might use `dataset.loadData()` to load the actual data, as you defined above.
 
 **`mode`**:
-: string that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:
+: String that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:
 
     * `export` - indicates that the sequence data will exported as the input to the actual Python+Tensorflow LFADS run
     * `alignment` - for multi-dataset stitched runs, indicates that the output data will be used only to construct the alignment matrices that translate between the spiking channels across different datasets. For example, you might wish to include a subset of trials or a different time window for fitting the alignment matrices, but include all trials for the actual LFADS run.
+
+    If you decide you do wish to handle the `alignment` case differently, you will need to override the `usesDifferentDataForAlignment` method in your `Run` class to return `true`, by adding:
+
+    ```matlab
+    function tf = usesDifferentDataForAlignment(r)
+        tf = true;
+    end
+    ```
+
 
 **`varargin`**:
 : Currently not being used, but this enables additional arguments to be passed as named-parameter value pairs (e.g. `:::matlab 'paramName', paramValue, ...`) in the future without breaking existing implementations.
@@ -188,7 +198,7 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 : A vector of timepoints with length `nTime` in milliseconds associated with each time bin in `counts`. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the _raw_ spike bin width used when the data are later rebinned to match `r.params.spikeBinMs`.
 
 **`conditionId`**:
-: Vector with length `nTrials` identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector
+: Vector with length `nTrials` identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector.
 
 !!! note "A note on bin widths"
     There are two different bin widths in `lfads-run-manager`. First is this `binWidthMs` within `seq`, which is the spike binning that you will do to the data inside `convertDatasetToSequenceStruct`. **We recommend binning here at 1 ms or the smallest bin width you might wish to use.** Second is the field `spikeBinMs` inside the `RunParams` class. The expectation is that you will bin using a very small bin width inside `convertDatasetToSequenceStruct`, and then **the run manager code will automatically re-bin the data at the larger bin width set by `r.params.spikeBinMs`** for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.

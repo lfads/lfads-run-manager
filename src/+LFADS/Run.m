@@ -22,7 +22,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   windows) for the alignment process separately from the actual
             %   data exported to LFADS, or return the same for both. Alignment
             %   is only relevant for multi-dataset models. If you wish to use
-            %   separate data for alignment, override the method usesDifferentSequenceDataForAlignment
+            %   separate data for alignment, override the method usesDifferentDataForAlignment
             %   to return true as well.
             %
             % Returns
@@ -53,7 +53,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   windows) for the alignment process separately from the actual
             %   data exported to LFADS, or return the same for both. Alignment
             %   is only relevant for multi-dataset models. If you wish to use
-            %   separate data for alignment, override the method usesDifferentSequenceDataForAlignment
+            %   separate data for alignment, override the method usesDifferentDataForAlignment
             %   to return true as well.
             %
             % Returns
@@ -141,8 +141,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         end
 
-        function tf = usesDifferentSequenceDataForAlignment(r)  %#ok<MANU>
-            % tf = usesDifferentSequenceDataForAlignment()
+        function tf = usesDifferentDataForAlignment(r)  %#ok<MANU>
+            % tf = usesDifferentDataForAlignment()
             %
             % Returns true if you would like the Run to call your
             % convertDatasetToSequenceStruct with a mode == 'alignment'
@@ -216,7 +216,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % matrices, which may be a subset of all trials, e.g.
             % correct trials only. If return is empty, use the full
             % seqData
-            if r.usesDifferentSequenceDataForAlignment()
+            if r.usesDifferentDataForAlignment()
                 seqDataForAlignmentMatrices = r.loadSequenceData(regenerate, 'alignment');
             else
                 seqDataForAlignmentMatrices = r.loadSequenceData(regenerate);
