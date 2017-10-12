@@ -663,11 +663,17 @@
 <dd><code class="codehilite">MyExperiment.Dataset</code> instance that is to be processed. If this is a single-dataset run, this will be the dataset used. If this is a multi-dataset stitched run, <code class="codehilite">convertDatasetToSequenceStruct</code> will be called once for each dataset, one at a time. You might use <code class="codehilite">dataset.loadData()</code> to load the actual data, as you defined above.</dd>
 <dt><strong><code class="codehilite">mode</code></strong>:</dt>
 <dd>
-<p>string that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:</p>
+<p>String that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:</p>
 <ul>
 <li><code class="codehilite">export</code> - indicates that the sequence data will exported as the input to the actual Python+Tensorflow LFADS run</li>
 <li><code class="codehilite">alignment</code> - for multi-dataset stitched runs, indicates that the output data will be used only to construct the alignment matrices that translate between the spiking channels across different datasets. For example, you might wish to include a subset of trials or a different time window for fitting the alignment matrices, but include all trials for the actual LFADS run.</li>
 </ul>
+<p>If you decide you do wish to handle the <code class="codehilite">alignment</code> case differently, you will need to override the <code class="codehilite">usesDifferentDataForAlignment</code> method in your <code class="codehilite">Run</code> class to return <code class="codehilite">true</code>, by adding:</p>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span>tf <span class="p">=</span><span class="w"> </span><span class="nf">usesDifferentDataForAlignment</span><span class="p">(</span>r<span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">tf</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">end</span>
+</pre></div>
+
 </dd>
 <dt><strong><code class="codehilite">varargin</code></strong>:</dt>
 <dd>Currently not being used, but this enables additional arguments to be passed as named-parameter value pairs (e.g. <code class="codehilite"><span class="s">&#39;paramName&#39;</span><span class="p">,</span> <span class="n">paramValue</span><span class="p">,</span> <span class="c">...</span></code>) in the future without breaking existing implementations.</dd>
@@ -679,7 +685,7 @@
 <dt><strong><code class="codehilite">timeVecMs</code></strong>:</dt>
 <dd>A vector of timepoints with length <code class="codehilite">nTime</code> in milliseconds associated with each time bin in <code class="codehilite">counts</code>. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the <em>raw</em> spike bin width used when the data are later rebinned to match <code class="codehilite">r.params.spikeBinMs</code>.</dd>
 <dt><strong><code class="codehilite">conditionId</code></strong>:</dt>
-<dd>Vector with length <code class="codehilite">nTrials</code> identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector</dd>
+<dd>Vector with length <code class="codehilite">nTrials</code> identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector.</dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">A note on bin widths</p>
