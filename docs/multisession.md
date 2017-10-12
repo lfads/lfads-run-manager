@@ -20,7 +20,7 @@ These read-in and readout alignment matrices are learned from the data along wit
 These matrices will be computed for you automatically by `run.prepareForLFADS()` and exported in the LFADS input folder. LFADS will generate an initial guess for the readout alignment matrix, which transforms from common factors back to dataset-specific rates, using the pseudo-inverse of the read-in alignment matrix computed by `lfads-run-manager`.
 
 !!! tip "Alignment biases"
-    In addition to this alignment read-in matrix, there is also an alignment bias vector which will be added to each neuron's counts befor projecting through the matrix. Consequently, `lfads-run-manager` seeds this bias with the negative mean of the rates of each neuron.
+    In addition to this alignment read-in matrix, there is also an alignment bias vector which will be added to each neuron's counts before projecting through the matrix. Consequently, `lfads-run-manager` seeds this bias with the negative mean of the rates of each neuron.
 
 
 ## Verifying the alignment matrices
