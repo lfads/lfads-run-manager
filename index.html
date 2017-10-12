@@ -275,8 +275,8 @@
 
 
   <li class="md-nav__item">
-    <a href="adapting/" title="Interfacing to your Datasets" class="md-nav__link">
-      Interfacing to your Datasets
+    <a href="adapting/" title="Interfacing with your Datasets" class="md-nav__link">
+      Interfacing with your Datasets
     </a>
   </li>
 
@@ -347,8 +347,8 @@
 
 
   <li class="md-nav__item">
-    <a href="trained_params/" title="Loading the trained model parameters" class="md-nav__link">
-      Loading the trained model parameters
+    <a href="trained_params/" title="Loading the Model Trained Parameters" class="md-nav__link">
+      Loading the Model Trained Parameters
     </a>
   </li>
 
@@ -489,8 +489,8 @@
        <span class="n">fileShellScriptRunQueue</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleRun/run_lfadsqueue.py&#39;</span>
 </pre></div>
 
-<p>Then you can simply run <code class="codehilite">python run_lfadsqueue.py</code>, a script which was automatically genrated to fire off all the LFADS jobs in parallel, load-balancing as many as your system can handle across available GPUs. Then wait a few hours/days&hellip;</p>
-<p>As they finish, you can load and visualize the results easily in Matlab. Here we plot the smoothed rates</p>
+<p>Then you can simply run <code class="codehilite">python run_lfadsqueue.py</code>, a script which was automatically generated to fire off all the LFADS jobs in parallel, load-balancing as many as your system can handle across available GPUs. Then wait a few hours/days&hellip;</p>
+<p>As they finish, you can load and visualize the results easily in Matlab. Here we plot the inferred, single-trial firing rates of the first neuron:</p>
 <div class="codehilite"><pre><span></span><span class="n">run</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">runs</span><span class="p">(</span><span class="s">&#39;single_dataset001&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 <span class="n">pm</span> <span class="p">=</span> <span class="n">run</span><span class="p">.</span><span class="n">loadPosteriorMeans</span><span class="p">();</span>
 <span class="n">rates1</span> <span class="p">=</span> <span class="nb">squeeze</span><span class="p">(</span><span class="n">pm</span><span class="p">.</span><span class="n">rates</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:));</span> <span class="c">% time x trials</span>
