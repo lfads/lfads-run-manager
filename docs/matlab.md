@@ -2,7 +2,12 @@
 
 ## Matlab Classes
 
-The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well developed object oriented programming functionality. While there are technical differences, classes in Matlab work similarly to classes in Java and other object-oriented languages, and are very well documented by Mathworks here (XXX). In writing the small amount of code needed to use the run manager with your own data, you will be overriding a small number of methods in classes that will inherit from the LFADS classes, though **it is not necessary to deeply understand classes in Matlab in order to get up and running**.
+The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well developed object oriented programming functionality. While there are technical differences, classes in Matlab work similarly to classes in Java and other object-oriented languages, and are very well documented by Mathworks:
+
+ * [Role of Classes in Matlab](https://www.mathworks.com/help/matlab/matlab_oop/classes-in-the-matlab-language.html)
+ * [Class Syntax Guide](https://www.mathworks.com/help/matlab/class-syntax-guide.html)
+
+ In writing the small amount of code needed to use the run manager with your own data, you will be overriding a small number of methods in classes that will inherit from the LFADS classes, though **it is not necessary to deeply understand classes in Matlab in order to get up and running**.
 
 If you are not familiar with object-oriented programming, the basic concept is that a class is a sort of fusion between a `struct` type (with its associated data fields, called properties), and a set of associated functions (called methods) that are defined to operate on a class's data. The term _class_ refers to the specification which defines the property names and the methods. A specific variable that holds actual data is referred to as an _instance_, and can be created, manipulated, and passed around in Matlab by its variable name. In the lingo of object-oriented programming, an instance is a variable whose type is some class.
 
