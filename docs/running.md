@@ -23,8 +23,8 @@ rc.runs(i).writeShellScriptLFADSTrain('cuda_visible_devices', 0, 'display', 500)
 
 Here, you should specify options that will be written into the shell script, the key ones being:
 
-* `cuda_visible_devices` - which GPU index to run this model on, e.g. `500`
-* `display` - the X display to use, e.g. `0`. The python code generates plots during training that will appear in TensorBoard. Generating these plots requires a display. When running in a remote server, you'll need to specify this, and possibly to launch an X server using something like `tightvnc`.
+* `cuda_visible_devices` - which GPU index to run this model on, e.g. `0`. Use the `nvidia-smi` to enumerate the available GPUs on your system
+* `display` - the X display to use, e.g. `500`. The python code generates plots during training that will appear in TensorBoard. Generating these plots requires a display. When running in a remote server, you'll need to specify this, and possibly to launch an X server using something like `tightvnc`.
 * `appendPosteriorMeanSample` - `true` or `false` specifying whether to chain the posterior mean sampling operation after the training is finished. The default is `false`, but if you set this to `true`, you won't need to call `writeShellScriptPosteriorMeanSample` below.
 * `appendWriteModelParams` - `true` or `false` specifying whether to chain the posterior mean sampling operation after the training is finished. The default is `false`, but if you set this to `true`, you won't need to call `writeShellScriptWriteModelParams` below.
 

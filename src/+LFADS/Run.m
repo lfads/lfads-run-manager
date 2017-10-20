@@ -690,6 +690,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             assert(isempty(idxTooFew), 'Issue with Run %s: %d trials are required for c_batch_size=%d and trainToTestRatio=%d. Datasets %s have too few trials', ...
                 r.name, nRequired, r.params.c_batch_size, r.params.trainToTestRatio, vec2str(idxTooFew));
+            
+            function str = vec2str(vec)
+                % returns a string representation of a vector
+
+                str = ['[' num2str(makerow(vec)) ']'];
+
+                if size(vec, 1) > size(vec, 2)
+                    % include a transpose tick if its a column vector
+                    str = [str ''''];
+                end
+            end
+
         end
 
         function makeLFADSInput(r, regenerate)
@@ -781,7 +793,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
                 % write the actual lfads input file
                 LFADS.Utils.mkdirRecursive(r.pathCommonData);
-                LFADS.seq_to_lfads(seqData(maskGenerate), r.pathCommonData, r.lfadsInputFileNames, ...
+                LFADS.Interface.seq_to_lfads(seqData(maskGenerate), r.pathCommonData, r.lfadsInputFileNames, ...
                     seqToLFADSArgs{:});
 
                 % save input info file for each dataset generated

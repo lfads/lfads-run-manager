@@ -62,7 +62,7 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         % Useful metadata about this dataset to be loaded by loadInfoFromData. These are not used explicitly
         % and can be left blank.
 
-        infoLoaded(1,1) logical = false;
+        infoLoaded logical = false;
         % Has loadInfo already been called and the info fields populated?
 
         subject char = ''
@@ -74,10 +74,10 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         datenum double = NaN;
         % Matlab datenum identifying the collection time of this dataset
 
-        nChannels(1,1) = NaN;
+        nChannels = NaN;
         % Number of spike channels recorded in this dataset
 
-        nTrials(1,1) = NaN;
+        nTrials = NaN;
         % Number of behavioral trials recorded in this dataset
     end
 

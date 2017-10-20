@@ -10,7 +10,7 @@ Each of the classes you have just created are defined to inherit from the corres
 Here we walk through each of the classes that you've just copied. Most of the classes can be left as is to get started, but you may find it helpful to add utility methods and addtional metadata in certain locations. However, the only required edits are:
 
 * `loadData` in `Dataset.m` - specify how to load a dataset from disk. The default implementation assumes that the data live in a `.mat` file that can be loaded using `load`.
-* `convertDatasetToSequenceStruct` in `Run.m`  - preprocess data and perform spike binning
+* `generateCountsForDataset` in `Run.m`  - preprocess data and perform spike binning
 
 ### Editing `DatasetCollection.m` _(Optional)_
 
@@ -154,7 +154,7 @@ end
 
 ### Editing `Run.m` _(Required)_
 
-Edit the file `+MyExperiment/Run.m`. Recall that a `Run` represents a specific LFADS model training run. The main function you will need to provide a definition for is `convertDatasetToSequenceStruct`. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:
+Edit the file `+MyExperiment/Run.m`. Recall that a `Run` represents a specific LFADS model training run. The main function you will need to provide a definition for is `generateCountsForDataset`. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:
 
 ```matlab
 function [counts, timeVecMs, conditionId] = ...
@@ -169,7 +169,7 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 : The `Run` instance. The current `RunParams` instance can be accessed through `r.params`.
 
 **`dataset`**:
-: `MyExperiment.Dataset` instance that is to be processed. If this is a single-dataset run, this will be the dataset used. If this is a multi-dataset stitched run, `convertDatasetToSequenceStruct` will be called once for each dataset, one at a time. You might use `dataset.loadData()` to load the actual data, as you defined above.
+: `MyExperiment.Dataset` instance that is to be processed. If this is a single-dataset run, this will be the dataset used. If this is a multi-dataset stitched run, `generateCountsForDataset` will be called once for each dataset, one at a time. You might use `dataset.loadData()` to load the actual data, as you defined above.
 
 **`mode`**:
 : String that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:
@@ -201,4 +201,4 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 : Vector with length `nTrials` identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector.
 
 !!! note "A note on bin widths"
-    There are two different bin widths in `lfads-run-manager`. First is this `binWidthMs` within `seq`, which is the spike binning that you will do to the data inside `convertDatasetToSequenceStruct`. **We recommend binning here at 1 ms or the smallest bin width you might wish to use.** Second is the field `spikeBinMs` inside the `RunParams` class. The expectation is that you will bin using a very small bin width inside `convertDatasetToSequenceStruct`, and then **the run manager code will automatically re-bin the data at the larger bin width set by `r.params.spikeBinMs`** for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.
+    There are two different bin widths in `lfads-run-manager`. First is this `binWidthMs` within `seq`, which is the spike binning that you will do to the data inside `generateCountsForDataset`. **We recommend binning here at 1 ms or the smallest bin width you might wish to use.** Second is the field `spikeBinMs` inside the `RunParams` class. The expectation is that you will bin using a small bin width inside `generateCountsForDataset`, and then **the run manager code will automatically re-bin the data at the larger bin width set by `r.params.spikeBinMs`** for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.
