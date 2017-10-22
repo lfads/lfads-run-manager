@@ -678,19 +678,24 @@
 <dd>Currently not being used, but this enables additional arguments to be passed as named-parameter value pairs (e.g. <code class="codehilite"><span class="s">&#39;paramName&#39;</span><span class="p">,</span> <span class="n">paramValue</span><span class="p">,</span> <span class="c">...</span></code>) in the future without breaking existing implementations.</dd>
 </dl>
 <h4 id="outputs">Outputs:<a class="headerlink" href="#outputs" title="Permanent link">&para;</a></h4>
-<p><strong><code class="codehilite">out</code></strong>: A scalar struct which holds the following fields</p>
 <dl>
-<dt><strong><code class="codehilite">counts</code></strong> (Required):</dt>
+<dt><strong><code class="codehilite">out</code></strong>:</dt>
+<dd>
+<p>A scalar struct which holds the following fields:</p>
+<dl>
+<dt><strong><code class="codehilite"><span class="p">.</span><span class="n">counts</span></code></strong> (Required):</dt>
 <dd>A tensor of binned spike counts (not rates) with size <code class="codehilite">nTrials</code> x <code class="codehilite">nChannels</code> x <code class="codehilite">nTime</code>. These should be total counts, not normalized rates, as they will be added togeher during rebinning.</dd>
-<dt><strong><code class="codehilite">timeVecMs</code></strong> (Optional):</dt>
+<dt><strong><code class="codehilite"><span class="p">.</span><span class="n">timeVecMs</span></code></strong> (Optional):</dt>
 <dd>A vector of timepoints with length <code class="codehilite">nTime</code> in milliseconds associated with each time bin in <code class="codehilite">counts</code>. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the <em>raw</em> spike bin width used when the data are later rebinned to match <code class="codehilite">r.params.spikeBinMs</code>. Default is <code class="codehilite"><span class="mi">1</span><span class="o">:</span><span class="n">size</span><span class="o">(</span><span class="n">counts</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span></code>.</dd>
-<dt><strong><code class="codehilite">conditionId</code></strong> (Optional):</dt>
-<dd>Vector with length <code class="codehilite">nTrials</code> identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector.</dd>
+<dt><strong><code class="codehilite"><span class="p">.</span><span class="n">conditionId</span></code></strong> (Optional):</dt>
+<dd>Vector with length <code class="codehilite">nTrials</code> identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector. Default is <code class="codehilite">[]</code>.</dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">A note on bin widths</p>
 <p>There are two different bin widths in <code class="codehilite">lfads-run-manager</code>. First is this <code class="codehilite">binWidthMs</code> within <code class="codehilite">seq</code>, which is the spike binning that you will do to the data inside <code class="codehilite">generateCountsForDataset</code>. <strong>We recommend binning here at 1 ms or the smallest bin width you might wish to use.</strong> Second is the field <code class="codehilite">spikeBinMs</code> inside the <code class="codehilite">RunParams</code> class. The expectation is that you will bin using a small bin width inside <code class="codehilite">generateCountsForDataset</code>, and then <strong>the run manager code will automatically re-bin the data at the larger bin width set by <code class="codehilite">r.params.spikeBinMs</code></strong> for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.</p>
 </div>
+</dd>
+</dl>
                 
                   
                 
