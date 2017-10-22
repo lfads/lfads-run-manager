@@ -6,7 +6,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     methods
         % These methods will need to be implemented in a subclass that provides the custom behavior for your application
 
-        function [counts, timeVecMs, conditionId] = generateCountsForDataset(r, dataset, mode, varargin) %#ok<STOUT,INUSD>
+        function out = generateCountsForDataset(r, dataset, mode, varargin) %#ok<STOUT,INUSD>
             % Generate binned spike count tensor for a single dataset.
             %% Generate binned spike count tensor for a single dataset.
             %
@@ -27,20 +27,22 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %
             % Returns
             % ----------
-            % counts : nTrials x nChannels x nTime tensor
+            % out: a scalar struct with the following fields:
+            % .counts : nTrials x nChannels x nTime tensor
             %   spike counts in time bins in trials x channels x time. These
             %   should be total counts, not normalized rates, as they will be
             %   added during rebinning.
             %
-            % timeVecMs: nTime x 1 vector
+            % .timeVecMs: nTime x 1 vector
             %   of timepoints in milliseconds associated with each time bin. You can start this
             %   wherever you like, but timeVecMs(2) - timeVecMs(1) will be
             %   treated as the spike bin width used when the data are later
             %   rebinned to match run.params.spikeBinMs
             %
-            % conditionId: nTrials x 1 vector
+            % .conditionId: nTrials x 1 vector
             %   of unique conditionIds. Can be cell array of strings or
             %   vector of unique integers.
+            %
             % Parameters
             % ------------
             % dataset : :ref:`LFADS_Dataset`

@@ -157,8 +157,7 @@ end
 Edit the file `+MyExperiment/Run.m`. Recall that a `Run` represents a specific LFADS model training run. The main function you will need to provide a definition for is `generateCountsForDataset`. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:
 
 ```matlab
-function [counts, timeVecMs, conditionId] = ...
-    generateCountsForDataset(r, dataset, mode, varargin)
+function out = generateCountsForDataset(r, dataset, mode, varargin)
 ```
 
 Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly helpful to refer to the `RunParams` instance assigned to this run via `r.params`, especially if you have defined any additional hyperparameters that affect the way in which neural data should be extracted, e.g. which trials and what time window are included.
@@ -191,13 +190,15 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 
 #### Outputs:
 
-**`counts`**:
+**`out`**: A scalar struct which holds the following fields
+
+**`counts`** (Required):
 : A tensor of binned spike counts (not rates) with size `nTrials` x `nChannels` x `nTime`. These should be total counts, not normalized rates, as they will be added togeher during rebinning.
 
-**`timeVecMs`**:
-: A vector of timepoints with length `nTime` in milliseconds associated with each time bin in `counts`. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the _raw_ spike bin width used when the data are later rebinned to match `r.params.spikeBinMs`.
+**`timeVecMs`** (Optional):
+: A vector of timepoints with length `nTime` in milliseconds associated with each time bin in `counts`. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the _raw_ spike bin width used when the data are later rebinned to match `r.params.spikeBinMs`. Default is `1:size(counts, 3)`.
 
-**`conditionId`**:
+**`conditionId`** (Optional):
 : Vector with length `nTrials` identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector.
 
 !!! note "A note on bin widths"
