@@ -190,16 +190,17 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 
 #### Outputs:
 
-**`out`**: A scalar struct which holds the following fields
+**`out`**:
+: A scalar struct which holds the following fields:
 
-**`counts`** (Required):
-: A tensor of binned spike counts (not rates) with size `nTrials` x `nChannels` x `nTime`. These should be total counts, not normalized rates, as they will be added togeher during rebinning.
+    **`:::matlab .counts`** (Required):
+    : A tensor of binned spike counts (not rates) with size `nTrials` x `nChannels` x `nTime`. These should be total counts, not normalized rates, as they will be added togeher during rebinning.
 
-**`timeVecMs`** (Optional):
-: A vector of timepoints with length `nTime` in milliseconds associated with each time bin in `counts`. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the _raw_ spike bin width used when the data are later rebinned to match `r.params.spikeBinMs`. Default is `1:size(counts, 3)`.
+    **`:::matlab .timeVecMs`** (Optional):
+    : A vector of timepoints with length `nTime` in milliseconds associated with each time bin in `counts`. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the _raw_ spike bin width used when the data are later rebinned to match `r.params.spikeBinMs`. Default is `1:size(counts, 3)`.
 
-**`conditionId`** (Optional):
-: Vector with length `nTrials` identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector.
+    **`:::matlab .conditionId`** (Optional):
+    : Vector with length `nTrials` identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector. Default is `[]`.
 
-!!! note "A note on bin widths"
-    There are two different bin widths in `lfads-run-manager`. First is this `binWidthMs` within `seq`, which is the spike binning that you will do to the data inside `generateCountsForDataset`. **We recommend binning here at 1 ms or the smallest bin width you might wish to use.** Second is the field `spikeBinMs` inside the `RunParams` class. The expectation is that you will bin using a small bin width inside `generateCountsForDataset`, and then **the run manager code will automatically re-bin the data at the larger bin width set by `r.params.spikeBinMs`** for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.
+    !!! note "A note on bin widths"
+        There are two different bin widths in `lfads-run-manager`. First is this `binWidthMs` within `seq`, which is the spike binning that you will do to the data inside `generateCountsForDataset`. **We recommend binning here at 1 ms or the smallest bin width you might wish to use.** Second is the field `spikeBinMs` inside the `RunParams` class. The expectation is that you will bin using a small bin width inside `generateCountsForDataset`, and then **the run manager code will automatically re-bin the data at the larger bin width set by `r.params.spikeBinMs`** for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.
