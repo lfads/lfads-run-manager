@@ -650,8 +650,7 @@
 <p><strong>No changes are required to <code class="codehilite">RunCollection.m</code> to get up and running</strong>, but you can add any utility methods to facilitate analysis for your specific application.</p>
 <h3 id="editing-runm-required">Editing <code class="codehilite">Run.m</code> <em>(Required)</em><a class="headerlink" href="#editing-runm-required" title="Permanent link">&para;</a></h3>
 <p>Edit the file <code class="codehilite">+MyExperiment/Run.m</code>. Recall that a <code class="codehilite">Run</code> represents a specific LFADS model training run. The main function you will need to provide a definition for is <code class="codehilite">generateCountsForDataset</code>. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:</p>
-<div class="codehilite"><pre><span></span><span class="k">function</span><span class="err"> [</span><span class="nf">counts</span><span class="p">,</span> <span class="n">timeVecMs</span><span class="p">,</span> <span class="n">conditionId</span><span class="p">]</span> <span class="p">=</span> <span class="c">...</span>
-    <span class="n">generateCountsForDataset</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">varargin</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><span class="k">function</span><span class="w"> </span>out <span class="p">=</span><span class="w"> </span><span class="nf">generateCountsForDataset</span><span class="p">(</span>r, dataset, mode, varargin<span class="p">)</span><span class="w"></span>
 </pre></div>
 
 <p>Here, <code class="codehilite">r</code> refers to the <code class="codehilite">MyExperiment.Run</code> instance. It may be particularly helpful to refer to the <code class="codehilite">RunParams</code> instance assigned to this run via <code class="codehilite">r.params</code>, especially if you have defined any additional hyperparameters that affect the way in which neural data should be extracted, e.g. which trials and what time window are included.</p>
@@ -679,12 +678,13 @@
 <dd>Currently not being used, but this enables additional arguments to be passed as named-parameter value pairs (e.g. <code class="codehilite"><span class="s">&#39;paramName&#39;</span><span class="p">,</span> <span class="n">paramValue</span><span class="p">,</span> <span class="c">...</span></code>) in the future without breaking existing implementations.</dd>
 </dl>
 <h4 id="outputs">Outputs:<a class="headerlink" href="#outputs" title="Permanent link">&para;</a></h4>
+<p><strong><code class="codehilite">out</code></strong>: A scalar struct which holds the following fields</p>
 <dl>
-<dt><strong><code class="codehilite">counts</code></strong>:</dt>
+<dt><strong><code class="codehilite">counts</code></strong> (Required):</dt>
 <dd>A tensor of binned spike counts (not rates) with size <code class="codehilite">nTrials</code> x <code class="codehilite">nChannels</code> x <code class="codehilite">nTime</code>. These should be total counts, not normalized rates, as they will be added togeher during rebinning.</dd>
-<dt><strong><code class="codehilite">timeVecMs</code></strong>:</dt>
-<dd>A vector of timepoints with length <code class="codehilite">nTime</code> in milliseconds associated with each time bin in <code class="codehilite">counts</code>. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the <em>raw</em> spike bin width used when the data are later rebinned to match <code class="codehilite">r.params.spikeBinMs</code>.</dd>
-<dt><strong><code class="codehilite">conditionId</code></strong>:</dt>
+<dt><strong><code class="codehilite">timeVecMs</code></strong> (Optional):</dt>
+<dd>A vector of timepoints with length <code class="codehilite">nTime</code> in milliseconds associated with each time bin in <code class="codehilite">counts</code>. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the <em>raw</em> spike bin width used when the data are later rebinned to match <code class="codehilite">r.params.spikeBinMs</code>. Default is <code class="codehilite"><span class="mi">1</span><span class="o">:</span><span class="n">size</span><span class="o">(</span><span class="n">counts</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span></code>.</dd>
+<dt><strong><code class="codehilite">conditionId</code></strong> (Optional):</dt>
 <dd>Vector with length <code class="codehilite">nTrials</code> identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector.</dd>
 </dl>
 <div class="admonition note">
