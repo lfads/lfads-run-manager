@@ -36,11 +36,11 @@ function newdata=struct2jdata(data,varargin)
 fn=fieldnames(data);
 newdata=data;
 len=length(data);
-if(jsonopt('Recursive',0,varargin{:})==1)
+if(LFADS.Utils.jsonlab.jsonopt('Recursive',0,varargin{:})==1)
   for i=1:length(fn) % depth-first
     for j=1:len
         if(isstruct(getfield(data(j),fn{i})))
-            newdata(j)=setfield(newdata(j),fn{i},jstruct2array(getfield(data(j),fn{i})));
+            newdata(j)=setfield(newdata(j),fn{i},struct2array(getfield(data(j),fn{i})));
         end
     end
   end

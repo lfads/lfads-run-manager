@@ -694,7 +694,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             function str = vec2str(vec)
                 % returns a string representation of a vector
 
-                str = ['[' num2str(makerow(vec)) ']'];
+                str = ['[' num2str(LFADS.Utils.makerow(vec)) ']'];
 
                 if size(vec, 1) > size(vec, 2)
                     % include a transpose tick if its a column vector

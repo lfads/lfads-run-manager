@@ -36,3 +36,18 @@ function Image = huetorgb(m0,m2,H)
     k = floor(H) + 1;
     Image = reshape([M(j(k,1)+(1:Num).'),M(j(k,2)+(1:Num).'),M(j(k,3)+(1:Num).')],[N,3]);
 end
+
+function v = circspace(d1, d2, n)
+% v = circspace(d1, d2, n)
+% like linspace, except considers d1 == d2 in a circular axis
+
+    if nargin == 2
+        n = 100;
+    else
+        n = floor(double(n));
+    end
+
+    delta = (d2-d1)/n;
+    v = linspace(d1, d2-delta, n);
+
+end

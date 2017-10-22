@@ -1,11 +1,8 @@
 classdef ProgressBar < handle
+% Stripped down version for LFADS which does not support parallel mode
 % Generates a progress bar which uses ANSI color codes to colorize output
 % in a color terminal. The background color steadily advances along from 
 % left to right beneath a custom message and progress percentage string.
-%
-% Parallel mode: this class works in spmd and parfor blocks, if
-% .enableParallel is called BEFORE the spmd/parfor block. Only the thread
-% with labindex==1 will output to the screen. 
 %
 % Usage:
 %   pbar = ProgressBar('Message goes here', nThingsToProcess);
@@ -15,23 +12,8 @@ classdef ProgressBar < handle
 %   end
 %   pbar.finish([optional final message]);
 %
-% Parallel usage: (sort of works)
-%   pbar = ProgressBar('Message goes here', nThingsToProcess);
-%   pbar.enableParallel();
-%   for i = 1:nThingsToProcess
-%       ... % put operations BEFORE update
-%       pbar.update(i, [optional message update]);
-%   end
-%   pbar.finish([optional final message]);
-%         
-% Demonstration:
-%   ProgressBar.demo();
-%   ProgressBar.demoNested();
-%   ProgressBar.demoParallel();
-%
-%   
 
-    properties(SetAccess=protected)
+properties(SetAccess=protected)
         message
         n = 0; % last value
         N
@@ -44,8 +26,6 @@ classdef ProgressBar < handle
         
         usingTerminal
 
-        % enable for parallel for loops? see .enableParallel / disableParallel
-        parallel = false;
         fnamePrefix
         
 %         objWorker
@@ -100,71 +80,17 @@ classdef ProgressBar < handle
             pbar.lastNSpaces = 0;
             pbar.update(0);
         end
-        
-        function enableParallel(pbar)
-            pbar.parallel = true;
-            pbar.fnamePrefix = tempname();
-            try
-                delete(sprintf('%s_*', pbar.fnamePrefix));
-            catch
-            end
-            
-%             pbar.objWorker = WorkerObjWrapper(@labindex, {});
-        end
-
-        function n = updateParallel(pbar, n)           
-%             id = pbar.objWorker.Value;
-            id = labindex;
-            if ~isscalar(id)
-                % not running in parallel mode
-                % n = n;
-                return;
-            end
-            fname = sprintf('%s_%d', pbar.fnamePrefix, id);
-            f = fopen(fname, 'a');
-            fprintf(f, '.');
-            fclose(f);
-            
-            if id == 1
-                % i do all output
-                d = dir([pbar.fnamePrefix '_*']);
-                n = sum([d.bytes]); 
-            else
-                % non-primary worker, no output
-                n = [];
-            end
-        end
-        
-        function cleanupParallel(pbar)
-            if pbar.parallel
-                delete(sprintf('%s_*', pbar.fnamePrefix));
-            end
-        end
-        
+ 
         function increment(pbar, varargin)
             pbar.update(pbar.n+1, varargin{:});
         end
         
         function update(pbar, n, message, varargin)
-            if feature('isdmlworker') && ~pbar.parallel
-                return; % print nothing inside parfor loop if I'm not the main progress bar
-            end
-            
             if nargin > 2
-%                 newMessage = true;
                 pbar.message = sprintf(message, varargin{:});
             else
-%                 newMessage = false;
             end
             pbar.n = n; % store last update
-
-            if pbar.parallel
-                n = pbar.updateParallel(n);
-                if isempty(n)
-                    pbar.firstUpdate = false;
-                    return;
-                end
-            end
             
             % don't run too often
             if isempty(pbar.lastCalled)
@@ -194,13 +120,10 @@ classdef ProgressBar < handle
                 end
                 percentage = ratio * 100;
                 progStr = sprintf('[ %5.1f%% ]', percentage);
-                %progLen = 10;
             else
                 ratio = (n-1)/pbar.N;
                 percentage = min(max(ratio*100, 0), 100);
                 progStr = sprintf('%*d / %*d [ %5.1f%% ]', numWidth, n, numWidth, pbar.N, percentage);
-                
-                %progLen = numWidth*2 + 4 + 10;
             end
             
             progLen = length(progStr);
@@ -241,79 +164,19 @@ classdef ProgressBar < handle
                 end
                 preStr = newPreStr;
             end
-            
-%             if isempty(getCurrentTask())
-                try
-                    DatabaseAnalysis.pauseOutputLog();
-                catch
-                end
-%             end
-            
-%            disp(n)
+
             if pbar.usingTerminal
-                if pbar.parallel
-                    fprintf('\033[1A\033[1;44;37m %s\033[49;37m%s\033[0m \n', preStr, postStr);
+                if pbar.firstUpdate
+                    fprintf(' '); % don't delete whole line on first update
+                end
+                if pbar.trueColor
+                    fprintf('\b\r%s\033[49;37m%s\033[0m ', preStr, postStr);
                 else
-                    if pbar.firstUpdate
-                        fprintf(' '); % don't delete whole line on first update
-                    end
-                    if pbar.trueColor
-                        fprintf('\b\r%s\033[49;37m%s\033[0m ', preStr, postStr);
-                    else
-                        fprintf('\b\r\033[1;44;37m%s\033[49;37m%s\033[0m  ', preStr, postStr);
-                    end
+                    fprintf('\b\r\033[1;44;37m%s\033[49;37m%s\033[0m  ', preStr, postStr);
                 end
             else
                 pbar.textprogressbar(ratio);
-               
-%                 % figure out number of boxes
-%                 boxChar = char(9608);
-%                 nTotal = pbar.cols - 4;
-%                 idealBoxCount = ratio*(nTotal-numel(progStr)-2);
-%                 nBoxes = floor(idealBoxCount);
-%                 
-%                 nBoxesLast = pbar.lastNBoxes;
-%                 newBoxes = nBoxes - nBoxesLast;
-%                 nSpaces = nTotal-nBoxes;
-%                 boxes = repmat(boxChar, 1, newBoxes);
-%                 
-%                 fracLast = idealBoxCount - nBoxes;
-%                 fractionalBox = ProgressBar.getFractionalBlockChar(fracLast);
-%                 
-%                 empty = blanks(nSpaces);
-%                 empty((end-numel(progStr)+1):end) = progStr;
-%                 
-%                 % clear old lines
-%                 if ~firstUpdate
-%                     if newMessage
-%                         backspaces = repmat('\b', 1, pbar.lastNSpaces + pbar.lastNBoxes + 1 + pbar.cols - 1);
-%                     else
-%                         % no need to update message, clear only the number
-%                         % of boxes required
-%                         backspaces = repmat('\b', 1, pbar.lastNSpaces + 1);
-%                     end
-%                     fprintf(backspaces);
-%                 end
-%                 
-%                 pbar.lastNBoxes = nBoxes;
-%                 pbar.lastNSpaces = nSpaces;
-%                 
-%                 
-%                 if newMessage
-%                     fprintf('%s%s\n', preStr, postStr);
-%                 end
-%                 
-%                 fprintf('%s%c%s', boxes, fractionalBox, empty);
-                
             end
-            
-%             if isempty(getCurrentTask())
-                try
-                    DatabaseAnalysis.resumeOutputLog();
-                catch
-                end
-%             end
-            
             pbar.firstUpdate = false;
             
             %str = sprintf('\b\r\033[1;44;37m %s\033[49;37m%s\033[0m ', preStr, postStr);
@@ -326,35 +189,9 @@ classdef ProgressBar < handle
             % will be displayed. Otherwise, the progress bar will disappear
             % and output will resume on the same line.
             
-            %gap = pbar.cols - 1 - length(pbar.message);
-            %spaces = repmat(' ' , 1, gap);
-            %fprintf('\b\r%s%s\033[0m\n', pbar.message, spaces);
-
-            if feature('isdmlworker') && ~pbar.parallel
-                return; % print nothing inside parfor loop if I'm not the main progress bar
-            end
-
-	    try
-	        DatabaseAnalysis.pauseOutputLog();
-	    catch
-	    end
-            
             if pbar.usingTerminal
-                spaces = repmat(' ', 1, pbar.cols-1);
-                if pbar.parallel
-                    fprintf('\033[1A%s\033[0m\r', spaces);
-                else
-                    %spaces = repmat(' ', 1, pbar.cols-10);
-                    %fprintf('\033[2K\033[0m\r');
-                 
-                    % working on mac os
-%                     fprintf('\b\r%s\033[0m\r', spaces);
-                    fprintf('\033[1Acll\033[2K\r');
-%                     pause(1);
-                end
+                fprintf('\033[1Acll\033[2K\r');
             else
-%                 backspaces = repmat('\b', 1, pbar.lastNSpaces + pbar.lastNBoxes + 1 + pbar.cols - 1);
-%                 fprintf(backspaces
                 pbar.textprogressbar(1);
                 fprintf('\n');
             end
@@ -363,18 +200,6 @@ classdef ProgressBar < handle
                 fprintf('%s\n', pbar.message);
             end
             
-            %if pbar.parallel && exist(pbar.fname, 'file')
-                %delete(pbar.fname);
-            %end
-            
-            pbar.cleanupParallel();
-            
-%             if ~isempty(getCurrentTask())
-                try
-                    DatabaseAnalysis.resumeOutputLog();
-                catch
-                end
-%             end
         end
         
         function textprogressbar(pbar, c)
@@ -406,7 +231,7 @@ classdef ProgressBar < handle
             strOut = [percentageOut dotOut];
 
             % Print it on the screen
-            if pbar.textprogressStrCR == -1,
+            if pbar.textprogressStrCR == -1
                 % Don't do carriage return during first run
                 fprintf(strOut);
             else
@@ -421,60 +246,6 @@ classdef ProgressBar < handle
     end
 
     methods(Static)
-        function demo(N, varargin)
-            if nargin < 1
-                N = 300;
-            end
-            if numel(varargin) == 0
-                varargin = {'Running ProgressBarDemo with %d items', N};
-            end
-            
-            pbar = LFADS.Utils.ProgressBar(N, varargin{:});
-            for i = 1:N
-                pbar.update(i);
-%                 if i == floor(N/2) && withInterruption
-%                     fprintf('Random interruption!\n');
-%                 end
-                pause(0.01);
-            end
-            pbar.finish();
-        end
-        
-        function demoNested()
-            ni = 20;
-            nj = 100;
-
-            pi = LFADS.Utils.ProgressBar(ni, 'Outer loop');
-            for i = 1:ni
-                pi.update(i);
-                pj = LFADS.Utils.ProgressBar(nj, 'Inner loop');
-                for j = 1:nj
-                    pj.update(j);
-                    pause(0.001);
-                end
-                pj.finish();
-            end
-            pi.finish();
-        end
-        
-        function demoParallel(N, varargin)
-            if nargin < 1
-                N = 100;
-            end
-            if numel(varargin) == 0
-                varargin = {'Running ProgressBarDemo parallel with %d items', N};
-            end
-            
-            pbar = LFADS.Utils.ProgressBar(N, varargin{:});
-            pbar.enableParallel();
-
-            parfor i = 1:N
-                pause(0.3*rand(1));
-                pbar.update(i); %#ok<PFBNS>
-            end
-            pbar.finish();
-        end
-        
         function [rows, cols] = getTerminalSize()
             usingTerminal = ~usejava('desktop');
 
@@ -517,16 +288,7 @@ classdef ProgressBar < handle
                 catch
                 end
             end
-        end
-        
-        function ch = getFractionalBlockChar(frac)
-            if frac < 1/8
-                ch = char(' ');
-            elseif frac < 1
-                ch = char(9614 - floor(frac / 0.125));
-            end
-        end
-        
+        end 
         
     end
 end

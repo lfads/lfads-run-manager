@@ -9,7 +9,7 @@ function showInLegend(h, names)
     end
 
     for i = 1:numel(h)
-        if ~TrialDataUtilities.Plotting.isGraphicsHandle(h(i)), continue; end
+        if ~isGraphicsHandle(h(i)), continue; end
         ann = get(h(i), 'Annotation');
         leg = get(ann, 'LegendInformation');
         set(leg, 'IconDisplayStyle', 'on');
@@ -19,4 +19,12 @@ function showInLegend(h, names)
         end
     end
 
+end
+
+function mask = isGraphicsHandle(h)
+    if isobject(h)
+        mask = isgraphics(h);
+    else
+        mask = ~isnan(h);
+    end
 end

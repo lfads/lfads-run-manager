@@ -28,7 +28,7 @@ if(len==0) return; end
 i=1;
 while(i<=len)
     if(isstruct(varargin{i}))
-        opt=mergestruct(opt,varargin{i});
+        opt=LFADS.Utils.jsonlab.mergestruct(opt,varargin{i});
     elseif(ischar(varargin{i}) && i<len)
         opt=setfield(opt,lower(varargin{i}),varargin{i+1});
         i=i+1;

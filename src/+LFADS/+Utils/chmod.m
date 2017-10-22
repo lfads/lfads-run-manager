@@ -3,8 +3,8 @@ function [status, result] = chmod(permissions, fileList, varargin)
     p = inputParser;
     p.addRequired('permissions', @(x) isempty(x) || ischar(x));
     p.addRequired('fileList', @(x) ischar(x) || iscellstr(x));
-    p.addParamValue('recursive', false, @islogical);
-    p.addParamValue('printError', true, @islogical);
+    p.addParameter('recursive', false, @islogical);
+    p.addParameter('printError', true, @islogical);
     p.parse(permissions, fileList, varargin{:});
     printError = p.Results.printError;
     recursive = p.Results.recursive;
@@ -33,8 +33,7 @@ function [status, result] = chmod(permissions, fileList, varargin)
     [status, result] = system(cmd);
     
     if status && printError
-        tcprintf('light red', 'Error running chmod:\n');
-        tcprintf('light red', '%s\n', result);
+        warning('Error running chmod: %s', result);
     end
 
 end
