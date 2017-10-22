@@ -185,7 +185,22 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % seq : struct Array
             %   sequence formatted data. A struct array where each elemnt corresponds to a specific trial.
 
-            [counts, timeVecMs, conditionId] = r.generateCountsForDataset(dataset, mode, varargin{:});
+            out = r.generateCountsForDataset(dataset, mode, varargin{:});
+            
+            assert(isstruct(out) && isscalar(out) && isfield(out, 'counts'));
+            counts = out.counts;
+            if isfield(out, 'timeVecMs')
+                timeVecMs = out.timeVecMs;
+            else
+                timeVecMs = 1:size(counts, 3);
+            end
+                
+            if isfield(out, 'conditionId') 
+                conditionId = out.conditionId;
+            else
+                conditionId = [];
+            end
+            
             assert(isnumeric(counts) && ndims(counts) == 3 && isnumeric(timeVecMs) && isvector(timeVecMs));
             assert(size(counts, 3) == numel(timeVecMs));
             assert(isempty(conditionId) || numel(conditionId) == size(counts, 1));
