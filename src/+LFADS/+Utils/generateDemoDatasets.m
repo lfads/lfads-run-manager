@@ -1,4 +1,4 @@
-function datasets = generateDemoDatasets(datasetPath, nDatasets)
+function datasets = generateDemoDatasets(datasetPath)
     % generates a set of demo datasets for LFADS based on generating
     % spikes via a chaotic Lorenz attractor
     
@@ -10,6 +10,7 @@ function datasets = generateDemoDatasets(datasetPath, nDatasets)
     end
 
     %% Generate datasets
+    nDatasets = 4; % changing this unfortunately changes the sequence of rand calls below, so dataset 1:min(nDatasetsOld, nDatasetsNew) won't match when nDatasets changes
     minChannels = 25;
     maxChannels = 35;
 
@@ -40,6 +41,7 @@ function datasets = generateDemoDatasets(datasetPath, nDatasets)
         trialIdx = 1;
         spikes = nan(nTrC * nConditions, nCh, T);
         conditionId = nan(nTrC * nConditions, 1);
+        true_rates = nan(nTrC * nConditions, nCh, T);
 
         for iC = 1:nConditions
             % generate rates via lorenz
@@ -48,6 +50,7 @@ function datasets = generateDemoDatasets(datasetPath, nDatasets)
             rates = exp(clip(log_rates, -20, 20));
             
             for iTr = 1:nTrC
+                true_rates(trialIdx, :, :) = rates;
                 spikes(trialIdx, :, :) = poissrnd(rates) > 0;
                 conditionId(trialIdx) = iC;
                 trialIdx = trialIdx + 1;
@@ -63,6 +66,7 @@ function datasets = generateDemoDatasets(datasetPath, nDatasets)
         datasets(iDS).W = W;
         datasets(iDS).b = b;
         datasets(iDS).lorenz_trajectories = lorenz_trajectories;
+        datasets(iDS).true_rates = true_rates;
     end
 
     %% Save datasets to disk

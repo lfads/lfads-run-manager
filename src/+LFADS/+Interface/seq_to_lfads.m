@@ -149,6 +149,11 @@ for ndset = 1:numel(seqs)
         ytrain_true = zeros(nTrainTrials, nTimeBins, nNeurons);
         ytest_true = zeros(nTestTrials, nTimeBins, nNeurons);
     end
+    if isfield(seq,'externalInputs')
+        nExtInputs = size(seq(1).externalInputs, 1);
+        train_extinput = zeros(nTrainTrials, nTimeBins, nExtInputs);
+        test_extinput = zeros(nTestTrials, nTimeBins, nExtInputs);
+    end
     
     % compile the train data
     for it = 1:nTrainTrials
@@ -173,6 +178,12 @@ for ndset = 1:numel(seqs)
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
             tmp2=squeeze(sum(tmp))/binSizeMS;
             ytrain_true(it,:,:) = tmp2;
+        end
+        if isfield(seq,'externalInputs')
+            ykeep = seq(nn).externalInputs(:, 1:inputTimeBinsToKeep);
+            tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
+            tmp2=squeeze(sum(tmp))/binSizeMS;
+            train_extinput(it,:,:) = tmp2;
         end
     end
 
@@ -199,7 +210,13 @@ for ndset = 1:numel(seqs)
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
             tmp2=squeeze(sum(tmp))/binSizeMS;
             ytest_true(it,:,:) = tmp2;
-        end        
+        end  
+        if isfield(seq,'externalInputs')
+            ykeep = seq(nn).externalInputs(:, 1:inputTimeBinsToKeep);
+            tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
+            tmp2=squeeze(sum(tmp))/binSizeMS;
+            test_extinput(it,:,:) = tmp2;
+        end  
     end
 
 %     fprintf('Each trial is %g bins\n', nTimeBins);
@@ -211,6 +228,13 @@ for ndset = 1:numel(seqs)
         varout{end+1} = ytrain_true;
         varout{end+1} = 'valid_truth';
         varout{end+1} = ytest_true;
+    end
+    
+    if isfield(seq, 'externalInputs')
+        varout{end+1} = 'train_ext_input'; %#ok<*AGROW>
+        varout{end+1} = train_extinput;
+        varout{end+1} = 'valid_ext_input';
+        varout{end+1} = test_extinput;
     end
 
     if numel(varout)

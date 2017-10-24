@@ -202,5 +202,11 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
     **`:::matlab .conditionId`** (Optional):
     : Vector with length `nTrials` identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector. Default is `[]`.
 
+    **`:::matlab .truth`** (Optional):
+    : For synthetic datasets, provides the ground-truth counts for each trial. Same size as `.counts`. Default is `[]`.
+
+    **`:::matlab externalInputs`** (Optional):
+    : Specifies the observed, external inputs which will be passed either to the generator directly or to the encoder. Default is `[]`.
+
     !!! note "A note on bin widths"
         There are two different bin widths in `lfads-run-manager`. First is this `binWidthMs` within `seq`, which is the spike binning that you will do to the data inside `generateCountsForDataset`. **We recommend binning here at 1 ms or the smallest bin width you might wish to use.** Second is the field `spikeBinMs` inside the `RunParams` class. The expectation is that you will bin using a small bin width inside `generateCountsForDataset`, and then **the run manager code will automatically re-bin the data at the larger bin width set by `r.params.spikeBinMs`** for you. However, you are responsible for ensuring that the larger spike bin width is an integer multiple of the smaller bin width, otherwise an error will be generated.

@@ -2,11 +2,10 @@
 
 % build the dataset collection
 datasetPath = '~/lorenz_example/datasets';
-nDatasets = 4;
 
 % generate demo datasets
-if ~exist(fullfile(datasetPath, sprintf('dataset%03d.mat', nDatasets)), 'file')
-    LFADS.Utils.generateDemoDatasets(datasetPath, nDatasets);
+if ~exist(fullfile(datasetPath, 'dataset001.mat'), 'file')
+    LFADS.Utils.generateDemoDatasets(datasetPath);
 end
 
 %% Locate and specify the datasets

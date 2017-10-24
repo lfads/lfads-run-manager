@@ -43,6 +43,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   of unique conditionIds. Can be cell array of strings or
             %   vector of unique integers.
             %
+            % .truth: nTrials x nChannels x nTime tensor
+            %   for synthetic datasets, provides the ground-truth counts
+            %   for each trial. Same size as .counts. 
+            %
+            % .externalInputs: nTrials x nExternalInputs x nTime tensor
+            %   specifies the observed, external inputs which will be
+            %   passed either to the generator directly or to the encoder.
+            %
             % Parameters
             % ------------
             % dataset : :ref:`LFADS_Dataset`
@@ -171,6 +179,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %       belongs. This information isn't passed to LFADS. It is used
             %       only when building the alignment matrices for multi-session
             %       stitching, if trial-averaging is employed.
+            %       `y_true` has the same size as `y` and provides
+            %       ground-truth counts.  `externalInputs` provides
+            %       observed inputs.
             %
             % Parameters
             % ------------
@@ -201,9 +212,24 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 conditionId = [];
             end
             
-            assert(isnumeric(counts) && ndims(counts) == 3 && isnumeric(timeVecMs) && isvector(timeVecMs));
-            assert(size(counts, 3) == numel(timeVecMs));
-            assert(isempty(conditionId) || numel(conditionId) == size(counts, 1));
+            if isfield(out, 'truth')
+                truth = out.truth;
+            else
+                truth = [];
+            end
+            
+            if isfield(out, 'externalInputs')
+                externalInputs = out.externalInputs;
+            else
+                externalInputs = [];
+            end
+            
+            assert(isnumeric(counts) && ndims(counts) == 3, 'counts must be 3 dim tensor');
+            assert(isnumeric(timeVecMs) && isvector(timeVecMs), 'timeVecMs must be numeric vector');
+            assert(size(counts, 3) == numel(timeVecMs), 'size(counts, 3) must match numel(timeVecMs)');
+            assert(isempty(conditionId) || numel(conditionId) == size(counts, 1), 'numel(conditionId) must be size(counts, 1)');
+            assert(isempty(truth) || isequal(size(counts), size(truth)), 'size(truth) must be same as size(counts)');
+            assert(isempty(externalInputs) || (size(counts, 1) == size(externalInputs, 1) && size(counts, 2) == size(counts, 2)), 'size(externalInputs) must match size(counts) along dims 1, 2');
 
             nTrials = size(counts, 1);
 
@@ -219,6 +245,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     else
                         seq(iTrial).conditionId = conditionId(iTrial);
                     end
+                end
+                if ~isempty(truth)
+                     seq(iTrial).y_true = squeeze(truth(iTrial, :, :)); % nChannels x nTime
+                end
+                if ~isempty(externalInputs)
+                     seq(iTrial).externalInputs = squeeze(externalInputs(iTrial, :, :));  % nExternalInputs x nTime
                 end
             end
         end
@@ -786,7 +818,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     validIndsCell{iDS} = 1 : (r.params.trainToTestRatio+1) : numel(seqData{iDS});
                     trainIndsCell{iDS} = setdiff(allInds, validIndsCell{iDS});
                 end
-
+                
                 % support old .params.dtMS field
                 if isfield(seqData{1}(1), 'params') && isfield(seqData{1}(1).params, 'dtMS')
                     inputBinSizeMs = seqData{1}(1).params.dtMS;
@@ -830,9 +862,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         % too
                         counts = cat(3, seqData{iDS}.y); % nNeurons x nTime x nChannels
                         conditionId = cat(1, seqData{iDS}.conditionId);
+                        
+                        % optionally include ground truth
+                        extra = {};
+                        if isfield(seqData{iDS}, 'y_true')
+                            truth = seqData{iDS}.y_true;
+                            extra = union(extra, 'truth');
+                        end
+                        if isfield(seqData{iDS}, 'externalInputs')
+                            externalInputs = seqData{iDS}.externalInputs;
+                            extra = union(extra, 'externalInputs');
+                        end
 
                         fname = fullfile(r.pathCommonData, inputInfoNames{iDS});
-                        save(fname, 'trainInds', 'validInds', 'paramInputDataHash', 'seq_timeVector', 'seq_binSizeMs', 'conditionId', 'counts');
+                        save(fname, 'trainInds', 'validInds', 'paramInputDataHash', 'seq_timeVector', 'seq_binSizeMs', 'conditionId', 'counts', extra{:});
                     end
                 end
             end

@@ -46,6 +46,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
         c_kl_ic_weight double = 1; % how much to weight the generator l2 cost
         c_kl_co_weight double = 1; % how much to weight the controller l2 cost
+        
+        c_inject_ext_input_to_gen logical = false; % should observed inputs be input to model via encoders (false) or injected directly into generator (true)?
     end
     
     % Retired properties that should be kept around for hash value purposes

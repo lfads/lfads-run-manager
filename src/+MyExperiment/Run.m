@@ -46,6 +46,7 @@ classdef Run < LFADS.Run
             out.counts = data.spikes;
             out.timeVecMs = data.timeMs;
             out.conditionId = data.conditionId;
+            out.truth = data.true_rates;
         end
     end
 end
