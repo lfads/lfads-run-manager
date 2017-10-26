@@ -161,7 +161,7 @@ for ndset = 1:numel(seqs)
         spks = seq(nn).y(whichChannelsThisSet,1:inputTimeBinsToKeep);
         if binSizeMS ~= inputBinSizeMS
             tmp = reshape(full(spks'),[],nTimeBins,size(spks,1));
-            tmp2=squeeze(sum(tmp)); % should be nTimeBins x nChannels
+            tmp2=squeeze(sum(tmp, 1)); % should be nTimeBins x nChannels
         else
             tmp2 = full(spks)';
         end
@@ -170,19 +170,19 @@ for ndset = 1:numel(seqs)
         if isfield(seq,'x_true')
             xkeep = seq(nn).x_true(:, 1:inputTimeBinsToKeep);
             tmp = reshape(xkeep',[],nTimeBins,size(xkeep,1));
-            tmp2=squeeze(sum(tmp))/binSizeMS;
+            tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             xtrain_true(it,:,:) = tmp2;
         end
         if isfield(seq,'y_true')
             ykeep = seq(nn).y_true(whichChannelsThisSet, 1:inputTimeBinsToKeep);
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
-            tmp2=squeeze(sum(tmp))/binSizeMS;
+            tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             ytrain_true(it,:,:) = tmp2;
         end
         if isfield(seq,'externalInputs')
             ykeep = seq(nn).externalInputs(:, 1:inputTimeBinsToKeep);
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
-            tmp2=squeeze(sum(tmp))/binSizeMS;
+            tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             train_extinput(it,:,:) = tmp2;
         end
     end
@@ -193,7 +193,7 @@ for ndset = 1:numel(seqs)
         spks = seq(nn).y(whichChannelsThisSet, 1:inputTimeBinsToKeep);
         if binSizeMS ~= inputBinSizeMS
             tmp = reshape(full(spks'),[],nTimeBins,size(spks,1));
-            tmp2=squeeze(sum(tmp));
+            tmp2=squeeze(sum(tmp, 1));
         else
             tmp2 = full(spks)';
         end
@@ -202,19 +202,19 @@ for ndset = 1:numel(seqs)
         if isfield(seq,'x_true')
             xkeep = seq(nn).x_true(:,1:inputTimeBinsToKeep);
             tmp = reshape(xkeep',[],nTimeBins,size(xkeep,1));
-            tmp2=squeeze(sum(tmp))/binSizeMS;
+            tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             xtest_true(it,:,:) = tmp2;
         end
         if isfield(seq,'y_true')
             ykeep = seq(nn).y_true(whichChannelsThisSet, 1:inputTimeBinsToKeep);
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
-            tmp2=squeeze(sum(tmp))/binSizeMS;
+            tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             ytest_true(it,:,:) = tmp2;
         end  
         if isfield(seq,'externalInputs')
             ykeep = seq(nn).externalInputs(:, 1:inputTimeBinsToKeep);
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
-            tmp2=squeeze(sum(tmp))/binSizeMS;
+            tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             test_extinput(it,:,:) = tmp2;
         end  
     end
