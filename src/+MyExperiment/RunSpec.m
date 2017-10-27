@@ -19,8 +19,8 @@ classdef RunSpec < LFADS.RunSpec
             %   if numeric vector, will select datasets by index in datasetCollection. If cellstr of names, will
             %   search for datasets by name within datasetCollection.
 
-            runClassName = sprintf('%s.Run', LFADS.Utils.getPackage());
-            r = r@LFADS.RunSpec(name, runClassName, datasetCollection, datasetIndicesOrNames);
+            r = r@LFADS.RunSpec(name, '', datasetCollection, datasetIndicesOrNames);
+            r.runClassName = strrep(class(r), 'RunSpec', 'Run');
         end
     end
 end

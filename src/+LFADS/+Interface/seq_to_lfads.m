@@ -23,7 +23,7 @@ p.addParameter('trainInds', {}, @isvector);
 p.addParameter('testInds', {}, @isvector);
 p.addParameter('binSizeMs', 5, @isscalar);
 p.addParameter('inputBinSizeMs', 1, @isscalar);
-p.addParameter('conversion_factor', 0.5, @isscalar);
+p.addParameter('conversion_factor', 1, @isscalar);
 p.addParameter('alignment_matrix_cxf', {}, @iscell);
 p.addParameter('alignment_bias_c', {}, @iscell);
 p.parse(varargin{:});
@@ -219,15 +219,15 @@ for ndset = 1:numel(seqs)
         end  
     end
 
-%     fprintf('Each trial is %g bins\n', nTimeBins);
-
     varout = {};
+    assert(~any(isnan(ytrain(:))) && ~any(isnan(ytest(:))), 'NaNs found in counts data');
 
     if isfield(seq,'y_true')
         varout{end+1} = 'train_truth'; %#ok<*AGROW>
         varout{end+1} = ytrain_true;
         varout{end+1} = 'valid_truth';
         varout{end+1} = ytest_true;
+        assert(~any(isnan(ytrain_true(:))) && ~any(isnan(ytest_true(:))), 'NaNs found in ground truth data');
     end
     
     if isfield(seq, 'externalInputs')
@@ -235,6 +235,7 @@ for ndset = 1:numel(seqs)
         varout{end+1} = train_extinput;
         varout{end+1} = 'valid_ext_input';
         varout{end+1} = test_extinput;
+        assert(~any(isnan(train_extinput(:))) && ~any(isnan(test_extinput(:))), 'NaNs found in external input data');
     end
 
     if numel(varout)
@@ -258,6 +259,7 @@ for ndset = 1:numel(seqs)
     varout{end+1} = trainInds;
     varout{end+1} = 'valid_inds';
     varout{end+1} = testInds;
+    
 
     %% export the spikes
     LFADS.Interface.export_spikes(outfile, ytrain, ytest, varout{:})
