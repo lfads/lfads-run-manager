@@ -664,7 +664,7 @@
 <dd>
 <p>String that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:</p>
 <ul>
-<li><code class="codehilite">export</code> - indicates that the sequence data will exported as the input to the actual Python+Tensorflow LFADS run</li>
+<li><code class="codehilite">export</code> - indicates that the sequence data will be exported as the actual input to the Python+Tensorflow LFADS run</li>
 <li><code class="codehilite">alignment</code> - for multi-dataset stitched runs, indicates that the output data will be used only to construct the alignment matrices that translate between the spiking channels across different datasets. For example, you might wish to include a subset of trials or a different time window for fitting the alignment matrices, but include all trials for the actual LFADS run.</li>
 </ul>
 <p>If you decide you do wish to handle the <code class="codehilite">alignment</code> case differently, you will need to override the <code class="codehilite">usesDifferentDataForAlignment</code> method in your <code class="codehilite">Run</code> class to return <code class="codehilite">true</code>, by adding:</p>
@@ -684,11 +684,15 @@
 <p>A scalar struct which holds the following fields:</p>
 <dl>
 <dt><strong><code class="codehilite"><span class="p">.</span><span class="n">counts</span></code></strong> (Required):</dt>
-<dd>A tensor of binned spike counts (not rates) with size <code class="codehilite">nTrials</code> x <code class="codehilite">nChannels</code> x <code class="codehilite">nTime</code>. These should be total counts, not normalized rates, as they will be added togeher during rebinning.</dd>
+<dd>A tensor of binned spike counts (not rates) with size <code class="codehilite">nTrials</code> x <code class="codehilite">nChannels</code> x <code class="codehilite">nTime</code>. These should be total counts, not normalized rates, as they will be added together during re-binning.</dd>
 <dt><strong><code class="codehilite"><span class="p">.</span><span class="n">timeVecMs</span></code></strong> (Optional):</dt>
 <dd>A vector of timepoints with length <code class="codehilite">nTime</code> in milliseconds associated with each time bin in <code class="codehilite">counts</code>. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the <em>raw</em> spike bin width used when the data are later rebinned to match <code class="codehilite">r.params.spikeBinMs</code>. Default is <code class="codehilite"><span class="mi">1</span><span class="o">:</span><span class="n">size</span><span class="o">(</span><span class="n">counts</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span></code>.</dd>
 <dt><strong><code class="codehilite"><span class="p">.</span><span class="n">conditionId</span></code></strong> (Optional):</dt>
 <dd>Vector with length <code class="codehilite">nTrials</code> identifying the condition to which each trial belongs. This can either be a cell array of strings or a numeric vector. Default is <code class="codehilite">[]</code>.</dd>
+<dt><strong><code class="codehilite"><span class="p">.</span><span class="n">truth</span></code></strong> (Optional):</dt>
+<dd>For synthetic datasets, provides the ground-truth counts for each trial. Same size as <code class="codehilite"><span class="na">.counts</span></code>. Default is <code class="codehilite">[]</code>.</dd>
+<dt><strong><code class="codehilite"><span class="n">externalInputs</span></code></strong> (Optional):</dt>
+<dd>Specifies the observed, external inputs which will be passed either to the generator directly or to the encoder. Default is <code class="codehilite">[]</code>.</dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">A note on bin widths</p>
