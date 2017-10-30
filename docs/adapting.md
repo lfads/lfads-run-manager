@@ -173,7 +173,7 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 **`mode`**:
 : String that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:
 
-    * `export` - indicates that the sequence data will exported as the input to the actual Python+Tensorflow LFADS run
+    * `export` - indicates that the sequence data will be exported as the actual input to the Python+Tensorflow LFADS run
     * `alignment` - for multi-dataset stitched runs, indicates that the output data will be used only to construct the alignment matrices that translate between the spiking channels across different datasets. For example, you might wish to include a subset of trials or a different time window for fitting the alignment matrices, but include all trials for the actual LFADS run.
 
     If you decide you do wish to handle the `alignment` case differently, you will need to override the `usesDifferentDataForAlignment` method in your `Run` class to return `true`, by adding:
@@ -194,7 +194,7 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
 : A scalar struct which holds the following fields:
 
     **`:::matlab .counts`** (Required):
-    : A tensor of binned spike counts (not rates) with size `nTrials` x `nChannels` x `nTime`. These should be total counts, not normalized rates, as they will be added togeher during rebinning.
+    : A tensor of binned spike counts (not rates) with size `nTrials` x `nChannels` x `nTime`. These should be total counts, not normalized rates, as they will be added together during re-binning.
 
     **`:::matlab .timeVecMs`** (Optional):
     : A vector of timepoints with length `nTime` in milliseconds associated with each time bin in `counts`. You can start this wherever you like, but timeVecMs(2) - timeVecMs(1) will be treated as the _raw_ spike bin width used when the data are later rebinned to match `r.params.spikeBinMs`. Default is `1:size(counts, 3)`.
