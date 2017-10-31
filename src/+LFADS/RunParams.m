@@ -29,14 +29,18 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_keep_prob double = 0.95; % randomly drop units during each training pass
         c_learning_rate_decay_factor double = 0.98; % how quickly to decrease the learning rate
         c_device char = '/gpu:0'; % which visible GPU/CPU to use
+        
         c_co_dim uint16 = 4;
-        c_do_causal_controller logical = false; % restrict input encoder from seeing the future?
+        c_do_causal_controller logical = false; % restrict input encoder from seeing the future?DO_FEED_FACTORS_TO_CONTROLLER
+        c_do_feed_factors_to_controller logical = true; % restrict input encoder from seeing the future?
+        c_feedback_factors_or_rates char = 'factors'; % Feedback the factors or the rates to the controller? Acceptable values: 'factors' or 'rates'
+        c_controller_input_lag uint16 = 1;
+        
         c_l2_gen_scale double = 500; % how much to weight the generator l2 cost
         c_l2_con_scale double = 500; % how much to weight the controller l2 cost
         c_batch_size uint16 = 256; % number of trials to use during each training pass
         c_kl_increase_steps uint16 = 900; % Number of steps over which the kl costs increase
         c_l2_increase_steps uint16 = 900; % Number of steps over which the l2 costs increase
-        c_controller_input_lag uint16 = 1;
         c_ic_dim uint16 = 64; % dimensionality of the initial conditions
         c_con_dim uint16 = 128; %controller dimensionality
         
