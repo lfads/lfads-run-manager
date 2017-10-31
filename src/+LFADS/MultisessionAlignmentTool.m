@@ -50,14 +50,14 @@ classdef MultisessionAlignmentTool < handle
                    conditionsEachTrial{iDS} = cell2mat(conditionsEachTrial{iDS});
                end
                
-               c{iDS} = unique(removenan(conditionsEachTrial{iDS}));
+               if iscell(conditionsEachTrial{iDS})
+                   c{iDS} = removeempty(unique(conditionsEachTrial{iDS}));
+               else
+                   c{iDS} = unique(removenan(conditionsEachTrial{iDS}));
+               end
             end
             conditions = unique(cat(1, c{:}));
-            if isnumeric(conditions)
-                conditions = conditions(~isnan(conditions));
-            elseif iscellstr(conditions)
-                conditions = conditions(~cellfun(@isempty, conditions));
-            else
+            if ~isnumeric(conditions) && ~iscellstr(conditions)
                 error('conditionId field must contain numeric or string values');
             end
             tool.conditions = conditions;
@@ -118,6 +118,10 @@ classdef MultisessionAlignmentTool < handle
             
             function a = removenan(a)
                 a = a(~isnan(a));
+            end
+            
+            function a = removeempty(a)
+                a = a(~cellfun(@isempty, a));
             end
         end
         
@@ -240,6 +244,12 @@ classdef MultisessionAlignmentTool < handle
                 f = factorIdx(iF);
                 for iC = 1:nConditionsPlot
                     c = conditionIdx(iC);
+                    if ~iscell(tool.conditions)
+                        this_cond_desc = sprintf('Condition %d', tool.conditions(c));
+                    else
+                        this_cond_desc = tool.conditions{c};
+                        assert(ischar(this_cond_desc));
+                    end
                     LFADS.Utils.subtightplot(nFactorsPlot, nConditionsPlot, iSub, 0.01, [0.01 0.05], [0.05 0.01]);
                     iSub = iSub + 1;
 
@@ -265,7 +275,7 @@ classdef MultisessionAlignmentTool < handle
                     axis off;
                     
                     if iF == 1
-                        h = title(sprintf('Condition %d', c)); 
+                        h = title(this_cond_desc);
                         h.Visible = 'on';
                         h.FontWeight = 'normal';
                     end
