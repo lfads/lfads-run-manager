@@ -193,14 +193,14 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser.addParameter('ignoreProperties', {}, @iscellstr);
             parser.addParameter('onlyRootClassProperties', false, @islogical);
             parser.addParameter('defaultsFromClassDefinition', true, @islogical);
-            parser.addParameter('ignoreHidden', false, @islogical);
+            parser.addParameter('ignoreHiddenUnlessDifferentFromDefault', false, @islogical);
             parser.addParameter('omitFields', {}, @iscellstr);
             
             parser.parse(varargin{:});
             
             [props, propMeta] = p.listNonTransientProperties('ignoreProperties', parser.Results.ignoreProperties, ...
                 'onlyRootClassProperties', parser.Results.onlyRootClassProperties, ...
-                'ignoreHidden', parser.Results.ignoreHidden);
+                'ignoreHidden', false); % get hidden props too
             
             if ~parser.Results.defaultsFromClassDefinition
                 defaultInstance = eval(class(p));
@@ -211,7 +211,9 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 prop = props{i};
                 value = p.(prop);
                 
-                if parser.Results.onlyDifferentFromDefault
+                % skips prop equal to default (either all props or just
+                % hidden on
+                if (propMeta(i).Hidden && parser.Results.ignoreHiddenUnlessDifferentFromDefault) || parser.Results.onlyDifferentFromDefault
                     if parser.Results.defaultsFromClassDefinition
                         def = propMeta(i).DefaultValue;
                     else
@@ -328,12 +330,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
             parser.addParameter('afterValue', '', @ischar);
             parser.addParameter('betweenProps', ' ', @ischar);
             parser.addParameter('onlyDifferentFromDefault', false, @islogical);
-            parser.addParameter('ignoreHidden', true, @islogical);
+            parser.addParameter('ignoreHiddenUnlessDifferentFromDefault', true, @islogical);
             parser.KeepUnmatched = true;
             parser.parse(varargin{:});
             
             data = p.getPropertyValueSubset('onlyDifferentFromDefault', parser.Results.onlyDifferentFromDefault, ...
-                'ignoreHidden', parser.Results.ignoreHidden, parser.Unmatched);
+                'ignoreHiddenUnlessDifferentFromDefault', parser.Results.ignoreHiddenUnlessDifferentFromDefault, parser.Unmatched);
             
             props = fieldnames(data);
             
@@ -357,6 +359,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         function str = generateShortDifferencesString(p)
             str = p.generateString('onlyDifferentFromDefault', true, ...
+                'ignoreHiddenUnlessDifferentFromDefault', true, ...
                 'defaultsFromClassDefinition', true, ... % can change this to false if many options are changed in the constructor. They'll still factor into the hash though.
                 'beforeProp', '', 'betweenPropValue', '=', 'afterValue', '', 'betweenProps', ' ');
         end
@@ -373,8 +376,9 @@ classdef RunParams < matlab.mixin.CustomDisplay
             end
             header = sprintf('%s%s %s\n%sDiff: %s\n\n', blanks(indent), indexStr,className, blanks(indent+2), p.generateShortDifferencesString());
             text = p.generateString('onlyDifferentFromDefault', false, ...
-                'beforeProp', blanks(indent+2), 'betweenPropValue', ': ', 'afterValue', '', 'betweenProps', sprintf('\n'));
-            str = cat(2, header, text, sprintf('\n'));
+                'ignoreHiddenUnlessDifferentFromDefault', true, ...
+                'beforeProp', blanks(indent+2), 'betweenPropValue', ': ', 'afterValue', '', 'betweenProps', sprintf('\n')); %#ok<SPRINTFN>
+            str = cat(2, header, text, sprintf('\n')); %#ok<SPRINTFN>
         end
         
         function valstr = serializePropertyValue(p, prop, value)
