@@ -1,4 +1,7 @@
 
+
+
+
 <!DOCTYPE html>
 <html lang="en" class="no-js">
   <head>
@@ -14,9 +17,22 @@
         <meta name="author" content="Daniel J. O'Shea">
       
       
-        <link rel="shortcut icon" href="../assets/images/favicon.png">
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
       
-      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.10.1">
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-0.17.1, mkdocs-material-2.0.2">
     
     
       
@@ -24,19 +40,16 @@
       
     
     
-      <script src="../assets/javascripts/modernizr-e826f8942a.js"></script>
-    
-    
-      <link rel="stylesheet" href="../assets/stylesheets/application-a20f419c8e.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application-5b1b46901f.css">
       
         <link rel="stylesheet" href="../assets/stylesheets/application-23f75ab9c7.palette.css">
       
     
     
+      <script src="../assets/javascripts/modernizr-e826f8942a.js"></script>
+    
+    
       
-        
-        
-        
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -46,10 +59,11 @@
     
   </head>
   
-  
-  
-  
-    <body data-md-color-primary="red" data-md-color-accent="red">
+    
+    
+    
+      <body data-md-color-primary="red" data-md-color-accent="red">
+    
   
     <svg class="md-svg">
       <defs>
@@ -69,7 +83,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href=".." title="LFADS Run Manager" class="md-header-nav__button md-logo">
           
-            <i class="md-icon md-icon--home"></i>
+            <i class="md-icon"></i>
           
         </a>
       </div>
@@ -88,8 +102,9 @@
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
         
-          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
           
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
 <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="search"></label>
   <div class="md-search__inner">
@@ -100,8 +115,8 @@
     </form>
     <div class="md-search__output">
       <div class="md-search__scrollwrap" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="result" data-md-lang-search="" data-md-lang-tokenizer="[\s\-]+">
-          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
             Type to start searching
           </div>
           <ol class="md-search-result__list"></ol>
@@ -110,6 +125,7 @@
     </div>
   </div>
 </div>
+          
         
       </div>
       
@@ -121,7 +137,7 @@
   
 
 
-  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/djoshea/lfads-run-manager/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -143,7 +159,6 @@
     
     <div class="md-container">
       
-      
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
@@ -153,11 +168,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="drawer">
-    <div class="md-nav__button md-logo">
+    <span class="md-nav__button md-logo">
       
-        <i class="md-icon md-icon--home"></i>
+        <i class="md-icon"></i>
       
-    </div>
+    </span>
     LFADS Run Manager
   </label>
   
@@ -168,7 +183,7 @@
   
 
 
-  <a href="https://github.com/djoshea/lfads-run-manager" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/djoshea/lfads-run-manager/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -239,7 +254,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../adapting/" title="Interfacing with your Datasets" class="md-nav__link">
+    <a href="../interfacing/" title="Interfacing with your Datasets" class="md-nav__link">
       Interfacing with your Datasets
     </a>
   </li>
@@ -251,7 +266,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../drive/" title="Preparing for LFADS" class="md-nav__link">
+    <a href="../preparing/" title="Preparing for LFADS" class="md-nav__link">
       Preparing for LFADS
     </a>
   </li>
@@ -422,6 +437,8 @@
             <article class="md-content__inner md-typeset">
               
                 
+                  <a href="https://github.com/djoshea/lfads-run-manager/edit/master/docs/files.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
                 
                 <h1 id="file-organization-used-by-lfads-run-manager">File organization used by LFADS Run Manager<a class="headerlink" href="#file-organization-used-by-lfads-run-manager" title="Permanent link">&para;</a></h1>
 <p>You won&rsquo;t likely need to dive into the raw files produced by lfads-run-manager and LFADS, but we include a brief overview here to help understand what&rsquo;s stored where. You can safely skip to <a href="../running/">running your model</a>.</p>
@@ -436,7 +453,7 @@
 │   └── dataset004.mat
 └── runs
     └── exampleRun
-        ├── data_IR3OQV
+        ├── data_-MSPr6
         │   ├── inputInfo_dataset001.mat
         │   ├── inputInfo_dataset002.mat
         │   ├── inputInfo_dataset003.mat
@@ -444,7 +461,7 @@
         │   ├── lfads_dataset002.h5
         │   └── lfads_dataset003.h5
         ├── launch_tensorboard.sh
-        ├── param_pqQbzB
+        ├── param_Qr2PeG
         │   ├── all
         │   ├── single_dataset001
         │   ├── single_dataset002
@@ -473,7 +490,7 @@
 <dl>
 <dt><strong><code class="codehilite">data_IR3OQV</code></strong>:</dt>
 <dd>
-<p>The location of the exported datasets for <code class="codehilite">RunParams</code> whose data hash is <code class="codehilite">IR3OQV</code>. The data hash includes properties of <code class="codehilite">RunParams</code> that affect the exported data, as described <a href="../drive/#runparams-data-and-param-hashes">here</a>.</p>
+<p>The location of the exported datasets for <code class="codehilite">RunParams</code> whose data hash is <code class="codehilite">IR3OQV</code>. The data hash includes properties of <code class="codehilite">RunParams</code> that affect the exported data, as described <a href="../preparing#runparams-data-and-param-hashes">here</a>.</p>
 <dl>
 <dt><strong><code class="codehilite">inputInfo_datasetName.mat</code></strong></dt>
 <dd>Contains data collected when generating the LFADS input, including the raw spike counts, condition ids, time vector, and trial indices assigned to the training and validation sets.</dd>
@@ -489,7 +506,7 @@
 <dl>
 <dt><strong><code class="codehilite">launch_tensorboard.sh</code></strong>:</dt>
 <dd>Shell script which will launch TensorBoard, optionally on a specific port
-<div class="codehilite"><pre><span></span>./launch_tensorboard.sh <span class="m">50000</span>
+<div class="codehilite"><pre><span></span>sh launch_tensorboard.sh <span class="m">50000</span>
 </pre></div></dd>
 <dt><strong><code class="codehilite">run_lfadsqueue.py</code></strong>:</dt>
 <dd>Python script which will launch the LFADS Run Queue on all runs within the <code class="codehilite">exampleRun</code> <code class="codehilite">RunCollection</code>:
@@ -502,17 +519,17 @@
 </dl>
 <h2 id="individual-run-folders">Individual run folders<a class="headerlink" href="#individual-run-folders" title="Permanent link">&para;</a></h2>
 <p>Within an run folder, we find:</p>
-<div class="codehilite"><pre><span></span>$ tree ~/lorenz_example/runs/exampleRuns/param_pqQbzB/all
+<div class="codehilite"><pre><span></span>$ tree ~/lorenz_example/runs/exampleRuns/param_Qr2PeG/all
 .
 ├── lfads.done
 ├── lfads.out
 ├── lfadsInput
-│   ├── inputInfo_dataset001.mat -&gt; ../../../data_IR3OQV/inputInfo_dataset001.mat
-│   ├── inputInfo_dataset002.mat -&gt; ../../../data_IR3OQV/inputInfo_dataset002.mat
-│   ├── inputInfo_dataset003.mat -&gt; ../../../data_IR3OQV/inputInfo_dataset003.mat
-│   ├── lfads_dataset001.h5 -&gt; ../../../data_IR3OQV/lfads_dataset001.h5
-│   ├── lfads_dataset002.h5 -&gt; ../../../data_IR3OQV/lfads_dataset002.h5
-│   └── lfads_dataset003.h5 -&gt; ../../../data_IR3OQV/lfads_dataset003.h5
+│   ├── inputInfo_dataset001.mat -&gt; ../../../data_-MSPr6/inputInfo_dataset001.mat
+│   ├── inputInfo_dataset002.mat -&gt; ../../../data_-MSPr6/inputInfo_dataset002.mat
+│   ├── inputInfo_dataset003.mat -&gt; ../../../data_-MSPr6/inputInfo_dataset003.mat
+│   ├── lfads_dataset001.h5 -&gt; ../../../data_-MSPr6/lfads_dataset001.h5
+│   ├── lfads_dataset002.h5 -&gt; ../../../data_-MSPr6/lfads_dataset002.h5
+│   └── lfads_dataset003.h5 -&gt; ../../../data_-MSPr6/lfads_dataset003.h5
 ├── lfadsOutput
 │   ├── checkpoint
 │   ├── checkpoint_lve
@@ -520,7 +537,7 @@
 │   ├── hyperparameters-0.txt
 │   ├── hyperparameters-38740.txt
 │   ├── lfads_log
-│   │   └── events.out.tfevents.1507613307.photon
+│   │   └── events.out...
 │   ├── lfads_vae.ckpt-37206.data-00000-of-00001
 │   ├── lfads_vae.ckpt-37206.index
 │   ├── lfads_vae.ckpt-37206.meta
@@ -537,7 +554,7 @@
 
 <dl>
 <dt><strong><code class="codehilite">lfadsInput</code></strong>:</dt>
-<dd>Contains relative symbolic links to the contents of <code class="codehilite">data_IR3OQV</code>, enabling multiple runs to share data without duplication. The <code class="codehilite"><span class="na">.h5</span></code> files will be read in by LFADS.</dd>
+<dd>Contains relative symbolic links to the contents of <code class="codehilite">data_-MSPr6</code>, enabling multiple runs to share data without duplication. The <code class="codehilite"><span class="na">.h5</span></code> files will be read in by LFADS.</dd>
 <dt><strong><code class="codehilite">lfadsOutput</code></strong>:</dt>
 <dd>
 <p>The directory to which LFADS will write generated output. Some of the key files within are:</p>
@@ -581,7 +598,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../drive/" title="Preparing for LFADS" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../preparing/" title="Preparing for LFADS" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -646,15 +663,21 @@
       
     </div>
     
-      <script src="../assets/javascripts/application-f3ab9e5ff8.js"></script>
+      <script src="../assets/javascripts/application-84693e5e49.js"></script>
       
-      
-      <script>app.initialize({url:{base:".."}})</script>
+      <script>app.initialize({version:"0.17.1",url:{base:".."}})</script>
       
     
     
       
-      <script>!function(e,t,a,n,o,c,i){e.GoogleAnalyticsObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,c=t.createElement(a),i=t.getElementsByTagName(a)[0],c.async=1,c.src=n,i.parentNode.insertBefore(c,i)}(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-322693-7","auto"),ga("set","anonymizeIp",!0),ga("send","pageview");var links=document.getElementsByTagName("a");Array.prototype.map.call(links,function(e){e.host!=document.location.host&&e.addEventListener("click",function(){var t=e.getAttribute("data-md-action")||"follow";ga("send","event","outbound",t,e.href)})});var query=document.forms.search.query;query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})</script>
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-322693-7"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-322693-7');
+      </script>
       
     
   </body>
