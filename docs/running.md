@@ -24,20 +24,20 @@ rc.runs(i).writeShellScriptLFADSTrain('cuda_visible_devices', 0, 'display', 500)
 Here, you should specify options that will be written into the shell script, the key ones being:
 
 * `cuda_visible_devices` - which GPU index to run this model on, e.g. `0`. Use the `nvidia-smi` to enumerate the available GPUs on your system
-* `display` - the X display to use, e.g. `500`. The python code generates plots during training that will appear in TensorBoard. Generating these plots requires a display. When running in a remote server, you'll need to specify this, and possibly to launch an X server using something like `tightvnc`.
+* `display` - the X display to use, e.g. `500`. The python code generates plots during training that will appear in TensorBoard. Generating these plots requires a display. When running in a remote server, you'll need to specify this, and possibly to launch an X server using something like `tightvnc` or `vncserver`.
 * `appendPosteriorMeanSample` - `true` or `false` specifying whether to chain the posterior mean sampling operation after the training is finished. The default is `false`, but if you set this to `true`, you won't need to call `writeShellScriptPosteriorMeanSample` below.
 * `appendWriteModelParams` - `true` or `false` specifying whether to chain the posterior mean sampling operation after the training is finished. The default is `false`, but if you set this to `true`, you won't need to call `writeShellScriptWriteModelParams` below.
 
 This will generate an `lfads_train.sh` in the corresponding run's folder. For the first run in our example, this is at
 ```
-~/lorenz_example/runs/exampleRun/param_yMRS4W/single_dataset001/lfads_train.sh
+~/lorenz_example/runs/exampleRun/param_Qr2PeG/single_dataset001/lfads_train.sh
 ```
 
 The script essentially launches Python to run `run_lfads.py` with the specific parameters you've indicated in `RunParams` and pointing at the corresponding datasets, which were saved earlier when we called `rc.prepareForLFADS`.
 
 ```bash
 #!/bin/bash
-CUDA_VISIBLE_DEVICES=0 python $(which run_lfads.py) --data_dir=~/lorenz_example/runs/exampleRun/param_yMRS4W/single_dataset001/lfadsInput --data_filename_stem=lfads --lfads_save_dir=~/lorenz_example/runs/exampleRun/param_yMRS4W/single_dataset001/lfadsOutput --allow_gpu_growth=true --batch_size=256 --cell_clip_value=5.000000 --ci_enc_dim=128 --co_dim=4 --con_dim=128 --controller_input_lag=1 --device=/gpu:0 --do_causal_controller=false --factors_dim=8 --gen_dim=100 --ic_dim=64 --ic_enc_dim=128 --in_factors_dim=8 --keep_prob=0.950000 --kl_co_weight=1.000000 --kl_ic_weight=1.000000 --kl_increase_steps=900 --l2_con_scale=500.000000 --l2_gen_scale=500.000000 --l2_increase_steps=900 --learning_rate_decay_factor=0.980000 --learning_rate_stop=0.000010 --temporal_spike_jitter_width=0
+CUDA_VISIBLE_DEVICES=0 python $(which run_lfads.py) --data_dir=~/lorenz_example/runs/exampleRun/param_Qr2PeG/single_dataset001/lfadsInput --data_filename_stem=lfads --lfads_save_dir=~/lorenz_example/runs/exampleRun/param_Qr2PeG/single_dataset001/lfadsOutput --allow_gpu_growth=true --batch_size=256 --cell_clip_value=5.000000 --ci_enc_dim=128 --co_dim=4 --con_dim=128 --controller_input_lag=1 --device=/gpu:0 --do_causal_controller=false --factors_dim=8 --gen_dim=100 --ic_dim=64 --ic_enc_dim=128 --in_factors_dim=8 --keep_prob=0.950000 --kl_co_weight=1.000000 --kl_ic_weight=1.000000 --kl_increase_steps=900 --l2_con_scale=500.000000 --l2_gen_scale=500.000000 --l2_increase_steps=900 --learning_rate_decay_factor=0.980000 --learning_rate_stop=0.000010 --temporal_spike_jitter_width=0
 ```
 
 Running the `lfads_train.sh` script will launch the Tensorflow training which will take some time. You likely want to launch this in a `tmux` session if running remotely.
@@ -134,20 +134,20 @@ Warning: tmux sessions will be nested inside the current session
 Queue: Launching TensorBoard on port 42561 in tmux session exampleRun_tensorboard_port42561
 bash /home/djoshea/lorenz_example/runs/exampleRun/launch_tensorboard.sh --port=42561
 Queue: Initializing with 2 GPUs and 12 CPUs, max 4 simultaneous tasks
-Task lfads_param_pqQbzB__single_dataset001: launching on gpu 0
-Task lfads_param_pqQbzB__single_dataset001: started in tmux session lfads_param_pqQbzB__single_dataset001 on GPU 0 with PID 19498
-Task lfads_param_pqQbzB__single_dataset002: launching on gpu 1
-Task lfads_param_pqQbzB__single_dataset002: started in tmux session lfads_param_pqQbzB__single_dataset002 on GPU 1 with PID 19527
-Task lfads_param_pqQbzB__single_dataset003: launching on gpu 0
-Task lfads_param_pqQbzB__single_dataset003: started in tmux session lfads_param_pqQbzB__single_dataset003 on GPU 0 with PID 19551
-Task lfads_param_pqQbzB__all: launching on gpu 1
-Task lfads_param_pqQbzB__all: started in tmux session lfads_param_pqQbzB__all on GPU 1 with PID 19585
-Task lfads_param_pqQbzB__single_dataset003:      Decreasing learning rate to 0.009800.
-Task lfads_param_pqQbzB__single_dataset001:      Decreasing learning rate to 0.009800.
-Task lfads_param_pqQbzB__single_dataset001:      Decreasing learning rate to 0.009604.
-Task lfads_param_pqQbzB__single_dataset003:      Decreasing learning rate to 0.009604.
-Task lfads_param_pqQbzB__single_dataset003:      Decreasing learning rate to 0.009412.
-Task lfads_param_pqQbzB__single_dataset001:      Decreasing learning rate to 0.009412.
+Task lfads_param_Qr2PeG__single_dataset001: launching on gpu 0
+Task lfads_param_Qr2PeG__single_dataset001: started in tmux session lfads_param_Qr2PeG__single_dataset001 on GPU 0 with PID 19498
+Task lfads_param_Qr2PeG__single_dataset002: launching on gpu 1
+Task lfads_param_Qr2PeG__single_dataset002: started in tmux session lfads_param_Qr2PeG__single_dataset002 on GPU 1 with PID 19527
+Task lfads_param_Qr2PeG__single_dataset003: launching on gpu 0
+Task lfads_param_Qr2PeG__single_dataset003: started in tmux session lfads_param_Qr2PeG__single_dataset003 on GPU 0 with PID 19551
+Task lfads_param_Qr2PeG__all: launching on gpu 1
+Task lfads_param_Qr2PeG__all: started in tmux session lfads_param_Qr2PeG__all on GPU 1 with PID 19585
+Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009800.
+Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009800.
+Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009604.
+Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009604.
+Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009412.
+Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009412.
 ```
 
 As the tasks run, the task queue will print out messages related to decreasing the learning rate, which is one way to measure ongonig progress towards the termination criterion (when the learning rate hits `c_learning_rate_stop`). When a task fails or completes, the queue will print out a running tally.
@@ -158,17 +158,17 @@ Note that TensorBoard has automatically been launched on an available port, here
 ➜  exampleRun tmux list-sessions
 matlab: 4 windows (created Tue Oct  3 21:51:49 2017) [201x114] (attached)
 exampleRun_tensorboard_port42561: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
-lfads_param_pqQbzB__all: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
-lfads_param_pqQbzB__single_dataset001: 1 windows (created Fri Oct  6 14:43:16 2017) [201x114]
-lfads_param_pqQbzB__single_dataset002: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
-lfads_param_pqQbzB__single_dataset003: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
+lfads_param_Qr2PeG__all: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
+lfads_param_Qr2PeG__single_dataset001: 1 windows (created Fri Oct  6 14:43:16 2017) [201x114]
+lfads_param_Qr2PeG__single_dataset002: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
+lfads_param_Qr2PeG__single_dataset003: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
 ```
 
 If you wish to abort ongoing runs, you can either attach to them directly and use `Ctrl-C`, or use `tmux kill-session SESSIONNAME`. When everything has completed, you'll see something like this:
 
 ```bash
-Task lfads_param_pqQbzB__all: Stopping optimization based on learning rate criteria.
-Task lfads_param_pqQbzB__all: completed successfully
+Task lfads_param_Qr2PeG__all: Stopping optimization based on learning rate criteria.
+Task lfads_param_Qr2PeG__all: completed successfully
 Queue: All tasks completed.
 Queue: 0 skipped, 4 finished, 0 failed, 0 running
 ```

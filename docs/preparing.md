@@ -1,6 +1,6 @@
 # Setting up LFADS runs
 
-Assuming you have finished [adapting the LFADS run manager classes to your dataset](adapting.md), you should be all set to generate some LFADS runs and start training. We'll be setting up a _drive script_ that will do the work of creating the appropriate instances, pointing at the datasets, creating the runs, and telling `lfads-run-manager` to generate the files needed for LFADS. Below, we'll refer to the package name as `MyExperiment`, but you should substitute this with your package name.
+Assuming you have finished [adapting the LFADS run manager classes to your dataset](interfacing), you should be all set to generate some LFADS runs and start training. We'll be setting up a _drive script_ that will do the work of creating the appropriate instances, pointing at the datasets, creating the runs, and telling `lfads-run-manager` to generate the files needed for LFADS. Below, we'll refer to the package name as `MyExperiment`, but you should substitute this with your package name.
 
 !!! tip "Follow along with `MyExperiment.drive_script`"
     A complete drive script is available as a starting point in `+MyExperiment/drive_script.m` for you to copy/paste from.
@@ -141,8 +141,6 @@ par.spikeBinMs = 2; % rebin the data at 2 ms
 par.c_co_dim = 0; % no controller --> no inputs to generator
 par.c_batch_size = 150; % must be < 1/5 of the min trial count
 
-par.setInFactorsMatchDataForSingleDataset = true;  % automatically change c_in_factors_dim to match the number of channels in a single dataset
-par.c_in_factors_dim = 8; % and manually set it for multisession stitched models
 par.c_factors_dim = 8; % number of factors read out from generator to generate rates
 par.useAlignmentMatrix = true; % use alignment matrices initial guess for multisession stitching
 
@@ -152,7 +150,7 @@ par.c_ic_enc_dim = 64; % number of units in encoder RNN
 par.c_learning_rate_stop = 1e-3; % we can stop really early for the demo
 ```
 
-As we wish stitch multiple datasets together in one of the runs, we'll also specify that we'd like to automatically specify an initial guess for the alignment matrices that link neurons to factors for each dataset using `useAlignmentMatrix`. We'll also have LFADS automatically set `c_in_factors_dim` to match the number of channels of the dataset for each single session run using `setInFactorsMatchDataForSingleDataset`. For multi-dataset stitched runs, the set value of `:::matlab c_in_factors_dim = 8` will be used.
+As we wish stitch multiple datasets together in one of the runs, we'll also specify that we'd like to automatically specify an initial guess for the alignment matrices that link neurons to factors for each dataset using `useAlignmentMatrix`.
 
 !!! warning "Setting batch size"
     The number of trials in your smallest dataset determines the largest batch size you can pick. If `trainToTestRatio` is 4 (the default), then you will need at least 4+1 = 5 times as many trials in every dataset as `c_batch_size`. If you choose a batch size which is too large, `lfads-run-manager` will generate an error to alert you.
@@ -167,8 +165,9 @@ You can then look at the parameter settings added to `rc` using `rc.params`:
 ```matlab
 >> rc.params
 
-MyExperiment.RunParams param_pqQbzB data_IR3OQV
-useAlignmentMatrix=true setInFactorsMatchDataForSingleDataset=true c_factors_dim=8 c_in_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+MyExperiment.RunParams param_Qr2PeG data_-MSPr6
+useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+
 ...
 ```
 
@@ -177,7 +176,7 @@ The six digit alphanumeric hash values are used to uniquely and concisely identi
 
 The second is a hash of only those parameter settings that affect the input data used by LFADS, prefixed by `data_`. We use two separate hashes here to save space on disk; many parameters like `c_co_dim` only affect LFADS internally, but the input data is the same. Consequently, generating a large sweep of parameters like `c_co_dim` would otherwise require many copies of identical data to be saved on disk. Intead, we store the data in folders according to the `data_` hash and symlink copies for each run.
 
-Below the hash values are the set of properties whose values differ from their specified defaults.
+Below the hash values are the set of properties whose values differ from their specified defaults (as specified next to the property in the class definition). Properties which are equal to their default values are not included in the hash calculation. This allows you to add new properties to your `RunParams` class without altering the computed hashes for older runs. See this [warning note](interfacing/#editing-runparamsm-optional) for more details.
 
 !!! tip "Specifying data-hash affecting parameters"
     By default, the `data_` hash includes all properties that do not begin with `c_` as these are passed directly to the Python+Tensorflow LFADS code. This includes all of the parameters that you have added to `RunParams`. If you need to adjust this behavior, override the method `getListPropertiesNotAffectingInputData` in your `RunParams` instance.
@@ -216,7 +215,7 @@ MyExperiment.RunCollection "exampleRun" (5 runs total)
   Path: ~/lorenz_example/runs/exampleRun
 
   1 parameter settings
-  [1 param_jMCQCl data_-MSPr6] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_in_factors_dim=8 c_co_dim=64 c_batch_size=150
+  [1 param_Qr2PeG data_-MSPr6] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
   5 run specifications
   [ 1] MyExperiment.RunSpec "single_dataset001" (1 datasets)
@@ -239,7 +238,7 @@ MyExperiment.RunCollection "exampleRun" (5 runs total)
                      nDatasets: 4
                           path: '~/lorenz_example/runs/exampleRun'
       pathsCommonDataForParams: {'~/lorenz_example/runs/exampleRun/data_-MSPr6'}
-                pathsForParams: {'~/lorenz_example/runs/exampleRun/param_jMCQCl'}
+                pathsForParams: {'~/lorenz_example/runs/exampleRun/param_Qr2PeG'}
     fileShellScriptTensorboard: '~/lorenz_example/runs/exampleRun/launch_tensorboard.sh'
                fileSummaryText: '~/lorenz_example/runs/exampleRun/summary.txt'
        fileShellScriptRunQueue: '~/lorenz_example/runs/exampleRun/run_lfadsqueue.py'
@@ -255,7 +254,7 @@ rc.prepareForLFADS();
 
 This will generate files for all runs. If you decide to add new runs, by adding additional run specifications or parameters, you can simply call `prepareForLFADS` again. Existing files won't be overwritten unless you call `rc.prepareForLFADS(true)`.
 
-Also, a `summary.txt` file will be generated which can be useful for identifying all of the runs and their locations on disk.
+Also, a `summary.txt` file will be generated which can be useful for identifying all of the runs and their locations on disk. You can also generate this text from within Matlab by calling `rc.generateSummaryText()`.
 
 ```
 MyExperiment.RunCollection "exampleRun" (4 runs total)
@@ -284,17 +283,15 @@ MyExperiment.RunCollection "exampleRun" (4 runs total)
 
   1 Parameter Settings:
 
-    [1 param_pqQbzB] MyExperiment.RunParams
-      Diff: useAlignmentMatrix=true setInFactorsMatchDataForSingleDataset=true c_factors_dim=8 c_in_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [1 param_Qr2PeG] MyExperiment.RunParams
+      Diff: useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
       spikeBinMs: 2
       trainToTestRatio: 4
       useAlignmentMatrix: true
       scaleIncreaseStepsWithDatasets: true
-      setInFactorsMatchDataForSingleDataset: true
       c_cell_clip_value: 5
       c_factors_dim: 8
-      c_in_factors_dim: 8
       c_ic_enc_dim: 64
       c_ci_enc_dim: 128
       c_gen_dim: 64
@@ -303,12 +300,14 @@ MyExperiment.RunCollection "exampleRun" (4 runs total)
       c_device: /gpu:0
       c_co_dim: 0
       c_do_causal_controller: false
+      c_do_feed_factors_to_controller: true
+      c_feedback_factors_or_rates: factors
+      c_controller_input_lag: 1
       c_l2_gen_scale: 500
       c_l2_con_scale: 500
       c_batch_size: 150
       c_kl_increase_steps: 900
       c_l2_increase_steps: 900
-      c_controller_input_lag: 1
       c_ic_dim: 64
       c_con_dim: 128
       c_learning_rate_stop: 0.001
@@ -316,4 +315,6 @@ MyExperiment.RunCollection "exampleRun" (4 runs total)
       c_allow_gpu_growth: true
       c_kl_ic_weight: 1
       c_kl_co_weight: 1
+      c_inject_ext_input_to_gen: false
+
 ```

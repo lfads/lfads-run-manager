@@ -1,16 +1,18 @@
 site_name: LFADS Run Manager
 site_description: Documentation of LFADS Run Manager for Matlab
 site_author: Daniel J. O'Shea
-theme: 'material'
 
 repo_name: 'djoshea/lfads-run-manager'
 repo_url: 'https://github.com/djoshea/lfads-run-manager'
 
-extra:
+theme:
+  name: material
+  custom_dir: docs/theme/
   palette:
     primary: 'red'
     accent: 'red'
 
+extra:
   social:
     - type: 'github'
       link: 'https://github.com/djoshea'
@@ -31,8 +33,8 @@ pages:
   - Installation: install.md
   - Matlab Classes and Packages: matlab.md
   - Key Concepts: concepts.md
-  - Interfacing with your Datasets : adapting.md
-  - Preparing for LFADS: drive.md
+  - Interfacing with your Datasets : interfacing.md
+  - Preparing for LFADS: preparing.md
   - File Organization: files.md
   - Multisession Stitched Models: multisession.md
   - Running LFADS: running.md
@@ -41,6 +43,4 @@ pages:
 
 copyright: 'Copyright &copy; 2017 &mdash; Daniel J. O&#39;Shea'
 
-google_analytics:
-  - 'UA-322693-7'
-  - 'auto'
+google_analytics_code: 'UA-322693-7'

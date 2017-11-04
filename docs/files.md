@@ -16,7 +16,7 @@ $ tree -L 4 ~/lorenz_example/
 │   └── dataset004.mat
 └── runs
     └── exampleRun
-        ├── data_IR3OQV
+        ├── data_-MSPr6
         │   ├── inputInfo_dataset001.mat
         │   ├── inputInfo_dataset002.mat
         │   ├── inputInfo_dataset003.mat
@@ -24,7 +24,7 @@ $ tree -L 4 ~/lorenz_example/
         │   ├── lfads_dataset002.h5
         │   └── lfads_dataset003.h5
         ├── launch_tensorboard.sh
-        ├── param_pqQbzB
+        ├── param_Qr2PeG
         │   ├── all
         │   ├── single_dataset001
         │   ├── single_dataset002
@@ -52,7 +52,7 @@ $ tree -L 4 ~/lorenz_example/
         ```
 
         **`data_IR3OQV`**:
-        :   The location of the exported datasets for `RunParams` whose data hash is `IR3OQV`. The data hash includes properties of `RunParams` that affect the exported data, as described [here](drive.md#runparams-data-and-param-hashes).
+        :   The location of the exported datasets for `RunParams` whose data hash is `IR3OQV`. The data hash includes properties of `RunParams` that affect the exported data, as described [here](preparing#runparams-data-and-param-hashes).
 
             **`inputInfo_datasetName.mat`**
             :   Contains data collected when generating the LFADS input, including the raw spike counts, condition ids, time vector, and trial indices assigned to the training and validation sets.
@@ -69,7 +69,7 @@ $ tree -L 4 ~/lorenz_example/
         **`launch_tensorboard.sh`**:
         :   Shell script which will launch TensorBoard, optionally on a specific port
             ```bash
-            ./launch_tensorboard.sh 50000
+            sh launch_tensorboard.sh 50000
             ```
 
         **`run_lfadsqueue.py`**:
@@ -83,17 +83,17 @@ $ tree -L 4 ~/lorenz_example/
 Within an run folder, we find:
 
 ```bash
-$ tree ~/lorenz_example/runs/exampleRuns/param_pqQbzB/all
+$ tree ~/lorenz_example/runs/exampleRuns/param_Qr2PeG/all
 .
 ├── lfads.done
 ├── lfads.out
 ├── lfadsInput
-│   ├── inputInfo_dataset001.mat -> ../../../data_IR3OQV/inputInfo_dataset001.mat
-│   ├── inputInfo_dataset002.mat -> ../../../data_IR3OQV/inputInfo_dataset002.mat
-│   ├── inputInfo_dataset003.mat -> ../../../data_IR3OQV/inputInfo_dataset003.mat
-│   ├── lfads_dataset001.h5 -> ../../../data_IR3OQV/lfads_dataset001.h5
-│   ├── lfads_dataset002.h5 -> ../../../data_IR3OQV/lfads_dataset002.h5
-│   └── lfads_dataset003.h5 -> ../../../data_IR3OQV/lfads_dataset003.h5
+│   ├── inputInfo_dataset001.mat -> ../../../data_-MSPr6/inputInfo_dataset001.mat
+│   ├── inputInfo_dataset002.mat -> ../../../data_-MSPr6/inputInfo_dataset002.mat
+│   ├── inputInfo_dataset003.mat -> ../../../data_-MSPr6/inputInfo_dataset003.mat
+│   ├── lfads_dataset001.h5 -> ../../../data_-MSPr6/lfads_dataset001.h5
+│   ├── lfads_dataset002.h5 -> ../../../data_-MSPr6/lfads_dataset002.h5
+│   └── lfads_dataset003.h5 -> ../../../data_-MSPr6/lfads_dataset003.h5
 ├── lfadsOutput
 │   ├── checkpoint
 │   ├── checkpoint_lve
@@ -101,7 +101,7 @@ $ tree ~/lorenz_example/runs/exampleRuns/param_pqQbzB/all
 │   ├── hyperparameters-0.txt
 │   ├── hyperparameters-38740.txt
 │   ├── lfads_log
-│   │   └── events.out.tfevents.1507613307.photon
+│   │   └── events.out...
 │   ├── lfads_vae.ckpt-37206.data-00000-of-00001
 │   ├── lfads_vae.ckpt-37206.index
 │   ├── lfads_vae.ckpt-37206.meta
@@ -117,7 +117,7 @@ $ tree ~/lorenz_example/runs/exampleRuns/param_pqQbzB/all
 ```
 
 **`lfadsInput`**:
-:    Contains relative symbolic links to the contents of `data_IR3OQV`, enabling multiple runs to share data without duplication. The `.h5` files will be read in by LFADS.
+:    Contains relative symbolic links to the contents of `data_-MSPr6`, enabling multiple runs to share data without duplication. The `.h5` files will be read in by LFADS.
 
 **`lfadsOutput`**:
 :   The directory to which LFADS will write generated output. Some of the key files within are:
