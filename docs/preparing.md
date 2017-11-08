@@ -106,6 +106,7 @@ We'll now setup a `RunCollection` that will contain all of the LFADS runs we'll 
 ```matlab
 runRoot = '~/lorenz_example/runs';
 rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
+rc.version = 20171107; % replace date authored as YYYYMMDD to ensure compatibility going forward
 ```
 
 !!! tip "Versioning and backwards compatibility"

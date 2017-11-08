@@ -26,6 +26,11 @@ dc.loadInfo;
 runRoot = '~/lorenz_example/runs';
 rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
 
+% replace this with the date this script was authored as YYYYMMDD 
+% This ensures that updates to lfads-run-manager won't invalidate older 
+% runs already on disk and provides for backwards compatibility
+rc.version = 20171107;
+
 %% Set parameters for the entire run collection
 
 par = MyExperiment.RunParams;
