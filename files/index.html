@@ -453,20 +453,32 @@
 │   └── dataset004.mat
 └── runs
     └── exampleRun
-        ├── data_-MSPr6
-        │   ├── inputInfo_dataset001.mat
-        │   ├── inputInfo_dataset002.mat
-        │   ├── inputInfo_dataset003.mat
-        │   ├── lfads_dataset001.h5
-        │   ├── lfads_dataset002.h5
-        │   └── lfads_dataset003.h5
-        ├── launch_tensorboard.sh
+        ├── data_RE1kuL
+        │   ├── all
+        │   │   ├── inputInfo_dataset001.mat
+        │   │   ├── inputInfo_dataset002.mat
+        │   │   ├── inputInfo_dataset003.mat
+        │   │   ├── lfads_dataset001.h5
+        │   │   ├── lfads_dataset002.h5
+        │   │   └── lfads_dataset003.h5
+        │   ├── single_dataset001
+        │   │   ├── inputInfo_dataset001.mat
+        │   │   └── lfads_dataset001.h5
+        │   ├── single_dataset002
+        │   │   ├── inputInfo_dataset002.mat
+        │   │   └── lfads_dataset002.h5
+        │   └── single_dataset003
+        │       ├── inputInfo_dataset003.mat
+        │       └── lfads_dataset003.h5
         ├── param_Qr2PeG
         │   ├── all
+        │   │   └── lfadsInput
         │   ├── single_dataset001
+        │   │   └── lfadsInput
         │   ├── single_dataset002
+        │   │   └── lfadsInput
         │   └── single_dataset003
-        ├── run_lfadsqueue.py
+        │       └── lfadsInput
         └── summary.txt
 
 <span class="m">9</span> directories, <span class="m">13</span> files
@@ -488,9 +500,9 @@
 <div class="codehilite"><pre><span></span><span class="n">rc</span> <span class="p">=</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">runRoot</span><span class="p">,</span> <span class="s">&#39;exampleRun&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">);</span>
 </pre></div></p>
 <dl>
-<dt><strong><code class="codehilite">data_IR3OQV</code></strong>:</dt>
+<dt><strong><code class="codehilite">data_RE1kuL</code></strong>:</dt>
 <dd>
-<p>The location of the exported datasets for <code class="codehilite">RunParams</code> whose data hash is <code class="codehilite">IR3OQV</code>. The data hash includes properties of <code class="codehilite">RunParams</code> that affect the exported data, as described <a href="../preparing#runparams-data-and-param-hashes">here</a>.</p>
+<p>The location of the exported datasets for <code class="codehilite">RunParams</code> whose data hash is <code class="codehilite">RE1kuL</code>. The data hash includes properties of <code class="codehilite">RunParams</code> that affect the exported data, as described <a href="../preparing#runparams-data-and-param-hashes">here</a>. Each subfolder corresponds to the name of a <code class="codehilite">RunSpec</code>.</p>
 <dl>
 <dt><strong><code class="codehilite">inputInfo_datasetName.mat</code></strong></dt>
 <dd>Contains data collected when generating the LFADS input, including the raw spike counts, condition ids, time vector, and trial indices assigned to the training and validation sets.</dd>
@@ -499,8 +511,8 @@
 </dl>
 </dd>
 </dl>
-<p><strong><code class="codehilite">param_pqQbzB</code></strong>:
-    :   Location of the individual runs generated with the <code class="codehilite">RunParams</code> instance whose param hash is <code class="codehilite">pqQbzB</code>. The subfolders correspond to the run names passed to <code class="codehilite">RunSpec</code>, and their contents will be discussed below.
+<p><strong><code class="codehilite">param_Qr2PeG</code></strong>:
+    :   Location of the individual runs generated with the <code class="codehilite">RunParams</code> instance whose param hash is <code class="codehilite">Qr2PeG</code>. The subfolders correspond to the run names passed to <code class="codehilite">RunSpec</code>, and their contents will be discussed below.
         <div class="codehilite"><pre><span></span><span class="n">rc</span><span class="p">.</span><span class="n">addRunSpec</span><span class="p">(</span><span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunSpec</span><span class="p">(</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">));</span>
 </pre></div></p>
 <dl>
@@ -524,12 +536,12 @@
 ├── lfads.done
 ├── lfads.out
 ├── lfadsInput
-│   ├── inputInfo_dataset001.mat -&gt; ../../../data_-MSPr6/inputInfo_dataset001.mat
-│   ├── inputInfo_dataset002.mat -&gt; ../../../data_-MSPr6/inputInfo_dataset002.mat
-│   ├── inputInfo_dataset003.mat -&gt; ../../../data_-MSPr6/inputInfo_dataset003.mat
-│   ├── lfads_dataset001.h5 -&gt; ../../../data_-MSPr6/lfads_dataset001.h5
-│   ├── lfads_dataset002.h5 -&gt; ../../../data_-MSPr6/lfads_dataset002.h5
-│   └── lfads_dataset003.h5 -&gt; ../../../data_-MSPr6/lfads_dataset003.h5
+│   ├── inputInfo_dataset001.mat -&gt; ../../../data_RE1kuL/all/inputInfo_dataset001.mat
+│   ├── inputInfo_dataset002.mat -&gt; ../../../data_RE1kuL/all/inputInfo_dataset002.mat
+│   ├── inputInfo_dataset003.mat -&gt; ../../../data_RE1kuL/all/inputInfo_dataset003.mat
+│   ├── lfads_dataset001.h5 -&gt; ../../../data_RE1kuL/all/lfads_dataset001.h5
+│   ├── lfads_dataset002.h5 -&gt; ../../../data_RE1kuL/all/lfads_dataset002.h5
+│   └── lfads_dataset003.h5 -&gt; ../../../data_RE1kuL/all/lfads_dataset003.h5
 ├── lfadsOutput
 │   ├── checkpoint
 │   ├── checkpoint_lve
@@ -554,7 +566,7 @@
 
 <dl>
 <dt><strong><code class="codehilite">lfadsInput</code></strong>:</dt>
-<dd>Contains relative symbolic links to the contents of <code class="codehilite">data_-MSPr6</code>, enabling multiple runs to share data without duplication. The <code class="codehilite"><span class="na">.h5</span></code> files will be read in by LFADS.</dd>
+<dd>Contains relative symbolic links to the contents of <code class="codehilite">data_RE1kuL</code>, enabling multiple runs to share data without duplication. The <code class="codehilite"><span class="na">.h5</span></code> files will be read in by LFADS.</dd>
 <dt><strong><code class="codehilite">lfadsOutput</code></strong>:</dt>
 <dd>
 <p>The directory to which LFADS will write generated output. Some of the key files within are:</p>

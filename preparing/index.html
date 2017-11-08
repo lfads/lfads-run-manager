@@ -607,6 +607,10 @@
 <span class="n">rc</span> <span class="p">=</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">runRoot</span><span class="p">,</span> <span class="s">&#39;exampleRun&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">);</span>
 </pre></div>
 
+<div class="admonition tip">
+<p class="admonition-title">Versioning and backwards compatibility</p>
+<p>You can optionally set <code class="codehilite">rc.version</code> just after creating the <code class="codehilite">RunCollection</code>. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format <code class="codehilite">YYYYMMDD</code>. Specifying this here allows for backwards compatibility in case we need to change aspects of where lfads-run-manager organizes files on dis or how the <code class="codehilite">RunParams</code> hashes are generated. The default <code class="codehilite">rc.version</code> will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to &ldquo;freeze&rdquo; the lfads-run-manager logic for this specific collection of runs.</p>
+</div>
 <h2 id="add-the-runspec-instances">Add the <code class="codehilite">RunSpec</code> instances<a class="headerlink" href="#add-the-runspec-instances" title="Permanent link">&para;</a></h2>
 <p>Recall that <code class="codehilite">RunSpec</code> instances specify which datasets are included in a specific run. We&rsquo;ll start by setting up a single dataset run for each of the datasets:</p>
 <div class="codehilite"><pre><span></span><span class="k">for</span> <span class="n">iR</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span>
@@ -652,7 +656,7 @@
 <p>You can then look at the parameter settings added to <code class="codehilite">rc</code> using <code class="codehilite">rc.params</code>:</p>
 <div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">rc</span><span class="p">.</span><span class="n">params</span>
 
-<span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunParams</span> <span class="n">param_Qr2PeG</span> <span class="n">data_</span><span class="o">-</span><span class="n">MSPr6</span>
+<span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunParams</span> <span class="n">param_Qr2PeG</span> <span class="n">data_RE1kuL</span>
 <span class="n">useAlignmentMatrix</span><span class="p">=</span><span class="n">true</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
 
 <span class="c">...</span>
@@ -695,7 +699,7 @@
   <span class="n">Path</span><span class="p">:</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">exampleRun</span>
 
   <span class="mi">1</span> <span class="n">parameter</span> <span class="n">settings</span>
-  <span class="p">[</span><span class="mi">1</span> <span class="n">param_Qr2PeG</span> <span class="n">data_</span><span class="o">-</span><span class="n">MSPr6</span><span class="p">]</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunParams</span> <span class="n">useAlignmentMatrix</span><span class="p">=</span><span class="n">true</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
+  <span class="p">[</span><span class="mi">1</span> <span class="n">param_Qr2PeG</span> <span class="n">data_RE1kuL</span><span class="p">]</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunParams</span> <span class="n">useAlignmentMatrix</span><span class="p">=</span><span class="n">true</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
 
   <span class="mi">5</span> <span class="n">run</span> <span class="n">specifications</span>
   <span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunSpec</span> &quot;<span class="n">single_dataset001</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">datasets</span><span class="p">)</span>
@@ -707,7 +711,7 @@
                           <span class="n">name</span><span class="p">:</span> <span class="s">&#39;exampleRun&#39;</span>
                        <span class="n">comment</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
                       <span class="n">rootPath</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs&#39;</span>
-                       <span class="n">version</span><span class="p">:</span> <span class="mi">3</span>
+                       <span class="n">version</span><span class="p">:</span> <span class="mi">20171107</span>
              <span class="n">datasetCollection</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="n">x1</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">DatasetCollection</span><span class="p">]</span>
                           <span class="n">runs</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="n">x1</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">Run</span><span class="p">]</span>
                         <span class="n">params</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="n">x1</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunParams</span><span class="p">]</span>
@@ -717,7 +721,7 @@
                     <span class="n">nRunsTotal</span><span class="p">:</span> <span class="mi">5</span>
                      <span class="n">nDatasets</span><span class="p">:</span> <span class="mi">4</span>
                           <span class="n">path</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleRun&#39;</span>
-      <span class="n">pathsCommonDataForParams</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;~/lorenz_example/runs/exampleRun/data_-MSPr6&#39;</span><span class="p">}</span>
+      <span class="n">pathsCommonDataForParams</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;~/lorenz_example/runs/exampleRun/data_RE1kuL&#39;</span><span class="p">}</span>
                 <span class="n">pathsForParams</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;~/lorenz_example/runs/exampleRun/param_Qr2PeG&#39;</span><span class="p">}</span>
     <span class="n">fileShellScriptTensorboard</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleRun/launch_tensorboard.sh&#39;</span>
                <span class="n">fileSummaryText</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleRun/summary.txt&#39;</span>
