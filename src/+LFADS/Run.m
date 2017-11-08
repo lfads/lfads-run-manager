@@ -257,7 +257,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if nargin < 2
                 regenerate = false;
             end
-            assert(r.nDatasets > 1 && r.params.useAlignmentMatrix, 'Alignment matrices can only be built for multi-session datasets where useAlignmentMatrix is true');
+            assert((r.nDatasets > 1 && r.params.useAlignmentMatrix) || (r.nDatasets == 1 && r.params.useSingleDatasetAlignmentMatrix), ...
+                'Alignment matrices can only be built for multi-dataset runs where useAlignmentMatrix is true or single-dataset runs where useSingleDatasetAlignmentMatrix is true');
 
             % ask for specific dataset for building the alignment
             % matrices, which may be a subset of all trials, e.g.
@@ -303,10 +304,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   For each dataset, an initial guess at the encoder matrices which maps `nNeuronsThisSession` (for that dataset) to a
             %   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,
             %   PC regression can provide a reasonable set of guesses.
-
-            if r.nDatasets == 1
-                error('Alignment matrices can only be generated when number of datasets > 1');
-            end
 
             r.multisessionAlignmentTool = LFADS.MultisessionAlignmentTool(r, seqData, {r.datasets.name}');
             [alignmentMatrices, alignmentBiases] = r.multisessionAlignmentTool.computeAlignmentMatricesUsingTrialAveragedPCR();

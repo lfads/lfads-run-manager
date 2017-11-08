@@ -33,11 +33,8 @@ classdef MultisessionAlignmentTool < handle
             %
             
             tool.spikeBinMs = run.params.spikeBinMs;
-            tool.nDatasets = numel(seqData);
-            assert(tool.nDatasets > 1, 'LFADS.MultisessionAlignmentTool can only be used when number of datasets is > 1');
-            
+            tool.nDatasets = numel(seqData);   
             tool.nFactors = run.params.c_factors_dim;
-            
             tool.datasetNames = LFADS.Utils.makecol(datasetNames);
             
             % compute all unique conditions across datasets
@@ -166,50 +163,78 @@ classdef MultisessionAlignmentTool < handle
             all_data_centered = bsxfun(@minus, all_data, all_data_means);
             
             % apply PCA
+            nFactorsRequested = min(tool.nFactors, size(all_data_centered, 1)); % in case nFactors > dataset num channels
             try
-                keep_pcs = pca(all_data_centered', 'Rows', 'pairwise', 'NumComponents', tool.nFactors);
+                [pca_proj_mat, pc_data] = pca(all_data_centered', 'Rows', 'pairwise', 'NumComponents', nFactorsRequested);
             catch
-                keep_pcs = pca(all_data_centered', 'Rows', 'complete', 'NumComponents', tool.nFactors);
+                [pca_proj_mat, pc_data] = pca(all_data_centered', 'Rows', 'complete', 'NumComponents', nFactorsRequested);
+            end
+            % pca_proj_mat is nNeuronsTotal x nFactorsRequested
+            % pc_data is nTime*nConditions x nFactorsRequested
+            
+            [alignmentMatrices, alignmentBiases] = deal(cell(tool.nDatasets, 1));
+            tool.pcAvg_reconstructionByDataset = zeros(tool.nFactors, tool.nTime, tool.nConditions, tool.nDatasets);
+            if tool.nDatasets == 1
+                % single dataset alignment matrix just for dimensionality
+                % reduction
+                % just use the pca projection directly
+                alignmentMatrices{1} = pca_proj_mat;
+                alignmentBiases{1} = all_data_means;
+                
+                % pca_proj_mat is (nTime*nConditions) x nFactorsRequested
+                % pcAvg_reconstructionByDataset is nFactors x nTime x nConditions x 1 
+                tool.pcAvg_reconstructionByDataset(1:nFactorsRequested, :, :, 1) = reshape(pc_data', [nFactorsRequested, tool.nTime, tool.nConditions]);
+                
+            else
+                % multi-dataset PC regression to reconstruct the global PCs
+                % from each dataset's neurons alone
+                
+                % project all data into pca space
+                % dim_reduced_data will be nFactors x nTime*nConditions
+                dim_reduced_data = pca_proj_mat' * all_data_centered;
+                tool.pcAvg_allDatasets = reshape(dim_reduced_data, [tool.nFactors, tool.nTime, tool.nConditions]);
+
+                % get a mapping from each day to the lowD space
+                for iDS = 1:tool.nDatasets
+                    % nChannelsByDataset(iDS) x (nTime*nConditions)
+                    this_dataset_data = all_data(which_dataset==iDS, :);
+                    % nChannelsByDataset(iDS) x 1
+                    this_dataset_means = all_data_means(which_dataset==iDS);
+
+                    % figure out which timepoints are valid
+                    tMask = ~any(isnan(this_dataset_data), 1) & ~any(isnan(dim_reduced_data), 1);
+                    % nFactors x (nTime*nConditions)
+                    dim_reduced_data_this = bsxfun(@minus, dim_reduced_data(:, tMask), ...
+                        nanmean(dim_reduced_data(:, tMask), 2));
+                    % nChannelsByDataset(iDS) x (nTime*nConditions)
+                    this_dataset_centered = bsxfun(@minus, this_dataset_data(:, tMask), ...
+                        nanmean(this_dataset_data(:, tMask), 2));
+
+                    % regress this day's data against the global PCs -
+                    % nChannelsByDataset(iDS) x nFactors
+                   alignmentMatrices{iDS} = (this_dataset_centered' \ dim_reduced_data_this');
+                    % and set mean as it will be subtracted from the data
+                    % before projecting by the alignment matrix
+                    % nChannelsByDataset(iDS) x 1
+                   alignmentBiases{iDS} = squeeze(this_dataset_means);
+
+                    if any(isnan(alignmentMatrices{iDS}(:)))f
+                        error('NaNs in the the alignment matrix');
+                    end
+
+                    % prediction is nFactors x (nTime*nConditions)
+                    prediction = alignmentMatrices{iDS}' * this_dataset_centered;
+                    tool.pcAvg_reconstructionByDataset(1:nFactorsRequested, :, :, iDS) = reshape(prediction, [nFactorsRequested, tool.nTime, tool.nConditions]);
+                end
             end
             
-            % project all data into pca space
-            % dim_reduced_data will be nFactors x nTime*nConditions
-            dim_reduced_data = keep_pcs' * all_data_centered;
-            tool.pcAvg_allDatasets = reshape(dim_reduced_data, [tool.nFactors, tool.nTime, tool.nConditions]);
-            
-            % get a mapping from each day to the lowD space
-            [tool.pcAvg_reconstructionByDataset, alignmentMatrices, alignmentBiases] = deal(cell(tool.nDatasets, 1));
-            tool.pcAvg_reconstructionByDataset = nan(tool.nFactors, tool.nTime, tool.nConditions, tool.nDatasets);
+            % expand alignment matrices to include additional factors if
+            % too many requested
             for iDS = 1:tool.nDatasets
-                % nChannelsByDataset(iDS) x (nTime*nConditions)
-                this_dataset_data = all_data(which_dataset==iDS, :);
-                % nChannelsByDataset(iDS) x 1
-                this_dataset_means = all_data_means(which_dataset==iDS);
-                
-                % figure out which timepoints are valid
-                tMask = ~any(isnan(this_dataset_data), 1) & ~any(isnan(dim_reduced_data), 1);
-                % nFactors x (nTime*nConditions)
-                dim_reduced_data_this = bsxfun(@minus, dim_reduced_data(:, tMask), ...
-                    nanmean(dim_reduced_data(:, tMask), 2));
-                % nChannelsByDataset(iDS) x (nTime*nConditions)
-                this_dataset_centered = bsxfun(@minus, this_dataset_data(:, tMask), ...
-                    nanmean(this_dataset_data(:, tMask), 2));
-                
-                % regress this day's data against the global PCs -
-                % nChannelsByDataset(iDS) x nFactors
-               alignmentMatrices{iDS} = (this_dataset_centered' \ dim_reduced_data_this');
-                % and set mean as it will be subtracted from the data
-                % before projecting by the alignment matrix
-                % nChannelsByDataset(iDS) x 1
-               alignmentBiases{iDS} = squeeze(this_dataset_means);
-                
-                if any(isnan(alignmentMatrices{iDS}(:)))f
-                    error('NaNs in the the alignment matrix');
+                nCol = size(alignmentMatrices{iDS}, 2);
+                if nCol < tool.nFactors
+                    alignmentMatrices{iDS} = cat(2, alignmentMatrices{iDS}, zeros(size(alignmentMatrices{iDS}, 1), tool.nFactors - nCol));
                 end
-                    
-                % prediction is nFactors x (nTime*nConditions)
-                prediction = alignmentMatrices{iDS}' * this_dataset_centered;
-                tool.pcAvg_reconstructionByDataset(:, :, :, iDS) = reshape(prediction, [tool.nFactors, tool.nTime, tool.nConditions]);
             end
             
             tool.alignmentMatrices = alignmentMatrices;
