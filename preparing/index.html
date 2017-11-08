@@ -605,6 +605,7 @@
 <p>We&rsquo;ll now setup a <code class="codehilite">RunCollection</code> that will contain all of the LFADS runs we&rsquo;ll be training. Inside this folder will be stored all of the processed data and LFADS output, nicely organized within subfolders.</p>
 <div class="codehilite"><pre><span></span><span class="n">runRoot</span> <span class="p">=</span> <span class="s">&#39;~/lorenz_example/runs&#39;</span><span class="p">;</span>
 <span class="n">rc</span> <span class="p">=</span> <span class="n">MyExperiment</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">runRoot</span><span class="p">,</span> <span class="s">&#39;exampleRun&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">);</span>
+<span class="n">rc</span><span class="p">.</span><span class="n">version</span> <span class="p">=</span> <span class="mi">20171107</span><span class="p">;</span> <span class="c">% replace date authored as YYYYMMDD to ensure compatibility going forward</span>
 </pre></div>
 
 <div class="admonition tip">
