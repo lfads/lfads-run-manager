@@ -216,7 +216,12 @@ classdef MultisessionAlignmentTool < handle
             tool.alignmentBiases = alignmentBiases;
         end
     
-        function plotAlignmentReconstruction(tool, factorIdx, conditionIdx)
+        function plotAlignmentReconstruction(tool, factorIdx, conditionIdx, varargin)
+            p = inputParser();
+            p.addParameter('flip', false, @islogical); % stack conditions vertically and factors horizontally instead of vice versa
+            p.parse(varargin{:});
+            flip = p.Results.flip;
+            
             clf;
             if isempty(tool.pcAvg_allDatasets) || isempty(tool.pcAvg_reconstructionByDataset)
                 tool.computeAlignmentMatricesUsingTrialAveragedPCR();
@@ -239,7 +244,6 @@ classdef MultisessionAlignmentTool < handle
 
             cmap = LFADS.Utils.hslmap(tool.nDatasets);
             
-            iSub = 1;
             for iF = 1:nFactorsPlot
                 f = factorIdx(iF);
                 for iC = 1:nConditionsPlot
@@ -250,8 +254,14 @@ classdef MultisessionAlignmentTool < handle
                         this_cond_desc = tool.conditions{c};
                         assert(ischar(this_cond_desc));
                     end
-                    LFADS.Utils.subtightplot(nFactorsPlot, nConditionsPlot, iSub, 0.01, [0.01 0.05], [0.05 0.01]);
-                    iSub = iSub + 1;
+                    
+                    if flip
+                        iSub = sub2ind([nFactorsPlot, nConditionsPlot], iF, iC);
+                        LFADS.Utils.subtightplot(nConditionsPlot, nFactorsPlot, iSub, 0.01, [0.01 0.05], [0.05 0.01]);
+                    else
+                        iSub = sub2ind([nConditionsPlot, nFactorsPlot], iC, iF);
+                        LFADS.Utils.subtightplot(nFactorsPlot, nConditionsPlot, iSub, 0.01, [0.01 0.05], [0.05 0.01]);
+                    end
 
                     % plot single dataset reconstructions
                     target = squeeze(tool.pcAvg_allDatasets(f, :, c));
@@ -274,17 +284,24 @@ classdef MultisessionAlignmentTool < handle
                     set(gca, 'YTick', [], 'XTick', []);
                     axis off;
                     
-                    if iF == 1
+                    if (flip && iC == 1)
+                        h = title(sprintf('Factor %d', f));
+                        h.Visible = 'on';
+                        h.FontWeight = 'normal';
+                    elseif (~flip && iF == 1)
                         h = title(this_cond_desc);
                         h.Visible = 'on';
                         h.FontWeight = 'normal';
                     end
-                    if iC == 1
+                    
+                    if (flip && iF == 1)
+                        h = ylabel(this_cond_desc);
+                        h.Visible = 'on';
+                    elseif (~flip && iC == 1)
                         h = ylabel(sprintf('Factor %d', f));
                         h.Visible = 'on';
                     end
-                    
-                    if iF == 1 && iC == nConditionsPlot
+                    if (~flip && iF == 1 && iC == nConditionsPlot) || (flip && iC ==1 && iF == nFactorsPlot)
                         legend(gca, 'show', 'Location', 'Best');
                         legend boxoff;
                     end
