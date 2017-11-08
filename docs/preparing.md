@@ -110,7 +110,7 @@ rc.version = 20171107; % replace date authored as YYYYMMDD to ensure compatibili
 ```
 
 !!! tip "Versioning and backwards compatibility"
-    You can optionally set `rc.version` just after creating the `RunCollection`. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format `YYYYMMDD`. Specifying this here allows for backwards compatibility in case we need to change aspects of where lfads-run-manager organizes files on dis or how the `RunParams` hashes are generated. The default `rc.version` will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to "freeze" the lfads-run-manager logic for this specific collection of runs.
+    You can optionally set `rc.version` just after creating the `RunCollection`. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format `YYYYMMDD`. Specifying this here allows for backwards compatibility in case we need to change aspects of where lfads-run-manager organizes files on disk or how the `RunParams` hashes are generated. The default `rc.version` will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to "freeze" the lfads-run-manager logic for this specific collection of runs.
 
 ## Add the `RunSpec` instances
 
