@@ -16,7 +16,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         comment char = '' % Textual comment for convenience
         rootPath char = ''; % Root path on disk under which individual Runs will be stored
 
-        version uint32 = 3; % version used for backwards compatibility
+        version uint32 = 20171107; % version used for graceful evolution with backwards compatibility
 
         datasetCollection % DatasetCollection instance
     end
@@ -140,6 +140,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             if isempty(rc.params)
                 rc.params = params;
             else
+                for iP = 1:numel(params)
+                    params.version = rc.version;
+                end
+                
                 % check for existing runs by name and replace them
                 [tf, idx] = rc.ismemberParams(params);
                 if any(tf)
@@ -209,6 +213,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                         new.params = rc.params(iP);
                         new.paramIndexInRunCollection = iP;
                         new.datasets = spec.datasets;
+                        
+                        % set the Run version to match RunCollectionVersion
+                        new.version = rc.version;
 
                         % check whether the old run matches, keep it if so,
                         % so that we don't break references unless

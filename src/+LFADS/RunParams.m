@@ -11,7 +11,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         % High-level params unrelated to LFADS internals
         spikeBinMs double = 2; % Spike bin width in ms
         trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio    
-        useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together. Default = false.     
+        useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together.
+        useSingleDatasetAlignmentMatrix logical = false;  % Whether to use an alignment matrix using a single dataset, for dimensionality reduction upstream of the encoder 
         scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run
     end
     
@@ -57,6 +58,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
     % Retired properties that should be kept around for hash value purposes
     % but no longer output to LFADS
     properties(Hidden)
+        version uint32 = 20171107; % Used for graceful evolution of path settings
         c_in_factors_dim uint16 = 50;
         setInFactorsMatchDataForSingleDataset logical = false; % if true, c_in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
     end
@@ -157,6 +159,10 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 if ismember(name, parser.Results.ignoreProperties)
                     continue;
                 end
+                % ALWAYS DON'T HASH VERSION
+                if strcmp(name, 'version')
+                    continue;
+                end
                 % skip properties that are Dependent, Constant, Transient,
                 % or Hidden. Serialize the value if it differes from the 
                 if ~prop.Dependent && ~prop.Constant && ~prop.Transient && (~parser.Results.ignoreHidden || ~prop.Hidden)
@@ -229,7 +235,15 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         function list = getListPropertiesNotAffectingInputData(p)
             props = p.listNonTransientProperties('onlyRootClassProperties', true);
-            mask = cellfun(@(x) strncmp('c_', x, 2), props);
+            
+            if p.version < 20171107
+                mask = cellfun(@(x) strncmp('c_', x, 2), props);
+            else
+                % c_factors_dim now affects the data hash because it
+                % changes the saved alignment matrix
+                doesAffectInputData = {'c_factors_dim'};
+                mask = cellfun(@(x) strncmp('c_', x, 2) && ~ismember(x, doesAffectInputData), props);
+            end
             list = props(mask);
         end
         

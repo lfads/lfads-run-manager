@@ -16,20 +16,32 @@ $ tree -L 4 ~/lorenz_example/
 │   └── dataset004.mat
 └── runs
     └── exampleRun
-        ├── data_-MSPr6
-        │   ├── inputInfo_dataset001.mat
-        │   ├── inputInfo_dataset002.mat
-        │   ├── inputInfo_dataset003.mat
-        │   ├── lfads_dataset001.h5
-        │   ├── lfads_dataset002.h5
-        │   └── lfads_dataset003.h5
-        ├── launch_tensorboard.sh
+        ├── data_RE1kuL
+        │   ├── all
+        │   │   ├── inputInfo_dataset001.mat
+        │   │   ├── inputInfo_dataset002.mat
+        │   │   ├── inputInfo_dataset003.mat
+        │   │   ├── lfads_dataset001.h5
+        │   │   ├── lfads_dataset002.h5
+        │   │   └── lfads_dataset003.h5
+        │   ├── single_dataset001
+        │   │   ├── inputInfo_dataset001.mat
+        │   │   └── lfads_dataset001.h5
+        │   ├── single_dataset002
+        │   │   ├── inputInfo_dataset002.mat
+        │   │   └── lfads_dataset002.h5
+        │   └── single_dataset003
+        │       ├── inputInfo_dataset003.mat
+        │       └── lfads_dataset003.h5
         ├── param_Qr2PeG
         │   ├── all
+        │   │   └── lfadsInput
         │   ├── single_dataset001
+        │   │   └── lfadsInput
         │   ├── single_dataset002
+        │   │   └── lfadsInput
         │   └── single_dataset003
-        ├── run_lfadsqueue.py
+        │       └── lfadsInput
         └── summary.txt
 
 9 directories, 13 files
@@ -51,8 +63,8 @@ $ tree -L 4 ~/lorenz_example/
         rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
         ```
 
-        **`data_IR3OQV`**:
-        :   The location of the exported datasets for `RunParams` whose data hash is `IR3OQV`. The data hash includes properties of `RunParams` that affect the exported data, as described [here](preparing#runparams-data-and-param-hashes).
+        **`data_RE1kuL`**:
+        :   The location of the exported datasets for `RunParams` whose data hash is `RE1kuL`. The data hash includes properties of `RunParams` that affect the exported data, as described [here](preparing#runparams-data-and-param-hashes). Each subfolder corresponds to the name of a `RunSpec`.
 
             **`inputInfo_datasetName.mat`**
             :   Contains data collected when generating the LFADS input, including the raw spike counts, condition ids, time vector, and trial indices assigned to the training and validation sets.
@@ -60,8 +72,8 @@ $ tree -L 4 ~/lorenz_example/
             **`lfads_datasetName.h5`**:
             :   The spike counts data directly read by LFADS
 
-        **`param_pqQbzB`**:
-            :   Location of the individual runs generated with the `RunParams` instance whose param hash is `pqQbzB`. The subfolders correspond to the run names passed to `RunSpec`, and their contents will be discussed below.
+        **`param_Qr2PeG`**:
+            :   Location of the individual runs generated with the `RunParams` instance whose param hash is `Qr2PeG`. The subfolders correspond to the run names passed to `RunSpec`, and their contents will be discussed below.
                 ```matlab
                 rc.addRunSpec(MyExperiment.RunSpec('all', dc, 1:dc.nDatasets));
                 ```
@@ -88,12 +100,12 @@ $ tree ~/lorenz_example/runs/exampleRuns/param_Qr2PeG/all
 ├── lfads.done
 ├── lfads.out
 ├── lfadsInput
-│   ├── inputInfo_dataset001.mat -> ../../../data_-MSPr6/inputInfo_dataset001.mat
-│   ├── inputInfo_dataset002.mat -> ../../../data_-MSPr6/inputInfo_dataset002.mat
-│   ├── inputInfo_dataset003.mat -> ../../../data_-MSPr6/inputInfo_dataset003.mat
-│   ├── lfads_dataset001.h5 -> ../../../data_-MSPr6/lfads_dataset001.h5
-│   ├── lfads_dataset002.h5 -> ../../../data_-MSPr6/lfads_dataset002.h5
-│   └── lfads_dataset003.h5 -> ../../../data_-MSPr6/lfads_dataset003.h5
+│   ├── inputInfo_dataset001.mat -> ../../../data_RE1kuL/all/inputInfo_dataset001.mat
+│   ├── inputInfo_dataset002.mat -> ../../../data_RE1kuL/all/inputInfo_dataset002.mat
+│   ├── inputInfo_dataset003.mat -> ../../../data_RE1kuL/all/inputInfo_dataset003.mat
+│   ├── lfads_dataset001.h5 -> ../../../data_RE1kuL/all/lfads_dataset001.h5
+│   ├── lfads_dataset002.h5 -> ../../../data_RE1kuL/all/lfads_dataset002.h5
+│   └── lfads_dataset003.h5 -> ../../../data_RE1kuL/all/lfads_dataset003.h5
 ├── lfadsOutput
 │   ├── checkpoint
 │   ├── checkpoint_lve
@@ -117,7 +129,7 @@ $ tree ~/lorenz_example/runs/exampleRuns/param_Qr2PeG/all
 ```
 
 **`lfadsInput`**:
-:    Contains relative symbolic links to the contents of `data_-MSPr6`, enabling multiple runs to share data without duplication. The `.h5` files will be read in by LFADS.
+:    Contains relative symbolic links to the contents of `data_RE1kuL`, enabling multiple runs to share data without duplication. The `.h5` files will be read in by LFADS.
 
 **`lfadsOutput`**:
 :   The directory to which LFADS will write generated output. Some of the key files within are:

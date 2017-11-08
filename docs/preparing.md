@@ -108,6 +108,9 @@ runRoot = '~/lorenz_example/runs';
 rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
 ```
 
+!!! tip "Versioning and backwards compatibility"
+    You can optionally set `rc.version` just after creating the `RunCollection`. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format `YYYYMMDD`. Specifying this here allows for backwards compatibility in case we need to change aspects of where lfads-run-manager organizes files on dis or how the `RunParams` hashes are generated. The default `rc.version` will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to "freeze" the lfads-run-manager logic for this specific collection of runs.
+
 ## Add the `RunSpec` instances
 
 Recall that `RunSpec` instances specify which datasets are included in a specific run. We'll start by setting up a single dataset run for each of the datasets:
@@ -165,7 +168,7 @@ You can then look at the parameter settings added to `rc` using `rc.params`:
 ```matlab
 >> rc.params
 
-MyExperiment.RunParams param_Qr2PeG data_-MSPr6
+MyExperiment.RunParams param_Qr2PeG data_RE1kuL
 useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
 ...
@@ -215,7 +218,7 @@ MyExperiment.RunCollection "exampleRun" (5 runs total)
   Path: ~/lorenz_example/runs/exampleRun
 
   1 parameter settings
-  [1 param_Qr2PeG data_-MSPr6] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+  [1 param_Qr2PeG data_RE1kuL] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
   5 run specifications
   [ 1] MyExperiment.RunSpec "single_dataset001" (1 datasets)
@@ -227,7 +230,7 @@ MyExperiment.RunCollection "exampleRun" (5 runs total)
                           name: 'exampleRun'
                        comment: ''
                       rootPath: '~/lorenz_example/runs'
-                       version: 3
+                       version: 20171107
              datasetCollection: [1x1 MyExperiment.DatasetCollection]
                           runs: [5x1 MyExperiment.Run]
                         params: [1x1 MyExperiment.RunParams]
@@ -237,7 +240,7 @@ MyExperiment.RunCollection "exampleRun" (5 runs total)
                     nRunsTotal: 5
                      nDatasets: 4
                           path: '~/lorenz_example/runs/exampleRun'
-      pathsCommonDataForParams: {'~/lorenz_example/runs/exampleRun/data_-MSPr6'}
+      pathsCommonDataForParams: {'~/lorenz_example/runs/exampleRun/data_RE1kuL'}
                 pathsForParams: {'~/lorenz_example/runs/exampleRun/param_Qr2PeG'}
     fileShellScriptTensorboard: '~/lorenz_example/runs/exampleRun/launch_tensorboard.sh'
                fileSummaryText: '~/lorenz_example/runs/exampleRun/summary.txt'

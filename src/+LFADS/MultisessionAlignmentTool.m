@@ -36,7 +36,7 @@ classdef MultisessionAlignmentTool < handle
             tool.nDatasets = numel(seqData);
             assert(tool.nDatasets > 1, 'LFADS.MultisessionAlignmentTool can only be used when number of datasets is > 1');
             
-            tool.nFactors = run.params.c_in_factors_dim;
+            tool.nFactors = run.params.c_factors_dim;
             
             tool.datasetNames = LFADS.Utils.makecol(datasetNames);
             

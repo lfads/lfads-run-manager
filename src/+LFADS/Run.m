@@ -93,7 +93,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         comment char = '' % Textual comment for convenience
 
-        version uint32 = 5; % Internal versioning allowing for graceful evolution of path settings
+        version uint32 = 20171107; % Internal versioning allowing for graceful evolution of path settings, set by RunCollection automatically
     end
 
     properties
@@ -128,11 +128,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         pathLFADSInput % Path on disk where LFADS input hd5 files for this run will be symlinked into, from their true location in pathCommonData
         lfadsInputFileNames % List of LFADS input hd5 files (sans path)
-
         lfadsInputInfoFileNames % List of LFADS input info .mat files (sans path)
-
+       
         pathLFADSOutput % Path on disk where LFADS output will be written
-
         fileShellScriptLFADSTrain % Location on disk where shell script for LFADS training will be written
         fileShellScriptLFADSPosteriorMeanSample  % Location on disk where shell script for LFADS posterior mean sampling will be written
         fileShellScriptLFADSWriteModelParams % Location on disk where shell script for LFADS write model params will be written
@@ -361,8 +359,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function p = get.pathCommonData(r)
             if isempty(r.runCollection)
                 p = '';
-            else
+            elseif r.version < 20171107
                 p = fullfile(r.runCollection.path, r.params.generateInputDataHashName());
+            else
+                % append run name under data_HASH folder so that different
+                % run specs get different h5 files (with potentially
+                % different alignment matrices)
+                p = fullfile(r.runCollection.path, r.params.generateInputDataHashName(), r.name);
             end
         end
 
@@ -705,6 +708,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             fnames = r.lfadsInputFileNames;
             fnamesInfo = r.lfadsInputInfoFileNames;
             for iDS = 1:numel(r.datasets)
+                % delete the original files
                 file = fullfile(r.pathCommonData, fnames{iDS});
                 if exist(file, 'file')
                     delete(file);
@@ -715,6 +719,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     delete(file);
                 end
 
+                % and delete the symlinks that point to them
                 file = fullfile(r.pathLFADSInput, fnames{iDS});
                 if exist(file, 'file')
                     delete(file);
@@ -803,9 +808,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
                 % if there are multiple datasets, we need an alignment matrix
                 if r.nDatasets > 1 && r.params.useAlignmentMatrix
-                    % call out to abstract dataset specific method
+                    % generate alignment matrices for stitching run 
                     useAlignMatrices = true;
-
+                    [alignmentMatrices, alignmentBiases] = r.doMultisessionAlignment(regenerate);
+                    
+                elseif r.version >= 20171107 && r.nDatasets == 1 && r.params.useSingleDatasetAlignmentMatrix
+                    % generate alignment matrix for single run (just PCA)
+                    useAlignMatrices = true;
                     [alignmentMatrices, alignmentBiases] = r.doMultisessionAlignment(regenerate);
                 else
                     useAlignMatrices = false;
@@ -842,6 +851,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
                 % write the actual lfads input file
                 LFADS.Utils.mkdirRecursive(r.pathCommonData);
+                
                 LFADS.Interface.seq_to_lfads(seqData(maskGenerate), r.pathCommonData, r.lfadsInputFileNames, ...
                     seqToLFADSArgs{:});
 
@@ -891,11 +901,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             fnames = r.lfadsInputFileNames;
             fnamesInputInfo = r.lfadsInputInfoFileNames;
             for iDS = 1:r.nDatasets
-                % make link relative (from
-                % runCollection/param_HASH/runName/lfadsInput/ to
-                % runCollection/data_HASH/)
-                origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), fnames{iDS});
-                % origName = fullfile(r.pathCommonData, fnames{iDS});
+                % make link relative (from link location in
+                % runCollection/param_HASH/runName/lfadsInput/)
+                if r.version < 20171107
+                    % to % runCollection/data_HASH/file.h5
+                    origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), fnames{iDS});
+                else
+                    % % runCollection/data_HASH/run_name/file.h5
+                    origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), r.name, fnames{iDS});
+                end
 
                 linkName = fullfile(r.pathLFADSInput, fnames{iDS});
                 if ~exist(linkName, 'file') || regenerate
@@ -903,8 +917,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 end
 
                 % make link relative
-                origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), fnamesInputInfo{iDS});
-                % origName = fullfile(r.pathCommonData, fnamesInputInfo{iDS});
+                if r.version < 20171107
+                    % runCollection/data_HASH/inputInfo.mat
+                    origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), fnamesInputInfo{iDS});
+                else
+                    % runCollection/data_HASH/run_name/inputInfo.mat
+                    origName = fullfile('..', '..', '..', r.params.generateInputDataHashName(), r.name, fnamesInputInfo{iDS});
+                end
                 linkName = fullfile(r.pathLFADSInput, fnamesInputInfo{iDS});
                 if ~exist(linkName, 'file') || regenerate
                     LFADS.Utils.makeSymLink(origName, linkName, false);

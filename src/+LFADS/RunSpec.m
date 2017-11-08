@@ -1,4 +1,3 @@
-
 classdef RunSpec < handle & matlab.mixin.CustomDisplay
     % Represents a set of specifications for an LFADS experiment on a specific subset of datasets
     % within a :ref:`LFADS_DatasetCollection`. RunSpec instances are used to create
@@ -11,8 +10,6 @@ classdef RunSpec < handle & matlab.mixin.CustomDisplay
         name char = '' % Name of this run unique within its RunCollection, will be used as subfolder on disk
 
         comment char = '' % Textual comment for convenience
-
-        version uint32 = 2; % Internal versioning allowing for graceful evolution of path settings
     end
 
     properties

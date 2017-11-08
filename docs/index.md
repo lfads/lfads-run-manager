@@ -70,10 +70,10 @@ MyExperiment.RunCollection "exampleRun" (16 runs total)
   Path: ~/lorenz_example/runs/exampleRun
 
   4 parameter settings
-  [1 param_7I6XSW data_-MSPr6] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=2 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-  [2 param_O4V73g data_-MSPr6] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=4 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-  [3 param_ngqEhM data_-MSPr6] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=6 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-  [4 param_Qr2PeG data_-MSPr6] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [1 param_7I6XSW data_cgrfui] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=2 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [2 param_O4V73g data_2_zdvC] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=4 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [3 param_ngqEhM data_GeiefE] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=6 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [4 param_Qr2PeG data_RE1kuL] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
   4 run specifications
   [ 1] MyExperiment.RunSpec "single_dataset001" (1 datasets)
@@ -84,7 +84,7 @@ MyExperiment.RunCollection "exampleRun" (16 runs total)
                           name: 'exampleRun'
                        comment: ''
                       rootPath: '~/lorenz_example/runs'
-                       version: 3
+                       version: 20171107
              datasetCollection: [1x1 MyExperiment.DatasetCollection]
                           runs: [4x4 MyExperiment.Run]
                         params: [4x1 MyExperiment.RunParams]
