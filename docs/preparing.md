@@ -287,38 +287,39 @@ MyExperiment.RunCollection "exampleRun" (4 runs total)
 
   1 Parameter Settings:
 
-    [1 param_Qr2PeG] MyExperiment.RunParams
+    [1 param_Qr2PeG data_RE1kuL] MyExperiment.RunParams
       Diff: useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
-      spikeBinMs: 2
-      trainToTestRatio: 4
-      useAlignmentMatrix: true
-      scaleIncreaseStepsWithDatasets: true
-      c_cell_clip_value: 5
-      c_factors_dim: 8
-      c_ic_enc_dim: 64
-      c_ci_enc_dim: 128
-      c_gen_dim: 64
-      c_keep_prob: 0.95
-      c_learning_rate_decay_factor: 0.98
-      c_device: /gpu:0
-      c_co_dim: 0
-      c_do_causal_controller: false
-      c_do_feed_factors_to_controller: true
-      c_feedback_factors_or_rates: factors
-      c_controller_input_lag: 1
-      c_l2_gen_scale: 500
-      c_l2_con_scale: 500
-      c_batch_size: 150
-      c_kl_increase_steps: 900
-      c_l2_increase_steps: 900
-      c_ic_dim: 64
-      c_con_dim: 128
-      c_learning_rate_stop: 0.001
-      c_temporal_spike_jitter_width: 0
-      c_allow_gpu_growth: true
-      c_kl_ic_weight: 1
-      c_kl_co_weight: 1
-      c_inject_ext_input_to_gen: false
+        spikeBinMs: 2
+        trainToTestRatio: 4
+        useAlignmentMatrix: true
+        useSingleDatasetAlignmentMatrix: false
+        scaleIncreaseStepsWithDatasets: true
+        c_cell_clip_value: 5
+        c_factors_dim: 8
+        c_ic_enc_dim: 64
+        c_ci_enc_dim: 128
+        c_gen_dim: 64
+        c_keep_prob: 0.95
+        c_learning_rate_decay_factor: 0.98
+        c_device: /gpu:0
+        c_co_dim: 0
+        c_do_causal_controller: false
+        c_do_feed_factors_to_controller: true
+        c_feedback_factors_or_rates: factors
+        c_controller_input_lag: 1
+        c_l2_gen_scale: 500
+        c_l2_con_scale: 500
+        c_batch_size: 150
+        c_kl_increase_steps: 900
+        c_l2_increase_steps: 900
+        c_ic_dim: 64
+        c_con_dim: 128
+        c_learning_rate_stop: 0.001
+        c_temporal_spike_jitter_width: 0
+        c_allow_gpu_growth: true
+        c_kl_ic_weight: 1
+        c_kl_co_weight: 1
+        c_inject_ext_input_to_gen: false
 
 ```

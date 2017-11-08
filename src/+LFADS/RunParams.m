@@ -384,9 +384,9 @@ classdef RunParams < matlab.mixin.CustomDisplay
             end
             className = class(p);
             if nargin > 2
-                indexStr = sprintf('[%d param_%s]', paramIndex, p.generateHash);
+                indexStr = sprintf('[%d %s %s]', paramIndex, p.paramHashString, p.dataHashString);
             else
-                indexStr = sprintf('[param_%s]', p.generateHash);
+                indexStr = sprintf('[%s %s]', p.paramHashString, p.dataHashString);
             end
             header = sprintf('%s%s %s\n%sDiff: %s\n\n', blanks(indent), indexStr,className, blanks(indent+2), p.generateShortDifferencesString());
             text = p.generateString('onlyDifferentFromDefault', false, ...
