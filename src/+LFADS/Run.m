@@ -1311,7 +1311,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             thisHash = r.params.generateInputDataHash();
             for iDS = 1:r.nDatasets
                 if ~isequal(info(iDS).paramInputDataHash, thisHash)
-                    error('Input data param hash saved for run %d in %s does not match', iDS, r.lfadsInputInfoFileNames{1});
+                    warning('Input data param hash saved for run %d in %s does not match', iDS, r.lfadsInputInfoFileNames{1});
                 end
             end
 
