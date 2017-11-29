@@ -1,4 +1,5 @@
-classdef Run < handle & matlab.mixin.CustomDisplay
+ classdef Run < handle & matlab.mixin.CustomDisplay
+%classdef Run < matlab.mixin.CustomDisplay
     % Represents a single LFADS experiment on a specific set of datasets. Runs are grouped into :ref:`LFADS_RunCollection`
     % instances, and all runs in a collection share the same parameter settings, which are represented by a shared
     % :ref:`LFADS_RunParams` instance.
@@ -56,6 +57,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
 
         inputInfo % parameters used to train model
+        
+        alignmentMatrix
+        
+        alignmentBias
+        
     end
     
     properties(Dependent)
@@ -270,7 +276,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             dim_reduced_data = keep_pcs' * all_data_centered;
             
             % get a mapping from each day to the lowD space
-            %[this_day_data, this_data_predicted] = cellvec(numel(datasetInfo)); % each is nChannels x time x 
+            %[this_day_data, this_data_predicted] = cellvec(numel(datasetInfo)); % each is nChannels x time x
+            
+            % Temp: FOR TEST
+            randMatrix = rand(numel(datasetInfo(1).this_day_inds), inFacDim)-0.5;  % assume equal number of dimensions
+            
             for nd = 1:numel(datasetInfo)
                 this_day_data{nd} = all_data(datasetInfo(nd).this_day_inds, :);
                 this_day_means = all_data_means(datasetInfo(nd).this_day_inds);
@@ -283,7 +293,16 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     nanmean(this_day_data{nd}(:, tMask), 2));
                 
                 % regress this day's data against the global PCs
-                datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
+                %datasetInfo(nd).alignment_matrix_cxf = (this_data_centered' \ dim_reduced_data_this');
+                %% CP & MRK - try using pinv instead here because of rank deficiency
+                % datasetInfo(nd).alignment_matrix_cxf = pinv(this_data_centered') * dim_reduced_data_this';
+                
+                % Temp: Test for rand alignment
+                datasetInfo(nd).alignment_matrix_cxf = randMatrix;
+                % Test 2 simple PCA
+                %datasetInfo(nd).alignment_matrix_cxf = pca(this_data_centered', 'NumComponents', inFacDim);
+                
+                %
                 % and set mean as it will be subtracted from the data
                 % before projecting by the alignment matrix
                 datasetInfo(nd).bias_subtract = squeeze(this_day_means);
@@ -624,7 +643,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
             
             if r.nDatasets > 1
-                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading/generating sequence data for %s', mode);            else
+                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading/generating sequence data for %s', mode);            
+            else
                 prog = [];
             end
             seqCell = cell(r.nDatasets, 1);
@@ -644,6 +664,41 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
         end
+        
+        function loadAlignmentMatrices(r)
+            if r.params.useAlignmentMatrix
+               for ndset = 1:numel(r.lfadsInputFileNames)
+                    hdf5file = fullfile( r.pathCommonData, r.lfadsInputFileNames{ndset});
+                    if ~exist(hdf5file, 'file')
+                        error('No HDF5 file found to load the alignment matrices.')
+                    end
+                    r.alignmentMatrix{ndset} = h5read(hdf5file,'/alignment_matrix_cxf');
+                    r.alignmentBias{ndset} = h5read(hdf5file,'/alignment_bias_c');
+               end
+            else
+                warning('No Alginment matrix to load.')
+            end
+            
+        end
+        
+        % generate the in_factors activations
+        function generate_in_factors(r)
+            loadAlignmentMatrices(r);
+            seq = r.sequenceData;
+            ndset = numel(seq);
+            if isempty(ndset)
+                error('Sequence data must be loaded!')
+            end
+            
+            for d = 1:ndset
+                for s = 1:numel(seq{d})
+                    centered_y = bsxfun(@minus, seq{d}(s).y,  r.alignmentBias{d}');
+                    r.sequenceData{d}(s).in_factors = r.alignmentMatrix{d} * centered_y;
+                end
+            end
+            
+        end
+        
         
         function seq = checkSequenceStruct(r, seq)
             assert(isfield(seq, 'y'), 'Sequence struct missing y field');
@@ -791,8 +846,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     seqToLFADSArgs{end+1} = alignmentMatrices(maskGenerate);
                     seqToLFADSArgs{end+1} = 'alignment_bias_c';
                     seqToLFADSArgs{end+1} = alignmentBiases(maskGenerate);
+                    r.alignmentMatrix = alignmentMatrices(maskGenerate);
+                    r.alignmentBias = alignmentBiases(maskGenerate);
                 end
-
+                
+                
                 % write the actual lfads input file
                 LFADS.Utils.mkdirRecursive(r.pathCommonData);
                 
@@ -1241,7 +1299,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     time = info(iDS).seq_timeVector(1:rebin:end);
                     time = time(1:size(pmData.rates, 2));
                 else        % if gaussian
-                    time = info{iDS}.seq_timeVector;
+                    time = info(iDS).seq_timeVector;
                 end
                 pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time); %#ok<AGROW>
             end

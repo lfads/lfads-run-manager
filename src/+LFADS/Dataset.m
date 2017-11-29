@@ -1,4 +1,5 @@
 classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
+% classdef Dataset < matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     % A single-day collection of raw data to be processed by LFADS
 
     methods

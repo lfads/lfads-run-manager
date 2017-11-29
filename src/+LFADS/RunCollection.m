@@ -1,4 +1,5 @@
 classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
+%classdef RunCollection < matlab.mixin.CustomDisplay & matlab.mixin.Copyable
     % A set of :ref:`LFADS_Run` instances utilizing
     % different subsets of :ref:`LFADS_Dataset` insstances in a :ref:`LFADS_DatasetCollection`.
     % A RunCollection is a logical grouping of LFADS runs, where multiple
@@ -120,7 +121,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             Opt = struct('Format', 'hex', 'Method', 'MD5');
             rcHash = LFADS.Utils.DataHash([rc.runs(:).paramsString], Opt);
             mkdir(filepath);
-            save([ filepath 'RC_' rc.name '_' rcHash(1:8) '.mat'], 'rc');
+            fname = [ filepath 'RC_' rc.name '_' rcHash(1:8) '.mat'];
+            save(fname, 'rc');
         end
         
         function clearRunSpecs(rc)

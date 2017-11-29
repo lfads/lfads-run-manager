@@ -1,4 +1,5 @@
 classdef RunSpec < handle & matlab.mixin.CustomDisplay
+%classdef RunSpec < matlab.mixin.CustomDisplay
     % Represents a set of specifications for an LFADS experiment on a specific subset of datasets
     % within a :ref:`LFADS_DatasetCollection`. RunSpec instances are used to create
     % instances, and all runs in a collection share the same parameter settings, which are represented by a shared
