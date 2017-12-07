@@ -1335,16 +1335,26 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             for iDS = 1:r.nDatasets
                 prog.update(iDS);
                 if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
-%                     warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
-%                         iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
-                    pms = [];
-                    return;
+                    oldFile = strrep(trainList{iDS}, 'posterior_sample_and_average', 'posterior_sample');
+                    if exist(fullfile(r.pathLFADSOutput, oldFile), 'file')
+                        trainList{iDS} = oldFile;
+                    else
+    %                     warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
+    %                         iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
+                        pms = [];
+                        return;
+                    end
                 end
                 if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
-%                     warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
-%                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
-                    pms = [];
-                    return;
+                    oldFile = strrep(validList{iDS}, 'posterior_sample_and_average', 'posterior_sample');
+                    if exist(fullfile(r.pathLFADSOutput, oldFile), 'file')
+                        validList{iDS} = oldFile;
+                    else
+    %                     warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
+    %                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
+                        pms = [];
+                        return;
+                    end
                 end
 
                 if isfield(info, 'conditionId')
