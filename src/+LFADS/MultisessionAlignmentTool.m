@@ -235,6 +235,15 @@ classdef MultisessionAlignmentTool < handle
                 if nCol < tool.nFactors
                     alignmentMatrices{iDS} = cat(2, alignmentMatrices{iDS}, zeros(size(alignmentMatrices{iDS}, 1), tool.nFactors - nCol));
                 end
+                
+                % prediction is nFactors x (nTime*nConditions), though deal
+                % with tMask masking the second dimension and re-inflate
+                % along this dimension
+                prediction_masked = alignmentMatrices{iDS}' * this_dataset_centered;
+                prediction = nan(size(prediction, 1), numel(tMask), size(prediction, 3));
+                prediction(:, tMask, :) = prediction_masked;\
+                
+                tool.pcAvg_reconstructionByDataset(:, :, :, iDS) = reshape(prediction, [tool.nFactors, tool.nTime, tool.nConditions]);
             end
             
             tool.alignmentMatrices = alignmentMatrices;
