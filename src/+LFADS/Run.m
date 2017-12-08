@@ -262,13 +262,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             % ask for specific dataset for building the alignment
             % matrices, which may be a subset of all trials, e.g.
-            % correct trials only. If return is empty, use the full
-            % seqData
-            if r.usesDifferentDataForAlignment()
-                seqDataForAlignmentMatrices = r.loadSequenceData(regenerate, 'alignment');
-            else
-                seqDataForAlignmentMatrices = r.loadSequenceData(regenerate);
-            end
+            % correct trials only.
+            seqDataForAlignmentMatrices = r.loadSequenceData(regenerate, 'alignment');
             [alignmentMatrices, alignmentBiases] = r.prepareAlignmentMatrices(seqDataForAlignmentMatrices);
         end
 
@@ -642,7 +637,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if nargin < 3
                 mode = 'export';
             end
+            
+            if strcmp(mode, 'alignment') && ~r.usesDifferentDataForAlignment()
+                % subsequent steps should go identically for alignment if
+                % usesDifferentDataForAlignment returns false
+                mode = 'export';
+            end
+            
             if strcmp(mode, 'export') && ~reload && ~isempty(r.sequenceData)
+                % return cached sequence data if already loaded
                 seqCell = r.sequenceData;
                 return;
             end
@@ -652,7 +655,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             seqFiles = cellfun(@(file) fullfile(r.pathSequenceFiles, file), r.sequenceFileNames, 'UniformOutput', false);
 
             if r.nDatasets > 1
-                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading/generating sequence data for %s', mode);            else
+                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading/generating sequence data for %s', mode); 
+            else
                 prog = [];
             end
             seqCell = cell(r.nDatasets, 1);
@@ -670,7 +674,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             if ~isempty(prog), prog.finish(); end
 
-            r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
+            if strcmp(mode, 'export')
+                r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
+            end
         end
 
         function seq = checkSequenceStruct(r, seq) %#ok<INUSL>
@@ -799,21 +805,28 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
 
             if any(maskGenerate)
-                seqData = r.loadSequenceData(regenerate);
+                regenerate = false;
+                seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
 
                 r.assertParamsOkayForSequenceData(seqData);
 
-                % if there are multiple datasets, we need an alignment matrix
+                % no need to regenerate if alignment and export use the
+                % same data, since we would have just regenerated them via
+                % loadSequenceData above
+                regenerateAlignmentData = regenerate && r.usesDifferentDataForAlignment();
+                
                 if r.nDatasets > 1 && r.params.useAlignmentMatrix
                     % generate alignment matrices for stitching run 
                     useAlignMatrices = true;
-                    [alignmentMatrices, alignmentBiases] = r.doMultisessionAlignment(regenerate);
+                    [alignmentMatrices, alignmentBiases] = r.doMultisessionAlignment(regenerateAlignmentData);
                     
                 elseif r.version >= 20171107 && r.nDatasets == 1 && r.params.useSingleDatasetAlignmentMatrix
-                    % generate alignment matrix for single run (just PCA)
+                    % generate alignment matrix for single run (just PCA down to c_factors_dim)
                     useAlignMatrices = true;
-                    [alignmentMatrices, alignmentBiases] = r.doMultisessionAlignment(regenerate);
+                    [alignmentMatrices, alignmentBiases] = r.doMultisessionAlignment(regenerateAlignmentData);
+                    
                 else
+                    % no alignment matrices
                     useAlignMatrices = false;
                 end
 
@@ -1146,9 +1159,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             else
                 % use the RunParams to generate the params
                 paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width', 'c_batch_size'});
-                % mattgolub 12/6/2017: changed 'batch_size' above to
-                % 'c_batch_size'. This fixes the duplicated --batch_size
-                % flag in the command generated below.
                 
                 cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
                 '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
