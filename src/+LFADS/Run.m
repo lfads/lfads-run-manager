@@ -1093,13 +1093,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p = inputParser();
             p.addOptional('inputParams', @iscell)
             p.addParameter('loadHyperparametersFromFile', false, @islogical);
-            p.addParameter('batchSize', 512, @isscalar);
+            p.addParameter('num_samples_posterior', r.params.num_samples_posterior, @isscalar); % can be used to manually overwrite
             p.addParameter('cuda_visible_devices', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
             p.parse(varargin{:});
-            batchSize = p.Results.batchSize;
 
             if p.Results.loadHyperparametersFromFile
                 % this is the old way of doing it that isn't necessary now
@@ -1114,8 +1113,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 params.data_dir = LFADS.Utils.GetFullPath(r.pathLFADSInput);
                 params.lfads_save_dir = LFADS.Utils.GetFullPath(r.pathLFADSOutput);
 
-                params.batch_size = batchSize; % this is the number of samples used to calculate the posterior mean
                 params.checkpoint_pb_load_name = 'checkpoint_lve';
+                params.batch_size = p.Results.num_samples_posterior;
 
                 % add in allow growth field
                 params.allow_gpu_growth = r.params.c_allow_gpu_growth;
@@ -1162,7 +1161,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 
                 cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
                 '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
-                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), batchSize, paramsString);
+                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), p.Results.num_samples_posterior, paramsString);
             end
 
             % set cuda visible devices

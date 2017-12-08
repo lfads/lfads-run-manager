@@ -345,7 +345,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             
             if ~isempty(p.Results.gpuList)
-                csv = strjoin('%d,', p.Results.gpuList);
+                csv = sprintf('%d,', p.Results.gpuList);
                 gpuStr = sprintf(', gpu_list=%s', csv(1:end-1));
             else
                 gpuStr = '';
