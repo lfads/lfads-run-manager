@@ -271,6 +271,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             p.addParameter('maxTasksSimultaneously', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('gpuMemoryRequired', 2000, @isscalar); % in MB
             
+            p.addParameter('runIdx', 1:rc.nRunsTotal, @isvector); % subsets and orders the runs to include in the script
+            
             p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
             
@@ -311,9 +313,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
 
             fprintf(fid, 'task_specs = [');
-            prog = LFADS.Utils.ProgressBar(rc.nRunsTotal, 'Writing shell scripts for each run');
-            for iR = 1:rc.nRunsTotal
-                prog.update(iR);
+            
+            % determine full ordering
+            runIdx = p.Results.runIdx;
+            assert(all(ismember(runIdx, 1:rc.nRunsTotal)), 'runIdx must be in 1:nRuns');
+            
+            nRunsIncluded = numel(runIdx);
+            prog = LFADS.Utils.ProgressBar(nRunsIncluded, 'Writing shell scripts for each run');
+            
+            for iiR = 1:nRunsIncluded
+                prog.update(iiR);
+                iR = runIdx(iiR);
                 rc.runs(iR).writeShellScriptLFADSTrain('display', display, 'useTmuxSession', false, ...
                     'appendPosteriorMeanSample', true, ...
                     'appendWriteModelParams', true, ...
@@ -324,7 +334,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 outfile = LFADS.Utils.GetFullPath(rc.runs(iR).fileLFADSOutput);
                 donefile = LFADS.Utils.GetFullPath(fullfile(rc.runs(iR).path, 'lfads.done'));
 
-                name = sprintf('lfads_%s__%s', rc.runs(iR).paramsString, rc.runs(iR).name); %#ok<*PROPLC>
+                name = sprintf('lfads_%s_run%03d_%s', rc.runs(iR).paramsString, iR, rc.runs(iR).name); %#ok<*PROPLC>
+                name = strrep(name, '.', '_');
                 fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": %d, "outfile": "%s", "donefile": "%s"}, \n', ...
                     name, LFADS.Utils.GetFullPath(rc.runs(iR).fileShellScriptLFADSTrain), ...
                     p.Results.gpuMemoryRequired, outfile, donefile);
@@ -344,19 +355,12 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 maxStr = '';
             end
             
-            if ~isempty(p.Results.gpuList)
-                csv = sprintf('%d,', p.Results.gpuList);
-                gpuStr = sprintf(', gpu_list=%s', csv(1:end-1));
-            else
-                gpuStr = '';
-            end
-            
             if p.Results.oneTaskPerGPU
                 oneTaskStr = ', one_task_per_gpu=True';
             else
                 oneTaskStr = ', one_task_per_gpu=False';
             end
-            fprintf(fid, 'tasks = lq.run_lfads_queue(queue_name, tensorboard_script, task_specs%s%s%s%s)\n\n', maxStr, donefileStr, gpuStr, oneTaskStr);
+            fprintf(fid, 'tasks = lq.run_lfads_queue(queue_name, tensorboard_script, task_specs, gpu_list=gpu_list%s%s%s)\n\n', maxStr, donefileStr, oneTaskStr);
             fclose(fid);
         end
     end
