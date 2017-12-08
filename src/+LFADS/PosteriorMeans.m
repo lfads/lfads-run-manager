@@ -9,9 +9,9 @@ classdef PosteriorMeans
         generator_ics % nGeneratorUnits x nTrials` generator initial conditions
         generator_states % nGeneratorUnits x T x nTrials 
         rates % nNeurons x T x nTrials        
-        costs % 1 x nTrials
-        nll_bound_vaes % 1 x nTrials
-        nll_bound_iwaes % 1 x nTrials
+        costs % nTrials x 1
+        nll_bound_vaes % nTrials x 1
+        nll_bound_iwaes % nTrials x 1
         validInds % list of validation trial indices
         trainInds % list of training trial indices
         params % :ref:`LFADS_RunParams` instance

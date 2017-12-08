@@ -31,9 +31,10 @@ for nf = 1:numel(vars_to_get)
         has_valid = size(valid.(outputName),1);
         has_train = size(train.(outputName),1);
     
-        pms.(outputName) = nan(1, total_trials);
-        pms.(outputName)(1,validInds(1:has_valid)) = valid.(outputName);
-        pms.(outputName)(1,trainInds(1:has_train)) = train.(outputName);
+        pms.(outputName) = nan(total_trials, 1);
+        pms.(outputName)(validInds(1:has_valid)) = valid.(outputName);
+        pms.(outputName)(trainInds(1:has_train)) = train.(outputName);
+        
     elseif ismember(variable, {'gen_ics'})
         % 2d, trials on dim 2
         has_valid = size(valid.(outputName),2);
@@ -43,6 +44,7 @@ for nf = 1:numel(vars_to_get)
                            total_trials);
         pms.(outputName)(:,validInds(1:has_valid)) = valid.(outputName);
         pms.(outputName)(:,trainInds(1:has_train)) = train.(outputName);
+        
     else
         % 3d, trials on dim 3
         has_valid = size(valid.(outputName),3);
