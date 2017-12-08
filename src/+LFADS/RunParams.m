@@ -55,10 +55,18 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_inject_ext_input_to_gen logical = false; % should observed inputs be input to model via encoders (false) or injected directly into generator (true)?
     end
     
+    properties
+        % These properties DO NOT affect the param_HASH, as they are
+        % returned by getListPropertiesNotAffectingParamHash below.
+        % They also do not affect data_HASH as they do not begin with c_
+        
+        num_samples_posterior = 512; % number of samples 
+        version uint32 = 20171107; % Used for graceful evolution of path settings
+    end
+    
     % Retired properties that should be kept around for hash value purposes
     % but no longer output to LFADS
     properties(Hidden)
-        version uint32 = 20171107; % Used for graceful evolution of path settings
         c_in_factors_dim uint16 = 50;
         setInFactorsMatchDataForSingleDataset logical = false; % if true, c_in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
     end
@@ -233,7 +241,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
             end
         end
         
-        function list = getListPropertiesNotAffectingInputData(p)
+        function list = getListPropertiesNotAffectingInputDataHash(p)
+            % list non-transient properties that do not affect the
+            % data_HASH. currently includes all c_* properties except
+            % c_factors_dim as well as the properties listed by getListPropertiesNotAffectingHash
+            
             props = p.listNonTransientProperties('onlyRootClassProperties', true);
             
             if p.version < 20171107
@@ -245,9 +257,17 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 mask = cellfun(@(x) strncmp('c_', x, 2) && ~ismember(x, doesAffectInputData), props);
             end
             list = props(mask);
+            list = union(list, p.getListPropertiesNotAffectingHash());
         end
         
-        function hash = generateHash(p, varargin)
+        function list = getListPropertiesNotAffectingHash(p) %#ok<MANU>
+            % this provides a list of all properties in the class that
+            % should not affect the resulting param_HASH, regardless of
+            % their values. 
+            list = {'version', 'num_samples_posterior'};
+        end
+        
+        function hash = generateHash(p)
             % Generate a short hash of this RunParams non-transient
             % properties that can be used in a directory name.
             %
@@ -257,20 +277,22 @@ classdef RunParams < matlab.mixin.CustomDisplay
             % Returns:
             %   hash (string): hash string
             
-            parser = inputParser();
-            parser.addParameter('length', 6, @isscalar);
-            parser.KeepUnmatched = true;
-            parser.parse(varargin{:});
+            %parser = inputParser();
+            %parser.addParameter('length', 6, @isscalar);
+            %parser.KeepUnmatched = true;
+            %parser.parse(varargin{:});
             
-            data = p.getPropertyValueSubset(parser.Unmatched, 'onlyDifferentFromDefault', true);
+            length = 6;
+            ignore = p.getListPropertiesNotAffectingHash();
+            data = p.getPropertyValueSubset('ignoreProperties', ignore, 'onlyDifferentFromDefault', true);
             hash = LFADS.Utils.DataHash(data, struct('Format', 'base64'));
             hash = strrep(strrep(hash, '/', '_'), '+', '-'); % https://tools.ietf.org/html/rfc3548#page-6
-            if numel(hash) > parser.Results.length
-                hash = hash(1:parser.Results.length);
+            if numel(hash) > length
+                hash = hash(1:length);
             end
         end
         
-        function hash = generateInputDataHash(p, varargin)
+        function hash = generateInputDataHash(p)
             % Generate a short hash of this RunParams non-transient 
             % properties that includes only those properties that affect
             % the data preprocessing that are fed into LFADS, excluding
@@ -283,32 +305,33 @@ classdef RunParams < matlab.mixin.CustomDisplay
             % Returns:
             %   hash (string): hash string
             
-            parser = inputParser();
-            parser.addParameter('length', 6, @isscalar);
-            parser.KeepUnmatched = true;
-            parser.parse(varargin{:});
+            %parser = inputParser();
+            %parser.addParameter('length', 6, @isscalar);
+            %parser.KeepUnmatched = true;
+            %parser.parse(varargin{:});
             
-            propsIgnore = p.getListPropertiesNotAffectingInputData();
-            data = p.getPropertyValueSubset(parser.Unmatched, 'ignoreProperties', propsIgnore, 'onlyDifferentFromDefault', true);
+            length = 6;
+            propsIgnore = p.getListPropertiesNotAffectingInputDataHash();
+            data = p.getPropertyValueSubset('ignoreProperties', propsIgnore, 'onlyDifferentFromDefault', true);
             hash = LFADS.Utils.DataHash(data, struct('Format', 'base64'));
             hash = strrep(strrep(hash, '/', '_'), '+', '-'); % https://tools.ietf.org/html/rfc3548#page-6
-            if numel(hash) > parser.Results.length
-                hash = hash(1:parser.Results.length); 
+            if numel(hash) > length
+                hash = hash(1:length); 
             end
         end
         
-        function str = generateHashName(p, varargin)
+        function str = generateHashName(p)
             % Generate a short hash name like 'param_HASH' where HASH is
             % generated by generateHash()
             
-            str = sprintf('param_%s', p.generateHash(varargin{:}));
+            str = sprintf('param_%s', p.generateHash());
         end
         
-        function str = generateInputDataHashName(p, varargin)
+        function str = generateInputDataHashName(p)
             % Generate a short hash name like 'data_HASH' where HASH is
             % generated by generateInputDataHash()
             
-            str = sprintf('data_%s', p.generateInputDataHash(varargin{:}));
+            str = sprintf('data_%s', p.generateInputDataHash());
         end
             
         function str = generateString(p, varargin)
@@ -395,7 +418,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             str = cat(2, header, text, sprintf('\n')); %#ok<SPRINTFN>
         end
         
-        function valstr = serializePropertyValue(p, prop, value)
+        function valstr = serializePropertyValue(p, prop, value) %#ok<INUSL>
             % Generates a string representation like name_value
             % Strips "c\_" from beginnning of name
             %
