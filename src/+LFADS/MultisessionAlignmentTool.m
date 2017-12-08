@@ -218,32 +218,29 @@ classdef MultisessionAlignmentTool < handle
                     % nChannelsByDataset(iDS) x 1
                    alignmentBiases{iDS} = squeeze(this_dataset_means);
 
-                    if any(isnan(alignmentMatrices{iDS}(:)))f
+                    if any(isnan(alignmentMatrices{iDS}(:)))
                         error('NaNs in the the alignment matrix');
                     end
+                    if any(isnan(alignmentBiases{iDS}(:)))
+                        error('NaNs in the the alignment biases');
+                    end
+                
+                    % expand alignment matrices to include additional factors if
+                    % too many requested
+                    nCol = size(alignmentMatrices{iDS}, 2);
+                    if nCol < tool.nFactors
+                        alignmentMatrices{iDS} = cat(2, alignmentMatrices{iDS}, zeros(size(alignmentMatrices{iDS}, 1), tool.nFactors - nCol));
+                    end
 
-                    % prediction is nFactors x (nTime*nConditions)
-                    prediction = alignmentMatrices{iDS}' * this_dataset_centered;
-                    tool.pcAvg_reconstructionByDataset(1:nFactorsRequested, :, :, iDS) = reshape(prediction, [nFactorsRequested, tool.nTime, tool.nConditions]);
+                    % prediction is nFactors x (nTime*nConditions), though deal
+                    % with tMask masking the second dimension and re-inflate
+                    % along this dimension
+                    prediction_masked = alignmentMatrices{iDS}' * this_dataset_centered;
+                    prediction = nan(tool.nFactors, tool.nTime*tool.nConditions);
+                    prediction(:, tMask) = prediction_masked;
+
+                    tool.pcAvg_reconstructionByDataset(:, :, :, iDS) = reshape(prediction, [tool.nFactors, tool.nTime, tool.nConditions]);
                 end
-            end
-            
-            % expand alignment matrices to include additional factors if
-            % too many requested
-            for iDS = 1:tool.nDatasets
-                nCol = size(alignmentMatrices{iDS}, 2);
-                if nCol < tool.nFactors
-                    alignmentMatrices{iDS} = cat(2, alignmentMatrices{iDS}, zeros(size(alignmentMatrices{iDS}, 1), tool.nFactors - nCol));
-                end
-                
-                % prediction is nFactors x (nTime*nConditions), though deal
-                % with tMask masking the second dimension and re-inflate
-                % along this dimension
-                prediction_masked = alignmentMatrices{iDS}' * this_dataset_centered;
-                prediction = nan(size(prediction, 1), numel(tMask), size(prediction, 3));
-                prediction(:, tMask, :) = prediction_masked;\
-                
-                tool.pcAvg_reconstructionByDataset(:, :, :, iDS) = reshape(prediction, [tool.nFactors, tool.nTime, tool.nConditions]);
             end
             
             tool.alignmentMatrices = alignmentMatrices;
