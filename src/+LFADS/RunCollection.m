@@ -267,6 +267,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             p.addParameter('rerun', false, @islogical);
             p.addParameter('gpuList', [], @(x) isempty(x) || isvector(x));
             p.addParameter('display', [], @(x) isempty(x) || isscalar(x));
+            p.addParameter('oneTaskPerGPU', true, @islogical); % false allows GPUs to multi-task, which seems to be slower than just running tasks sequentially
             p.addParameter('maxTasksSimultaneously', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('gpuMemoryRequired', 2000, @isscalar); % in MB
             
@@ -342,7 +343,20 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             else
                 maxStr = '';
             end
-            fprintf(fid, 'tasks = lq.run_lfads_queue(queue_name, tensorboard_script, task_specs%s%s)\n\n', maxStr, donefileStr);
+            
+            if ~isempty(p.Results.gpuList)
+                csv = strjoin('%d,', p.Results.gpuList);
+                gpuStr = sprintf(', gpu_list=%s', csv(1:end-1));
+            else
+                gpuStr = '';
+            end
+            
+            if p.Results.oneTaskPerGPU
+                oneTaskStr = ', one_task_per_gpu=True';
+            else
+                oneTaskStr = ', one_task_per_gpu=False';
+            end
+            fprintf(fid, 'tasks = lq.run_lfads_queue(queue_name, tensorboard_script, task_specs%s%s%s%s)\n\n', maxStr, donefileStr, gpuStr, oneTaskStr);
             fclose(fid);
         end
     end

@@ -134,7 +134,8 @@ def find_gpu_ready_for_task(gpu_status, task):
     if not gpu_eligible:
         return None
 
-    # and the fewest running tasks
+    # and the fewest running tasks. This also ensures that every GPU will be
+    # used at least once before tasks are doubled up
     gpu = sorted(gpu_eligible, key = lambda gpu: gpu.num_tasks)[0]
     return gpu.index
 
@@ -392,7 +393,7 @@ def launch_tensorboard_in_tmux(session_name, tensorboard_script, port):
     return run_command_in_tmux_session_no_monitoring(session_name, command)
 
 def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
-                    gpu_list=None, max_tasks_simultaneously=None, ignore_donefile=False):
+                    gpu_list=None, one_task_per_gpu=True, max_tasks_simultaneously=None, ignore_donefile=False):
 
     WAIT_TIME = 0.2
 
@@ -406,11 +407,21 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
 
     if gpu_list is not None:
         gpu_status = [gpu_status[i] for i in gpu_list]
+    num_gpus = len(gpu_status)
 
     # compute number of tasks we can do simultaneously
+    # factoring number of GPUs. If num_gpus == max_tasks_simultaneously, the
+    # load balancer will implicitly place one task on each gpu
     num_cpus = cpu_count()
-    if max_tasks_simultaneously is None:
-        max_tasks_simultaneously = num_cpus-1
+    if one_task_per_gpu:
+        # setting max_tasks_simultaneously <= num_gpus ensures that no gpu will
+        # ever have more than one task due to the scheduling algorithm
+        if max_tasks_simultaneously is None:
+            max_tasks_simultaneously = num_gpus
+        else:
+            max_tasks_simultaneously = min(max_tasks_simultaneously, num_gpus)
+    elif max_tasks_simultaneously is None:
+            max_tasks_simultaneously = num_cpus-1
 
     def print_status(x):
         print('Queue: ' + x.rstrip('\n'))
