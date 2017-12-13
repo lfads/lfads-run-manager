@@ -5,8 +5,10 @@ function pms = loadPosteriorMeans(validFile, trainFile, validInds, ...
 
 total_trials = numel(validInds) + numel(trainInds);
 
-outputFields = {'controller_outputs','factors', 'rates', 'generator_states', 'generator_ics','costs','nll_bound_vaes','nll_bound_iwaes'};
-storedVariables = {'controller_outputs','factors','output_dist_params', 'gen_states', 'gen_ics','costs','nll_bound_vaes','nll_bound_iwaes'};
+outputFields = {'controller_outputs','factors', 'rates', 'generator_states', 'generator_ics', ...
+    'costs','nll_bound_vaes', 'nll_bound_iwaes', 'post_g0_mean', 'post_g0_logvar'};
+storedVariables = {'controller_outputs','factors','output_dist_params', 'gen_states', ...
+    'gen_ics','costs','nll_bound_vaes','nll_bound_iwaes', 'post_g0_mean', 'post_g0_logvar'};
 
 tfInfo = h5info(trainFile);
 tfNames = {tfInfo.Datasets.Name};
@@ -35,7 +37,7 @@ for nf = 1:numel(vars_to_get)
         pms.(outputName)(validInds(1:has_valid)) = valid.(outputName);
         pms.(outputName)(trainInds(1:has_train)) = train.(outputName);
         
-    elseif ismember(variable, {'gen_ics'})
+    elseif ismember(variable, {'gen_ics', 'post_g0_mean', 'post_g0_logvar'})
         % 2d, trials on dim 2
         has_valid = size(valid.(outputName),2);
         has_train = size(train.(outputName),2);
