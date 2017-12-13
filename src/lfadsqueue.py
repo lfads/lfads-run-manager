@@ -405,7 +405,7 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
 
     gpu_status = query_gpu_status()
 
-    if gpu_list is not None:
+    if gpu_list:
         gpu_status = [gpu_status[i] for i in gpu_list]
     num_gpus = len(gpu_status)
 
