@@ -137,6 +137,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         fileLFADSOutput % output from training and sampling can be tee'd here
 
+        fileLFADSFitLog % location of fitlog CSV file
+
         fileModelParams % Location on disk where model params will be written
 
         sessionNameTrain % name of tmux session that will be created if useSession = true is passed to writeShellScriptLFADSTrain
@@ -423,6 +425,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             f = fullfile(r.path, 'lfads.out');
         end
 
+        function f = get.fileLFADSFitLog(r)
+            f = fullfile(r.pathLFADSOutput, 'fitlog.csv');
+        end
+        
         function n = get.nDatasets(r)
             n = numel(r.datasets);
         end
@@ -613,6 +619,35 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
             out = out';
         end
+
+        function out = loadFitLog(r)
+            % load the data stored in the fitlog csv (training & validation costs, etc)
+            fname = r.fileLFADSFitLog;
+            out =  LFADS.Interface.read_fitlog(fname);
+        end
+
+        function out = getCosts(r)
+            % parse data from the fitlog to get training and validation reconstruction costs
+            log = r.loadFitLog();
+            fields = {'epoch', 'step', 'trainRecon', 'valRecon'};
+            columns = [2 4 9 10];
+            for nf = 1:numel(fields)
+                out.(fields{nf}) = str2double( log(:, columns(nf)) );
+            end
+        end
+
+        function out = getSmoothedCosts(r, smoothspan)
+            % smooth the fitlog data to get less-noisy cost estimates
+            if ~exist('smoothspan', 'var')
+                smoothspan = 5;
+            end
+            out = r.getCosts();
+            fields = {'trainRecon', 'valRecon'};
+            for nf = 1:numel(fields)
+                out.([fields{nf} 'Smooth']) = smooth(out.(fields{nf}), smoothspan);
+            end
+        end
+
 
         function seqCell = loadSequenceData(r, reload, mode)
             % seq = loadSequenceData([reload = True])
@@ -969,6 +1004,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('keepSessionAlive', true, @islogical);
             p.addParameter('header', '#!/bin/bash', @ischar);
             p.addParameter('appendPosteriorMeanSample', false, @islogical);
+            p.addParameter('lfadsPythonPath', '$(which run_lfads.py)', @ischar);
             p.addParameter('appendWriteModelParams', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
             p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
@@ -982,6 +1018,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             trainString = r.buildLFADSTrainingCommand(...
                 'cuda_visible_devices', p.Results.cuda_visible_devices, ...
                 'display', p.Results.display, ...
+                'lfadsPythonPath', p.Results.lfadsPythonPath, ...
                 'useTmuxSession', false, ...
                 'teeOutput', false); % teeify later
 
@@ -1050,11 +1087,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addOptional('display', '', @(x) isempty(x) || (isnumeric(x) && mod(x,1)==0));
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', true, @islogical);
+            p.addParameter('lfadsPythonPath', '$(which run_lfads.py)', @ischar);
             p.addParameter('teeOutput', false, @islogical);
             p.parse(varargin{:});
 
-            outputString = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
+            outputString = sprintf(['python %s --data_dir=%s --data_filename_stem=lfads ' ...
                 '--lfads_save_dir=%s'], ...
+                p.Results.lfadsPythonPath, ...
                 LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput));
 
             % use the method from +LFADS/RunParams.m
@@ -1098,6 +1137,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
+            p.addParameter('checkpoint_pb_load_name', 'checkpoint_lve', @ischar);
             p.parse(varargin{:});
 
             if p.Results.loadHyperparametersFromFile
@@ -1113,7 +1153,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 params.data_dir = LFADS.Utils.GetFullPath(r.pathLFADSInput);
                 params.lfads_save_dir = LFADS.Utils.GetFullPath(r.pathLFADSOutput);
 
-                params.checkpoint_pb_load_name = 'checkpoint_lve';
+                params.checkpoint_pb_load_name = p.Results.checkpoint_pb_load_name;
                 params.batch_size = p.Results.num_samples_posterior;
 
                 % add in allow growth field
@@ -1160,8 +1200,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width', 'c_batch_size'});
                 
                 cmd = sprintf(['python $(which run_lfads.py) --data_dir=%s --data_filename_stem=lfads ' ...
-                '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
-                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), p.Results.num_samples_posterior, paramsString);
+                '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=%s %s'], ...
+                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), p.Results.num_samples_posterior, ...
+                              p.Results.checkpoint_pb_load_name, paramsString);
             end
 
             % set cuda visible devices

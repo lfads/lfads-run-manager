@@ -262,6 +262,26 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
         end
 
+        function out = getLVEs(rc)
+            for nr = 1:numel(rc.runs)
+                costs = rc.runs(nr).getCosts();
+                out(nr) = min(costs.valRecon);
+            end
+        end
+
+        function out = getSmoothedLVEs(rc, smoothspan)
+            if ~exist('smoothspan', 'var')
+                smoothspan = 5;
+            end
+            for nr = 1:numel(rc.runs)
+                costs = rc.runs(nr).getSmoothedCosts(smoothspan);
+                keepInds = costs.step > max( rc.runs(nr).params.c_kl_increase_steps, ...
+                                             rc.runs(nr).params.c_l2_increase_steps);
+                out(nr) = min( costs.valReconSmooth(keepInds) );
+            end
+        end
+
+
         function out_file = writeShellScriptRunQueue(rc, varargin)
             p = inputParser();
             p.addParameter('rerun', false, @islogical);
@@ -272,7 +292,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             p.addParameter('gpuMemoryRequired', 2000, @isscalar); % in MB
             
             p.addParameter('runIdx', 1:rc.nRunsTotal, @isvector); % subsets and orders the runs to include in the script
-            
+
+            p.addParameter('lfadsPythonPath', '$(which run_lfads.py)', @ischar); % path to the run_lfads.py script
             p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
             
@@ -328,6 +349,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     'appendPosteriorMeanSample', true, ...
                     'appendWriteModelParams', true, ...
                     'teeOutput', true, ...
+                    'lfadsPythonPath', p.Results.lfadsPythonPath, ...
                     'prependPathToLFADS', p.Results.prependPathToLFADS, ...
                     'virtualenv', p.Results.virtualenv);
                 
