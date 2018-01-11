@@ -46,7 +46,7 @@ function datasets = generateDemoDatasets(datasetPath)
         for iC = 1:nConditions
             % generate rates via lorenz
             X = lorenz_trajectories(:, :, iC); % 3 X T
-            log_rates = W*X + b; % Nx3 x 3xT = N x T
+            log_rates = bsxfun(@plus, W*X, b); % Nx3 x 3xT = N x T
             rates = exp(clip(log_rates, -20, 20));
             
             for iTr = 1:nTrC
@@ -104,6 +104,6 @@ function X = lorenz(T, x0)
         X(:, t) = X(:, t-1) + dt * derivfn(X(:, t-1));
     end
     
-    X = X - mean(X, 2);
-    X = X ./ max(X, [], 2);
+    X = bsxfun(@minus, X, mean(X, 2));
+    X = bsxfun(@rdivide, X, max(X, [], 2));
 end
