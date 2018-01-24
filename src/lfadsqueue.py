@@ -455,7 +455,7 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
     tensorboard_session_prefix = '{}_tensorboard'.format(queue_name)
     running_tensorboard_sessions = get_list_tmux_sessions_name_starts_with(tensorboard_session_prefix)
 
-    if running_tensorboard_sessions is None:
+    if running_tensorboard_sessions:
         port = get_open_port()
         tensorboard_session = '{}_port{}'.format(tensorboard_session_prefix, port)
         print_status('Launching TensorBoard on port {} in tmux session {}'.format(port, tensorboard_session))
