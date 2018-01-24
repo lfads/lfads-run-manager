@@ -451,20 +451,21 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
     def print_status(x):
         print('Queue: ' + x.rstrip('\n'))
 
-    # launch the tensorboard on an open port in a tmux session (if not already open)
+    # is tensorboard running in tmux?
     tensorboard_session_prefix = '{}_tensorboard'.format(queue_name)
     running_tensorboard_sessions = get_list_tmux_sessions_name_starts_with(tensorboard_session_prefix)
 
     if running_tensorboard_sessions:
-        port = get_open_port()
-        tensorboard_session = '{}_port{}'.format(tensorboard_session_prefix, port)
-        print_status('Launching TensorBoard on port {} in tmux session {}'.format(port, tensorboard_session))
-        launch_tensorboard_in_tmux(tensorboard_session, tensorboard_script_path, port)
-    else:
         # tensorboard already running
         m = re.search('port(?P<port>\d+)', running_tensorboard_sessions[0])
         port = m.group('port') if m is not None else None
         print_status('TensorBoard already running on port {} in tmux session {}'.format(port, running_tensorboard_sessions[0]))
+    else:
+        # launch the tensorboard on an open port in a tmux session (if not already open)
+        port = get_open_port()
+        tensorboard_session = '{}_port{}'.format(tensorboard_session_prefix, port)
+        print_status('Launching TensorBoard on port {} in tmux session {}'.format(port, tensorboard_session))
+        launch_tensorboard_in_tmux(tensorboard_session, tensorboard_script_path, port)
 
     print_status('Initializing with {} GPUs and {} CPUs, max {} simultaneous tasks'
                  .format(len(gpu_status), num_cpus, max_tasks_simultaneously))
