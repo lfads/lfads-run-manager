@@ -612,6 +612,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 out(iDS) = load(fnames{iDS}); %#ok<AGROW>
             end
             out = out';
+            r.inputInfo = out;
         end
 
         function seqCell = loadSequenceData(r, reload, mode)
