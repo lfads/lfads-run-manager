@@ -218,22 +218,28 @@ classdef MultisessionAlignmentTool < handle
                     % nChannelsByDataset(iDS) x 1
                    alignmentBiases{iDS} = squeeze(this_dataset_means);
 
-                    if any(isnan(alignmentMatrices{iDS}(:)))f
+                    if any(isnan(alignmentMatrices{iDS}(:)))
                         error('NaNs in the the alignment matrix');
                     end
+                    if any(isnan(alignmentBiases{iDS}(:)))
+                        error('NaNs in the the alignment biases');
+                    end
+                
+                    % expand alignment matrices to include additional factors if
+                    % too many requested
+                    nCol = size(alignmentMatrices{iDS}, 2);
+                    if nCol < tool.nFactors
+                        alignmentMatrices{iDS} = cat(2, alignmentMatrices{iDS}, zeros(size(alignmentMatrices{iDS}, 1), tool.nFactors - nCol));
+                    end
 
-                    % prediction is nFactors x (nTime*nConditions)
-                    prediction = alignmentMatrices{iDS}' * this_dataset_centered;
-                    tool.pcAvg_reconstructionByDataset(1:nFactorsRequested, :, :, iDS) = reshape(prediction, [nFactorsRequested, tool.nTime, tool.nConditions]);
-                end
-            end
-            
-            % expand alignment matrices to include additional factors if
-            % too many requested
-            for iDS = 1:tool.nDatasets
-                nCol = size(alignmentMatrices{iDS}, 2);
-                if nCol < tool.nFactors
-                    alignmentMatrices{iDS} = cat(2, alignmentMatrices{iDS}, zeros(size(alignmentMatrices{iDS}, 1), tool.nFactors - nCol));
+                    % prediction is nFactors x (nTime*nConditions), though deal
+                    % with tMask masking the second dimension and re-inflate
+                    % along this dimension
+                    prediction_masked = alignmentMatrices{iDS}' * this_dataset_centered;
+                    prediction = nan(tool.nFactors, tool.nTime*tool.nConditions);
+                    prediction(:, tMask) = prediction_masked;
+
+                    tool.pcAvg_reconstructionByDataset(:, :, :, iDS) = reshape(prediction, [tool.nFactors, tool.nTime, tool.nConditions]);
                 end
             end
             
@@ -244,6 +250,7 @@ classdef MultisessionAlignmentTool < handle
         function plotAlignmentReconstruction(tool, factorIdx, conditionIdx, varargin)
             p = inputParser();
             p.addParameter('flip', false, @islogical); % stack conditions vertically and factors horizontally instead of vice versa
+            p.addParameter('datasetIdx', 1:tool.nDatasets, @isvector);
             p.parse(varargin{:});
             flip = p.Results.flip;
             
@@ -252,22 +259,27 @@ classdef MultisessionAlignmentTool < handle
                 tool.computeAlignmentMatricesUsingTrialAveragedPCR();
             end
             
-            if nargin < 2
+            if nargin < 2 || isempty(factorIdx)
                 factorIdx = 1:tool.nFactors;
             elseif isscalar(factorIdx)
                 factorIdx = 1:factorIdx;
             end
             
-            if nargin < 3
+            if nargin < 3 || isempty(conditionIdx)
                 conditionIdx = 1:min(tool.nConditions, 6);
             elseif isscalar(conditionIdx)
                 conditionIdx = 1:conditionIdx;
             end
             
+            datasetIdx = p.Results.datasetIdx;
+            if islogical(datasetIdx)
+                datasetIdx = find(datasetIdx);
+            end
+                            
             nFactorsPlot = numel(factorIdx);
             nConditionsPlot = numel(conditionIdx);
 
-            cmap = LFADS.Utils.hslmap(tool.nDatasets);
+            cmap = LFADS.Utils.hslmap(numel(datasetIdx));
             
             for iF = 1:nFactorsPlot
                 f = factorIdx(iF);
@@ -290,12 +302,12 @@ classdef MultisessionAlignmentTool < handle
 
                     % plot single dataset reconstructions
                     target = squeeze(tool.pcAvg_allDatasets(f, :, c));
-                    data = squeeze(tool.pcAvg_reconstructionByDataset(f, :, c, :));
+                    data = squeeze(tool.pcAvg_reconstructionByDataset(f, :, c, datasetIdx));
                     
-                    for iDS = 1:tool.nDatasets
+                    for iDS = 1:numel(datasetIdx)
                         h = plot(data(:, iDS), 'LineWidth', 0.5, 'Color', cmap(iDS, :));
                         %LFADS.Utils.setLineOpacity(h, 0.5); 
-                        LFADS.Utils.showInLegend(h, tool.datasetNames{iDS});
+                        LFADS.Utils.showInLegend(h, tool.datasetNames{datasetIdx(iDS)});
                         hold on;
                     end
                     

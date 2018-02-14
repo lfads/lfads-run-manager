@@ -6,9 +6,16 @@ classdef PosteriorMeans
         time % nTime x 1 vector of times in ms for each of the timeseries below
         controller_outputs % `nControllerOutputs x T x nTrials` controller outputs to generator inputs
         factors % `nFactors x T x nTrials` factor trajectories
+        
+        post_g0_mean % c_ic_enc_dim x nTrials initial conditions at encoder (before projecting out to generator units)
+        post_g0_logvar % c_ic_enc_dim x nTrials initial conditions at encoder (before projecting out to generator units)
+        
         generator_ics % nGeneratorUnits x nTrials` generator initial conditions
         generator_states % nGeneratorUnits x T x nTrials 
-        rates % nNeurons x T x nTrials
+        rates % nNeurons x T x nTrials        
+        costs % nTrials x 1
+        nll_bound_vaes % nTrials x 1
+        nll_bound_iwaes % nTrials x 1
         validInds % list of validation trial indices
         trainInds % list of training trial indices
         params % :ref:`LFADS_RunParams` instance
@@ -44,11 +51,19 @@ classdef PosteriorMeans
                     pm.controller_outputs = [];
                 end
                 pm.factors = pms.factors;
+                pm.post_g0_mean = pms.post_g0_mean;
+                pm.post_g0_logvar = pms.post_g0_logvar;
                 pm.generator_ics = pms.generator_ics;
+                
                 pm.generator_states = pms.generator_states;
                 
                 % convert rates into spikes / sec
                 pm.rates = pms.rates * 1000 / params.spikeBinMs;
+                
+                pm.costs  = pms.costs;
+                pm.nll_bound_vaes = pms.nll_bound_vaes;
+                pm.nll_bound_iwaes = pms.nll_bound_iwaes;
+                
                 pm.validInds = pms.validInds;
                 pm.trainInds = pms.trainInds;
                 pm.time = time;
@@ -117,7 +132,11 @@ classdef PosteriorMeans
             %     nTrials.
             
             data = pm.(field);
-            dim = ndims(data);
+            if isvector(data)
+                dim = 1;
+            else
+                dim = ndims(data);
+            end
             
             [uc, ~, whichC] = unique(conditionIds);
             nC = numel(uc);
@@ -127,7 +146,9 @@ classdef PosteriorMeans
             avg = nan(sz, 'like', data);
             
             for iC = 1:nC
-                if dim == 2
+                if dim == 1
+                    avg(iC) = mean(data(whichC == iC), dim);
+                elseif dim == 2
                     avg(:, iC) = mean(data(:, whichC == iC), dim);
                 elseif dim == 3
                     avg(:, :, iC) = mean(data(:, :, whichC == iC), dim);

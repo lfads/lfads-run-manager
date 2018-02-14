@@ -117,7 +117,7 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
         end
         
         function filterHavingMinimumTrialsForBatchSize(dc, runParams)
-            minTrials = ceil(runParams.c_batch_size * (runParams.trainToTestRatio+1));
+            minTrials = max(ceil([runParams.c_batch_size] .* ([runParams.trainToTestRatio]+1)));
             dc.filterHavingMinimumTrials(minTrials);
         end
 

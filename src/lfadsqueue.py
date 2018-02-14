@@ -13,6 +13,7 @@
 import subprocess
 import os
 import csv
+import re
 import numpy as np
 import time
 import shlex
@@ -24,12 +25,13 @@ import sys, traceback
 mutex = Lock()
 
 class GpuStatus(object):
-    def __init__(self, index, name, memfree, memtotal):
+    def __init__(self, index, name, memfree, memtotal, uuid, num_tasks=0):
         self.index = index
         self.name = name
         self.memfree = memfree
         self.memtotal = memtotal
-        self.num_tasks = 0
+        self.uuid = uuid
+        self.num_tasks = num_tasks
 
     def __repr__(self):
         return 'GpuStatus {}:"{}" free {}/{} MiB, {} tasks'.format(self.index, self.name, self.memfree, self.memtotal, self.num_tasks)
@@ -92,7 +94,6 @@ class Task(object):
         if self.donefile and os.path.exists(donefile):
             os.remove(self.donefile)
 
-
 def query_gpu_status():
     """
     Calls nvidia_smi to poll GPU free memory
@@ -101,17 +102,34 @@ def query_gpu_status():
         gpu_status (list of dicts) : fields memfree (MiB), memtotal (MiB), name
     """
     nvidia_out = subprocess.check_output(['nvidia-smi',
-                                          '--query-gpu=name,memory.free,memory.total',
+                                          '--query-gpu=name,memory.free,memory.total,gpu_uuid',
                                           '--format=csv,noheader,nounits'])
-    nvidia_with_header = "name,memfree,memtotal\n" + nvidia_out
+    nvidia_with_header = "name,memfree,memtotal,uuid\n" + nvidia_out
 
 
     # parse output of nvidia-smi query
     reader = csv.DictReader(nvidia_with_header.splitlines())
     gpu_status = []
     for idx, info in enumerate(reader):
-        gpu_status.append(GpuStatus(index=idx, name=info['name'],
-                                  memfree=float(info['memfree']), memtotal=float(info['memtotal'])))
+        gpu_status.append(GpuStatus(index=idx, name=info['name'].strip(),
+                                    memfree=float(info['memfree']),
+                                    memtotal=float(info['memtotal']),
+                                    uuid=info['uuid'].strip()))
+
+    # now figure out how many python processes are running on each gpu
+    nvidia_out = subprocess.check_output(['nvidia-smi',
+                                          '--query-compute-apps=process_name,gpu_uuid',
+                                          '--format=csv,noheader,nounits'])
+    nvidia_with_header = "pname,uuid\n" + nvidia_out
+
+    # parse output of nvidia-smi query
+    reader = csv.DictReader(nvidia_with_header.splitlines())
+
+    # increment num tasks on python tasks by matching up GPU uuids
+    for task in reader:
+        if task['pname'] == 'python':
+            task_gpu_uuid = task['uuid'].strip()
+            [s.incr_num_tasks() for s in gpu_status if s.uuid == task_gpu_uuid]
 
     return gpu_status
 
@@ -134,7 +152,8 @@ def find_gpu_ready_for_task(gpu_status, task):
     if not gpu_eligible:
         return None
 
-    # and the fewest running tasks
+    # and the fewest running tasks. This also ensures that every GPU will be
+    # used at least once before tasks are doubled up
     gpu = sorted(gpu_eligible, key = lambda gpu: gpu.num_tasks)[0]
     return gpu.index
 
@@ -237,6 +256,8 @@ def get_list_tmux_sessions():
 def check_tmux_session_exists(session):
     return session in get_list_tmux_sessions()
 
+def get_list_tmux_sessions_name_starts_with(prefix):
+    return filter(lambda sess: sess.startswith(prefix), get_list_tmux_sessions())
 
 class TaskCompletedMessage(object):
     def __init__(self, task_index, success, tail):
@@ -262,7 +283,7 @@ class ChildProcessError(Exception) :
 def process_launch_task_in_tmux(queue, task, gpu_index, filter_output=True):
     """Run command in tmux and monitor output"""
     def print_task(x):
-        print('Task {}: {}'.format(task.name, x.rstrip('\n')))
+        print('Task {}: {}'.format(task.name, x.rstrip('\n').strip()))
 
     def print_relevant_output_return_success_status(outlines):
         """Prints out relevant lines of output (LFADS specific)
@@ -303,21 +324,26 @@ def process_launch_task_in_tmux(queue, task, gpu_index, filter_output=True):
         # if the tmux session is already running, throw an error, usually means
         # this model is already training
         if check_tmux_session_exists(task.name):
-            print('session exists {}'.format(task.name))
-            raise ChildProcessError('Tmux session {} already exists.'.format(task.name))
+            print('Queue: Task {} is already running. Monitoring'.format(task.name))
+            #raise ChildProcessError('Tmux session {} already exists.'.format(task.name))
+            pid = None
+            task.running_on_gpu = None
 
-        with mutex:
-            #print(tmux_command)
-            subp = subprocess.Popen(tmux_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    shell=True, universal_newlines=True);
+        else:
+            # need to launch this task
+            with mutex:
+                #print(tmux_command)
+                subp = subprocess.Popen(tmux_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                        shell=True, universal_newlines=True);
 
-        time.sleep(0.1)
-        if not check_tmux_session_exists(task.name):
-            # usually this means that the command immediately failed
-            raise ChildProcessError('Tmux session immediately terminated running "{}" '.format(tmux_command))
+            time.sleep(0.1)
+            if not check_tmux_session_exists(task.name):
+                # usually this means that the command immediately failed
+                raise ChildProcessError('Tmux session immediately terminated running "{}" '.format(tmux_command))
+            pid = subp.pid
 
         # notify master process we're starting
-        queue.put(TaskStartedMessage(task.index, subp.pid, task.name))
+        queue.put(TaskStartedMessage(task.index, pid, task.name))
 
         # monitor outfile for output in real time and print when it comes in
         task_success = False
@@ -392,7 +418,7 @@ def launch_tensorboard_in_tmux(session_name, tensorboard_script, port):
     return run_command_in_tmux_session_no_monitoring(session_name, command)
 
 def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
-                    gpu_list=None, max_tasks_simultaneously=None, ignore_donefile=False):
+                    gpu_list=None, one_task_per_gpu=True, max_tasks_simultaneously=None, ignore_donefile=False):
 
     WAIT_TIME = 0.2
 
@@ -404,22 +430,42 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
 
     gpu_status = query_gpu_status()
 
-    if gpu_list is not None:
+    if gpu_list:
         gpu_status = [gpu_status[i] for i in gpu_list]
+    num_gpus = len(gpu_status)
 
     # compute number of tasks we can do simultaneously
+    # factoring number of GPUs. If num_gpus == max_tasks_simultaneously, the
+    # load balancer will implicitly place one task on each gpu
     num_cpus = cpu_count()
-    if max_tasks_simultaneously is None:
-        max_tasks_simultaneously = num_cpus-1
+    if one_task_per_gpu:
+        # setting max_tasks_simultaneously <= num_gpus ensures that no gpu will
+        # ever have more than one task due to the scheduling algorithm
+        if max_tasks_simultaneously is None:
+            max_tasks_simultaneously = num_gpus
+        else:
+            max_tasks_simultaneously = min(max_tasks_simultaneously, num_gpus)
+    elif max_tasks_simultaneously is None:
+            max_tasks_simultaneously = num_cpus-1
 
     def print_status(x):
         print('Queue: ' + x.rstrip('\n'))
 
-    # launch the tensorboard on an open port in a tmux session
-    port = get_open_port()
-    tensorboard_session = '{}_tensorboard_port{}'.format(queue_name, port)
-    print_status('Launching TensorBoard on port {} in tmux session {}'.format(port, tensorboard_session))
-    launch_tensorboard_in_tmux(tensorboard_session, tensorboard_script_path, port)
+    # is tensorboard running in tmux?
+    tensorboard_session_prefix = '{}_tensorboard'.format(queue_name)
+    running_tensorboard_sessions = get_list_tmux_sessions_name_starts_with(tensorboard_session_prefix)
+
+    if running_tensorboard_sessions:
+        # tensorboard already running
+        m = re.search('port(?P<port>\d+)', running_tensorboard_sessions[0])
+        port = m.group('port') if m is not None else None
+        print_status('TensorBoard already running on port {} in tmux session {}'.format(port, running_tensorboard_sessions[0]))
+    else:
+        # launch the tensorboard on an open port in a tmux session (if not already open)
+        port = get_open_port()
+        tensorboard_session = '{}_port{}'.format(tensorboard_session_prefix, port)
+        print_status('Launching TensorBoard on port {} in tmux session {}'.format(port, tensorboard_session))
+        launch_tensorboard_in_tmux(tensorboard_session, tensorboard_script_path, port)
 
     print_status('Initializing with {} GPUs and {} CPUs, max {} simultaneous tasks'
                  .format(len(gpu_status), num_cpus, max_tasks_simultaneously))
@@ -444,7 +490,15 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
 
                 if type(msg) is TaskStartedMessage:
                     task = tasks[msg.task_index]
-                    print('Task {}: started in tmux session {} on GPU {} with PID {}'.format(task.name, msg.tmux_session, task.running_on_gpu, msg.pid))
+
+                    if msg.pid is not None:
+                        # None means the task was already running previously, so don't print anything
+                        print('Task {}: started in tmux session {} on GPU {} with PID {}'.format(task.name, msg.tmux_session, task.running_on_gpu, msg.pid))
+
+                        # deduct from gpu memory
+                        gpu = find_gpu_by_index(gpu_status, task.running_on_gpu)
+                        gpu.memfree -= task.memory_req
+                        gpu.incr_num_tasks()
 
                     sys.stdout.flush()
 
@@ -517,16 +571,11 @@ def run_lfads_queue(queue_name, tensorboard_script_path, task_specs,
             continue;
 
         task = tasks[task_index]
-        print('Task {}: launching on gpu {}'.format(task.name, gpu_index))
+        #print('Task {}: launching on gpu {}'.format(task.name, gpu_index))
         sys.stdout.flush()
 
         # mark task as running
         task.running_on_gpu = gpu_index
-
-        # deduct from gpu memory
-        gpu = find_gpu_by_index(gpu_status, task.running_on_gpu)
-        gpu.memfree -= task.memory_req
-        gpu.incr_num_tasks()
 
         # launch a process to monitor the task, also receive messages via Queue
         p = Process(target=process_launch_task_in_tmux, args=(message_queue, task, gpu_index, True))
