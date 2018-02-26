@@ -972,7 +972,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('appendPosteriorMeanSample', false, @islogical);
             p.addParameter('appendWriteModelParams', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
-            p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
+            p.addParameter('prependPathToLFADS', false, @islogical); % prepend an export path to run_lfads.py
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
             p.parse(varargin{:});
 
