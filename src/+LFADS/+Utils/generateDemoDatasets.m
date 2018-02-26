@@ -78,7 +78,7 @@ function datasets = generateDemoDatasets(datasetPath, varargin)
         for iC = 1:nConditions
             % generate rates via lorenz
             X = lorenz_trajectories(:, :, iC); % 3 X T
-            log_rates = W*X + b; % Nx3 x 3xT = N x T
+            log_rates = bsxfun(@plus, W*X, b); % Nx3 x 3xT = N x T
             rates = exp(clip(log_rates, -20, 20));
             
             for iTr = 1:nTrC
@@ -170,4 +170,4 @@ function plotICs(ic)
     scatter3(ic(1, :), ic(2, :), ic(3, :), 'LineWidth', 0.5, ...
         'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'w', 'MarkerEdgeAlpha', 0.5);
 end
-    
+
