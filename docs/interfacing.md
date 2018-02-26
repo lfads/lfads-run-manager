@@ -128,7 +128,7 @@ For example, you might add:
        timeWindowPost = 500; % ms after to include
    end
 ```
-!!! warning
+!!! warning "Pick default values carefully"
     **The default values you assign next to each property should be chosen carefully and never changed once added.** The reason for this is that when generating the hash of the hyperparameters (which specifies where LFADS-related files live on disk), each property is compared against this default value. The current value of a particular property is only included in the hashing process if it differs from this default value. This design ensures that it is always safe to add new hyperparameters; previously performed LFADS runs will still have the same hash value and will be assigned the default hyperparameter. However, if you change the default value here, all of the hash values for all previously performed runs will change, which will require directories to be manually renamed on disk and symbolic links to be corrected. If you wish to change the default value that a property takes for new runs, you can change its value in the `RunParams` constructor without affecting the hash. However, you will then want to manually assign this property to its _old value_ in any drive scripts you used to setup previous LFADS runs, in order to correctly specify the hyperparameters used and the corresponding hash values.
 
 **No changes are required to `RunParams.m` to get up and running.**
