@@ -37,6 +37,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_feedback_factors_or_rates char = 'factors'; % Feedback the factors or the rates to the controller? Acceptable values: 'factors' or 'rates'
         c_controller_input_lag uint16 = 1;
         
+        c_do_train_readin logical = true; % for stitching models, make the readin matrices trainable (true) or fix them to equal the alignment matrices (false)
+        
         c_l2_gen_scale double = 500; % how much to weight the generator l2 cost
         c_l2_con_scale double = 500; % how much to weight the controller l2 cost
         c_batch_size uint16 = 256; % number of trials to use during each training pass
@@ -47,7 +49,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         c_learning_rate_stop = 0.00001; % when the learning rate reaches this threshold, stop training
         c_temporal_spike_jitter_width uint16 = 0; % jittering spike times during training, in units of bin size
-
+        
         c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
         c_kl_ic_weight double = 1; % how much to weight the generator l2 cost
         c_kl_co_weight double = 1; % how much to weight the controller l2 cost
