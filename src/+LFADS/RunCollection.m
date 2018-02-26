@@ -273,7 +273,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             
             p.addParameter('runIdx', 1:rc.nRunsTotal, @isvector); % subsets and orders the runs to include in the script
             
-            p.addParameter('prependPathToLFADS', true, @islogical); % prepend an export path to run_lfads.py
+            p.addParameter('prependPathToLFADS', false, @islogical); % prepend an export path to run_lfads.py
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
             
             p.parse(varargin{:});
