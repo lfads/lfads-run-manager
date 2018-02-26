@@ -1,8 +1,18 @@
-function datasets = generateDemoDatasets(datasetPath)
+function datasets = generateDemoDatasets(datasetPath, varargin)
     % generates a set of demo datasets for LFADS based on generating
     % spikes via a chaotic Lorenz attractor
-    
-    rng(1);
+
+    p = inputParser();
+    p.addParameter('nDatasets', 3, @isscalar);
+    p.addParameter('minChannels', 25, @isscalar);
+    p.addParameter('maxChannels', 35, @isscalar);
+    p.addParameter('nConditions', 65, @isscalar);
+    p.addParameter('minTrialsC', 20, @isscalar); % per condition
+    p.addParameter('maxTrialsC', 30, @isscalar);
+    p.addParameter('nTime', 1000, @isscalar);
+    p.addParameter('meanFr', 5, @isscalar);
+    p.addParameter('T_burnIn', 500, @isscalar);
+    p.parse(varargin{:});
 
     %% Create temp directory for datasets
     if ~exist(datasetPath, 'dir')
@@ -10,32 +20,54 @@ function datasets = generateDemoDatasets(datasetPath)
     end
 
     %% Generate datasets
-    nDatasets = 4; % changing this unfortunately changes the sequence of rand calls below, so dataset 1:min(nDatasetsOld, nDatasetsNew) won't match when nDatasets changes
-    minChannels = 25;
-    maxChannels = 35;
+    nDatasets = p.Results.nDatasets;
+    minChannels = p.Results.minChannels;
+    maxChannels = p.Results.maxChannels;
 
-    nConditions = 65;
-    minTrialsC = 20;
-    maxTrialsC = 30;
-    T = 1000;
+    nConditions = p.Results.nConditions;
+    minTrialsC = p.Results.minTrialsC;
+    maxTrialsC = p.Results.maxTrialsC;
+    T = p.Results.nTime;
+    T_burnIn = p.Results.T_burnIn;
 
-    nTrialsCByDataset = randi([minTrialsC, maxTrialsC], nDatasets);
-    nChannelsByDataset = randi([minChannels, maxChannels], nDatasets);
+    meanFr = p.Results.meanFr;
+    D = 3; % dimensionality of lorenz system
 
-    meanFr = 5;
-    D = 3;
-    
-    initialConditions = randn(3, nConditions) * 2; % random IC per condition, but constant across datasets for stitching
-    lorenz_trajectories = nan(3, T, nConditions);
+    s = RandStream('mt19937ar','Seed', 0);
+
+    nTrialsCByDataset = randi(s, [minTrialsC, maxTrialsC], nDatasets);
+    nChannelsByDataset = randi(s, [minChannels, maxChannels], nDatasets);
+    initialConditions = bsxfun(@plus, randn(s, D, nConditions), [0 0 25]'); % random IC per condition, but constant across datasets for stitching
+
+    % run the lorenz system for a short time to bring the initial
+    % conditions into the butterfly
+    if T_burnIn > 1
+        for iC = 1:nConditions
+            traj = lorenz(T_burnIn, initialConditions(:, iC));
+            initialConditions(:, iC) = traj(:, end);
+        end
+    end
+
+    % generate the lorenz trajectories
+    lorenz_trajectories = nan(D, T, nConditions);
     for iC = 1:nConditions
         lorenz_trajectories(:, :, iC) = lorenz(T, initialConditions(:, iC));
     end
-    
+
+    % transform to [0 1] range
+    lorenz_trajectories = lorenz_trajectories - mean(lorenz_trajectories, 2);
+    lorenz_trajectories = lorenz_trajectories ./ max(lorenz_trajectories, [], 2);
+
+    figure();
+    plotTrajectories(lorenz_trajectories);
+    drawnow;
+
+    % project the trajectories into each dataset's neurons
     for iDS = 1:nDatasets
         nTrC = nTrialsCByDataset(iDS);
         nCh = nChannelsByDataset(iDS);
 
-        W = sort((rand(nCh, D)+1) .* sign(randn(nCh, D)), 1); % N x 3
+        W = sort((rand(s, nCh, D)+1) .* sign(randn(s, nCh, D)), 1); % N x 3
         b = log(meanFr / 1000) * ones(nCh, 1); % N x 1
 
         trialIdx = 1;
@@ -48,7 +80,7 @@ function datasets = generateDemoDatasets(datasetPath)
             X = lorenz_trajectories(:, :, iC); % 3 X T
             log_rates = bsxfun(@plus, W*X, b); % Nx3 x 3xT = N x T
             rates = exp(clip(log_rates, -20, 20));
-            
+
             for iTr = 1:nTrC
                 true_rates(trialIdx, :, :) = rates;
                 spikes(trialIdx, :, :) = poissrnd(rates) > 0;
@@ -57,12 +89,12 @@ function datasets = generateDemoDatasets(datasetPath)
             end
         end
 
-        datasets(iDS).spikes = spikes;
+        datasets(iDS).spikes = spikes; %#ok<*AGROW>
         datasets(iDS).timeMs = (0:T-1)';
         datasets(iDS).conditionId = conditionId;
         datasets(iDS).datetime = datetime('today') - nDatasets + iDS;
         datasets(iDS).subject = 'lorenz_example';
-        
+
         datasets(iDS).W = W;
         datasets(iDS).b = b;
         datasets(iDS).lorenz_trajectories = lorenz_trajectories;
@@ -73,7 +105,7 @@ function datasets = generateDemoDatasets(datasetPath)
 
     for iDS = 1:nDatasets
         fname = fullfile(datasetPath, sprintf('dataset%03d.mat', iDS));
-        dataset = datasets(iDS);
+        dataset = datasets(iDS); %#ok<NASGU>
         fprintf('Saving %s\n', fname);
         save(fname, '-struct', 'dataset');
     end
@@ -103,7 +135,38 @@ function X = lorenz(T, x0)
     for t = 2:T
         X(:, t) = X(:, t-1) + dt * derivfn(X(:, t-1));
     end
-    
-    X = bsxfun(@minus, X, mean(X, 2));
-    X = bsxfun(@rdivide, X, max(X, [], 2));
+end
+
+function plotTrajectories(lorenz_trajectories)
+    % lorenz_trajectories is 3 x T x C
+
+    cla;
+    ic = squeeze(lorenz_trajectories(:, 1, :));
+    C = size(lorenz_trajectories, 3);
+    [~, sortIdx] = sortrows(ic');
+
+    lorenz_trajectories = lorenz_trajectories(:, :, sortIdx);
+    ic = ic(:, sortIdx);
+    cmap = parula(C);
+
+    for iC = 1:C
+        plot3(lorenz_trajectories(1, :, iC), lorenz_trajectories(2, :, iC), lorenz_trajectories(3, :, iC), ...
+            'Color', [cmap(iC, :) 0.7], 'LineWidth', 0.5);
+        hold on;
+    end
+
+    plotICs(ic);
+
+    xlabel('x');
+    ylabel('y');
+    zlabel('z');
+    view(28.9, 7.6);
+    axis equal;
+    axis vis3d;
+    axis off;
+end
+
+function plotICs(ic)
+    scatter3(ic(1, :), ic(2, :), ic(3, :), 'LineWidth', 0.5, ...
+        'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'w', 'MarkerEdgeAlpha', 0.5);
 end

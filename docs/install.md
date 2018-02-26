@@ -2,7 +2,7 @@
 
 ## Install TensorFlow
 
-You'll need to install TensorFlow to run LFADS. Follow the [documentation for installing Tensorflow](https://www.tensorflow.org/install/). You may wish to install everything in a Python `virtualenv`, which is supported by `lfads-run-manager`. Be sure to test that you can `import tensorflow` in Python correctly:
+You'll need to install TensorFlow to run LFADS. Follow the [documentation for installing Tensorflow](https://www.tensorflow.org/install/) and be sure to install the version for GPUs if you wish to take advantage of the LFADS run queue. You may wish to install everything in a Python `virtualenv` or inside a `conda` environment, both of which are supported by `lfads-run-manager`. Be sure to test that you can `import tensorflow` in Python correctly:
 
 ```python
 # Python
@@ -35,7 +35,7 @@ Ensure that typing `which run_lfads.py` at your terminal prompt shows the path t
 
 ## Install tmux
 
-LFADS Run manager uses tmux to run LFADS within to enable queuing of many runs and online monitoring. Fortunately installing tmux is pretty straightforward on most distributions.
+LFADS Run Manager uses tmux to run LFADS within to enable queuing many runs across the available GPUs and to facilitate online monitoring. Fortunately, installing tmux is pretty straightforward on most distributions.
 
 * Ubuntu: `sudo apt-get install tmux`
 * Mac: `brew install tmux` using [Homebrew](https://brew.sh).

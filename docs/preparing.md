@@ -93,9 +93,9 @@ and view a summary of the results using:
                   subject                  date             saveTags    nTrials    nChannels
               ________________    ______________________    ________    _______    _________
 
-dataset001    'lorenz_example'    [01-Oct-2017 00:00:00]    '1'         1200       24
-dataset002    'lorenz_example'    [02-Oct-2017 00:00:00]    '1'         1350       26
-dataset003    'lorenz_example'    [03-Oct-2017 00:00:00]    '1'         1000       21
+dataset001    'lorenz_example'    [01-Oct-2017 00:00:00]    '1'         1820       35
+dataset002    'lorenz_example'    [02-Oct-2017 00:00:00]    '1'         1885       26
+dataset003    'lorenz_example'    [03-Oct-2017 00:00:00]    '1'         1365       35
 
 ```
 
@@ -105,37 +105,14 @@ We'll now setup a `RunCollection` that will contain all of the LFADS runs we'll 
 
 ```matlab
 runRoot = '~/lorenz_example/runs';
-rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
-rc.version = 20171107; % replace date authored as YYYYMMDD to ensure compatibility going forward
+rc_ds1 = MyExperiment.RunCollection(runRoot, 'exampleSingleRun', dc);
+rc_ds1.version = 20171107; % replace date authored as YYYYMMDD to ensure compatibility going forward
 ```
 
 !!! tip "Versioning and backwards compatibility"
     You can optionally set `rc.version` just after creating the `RunCollection`. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format `YYYYMMDD`. Specifying this here allows for backwards compatibility in case we need to change aspects of where lfads-run-manager organizes files on disk or how the `RunParams` hashes are generated. The default `rc.version` will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to "freeze" the lfads-run-manager logic for this specific collection of runs.
 
-## Add the `RunSpec` instances
-
-Recall that `RunSpec` instances specify which datasets are included in a specific run. We'll start by setting up a single dataset run for each of the datasets:
-
-```matlab
-for iR = 1:dc.nDatasets
-    runSpec = MyExperiment.RunSpec(dc.datasets(iR).getSingleRunName(), dc, iR);
-    rc.addRunSpec(runSpec);
-end
-```
-
-You can adjust the arguments to the constructor of `MyExperiment.RunSpec`, but in the example provided the inputs define:
-
-* the unique name of the run. Here we use `getSingleRunName`, a convenience method of `Dataset` that generates a name like `single_datasetName`.
-* the `DatasetCollection`
-* the indices or names of datasets (as a string or cell array of strings) to include
-
-We will also add a multi-session stitching run which includes all datasets:
-
-```matlab
-rc.addRunSpec(MyExperiment.RunSpec('all', dc, 1:dc.nDatasets));
-```
-
-## Specify the hyperparameters
+## Specify the hyperparameters in `RunParams`
 
 We'll next specify a single set of hyperparameters to begin with. Since this is a simple dataset, we'll reduce the size of the generator network to 64 and reduce the number of factors to 8.
 
@@ -144,46 +121,43 @@ par = MyExperiment.RunParams;
 par.spikeBinMs = 2; % rebin the data at 2 ms
 par.c_co_dim = 0; % no controller --> no inputs to generator
 par.c_batch_size = 150; % must be < 1/5 of the min trial count
-
-par.c_factors_dim = 8; % number of factors read out from generator to generate rates
-par.useAlignmentMatrix = true; % use alignment matrices initial guess for multisession stitching
-
+par.c_factors_dim = 8; % and manually set it for multisession stitched models
 par.c_gen_dim = 64; % number of units in generator RNN
 par.c_ic_enc_dim = 64; % number of units in encoder RNN
-
 par.c_learning_rate_stop = 1e-3; % we can stop really early for the demo
 ```
 
-As we wish stitch multiple datasets together in one of the runs, we'll also specify that we'd like to automatically specify an initial guess for the alignment matrices that link neurons to factors for each dataset using `useAlignmentMatrix`.
-
 !!! warning "Setting batch size"
-    The number of trials in your smallest dataset determines the largest batch size you can pick. If `trainToTestRatio` is 4 (the default), then you will need at least 4+1 = 5 times as many trials in every dataset as `c_batch_size`. If you choose a batch size which is too large, `lfads-run-manager` will generate an error to alert you.
+      The number of trials in your smallest dataset determines the largest batch size you can pick. If `trainToTestRatio` is 4 (the default), then you will need at least 4+1 = 5 times as many trials in every dataset as `c_batch_size`. If you choose a batch size which is too large, `lfads-run-manager` will generate an error to alert you.
 
-We then add this `RunParams` to the run collection:
+We then add this `RunParams` to the `RunCollection`:
+
 ```matlab
 rc.addParams(par);
 ```
 
-You can then look at the parameter settings added to `rc` using `rc.params`:
+You can access the parameter settings added to `rc` using `rc.params`, which will be an array of `RunParams` instances.
+
+### `RunParams` data and param hashes
+
+If we look at the printed representation of the `RunParams` instance, we see two hash values:
 
 ```matlab
->> rc.params
+>> par
 
-MyExperiment.RunParams param_Qr2PeG data_RE1kuL
-useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+par =
 
+MyExperiment.RunParams param_YOs74u data_4MaTKO
+c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 ...
 ```
 
-### `RunParams` data and param hashes
-The six digit alphanumeric hash values are used to uniquely and concisely identify the runs so that they can be conveniently located on disk in a predictable fashion. There are two hash values for each `RunParams` instance. The first is the hash of the whole collection of parameter settings which differ from their defaults, which is prefixed with `param_`.  
-
-The second is a hash of only those parameter settings that affect the input data used by LFADS, prefixed by `data_`. We use two separate hashes here to save space on disk; many parameters like `c_co_dim` only affect LFADS internally, but the input data is the same. Consequently, generating a large sweep of parameters like `c_co_dim` would otherwise require many copies of identical data to be saved on disk. Intead, we store the data in folders according to the `data_` hash and symlink copies for each run.
+These six digit alphanumeric hash values are used to uniquely and concisely identify the runs so that they can be conveniently located on disk in a predictable fashion. The first is the "param" hash of the whole collection of parameter settings which differ from their defaults, which is prefixed with `param_`.  The second is a hash of only those parameter settings that affect the input data used by LFADS, prefixed by `data_`. We use two separate hashes here to save space on disk; many parameters like `c_co_dim` only affect LFADS internally, but the input data is the same. Consequently, generating a large sweep of parameters like `c_co_dim` would otherwise require many copies of identical data to be saved on disk. Intead, we store the data in folders according to the `data_` hash and symlink copies for each run.
 
 Below the hash values are the set of properties whose values differ from their specified defaults (as specified next to the property in the class definition). Properties which are equal to their default values are not included in the hash calculation. This allows you to add new properties to your `RunParams` class without altering the computed hashes for older runs. See this [warning note](interfacing/#editing-runparamsm-optional) for more details.
 
 !!! tip "Specifying data-hash affecting parameters"
-    By default, the `data_` hash includes all properties that do not begin with `c_` as these are passed directly to the Python+Tensorflow LFADS code. This includes all of the parameters that you have added to `RunParams`. If you need to adjust this behavior, override the method `getListPropertiesNotAffectingInputData` in your `RunParams` instance.
+    By default, the `data_` hash includes all properties that do not begin with `c_` as these are passed directly to the Python+Tensorflow LFADS code. This includes all of the parameters that you have added to `RunParams`. If you need to adjust this behavior, override the method `getListPropertiesNotAffectingInputData` in your `RunParams` instance. You should probably take a union of your custom properties with the properties returned by the superclass method `:::matlab LFADS.Run/getListPropertiesNotAffectingInputData`.
 
 !!! tip "`RunParams` is a value class"
     Unlike all of the other classes, `RunParams` is not a handle but a value class, which acts similarly to a `struct` in that it is passed by value. This means that after adding the `RunParams` instance `par` to the `RunCollection`, we can modify `par` and then add it again to define a second set of parameters, like this:
@@ -206,6 +180,22 @@ Below the hash values are the set of properties whose values differ from their s
     parSet = par.generateSweep('c_gen_dim', [32 64 96 128], 'c_co_dim', 0:2:4);
     rc.addParams(parSet);
     ```
+
+## Specify the `RunSpec`
+
+Recall that `RunSpec` instances specify which datasets are included in a specific run. We'll start by setting up a single dataset run for the first dataset:
+
+```matlab
+runSpecName = dc.datasets(1).getSingleRunName();
+whichDataset = 1;
+runSpec = MyExperiment.RunSpec(runSpecName, dc, 1);
+```
+
+You can adjust the arguments to the constructor of `MyExperiment.RunSpec`, but in the example provided the inputs define:
+
+* the unique name of the run. Here we use `getSingleRunName`, a convenience method of `Dataset` that generates a name like `single_datasetName`.
+* the `DatasetCollection` from which datasets will be retrieved
+* the indices or names of datasets (as a string or cell array of strings) to include
 
 ## Check the `RunCollection`
 
@@ -322,4 +312,14 @@ MyExperiment.RunCollection "exampleRun" (4 runs total)
         c_kl_co_weight: 1
         c_inject_ext_input_to_gen: false
 
+```
+
+
+As we wish stitch multiple datasets together in one of the runs, we'll also specify that we'd like to automatically specify an initial guess for the alignment matrices that link neurons to factors for each dataset using `useAlignmentMatrix`.
+
+
+We will also add a multi-session stitching run which includes all datasets:
+
+```matlab
+rc.addRunSpec(MyExperiment.RunSpec('all', dc, 1:dc.nDatasets));
 ```
