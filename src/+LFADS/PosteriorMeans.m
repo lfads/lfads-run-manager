@@ -155,5 +155,41 @@ classdef PosteriorMeans
                 end
             end                      
         end
+        
+        function exportToHDF5(pm, filename)
+            pathTo = fileparts(filename);
+            if ~exist(pathTo, 'dir')
+                LFADS.Utils.mkdirRecursive(pathTo);
+            end
+            if exist(filename)
+                delete(filename);
+            end
+            
+            props = pm.listAllProperties();
+            for iP = 1:numel(props)
+                value = pm.(props{iP});
+                if ~isnumeric(value) continue, end
+                h5create(filename, ['/' props{iP}], size(value), 'DataType', class(value));
+                h5write(filename, ['/' props{iP}], value);
+            end
+        end
+        
+        function props = listAllProperties(pm)
+            meta = metaclass(pm);
+            
+            props = cell(numel(meta.PropertyList), 1);
+            mask = false(numel(meta.PropertyList), 1);
+            for i = 1:numel(meta.PropertyList)
+                prop = meta.PropertyList(i);
+                name = prop.Name;
+                props{i} = name;
+                
+                if ~prop.Constant && ~prop.Hidden
+                    mask(i) = true;
+                end
+            end
+            
+            props = props(mask);
+        end
     end    
 end
