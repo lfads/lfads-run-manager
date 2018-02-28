@@ -7,6 +7,8 @@ To train the LFADS model using Python+Tensorflow, you need to generate shell scr
 
     If Matlab is able to determine the location of `run_lfads.py` (meaning that it's own inherited `PATH` was set correctly), it will prepend an `export PATH=...` statement to each generated shell script for you. If not, you can try calling `setenv('PATH', '...')` from within Matlab to add `run_lfads.py` to the path. before generating the shell scripts.
 
+    Alternatively, you can hard-code the location to `run_lfads.py` by passing along the fully specified path to each of the `writeShellScript...` methods as `'path_run_lfads_py', '/path/to/run_lfads.py'`
+
 !!! tip "Virtualenv support"
     Each of the methods below supports a `:::matlab 'virtualenv', 'environmentName'` parameter-value argument. If specified, a `source activate environmentName` will be prepended to each script that calls Python for you. This is needed when Tensorflow is installed inside a virtual environment.
 
@@ -18,13 +20,13 @@ It is possible to run each model individually, but you'll probably prefer to [qu
 The first is to manually generate shell scripts for each run and then run them yourself. First, for each run `i`, you will call:
 
 ```matlab
-rc.runs(i).writeShellScriptLFADSTrain('cuda_visible_devices', 0, 'display', 500);
+rc.runs(i).writeShellScriptLFADSTrain('cuda_visible_devices', 0, 'display', 0);
 ```
 
 Here, you should specify options that will be written into the shell script, the key ones being:
 
 * `cuda_visible_devices` - which GPU index to run this model on, e.g. `0`. Use the `nvidia-smi` to enumerate the available GPUs on your system
-* `display` - the X display to use, e.g. `500`. The python code generates plots during training that will appear in TensorBoard. Generating these plots requires a display. When running in a remote server, you'll need to specify this, and possibly to launch an X server using something like `tightvnc` or `vncserver`.
+* `display` - the X display to use, e.g. `0`, which will set `DISPLAY` to `:0`. The python code generates plots during training that will appear in TensorBoard. Generating these plots requires a display. When running in a remote server, you'll need to specify this, and possibly to launch an X server using something like `tightvnc` or `vncserver`.
 * `appendPosteriorMeanSample` - `true` or `false` specifying whether to chain the posterior mean sampling operation after the training is finished. The default is `false`, but if you set this to `true`, you won't need to call `writeShellScriptPosteriorMeanSample` below.
 * `appendWriteModelParams` - `true` or `false` specifying whether to chain the posterior mean sampling operation after the training is finished. The default is `false`, but if you set this to `true`, you won't need to call `writeShellScriptWriteModelParams` below.
 
@@ -37,7 +39,14 @@ The script essentially launches Python to run `run_lfads.py` with the specific p
 
 ```bash
 #!/bin/bash
-CUDA_VISIBLE_DEVICES=0 python $(which run_lfads.py) --data_dir=~/lorenz_example/runs/exampleRun/param_Qr2PeG/single_dataset001/lfadsInput --data_filename_stem=lfads --lfads_save_dir=~/lorenz_example/runs/exampleRun/param_Qr2PeG/single_dataset001/lfadsOutput --allow_gpu_growth=true --batch_size=256 --cell_clip_value=5.000000 --ci_enc_dim=128 --co_dim=4 --con_dim=128 --controller_input_lag=1 --device=/gpu:0 --do_causal_controller=false --factors_dim=8 --gen_dim=100 --ic_dim=64 --ic_enc_dim=128 --in_factors_dim=8 --keep_prob=0.950000 --kl_co_weight=1.000000 --kl_ic_weight=1.000000 --kl_increase_steps=900 --l2_con_scale=500.000000 --l2_gen_scale=500.000000 --l2_increase_steps=900 --learning_rate_decay_factor=0.980000 --learning_rate_stop=0.000010 --temporal_spike_jitter_width=0
+
+path_to_run_lfads=$(which run_lfads.py)
+if [ ! -n "$path_to_run_lfads" ]; then
+    echo "Error: run_lfads.py not found on PATH. Ensure you add LFADS to your system PATH."
+    exit 1
+fi
+
+DISPLAY=:0 CUDA_VISIBLE_DEVICES=0 python $(which run_lfads.py) --data_dir=/home/djoshea/lorenz_example/runs/exampleSingleSession/param_YOs74u/single_dataset001/lfadsInput --data_filename_stem=lfads --lfads_save_dir=/home/djoshea/lorenz_example/runs/exampleSingleSession/param_YOs74u/single_dataset001/lfadsOutput --cell_clip_value=5.000000 --factors_dim=8 --ic_enc_dim=64 --ci_enc_dim=128 --gen_dim=64 --keep_prob=0.950000 --learning_rate_decay_factor=0.980000 --device=/gpu:0 --co_dim=0 --do_causal_controller=false --do_feed_factors_to_controller=true --feedback_factors_or_rates=factors --controller_input_lag=1 --do_train_readin=true --l2_gen_scale=500.000000 --l2_con_scale=500.000000 --batch_size=150 --kl_increase_steps=900 --l2_increase_steps=900 --ic_dim=64 --con_dim=128 --learning_rate_stop=0.001000 --temporal_spike_jitter_width=0 --allow_gpu_growth=true --kl_ic_weight=1.000000 --kl_co_weight=1.000000 --inject_ext_input_to_gen=false
 ```
 
 Running the `lfads_train.sh` script will launch the Tensorflow training which will take some time. You likely want to launch this in a `tmux` session if running remotely.
