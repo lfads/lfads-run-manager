@@ -64,6 +64,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         num_samples_posterior = 512; % number of samples 
         version uint32 = 20171107; % Used for graceful evolution of path settings
+        name char = ''; % convenient name for displaying this param
     end
     
     % Retired properties that should be kept around for hash value purposes
@@ -160,17 +161,19 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 meta = metaclass(p);
             end
             
+            % always exclude these fields
+            alwaysIgnore = {'version', 'name'};
+            
             props = cell(numel(meta.PropertyList), 1);
             mask = false(numel(meta.PropertyList), 1);
             for i = 1:numel(meta.PropertyList)
                 prop = meta.PropertyList(i);
-                name = prop.Name;
+                name = prop.Name; %#ok<*PROPLC>
                 props{i} = name;
                 if ismember(name, parser.Results.ignoreProperties)
                     continue;
                 end
-                % ALWAYS DON'T HASH VERSION
-                if strcmp(name, 'version')
+                if ismember(name, alwaysIgnore)
                     continue;
                 end
                 % skip properties that are Dependent, Constant, Transient,
@@ -413,7 +416,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             else
                 indexStr = sprintf('[%s %s]', p.paramHashString, p.dataHashString);
             end
-            header = sprintf('%s%s %s\n%sDiff: %s\n\n', blanks(indent), indexStr,className, blanks(indent+2), p.generateShortDifferencesString());
+            header = sprintf('%s%s %s "%s"\n%s%s\n\n', blanks(indent), indexStr, className, p.name, blanks(indent+2), p.generateShortDifferencesString());
             text = p.generateString('onlyDifferentFromDefault', false, ...
                 'ignoreHiddenUnlessDifferentFromDefault', true, ...
                 'beforeProp', blanks(indent+2), 'betweenPropValue', ': ', 'afterValue', '', 'betweenProps', sprintf('\n')); %#ok<SPRINTFN>
@@ -551,7 +554,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
             
         function h = getFirstLineHeader(p)
             className = class(p);
-            h = sprintf('%s param_%s data_%s\n%s', className, p.generateHash, p.generateInputDataHash, p.generateShortDifferencesString());
+            if isempty(p.name)
+                nameStr = '';
+            else
+                nameStr = sprintf(' "%s"', p.name);
+            end
+            h = sprintf('%s param_%s data_%s%s\n%s', className, p.generateHash, p.generateInputDataHash, nameStr, p.generateShortDifferencesString());
         end
     end
 
