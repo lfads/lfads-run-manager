@@ -1,7 +1,7 @@
 # Using LFADS Run Manager with your datasets
 
-## Copying the `MyExperiment` working example code
-Below we describe how to use the run manager code with datasets from a specific experiment. The recommended way to begin this process is to copy the folder `+MyExperiment` inside the` lfads-run-manager` repository to some other folder on your Matlab path, and then to rename it to something related to the experiment. Below, we'll stick with the name `MyExperiment`.
+## Copying the `LorenzExperiment` working example code
+Below we describe how to use the run manager code with datasets from a specific experiment. The recommended way to begin this process is to copy the folder `+LorenzExperiment` inside the` lfads-run-manager` repository to some other folder on your Matlab path, and then to rename it to something related to the experiment. Below, we'll stick with the name `LorenzExperiment`.
 
 Each of the classes you have just created are defined to inherit from the corresponding `LFADS.ClassName` inside the `lfads-run-manager` repo. Consequently, only a small amount of code is present in each file; the rest of the properties and methods for each class are define inside the `+LFADS` folder in the repo.
 
@@ -14,7 +14,7 @@ Here we walk through each of the classes that you've just copied. Most of the cl
 
 ### Editing `DatasetCollection.m` _(Optional)_
 
-Edit the file `+MyExperiment/DatasetCollection.m`. Recall that a dataset collection refers to a set of multiple individual datasets. Note the definition of the constructor:
+Edit the file `+LorenzExperiment/DatasetCollection.m`. Recall that a dataset collection refers to a set of multiple individual datasets. Note the definition of the constructor:
 
 ```matlab
 function ds = DatasetCollection(path)
@@ -25,7 +25,7 @@ end
 You may edit this to fit your needs, but the default approach is to create a new dataset collection by specifying a path on disk where the data live. For example, you could run:
 
 ```matlab
-dc = MyExperiment.DatasetCollection('/path/to/experimentData');
+dc = LorenzExperiment.DatasetCollection('/path/to/experimentData');
 ```
 
 This path will then be used as the parent folder by all of the datasets that are added to this collection.
@@ -47,7 +47,7 @@ end
 
 ### Editing `Dataset.m` _(Required)_
 
-Edit the file `+MyExperiment/Dataset.m`. Recall that a dataset encapsulates a collection of trials with simultaneously recorded neural data from an individual experimental session. Here, we will make a few light edits to specify metadata about each dataset.
+Edit the file `+LorenzExperiment/Dataset.m`. Recall that a dataset encapsulates a collection of trials with simultaneously recorded neural data from an individual experimental session. Here, we will make a few light edits to specify metadata about each dataset.
 
 First, look at the constructor.
 
@@ -57,10 +57,10 @@ function ds = Dataset(collection, relPath)
 end
 ```
 
-In order to encapsulate a particular dataset on disk, you will create a new `MyExperiment.Dataset` instance in Matlab. The first argument `collection` is the DatasetCollection to add this dataset to, which will provide the parent path. The second argument `relPath` specifies the path to this dataset relative to the collection. For example, if the dataset were stored in `/path/to/experimentalData/dataset001.mat`, you might run:
+In order to encapsulate a particular dataset on disk, you will create a new `LorenzExperiment.Dataset` instance in Matlab. The first argument `collection` is the DatasetCollection to add this dataset to, which will provide the parent path. The second argument `relPath` specifies the path to this dataset relative to the collection. For example, if the dataset were stored in `/path/to/experimentalData/dataset001.mat`, you might run:
 
 ```matlab
-ds1 = MyExperiment.Dataset(dc, 'dataset001.mat');
+ds1 = LorenzExperiment.Dataset(dc, 'dataset001.mat');
 ```
 
 You may need to specify how to load the actual data into Matlab in order to facilitate preprocessing. The default simply calls Matlab's `load` method and assumes that `ds.path` points to a `.mat` file. `ds.path` will be equal to the dataset collection path joined to `relPath`. If your data is stored differently, you will need to replace the implementation of `loadData`:
@@ -106,7 +106,7 @@ The metadata fields you might assign are as follows:
 
 ### Editing `RunParams.m` _(Optional)_
 
-Edit the file `+MyExperiment/RunParams.m`. Recall that `RunParams` encapsulates all of the hyperparameters used by LFADS but can also be used to specify any experiment specific hyperparameters you wish to add.
+Edit the file `+LorenzExperiment/RunParams.m`. Recall that `RunParams` encapsulates all of the hyperparameters used by LFADS but can also be used to specify any experiment specific hyperparameters you wish to add.
 
 You can add these additional properties anywhere in the file:
 ```matlab
@@ -135,7 +135,7 @@ For example, you might add:
 
 ### Editing `RunCollection.m` _(Optional)_
 
-Edit the file `+MyExperiment/RunCollection.m`. Recall that a `RunCollection` specifies a set of individual LFADS runs defined by an array of `RunSpec`s crossed with an array of `RunParams`.
+Edit the file `+LorenzExperiment/RunCollection.m`. Recall that a `RunCollection` specifies a set of individual LFADS runs defined by an array of `RunSpec`s crossed with an array of `RunParams`.
 
 ```matlab
 classdef RunCollection < LFADS.RunCollection
@@ -154,21 +154,21 @@ end
 
 ### Editing `Run.m` _(Required)_
 
-Edit the file `+MyExperiment/Run.m`. Recall that a `Run` represents a specific LFADS model training run. The main function you will need to provide a definition for is `generateCountsForDataset`. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:
+Edit the file `+LorenzExperiment/Run.m`. Recall that a `Run` represents a specific LFADS model training run. The main function you will need to provide a definition for is `generateCountsForDataset`. This is where you will actually need to process your datasets and return a structure array containing binned spike counts. The function signature looks like this:
 
 ```matlab
 function out = generateCountsForDataset(r, dataset, mode, varargin)
 ```
 
-Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly helpful to refer to the `RunParams` instance assigned to this run via `r.params`, especially if you have defined any additional hyperparameters that affect the way in which neural data should be extracted, e.g. which trials and what time window are included.
+Here, `r` refers to the `LorenzExperiment.Run` instance. It may be particularly helpful to refer to the `RunParams` instance assigned to this run via `r.params`, especially if you have defined any additional hyperparameters that affect the way in which neural data should be extracted, e.g. which trials and what time window are included.
 
-#### Inputs:
+#### Inputs to `generateCountsForDataset`:
 
 **`r`**:
 : The `Run` instance. The current `RunParams` instance can be accessed through `r.params`.
 
 **`dataset`**:
-: `MyExperiment.Dataset` instance that is to be processed. If this is a single-dataset run, this will be the dataset used. If this is a multi-dataset stitched run, `generateCountsForDataset` will be called once for each dataset, one at a time. You might use `dataset.loadData()` to load the actual data, as you defined above.
+: `LorenzExperiment.Dataset` instance that is to be processed. If this is a single-dataset run, this will be the dataset used. If this is a multi-dataset stitched run, `generateCountsForDataset` will be called once for each dataset, one at a time. You might use `dataset.loadData()` to load the actual data, as you defined above.
 
 **`mode`**:
 : String that indicates the intended purpose of the output data. You may ignore this and simply return the same sequence struct regardless of the mode, or you may process the data differently according to the context. Currently two modes are defined:
@@ -184,11 +184,10 @@ Here, `r` refers to the `MyExperiment.Run` instance. It may be particularly help
     end
     ```
 
-
 **`varargin`**:
 : Currently not being used, but this enables additional arguments to be passed as named-parameter value pairs (e.g. `:::matlab 'paramName', paramValue, ...`) in the future without breaking existing implementations.
 
-#### Outputs:
+#### Outputs to `generateCountsForDataset`:
 
 **`out`**:
 : A scalar struct which holds the following fields:
