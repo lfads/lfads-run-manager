@@ -241,6 +241,15 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             if nargin < 2
                 regenerate = false;
             end
+            
+            if rc.nRunsTotal == 0
+                if rc.nParams == 0
+                    error('No RunParams have been added. Use rc.addParams');
+                else
+                    error('No RunSpecs have been added. Use rc.addRunSpec');
+                end
+            end
+            
             prog = LFADS.Utils.ProgressBar(rc.nRunsTotal, 'Generating input data for each run');
             for iR = 1:rc.nRunsTotal
                 prog.update(iR);
@@ -714,9 +723,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
              header = cat(2, header, sprintf('  Path: %s\n\n', rc.path));
              header = cat(2, header, sprintf('  %d parameter settings\n', rc.nParams));
              for p = 1:rc.nParams
-                 header = cat(2, header, sprintf('  [%d %s %s] %s %s\n', ...
+                 header = cat(2, header, sprintf('  [%d %s %s] %s "%s" %s\n', ...
                      p, rc.params(p).generateHashName, rc.params(p).generateInputDataHashName, ...
-                     class(rc.params(p)), rc.params(p).generateShortDifferencesString()));
+                     class(rc.params(p)), rc.params(p).name, rc.params(p).generateShortDifferencesString()));
              end
 
              header = cat(2, header, sprintf('\n  %d run specifications\n', rc.nRunSpecs));
