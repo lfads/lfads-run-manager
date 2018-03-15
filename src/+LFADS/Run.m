@@ -138,6 +138,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         fileLFADSOutput % output from training and sampling can be tee'd here
 
         fileModelParams % Location on disk where model params will be written
+        
+        fileFitLog % location on disk where fit log will be written
 
         sessionNameTrain % name of tmux session that will be created if useSession = true is passed to writeShellScriptLFADSTrain
         sessionNamePosteriorMean % name of tmux session that will be created if useTmuxSession = true is passed to writeShellScriptLFADSPosteriorMean
@@ -418,6 +420,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function f = get.fileModelParams(r)
             f = fullfile(r.pathLFADSOutput, 'model_params');
         end
+        
+        function f = get.fileFitLog(r)
+            f = fullfile(r.pathLFADSOutput, 'fitlog.csv');
+        end
+
 
         function f = get.fileLFADSOutput(r)
             f = fullfile(r.path, 'lfads.out');
@@ -1512,7 +1519,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             readouts = readouts';
 
         end
+        
+        function fitLog = loadFitLog(r, varargin)
+            fname = r.fileFitLog;
+            assert(exist(fname, 'file') > 1, 'fitlog.csv file not found in lfadsOutput directory. Ensure that model has been trained');
 
+            r.fitLog = LFADS.FitLog(fname, r.name);
+            fitLog = r.fitLog;
+        end
     end
     
     methods(Static)
