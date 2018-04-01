@@ -1484,6 +1484,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     seqs{iDS}(ntr).rates = squeeze(pm.rates(:,:,ntr));
                     seqs{iDS}(ntr).factors = squeeze(pm.factors(:,:,ntr));
                     seqs{iDS}(ntr).generator_states = squeeze(pm.generator_states(:,:,ntr));
+                    seqs{iDS}(ntr).generator_ics = squeeze(pm.generator_ics(:,ntr));
                     if ~isempty(pm.controller_outputs)
                         seqs{iDS}(ntr).controller_outputs = ...
                             squeeze(pm.controller_outputs(:,:,ntr));
