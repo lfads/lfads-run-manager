@@ -50,22 +50,25 @@ classdef PosteriorMeans
                 else
                     pm.controller_outputs = [];
                 end
-                pm.factors = pms.factors;
-                pm.post_g0_mean = pms.post_g0_mean;
-                pm.post_g0_logvar = pms.post_g0_logvar;
-                pm.generator_ics = pms.generator_ics;
-                
-                pm.generator_states = pms.generator_states;
+                vars_to_transfer = { 'factors', 'post_g0_mean', 'post_g0_logvar', ...
+                                    'generator_ics', 'generator_states', 'costs', ...
+                                    'nll_bound_vaes', 'nll_bound_iwaes', 'validInds', ...
+                                   'trainInds' };
+                for nv = 1:numel( vars_to_transfer )
+                    v = vars_to_transfer{ nv };
+                    if isfield( pms, v )
+                        pm.( v ) = pms. ( v );
+                    else
+                        warning( sprintf( 'PosteriorMeans: couldn''t find variable %s', ...
+                                          v ) );
+                        pm.( v ) = [];
+                    end
+
+                end
                 
                 % convert rates into spikes / sec
                 pm.rates = pms.rates * 1000 / params.spikeBinMs;
-                
-                pm.costs  = pms.costs;
-                pm.nll_bound_vaes = pms.nll_bound_vaes;
-                pm.nll_bound_iwaes = pms.nll_bound_iwaes;
-                
-                pm.validInds = pms.validInds;
-                pm.trainInds = pms.trainInds;
+                % store the times
                 pm.time = time;
                 
             end
