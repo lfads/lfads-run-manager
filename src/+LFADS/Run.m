@@ -470,6 +470,22 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     r.datasets, 'UniformOutput', false);
             end
         end
+        
+        function [trainList, validList] = getLFADSPosteriorPushMeanFiles(r)
+            % Generates the list of training and validation LFADS posterior mean files for loading, without path
+            %
+            % Returns
+            % ---------
+            % trainList : cellstr
+            %   list of file names for training posterior samples
+            % validList : cellstr
+            %   list of file names for validation posterior samples
+
+            trainList = arrayfun(@(ds) sprintf('model_runs_%s.h5_train_posterior_push_mean', ds.name), ...
+                r.datasets, 'UniformOutput', false);
+            validList = arrayfun(@(ds) sprintf('model_runs_%s.h5_valid_posterior_push_mean', ds.name), ...
+                r.datasets, 'UniformOutput', false);
+        end
 
         function sess = get.sessionNameTrain(r)
             sess = sprintf('train_%s__%s', r.name, r.paramsString);
@@ -1328,7 +1344,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             LFADS.Utils.chmod('ug+rx', f);
         end
 
-        function pms = loadPosteriorMeans(r, reload)
+        function pms = loadPosteriorMeans(r, varargin)
             % pmData = loadPosteriorMeans(r, reload)
             % After the posterior mean shell script has been run, this will load the posterior mean samples from disk
             % and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans
@@ -1345,9 +1361,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % pmData : string
             %   nDatasets cell of :ref:`LFADS_PosteriorMeans` data loaded from disk
 
-            if nargin < 2
-                reload = false;
-            end
+            p = inputParser();
+            p.addOptional('reload', false, @(x) isscalar(x) && islogical(x));
+            p.addParameter('posterior_mean_kind', r.params.posterior_mean_kind, @ischar);
+            p.parse(varargin{:});
+            
+            reload = p.Results.reload;
+            
             if ~isempty(r.posteriorMeans) && all([r.posteriorMeans.isValid]) && ~reload
                 pms = LFADS.Utils.makecol(r.posteriorMeans);
                 return;
@@ -1376,8 +1396,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     info(iDS).seq_timeVector = seq{iDS}(1).y_time;
                 end
             end
-
-            [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
+    
+            % pick which file name based on posterior_mean_kind
+            posterior_mean_kind = p.Results.posterior_mean_kind;
+            switch posterior_mean_kind
+                case 'posterior_sample_and_average'
+                    [trainList, validList] = r.getLFADSPosteriorSampleMeanFiles();
+                case 'posterior_push_mean'
+                    [trainList, validList] = r.getLFADSPosteriorPushMeanFiles();
+                otherwise
+                    error('Unknown posterior_mean_kind "%s"', r.params.posterior_mean_kind);
+            end
+                    
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
             for iDS = 1:r.nDatasets
                 prog.update(iDS);
@@ -1425,7 +1455,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 time = info(iDS).seq_timeVector(1:rebin:end);
                 time = time(1:size(pmData.rates, 2));
 
-                pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time, conditionIds, rawCounts); %#ok<AGROW>
+                pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time, conditionIds, rawCounts, posterior_mean_kind); %#ok<AGROW>
             end
             prog.finish();
 
@@ -1506,7 +1536,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         end
 
         function readouts = loadReadoutMatricesByDataset(r)
-            fname = r.fileModelParams;
+            fname = r.fileModelParams; 
             assert(exist(fname, 'file') > 1, 'model_params file not found. Ensure that runCommandLFADSWriteModelParams has been run');
 
             biasStr = '/LFADS_glm_fac_2_logrates_%s.h5_b:0';
@@ -1518,7 +1548,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
 
             readouts = readouts';
-
         end
         
         function fitLog = loadFitLog(r, varargin)
