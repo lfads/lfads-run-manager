@@ -55,6 +55,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_kl_co_weight double = 1; % how much to weight the controller l2 cost
         
         c_inject_ext_input_to_gen logical = false; % should observed inputs be input to model via encoders (false) or injected directly into generator (true)?
+		
+	c_prior_ar_atau double = 10; % Initial autocorrelation of AR(1) priors (in time bins)
+	c_do_train_prior_ar_atau logical = true; % Is the value for atau an initial value (true) or the constant value (false)
+	c_prior_ar_nvar double = 0.1; % Initial noise variance for AR(1) priors
+	c_do_train_prior_ar_nvar logical = true; % Is the value for the noise var an initial value (true) or the constant value (false)
     end
     
     properties
