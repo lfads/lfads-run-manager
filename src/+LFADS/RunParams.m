@@ -65,6 +65,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         num_samples_posterior = 512; % number of samples 
         version uint32 = 20171107; % Used for graceful evolution of path settings
         name char = ''; % convenient name for displaying this param
+        
+        posterior_mean_kind char = 'posterior_sample_and_average'; % or 'posterior_push_mean'
     end
     
     % Retired properties that should be kept around for hash value purposes
@@ -269,7 +271,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             % this provides a list of all properties in the class that
             % should not affect the resulting param_HASH, regardless of
             % their values. 
-            list = {'version', 'num_samples_posterior'};
+            list = {'version', 'num_samples_posterior', 'posterior_mean_kind'};
         end
         
         function hash = generateHash(p)

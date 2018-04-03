@@ -3,6 +3,8 @@ classdef PosteriorMeans
     % trained LFADS model
     
     properties
+        kind char = ''; % either posterior_sample_and_average or posterior_push_mean
+        
         time % nTime x 1 vector of times in ms for each of the timeseries below
         controller_outputs % `nControllerOutputs x T x nTrials` controller outputs to generator inputs
         factors % `nFactors x T x nTrials` factor trajectories
@@ -35,7 +37,7 @@ classdef PosteriorMeans
     end
     
     methods
-        function pm = PosteriorMeans(pms, params, time, conditionIds, rawCounts)
+        function pm = PosteriorMeans(pms, params, time, conditionIds, rawCounts, kind)
             % pm = PosteriorMeans(pms, params, seq)
             % Construct instance by copying struct fields 
             %
@@ -80,6 +82,9 @@ classdef PosteriorMeans
             end
             if nargin > 4
                 pm.rawCounts = rawCounts;
+            end
+            if nargin > 5
+                pm.kind = kind;
             end
         end
     end
@@ -164,14 +169,14 @@ classdef PosteriorMeans
             if ~exist(pathTo, 'dir')
                 LFADS.Utils.mkdirRecursive(pathTo);
             end
-            if exist(filename)
+            if exist(filename, 'file')
                 delete(filename);
             end
             
             props = pm.listAllProperties();
             for iP = 1:numel(props)
                 value = pm.(props{iP});
-                if ~isnumeric(value) continue, end
+                if ~isnumeric(value), continue, end
                 h5create(filename, ['/' props{iP}], size(value), 'DataType', class(value));
                 h5write(filename, ['/' props{iP}], value);
             end
