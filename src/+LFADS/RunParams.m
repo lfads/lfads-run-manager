@@ -24,6 +24,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
         
         c_cell_clip_value double = 5; % used to avoid stepping too far during training
         c_factors_dim uint16 = 50;
+        c_in_factors_dim uint16 = 0; % size of the input factors for multi-session data
         c_ic_enc_dim uint16 = 128; % network size for IC encoder
         c_ci_enc_dim uint16 = 128; % network size for controller input encoder
         c_gen_dim uint16 = 100; % generator network size
@@ -69,7 +70,6 @@ classdef RunParams < matlab.mixin.CustomDisplay
     % Retired properties that should be kept around for hash value purposes
     % but no longer output to LFADS
     properties(Hidden)
-        c_in_factors_dim uint16 = 50;
         setInFactorsMatchDataForSingleDataset logical = false; % if true, c_in_factors_dim will be set to the dimensionality of the data when only a single dataset is used
     end
     
