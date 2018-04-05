@@ -282,7 +282,9 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             
             p.addParameter('runIdx', 1:rc.nRunsTotal, @isvector); % subsets and orders the runs to include in the script
             
-            p.addParameter('prependPathToLFADSQueue', false, @islogical); % prepend an export path to run_lfads.py
+            p.addParameter('prependPythonPathToLFADSQueue', false, @islogical); % prepend PYTHONPATH to lfadsqueue.py
+            p.addParameter('prependPathToRunLFADS', false, @islogical); % prepend PATH to run_lfads.py
+            
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
             
             p.parse(varargin{:});
@@ -302,7 +304,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
             fid = fopen(out_file, 'w');
             
-            if p.Results.prependPathToLFADSQueue
+            if p.Results.prependPythonPathToLFADSQueue
                 folder = LFADS.Utils.find_lfadsqueue_py();
                 if ~isempty(folder)
                     fprintf(fid, 'import sys\n');
@@ -337,7 +339,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     'appendPosteriorMeanSample', true, ...
                     'appendWriteModelParams', true, ...
                     'teeOutput', true, ...
-                    'prependPathToLFADS', p.Results.prependPathToLFADS, ...
+                    'prependPathToRunLFADS', p.Results.prependPathToRunLFADS, ...
                     'virtualenv', p.Results.virtualenv);
                 
                 outfile = LFADS.Utils.GetFullPath(rc.runs(iR).fileLFADSOutput);
