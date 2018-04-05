@@ -1,7 +1,7 @@
 # Using LFADS Run Manager with your datasets
 
 ## Copying the `LorenzExperiment` working example code
-Below we describe how to use the run manager code with datasets from a specific experiment. The recommended way to begin this process is to copy the folder `+LorenzExperiment` inside the` lfads-run-manager` repository to some other folder on your Matlab path, and then to rename it to something related to the experiment. Below, we'll stick with the name `LorenzExperiment`.
+Below we describe how to use the run manager code with datasets from your specific experiment. The recommended way to begin this process is to copy the folder `+LorenzExperiment` inside the` lfads-run-manager` repository to some other folder on your Matlab path, and then to rename it to something related to the experiment, keeping the `+` in the folder name to keep it in a [Matlab package](matlab/#matlab-packages). Below, we'll stick with the name `LorenzExperiment`.
 
 Each of the classes you have just created are defined to inherit from the corresponding `LFADS.ClassName` inside the `lfads-run-manager` repo. Consequently, only a small amount of code is present in each file; the rest of the properties and methods for each class are define inside the `+LFADS` folder in the repo.
 
@@ -44,6 +44,29 @@ end
 ```
 
 **No edits are necessary to `DatasetCollection.m` to get up and running**, but feel free to add any additional methods or properties as needed for your application.
+
+
+!!! tip "Auto-detecting datasets"
+    You might consider adding a method to your `DatasetCollection` class which can automatically detect all of the datasets in a specific folder. An example, which would add every `.mat` file detected in the folder might look like this:
+
+    ```matlab
+    function autoDetectDatasets(dc)
+        dc.clearDatasets(); % in case there are existing datasets already added
+
+        % automatically find all .mat files within dc.path and build datasets for each
+        files = dir(dc.path);
+        for iF = 1:numel(files)
+            if strncmp(files(iF).name, '.', 1), continue, end
+            info = files(iF);
+            [~, ~, ext] = fileparts(info.name);
+            if ~strcmp(ext, '.mat'), continue; end
+
+            % get YourPackage.Dataset constructor
+            datasetFn = str2func(strrep(class(r), 'DatasetCollection', 'Dataset'));
+            ds = datasetFn(dc, info.name);
+        end
+    end
+    ```
 
 ### Editing `Dataset.m` _(Required)_
 
@@ -131,6 +154,11 @@ For example, you might add:
 !!! warning "Pick default values carefully"
     **The default values you assign next to each property should be chosen carefully and never changed once added.** The reason for this is that when generating the hash of the hyperparameters (which specifies where LFADS-related files live on disk), each property is compared against this default value. The current value of a particular property is only included in the hashing process if it differs from this default value. This design ensures that it is always safe to add new hyperparameters; previously performed LFADS runs will still have the same hash value and will be assigned the default hyperparameter. However, if you change the default value here, all of the hash values for all previously performed runs will change, which will require directories to be manually renamed on disk and symbolic links to be corrected. If you wish to change the default value that a property takes for new runs, you can change its value in the `RunParams` constructor without affecting the hash. However, you will then want to manually assign this property to its _old value_ in any drive scripts you used to setup previous LFADS runs, in order to correctly specify the hyperparameters used and the corresponding hash values.
 
+!!! tip "Specifying data-hash affecting parameters"
+    As described [here](single-session/#runparams-data-and-param-hashes), the parameter values inside `RunParams` will be used to generate two different hashes, a `param_` hash that includes all properties that affect LFADS whose values differ from their defaults, and a `data_` hash that includes the subset of those properties that affect the raw data input to LFADS. This design allows us to reuse data on disk when sweeping parameters that only affect LFADS internal architecture, e.g. the size of the generator RNN.
+
+    By default, the `data_` hash includes all properties that do not begin with `c_` as these are passed directly to the Python+Tensorflow LFADS code. This includes all of the parameters that you have added to `RunParams`. If you need to adjust this behavior, override the method `getListPropertiesNotAffectingInputData` in your `RunParams` instance. You should probably take a union of your custom properties with the properties returned by the superclass method `:::matlab LFADS.Run/getListPropertiesNotAffectingInputData`.
+
 **No changes are required to `RunParams.m` to get up and running.**
 
 ### Editing `RunCollection.m` _(Optional)_
@@ -204,7 +232,7 @@ Here, `r` refers to the `LorenzExperiment.Run` instance. It may be particularly 
     **`:::matlab .truth`** (Optional):
     : For synthetic datasets, provides the ground-truth counts for each trial. Same size as `.counts`. Default is `[]`.
 
-    **`:::matlab externalInputs`** (Optional):
+    **`:::matlab .externalInputs`** (Optional):
     : Specifies the observed, external inputs which will be passed either to the generator directly or to the encoder. Default is `[]`.
 
     !!! note "A note on bin widths"

@@ -16,8 +16,6 @@ dc.name = 'lorenz_example';
 
 % add individual datasets
 LorenzExperiment.Dataset(dc, 'dataset001.mat');
-LorenzExperiment.Dataset(dc, 'dataset002.mat');
-LorenzExperiment.Dataset(dc, 'dataset003.mat');
 
 % load metadata from the datasets to populate the dataset collection
 dc.loadInfo;
@@ -32,9 +30,9 @@ runRoot = '~/lorenz_example/runs';
 rc = LorenzExperiment.RunCollection(runRoot, 'exampleSingleSession', dc);
 
 % replace this with the date this script was authored as YYYYMMDD
-% This ensures that updates to lfads-run-manager won't invalidate older
-% runs already on disk and provides for backwards compatibility
-rc.version = 20180206;
+% This ensures that updates to lfads-run-manager will remain compatible 
+% with older runs already on disk
+rc.version = 20180131;
 
 %% Set some hyperparameters
 
@@ -42,7 +40,7 @@ par = LorenzExperiment.RunParams;
 par.name = 'first_attempt'; % name is completely optional and not hashed, for your convenience
 par.spikeBinMs = 2; % rebin the data at 2 ms
 par.c_co_dim = 0; % no controller --> no inputs to generator
-par.c_batch_size = 150; % must be < 1/5 of the min trial count
+par.c_batch_size = 150; % must be < 1/5 of the min trial count for trainToTestRatio == 4
 par.c_factors_dim = 8; % and manually set it for multisession stitched models
 par.c_gen_dim = 64; % number of units in generator RNN
 par.c_ic_enc_dim = 64; % number of units in encoder RNN

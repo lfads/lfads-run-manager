@@ -28,15 +28,15 @@ dc.getDatasetInfoTable()
 %% Set some hyperparameters
 
 par = LorenzExperiment.RunParams;
+par.name = 'first_attempt_stitching'; % completely optional
+par.useAlignmentMatrix = true; % use alignment matrices initial guess for multisession stitching
+
 par.spikeBinMs = 2; % rebin the data at 2 ms
 par.c_co_dim = 0; % no controller --> no inputs to generator
 par.c_batch_size = 150; % must be < 1/5 of the min trial count
 par.c_factors_dim = 8; % and manually set it for multisession stitched models
-par.useAlignmentMatrix = true; % use alignment matrices initial guess for multisession stitching
-
 par.c_gen_dim = 64; % number of units in generator RNN
 par.c_ic_enc_dim = 64; % number of units in encoder RNN
-
 par.c_learning_rate_stop = 1e-3; % we can stop really early for the demo
 
 %% Running a multi-dataset stitching run
@@ -47,33 +47,46 @@ par.c_learning_rate_stop = 1e-3; % we can stop really early for the demo
 % leverages all 3 of the datasets in a common shared model.
 
 runRoot = '~/lorenz_example/runs';
-rc = LorenzExperiment.RunCollection(runRoot, 'exampleStitching', dc);
+rc = LorenzExperiment.RunCollection(runRoot, 'exampleStitching2', dc);
 
 % replace this with the date this script was authored as YYYYMMDD
 % This ensures that updates to lfads-run-manager won't invalidate older
 % runs already on disk and provides for backwards compatibility
-rc.version = 20171107;
+rc.version = 201801;
+
+% Add a RunSpec using all datasets which LFADS will then "stitch" into a
+% shared dynamical model
+rc.addRunSpec(LorenzExperiment.RunSpec('all', dc, 1:dc.nDatasets));
 
 % add a single set of parameters to this run collection. Additional
 % parameters can be added. LFADS.RunParams is a value class, unlike the other objects
 % which are handle classes, so you can modify par freely.
 rc.addParams(par);
 
-% Add a RunSpec to train individual models for each dataset
-for iR = 1:dc.nDatasets
-    runSpec = LorenzExperiment.RunSpec(dc.datasets(iR).getSingleRunName(), dc, iR);
-    rc.addRunSpec(runSpec);
-end
-
-% Add a RunSpec using all datasets which LFADS will then "stitch" into a
-% shared dynamical model
-rc.addRunSpec(LorenzExperiment.RunSpec('all', dc, 1:dc.nDatasets));
-
 % adding a return here allows you to call this script to recreate all of
 % the objects here for subsequent analysis after the actual LFADS models
 % have been trained. The code below will setup the LFADS training runs on
 % disk the first time around, and should be run once manually.
 return;
+
+%% Generating accompanying single-dataset models
+
+% If you like you can also add RunSpecs to train individual models for each
+% dataset as well to facilitate comparison.
+for iR = 1:dc.nDatasets
+    runSpec = LorenzExperiment.RunSpec(dc.datasets(iR).getSingleRunName(), dc, iR);
+    rc.addRunSpec(runSpec);
+end
+
+%% Verifying the alignment matrices
+
+run = rc.findRuns('all', 1);
+run.doMultisessionAlignment();
+nFactorsPlot = 3;
+conditionsToPlot = [1 20 40];
+
+tool = run.multisessionAlignmentTool;
+tool.plotAlignmentReconstruction(nFactorsPlot, conditionsToPlot);
 
 %% Prepare LFADS input and shell scripts
 

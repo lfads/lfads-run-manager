@@ -1,9 +1,9 @@
 # Setting up a single-session LFADS run
 
-Assuming you have finished [adapting the LFADS run manager classes to your dataset](interfacing), you should be all set to generate some LFADS runs and start training. We'll be setting up a _drive script_ that will do the work of creating the appropriate instances, pointing at the datasets, creating the runs, and telling `lfads-run-manager` to generate the files needed for LFADS. Below, we'll refer to the package name as `MyExperiment`, but you should substitute this with your package name.
+Assuming you have finished [adapting the LFADS run manager classes to your dataset](interfacing), you should be all set to generate some LFADS runs and start training. We'll be setting up a _drive script_ that will do the work of creating the appropriate instances, pointing at the datasets, creating the runs, and telling `LFADS Run Manager` to generate the files needed for LFADS. Below, we'll refer to the package name as `LorenzExperiment`, but you should substitute this with your package name.
 
-!!! tip "Follow along with `MyExperiment.drive_script`"
-    A complete drive script is available as a starting point in `+MyExperiment/drive_script.m` for you to copy/paste from.
+!!! tip "Follow along with `LorenzExperiment.drive_script`"
+    A complete drive script is available as a starting point in `+LorenzExperiment/drive_script.m` for you to copy/paste from.
 
 
 ## Lorenz attractor example
@@ -30,52 +30,29 @@ First, create a dataset collection that points to a folder on disk where dataset
 
 ```matlab
 dataPath = '~/lorenz_example/datasets';
-dc = MyExperiment.DatasetCollection(dataPath);
+dc = LorenzExperiment.DatasetCollection(dataPath);
 dc.name = 'lorenz_example';
 ```
 
 Then, we can add the individual datasets within based on their individual paths. Note that when a new dataset instance is created, it is automatically added to the `DatasetCollection` and will replace any dataset that has the same name if present.
 
 ```matlab
-MyExperiment.Dataset(dc, 'dataset001.mat');
-MyExperiment.Dataset(dc, 'dataset002.mat');
-MyExperiment.Dataset(dc, 'dataset003.mat');
+LorenzExperiment.Dataset(dc, 'dataset001.mat');
 ```
-
-!!! tip "Auto-detecting datasets"
-    You might consider adding a method to your `DatasetCollection` class which can automatically detect all of the datasets in a specific folder. An example, which would add every `.mat` file detected in the folder might look like this:
-
-    ```matlab
-    function autoDetectDatasets(dc)
-        dc.clearDatasets(); % in case there are existing datasets already added
-
-        % automatically find all .mat files within dc.path and build datasets for each
-        files = dir(dc.path);
-        for iF = 1:numel(files)
-            if strncmp(files(iF).name, '.', 1), continue, end
-            info = files(iF);
-            [~, ~, ext] = fileparts(info.name);
-            if ~strcmp(ext, '.mat'), continue; end
-            ds = MyExperiment.Dataset(dc, info.name); % change this to match your package name
-        end
-    end
-    ```
 
 You can verify that the datasets have been added to the collection:
 
 ```matlab
 >> dc
-MyExperiment.DatasetCollection "lorenz_example"
-  3 datasets in ~/lorenz_example/datasets
-  [ 1] MyExperiment.Dataset "dataset001"
-  [ 2] MyExperiment.Dataset "dataset002"
-  [ 3] MyExperiment.Dataset "dataset003"
+LorenzExperiment.DatasetCollection "lorenz_example"
+  1 datasets in ~/lorenz_example/datasets
+  [ 1] LorenzExperiment.Dataset "dataset001"
 
          name: 'lorenz_example'
       comment: ''
          path: '~/lorenz_example/datasetss'
-     datasets: [3x1 LorenzExperiment.Dataset]
-    nDatasets: 3
+     datasets: [1x1 LorenzExperiment.Dataset]
+    nDatasets: 1
 ```
 
 You can access individual datasets using `:::matlab dc.datasets(1)` or by name with `:::matlab dc.matchDatasetsByName('dataset001')`.
@@ -85,7 +62,7 @@ You can then load all of the metadata for the datasets using:
 dc.loadInfo();
 ```
 
-and view a summary of the results using:
+How this metadata is determined for each dataset may be customized as described in [Interfacing with your Datasets](/interfacing/#editing-datasetm-required). You can view a summary of the metadata using:
 
 ```matlab
 >> dc.getDatasetInfoTable          
@@ -93,9 +70,8 @@ and view a summary of the results using:
                   subject                  date             saveTags    nTrials    nChannels
               ________________    ______________________    ________    _______    _________
 
-dataset001    'lorenz_example'    [01-Feb-2017 00:00:00]    '1'         1820       35
-dataset002    'lorenz_example'    [01-Feb-2017 00:00:00]    '1'         1885       26
-dataset003    'lorenz_example'    [01-Feb-2017 00:00:00]    '1'         1365       35
+dataset001    'lorenz_example'    [31-Jan-2018 00:00:00]    '1'         1820       35
+
 
 ```
 
@@ -105,19 +81,22 @@ We'll now setup a `RunCollection` that will contain all of the LFADS runs we'll 
 
 ```matlab
 runRoot = '~/lorenz_example/runs';
-rc_ds1 = MyExperiment.RunCollection(runRoot, 'exampleSingleRun', dc);
-rc_ds1.version = 20180206; % replace with approximate data authored as YYYYMMDD
+rc = LorenzExperiment.RunCollection(runRoot, 'exampleSingleRun', dc);
+
+% replace with approximate date script authored as YYYYMMDD
+% to ensure forwards compatibility
+rc.version = 20180131;
 ```
 
 !!! tip "Versioning and backwards compatibility"
-    You can optionally set `rc.version` just after creating the `RunCollection`. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format `YYYYMMDD`. Specifying this here allows for backwards compatibility in case we need to change aspects of where lfads-run-manager organizes files on disk or how the `RunParams` hashes are generated. The default `rc.version` will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to "freeze" the lfads-run-manager logic for this specific collection of runs.
+    You can optionally set `rc.version` just after creating the `RunCollection`. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format `YYYYMMDD`. Specifying this here allows for backwards compatibility in case we need to change aspects of where LFADS Run Manager organizes files on disk or how the `RunParams` hashes are generated. The default `rc.version` will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to "freeze" the LFADS Run Manager logic for this specific collection of runs.
 
 ## Specify the hyperparameters in `RunParams`
 
 We'll next specify a single set of hyperparameters to begin with. Since this is a simple dataset, we'll reduce the size of the generator network to 64 and reduce the number of factors to 8.
 
 ```matlab
-par = MyExperiment.RunParams;
+par = LorenzExperiment.RunParams;
 par.name = 'first_attempt'; % completely optional
 par.spikeBinMs = 2; % rebin the data at 2 ms
 par.c_co_dim = 0; % no controller --> no inputs to generator
@@ -129,7 +108,7 @@ par.c_learning_rate_stop = 1e-3; % we can stop training early for the demo
 ```
 
 !!! warning "Setting batch size"
-      The number of trials in your smallest dataset determines the largest batch size you can pick. If `trainToTestRatio` is 4 (the default), then you will need at least 4+1 = 5 times as many trials in every dataset as `c_batch_size`. If you choose a batch size which is too large, `lfads-run-manager` will generate an error to alert you.
+      The number of trials in your smallest dataset determines the largest batch size you can pick. If `trainToTestRatio` is 4 (the default), then you will need at least 4+1 = 5 times as many trials in every dataset as `c_batch_size`. If you choose a batch size which is too large, LFADS Run Manager will generate an error to alert you.
 
 We then add this `RunParams` to the `RunCollection`:
 
@@ -148,17 +127,14 @@ If we look at the printed representation of the `RunParams` instance, we see two
 
 par =
 
-MyExperiment.RunParams param_YOs74u data_4MaTKO
+LorenzExperiment.RunParams param_YOs74u data_4MaTKO
 c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 ...
 ```
 
-These six digit alphanumeric hash values are used to uniquely and concisely identify the runs so that they can be conveniently located on disk in a predictable fashion. The first is the "param" hash of the whole collection of parameter settings which differ from their defaults, which is prefixed with `param_`.  The second is a hash of only those parameter settings that affect the input data used by LFADS, prefixed by `data_`. We use two separate hashes here to save space on disk; many parameters like `c_co_dim` only affect LFADS internally, but the input data is the same. Consequently, generating a large sweep of parameters like `c_co_dim` would otherwise require many copies of identical data to be saved on disk. Intead, we store the data in folders according to the `data_` hash and symlink copies for each run.
+These six digit alphanumeric hash values are used to uniquely and concisely identify the runs so that they can be conveniently located on disk in a predictable fashion. The first is the "param" hash of the whole collection of parameter settings which differ from their defaults, which is prefixed with `param_`.  The second is a hash of only those parameter settings that affect the input data used by LFADS, prefixed by `data_`. We use two separate hashes here to save space on disk; many parameters like `c_co_dim` only affect LFADS internally, but the input data is the same. Consequently, generating a large sweep of parameters like `c_co_dim` would otherwise require many copies of identical data to be saved on disk. Instead, we store the data in folders according to the `data_` hash and symlink copies for each run. If you add additional parameters that do not affect the data used by LFADS, you should specify them in your `RunParams` class as described [here](interfacing/##editing-runparamsm-optional).
 
 Below the hash values are the set of properties whose values differ from their specified defaults (as specified next to the property in the class definition). Properties which are equal to their default values are not included in the hash calculation. This allows you to add new properties to your `RunParams` class without altering the computed hashes for older runs. See this [warning note](interfacing/#editing-runparamsm-optional) for more details.
-
-!!! tip "Specifying data-hash affecting parameters"
-    By default, the `data_` hash includes all properties that do not begin with `c_` as these are passed directly to the Python+Tensorflow LFADS code. This includes all of the parameters that you have added to `RunParams`. If you need to adjust this behavior, override the method `getListPropertiesNotAffectingInputData` in your `RunParams` instance. You should probably take a union of your custom properties with the properties returned by the superclass method `:::matlab LFADS.Run/getListPropertiesNotAffectingInputData`.
 
 !!! tip "`RunParams` is a value class"
     Unlike all of the other classes, `RunParams` is not a handle but a value class, which acts similarly to a `struct` in that it is passed by value. This means that after adding the `RunParams` instance `par` to the `RunCollection`, we can modify `par` and then add it again to define a second set of parameters, like this:
@@ -184,15 +160,16 @@ Below the hash values are the set of properties whose values differ from their s
 
 ## Specify the `RunSpec`
 
-Recall that `RunSpec` instances specify which datasets are included in a specific run. We'll start by setting up a single dataset run for the first dataset:
+Recall that `RunSpec` instances specify which datasets are included in a specific run. For this example, we've only included a single dataset, so we don't have any choices to make. We'll run LFADS on first dataset by itself:
 
 ```matlab
 ds_index = 1;
 runSpecName = dc.datasets(ds_index).getSingleRunName(); % generates a simple run name from this datasets name
 runSpec = LorenzExperiment.RunSpec(runSpecName, dc, ds_index);
+rc.addRunSpec(runSpec);
 ```
 
-You can adjust the arguments to the constructor of `MyExperiment.RunSpec`, but in the example provided the inputs define:
+You can adjust the arguments to the constructor of `LorenzExperiment.RunSpec`, but in the example provided the inputs define:
 
 * the unique name of the run. Here we use `getSingleRunName`, a convenience method of `Dataset` that generates a name like `single_datasetName`.
 * the `DatasetCollection` from which datasets will be retrieved
@@ -200,13 +177,13 @@ You can adjust the arguments to the constructor of `MyExperiment.RunSpec`, but i
 
 ## Check the `RunCollection`
 
-The `RunCollection` will now display inforation about the parameter settings and run specifications that have been added:
+The `RunCollection` will now display information about the parameter settings and run specifications that have been added. Here there is only one parameter setting by one run specification, so we're only performing 1 run total.
 
 ```matlab
 >> rc
 
 LorenzExperiment.RunCollection "exampleSingleSession" (1 runs total)
-  Dataset Collection "lorenz_example" (3 datasets) in ~/lorenz_example/datasets
+  Dataset Collection "lorenz_example" (1 datasets) in ~/lorenz_example/datasets
   Path: ~/lorenz_example/runs/exampleSingleSession
 
   1 parameter settings
@@ -218,7 +195,7 @@ LorenzExperiment.RunCollection "exampleSingleSession" (1 runs total)
                           name: 'exampleSingleSession'
                        comment: ''
                       rootPath: '~/lorenz_example/runs'
-                       version: 20180206
+                       version: 20180131
              datasetCollection: [1x1 LorenzExperiment.DatasetCollection]
                           runs: [1x1 LorenzExperiment.Run]
                         params: [1x1 LorenzExperiment.RunParams]
@@ -226,8 +203,8 @@ LorenzExperiment.RunCollection "exampleSingleSession" (1 runs total)
                        nParams: 1
                      nRunSpecs: 1
                     nRunsTotal: 1
-                     nDatasets: 3
-                  datasetNames: {3x1 cell}
+                     nDatasets: 1
+                  datasetNames: {'dataset001'}
                           path: '~/lorenz_example/runs/exampleSingleSession'
       pathsCommonDataForParams: {'~/lorenz_example/runs/exampleSingleSession/data_4MaTKO'}
                 pathsForParams: {'~/lorenz_example/runs/exampleSingleSession/param_YOs74u'}
@@ -265,10 +242,10 @@ After running `prepareForLFADS`, the run manager will create the following files
 
 The organization of these files on disk is discussed in more detail [here](files.md). Also, a `summary.txt` file will be generated which can be useful for identifying all of the runs and their locations on disk. You can also generate this text from within Matlab by calling `rc.generateSummaryText()`.
 
-```
+```matlab
 LorenzExperiment.RunCollection "exampleSingleSession" (1 runs total)
   Path: ~/lorenz_example/runs/exampleSingleSession
-  Dataset Collection "lorenz_example" (3 datasets) in ~/lorenz_example/datasets
+  Dataset Collection "lorenz_example" (1 datasets) in ~/lorenz_example/datasets
 
   ------------------------
 
@@ -316,5 +293,12 @@ LorenzExperiment.RunCollection "exampleSingleSession" (1 runs total)
       c_kl_ic_weight: 1
       c_kl_co_weight: 1
       c_inject_ext_input_to_gen: false
+      c_prior_ar_atau: 10
+      c_do_train_prior_ar_atau: true
+      c_prior_ar_nvar: 0.1
+      c_do_train_prior_ar_nvar: true
       num_samples_posterior: 512
+      posterior_mean_kind: posterior_sample_and_average
+
+
 ```
