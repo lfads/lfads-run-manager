@@ -1,8 +1,10 @@
 # Matlab language features used
 
+The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well developed object oriented programming functionality. The run manager code also makes use of packages, which helps you organize your code so that names don't collide in the Matlab path. If you are familiar with these aspects of Matlab programming, skip ahead to [Key Concepts](concepts.md).
+
 ## Matlab Classes
 
-The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well developed object oriented programming functionality. While there are technical differences, classes in Matlab work similarly to classes in Java and other object-oriented languages, and are very well documented by Mathworks:
+ While there are technical differences, classes in Matlab work similarly to classes in Java and other object-oriented languages, and are very well documented by Mathworks:
 
  * [Role of Classes in Matlab](https://www.mathworks.com/help/matlab/matlab_oop/classes-in-the-matlab-language.html)
  * [Class Syntax Guide](https://www.mathworks.com/help/matlab/class-syntax-guide.html)
@@ -64,8 +66,8 @@ With this definition complete, we can then use the class at the command line as 
 
 Here, note that `myMult` is a Matlab variable which holds an instance of the class `Mutliplier`. We then assign a value to the property `gain` of this instance, and then call the method `multiply`.
 
-## Matlab packages
+## Matlab Packages
 
-The run manager code is also organized within Matlab packages. Packages are a way of organizing code that are used in many other programming languages, such as Java and Python. In Matlab, a package is simply a folder that begins with a `+`. Within Matlab, you will then refer to these classes by prefixing the class names with the package name, followed by a `.`. So within Matlab, `LFADS.Run` refers to the class located on the file system at `+LFADS/Run.m`.
+The run manager code is also organized within Matlab packages. Packages are a way of organizing code that are used in many other programming languages, such as Java and Python. In Matlab, a package is simply a folder that begins with a `+`. Within Matlab, you will then refer to these classes by prefixing the class names with the package name. So within Matlab, `LFADS.Run` refers to the class located on the file system at `+LFADS/Run.m`.
 
-The main advantage to using packages is that it keeps the namespace organized. This enables you to have multiple things with the same name on the Matlab path while referring to them uniquely with the package name prefix. To use with LFADS run manager with your data, you will probably want to create your own package to organize this code. So, for example if you had a type of experimental data from a reaching task, you might create a folder somewhere on the Matlab path called `+ReachingTask`, and within it copy the starter code provided. Then you can refer to `ReachingTask.Dataset` and `ReachingTask.Run` from within Matlab.
+The main advantage to using packages is that it keeps the namespace organized. This enables you to have multiple things with the same name on the Matlab path while referring to them uniquely with the package name prefix. To use with LFADS run manager with your data, you will probably want to create your own package to organize this code. So, for example if you had a type of experimental data from a reaching task, you might create a folder somewhere on the Matlab path called `+ReachingTask`, and within it copy the starter code provided from `+LorenzExperiment`. Then you can refer to `ReachingTask.Dataset` and `ReachingTask.Run` from within Matlab.

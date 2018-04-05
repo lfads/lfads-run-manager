@@ -120,7 +120,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         datasetIndsInCollection % indices of each dataset into datasetCollection.datasets
 
         paramsString % string representation of params generated using .params.generateString()
-
+        paramsName % string corresponding to .params.name
+        
         pathCommonData % Path on disk where original data files are saved, shared by all Runs in this collection
 
         pathSequenceFiles % Path on disk where sequence files may be saved
@@ -229,8 +230,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             assert(size(counts, 3) == numel(timeVecMs), 'size(counts, 3) must match numel(timeVecMs)');
             assert(isempty(conditionId) || numel(conditionId) == size(counts, 1), 'numel(conditionId) must be size(counts, 1)');
             assert(isempty(truth) || isequal(size(counts), size(truth)), 'size(truth) must be same as size(counts)');
-            assert(isempty(externalInputs) || (size(counts, 1) == size(externalInputs, 1) && size(counts, 2) == size(counts, 2)), 'size(externalInputs) must match size(counts) along dims 1, 2');
+            assert(isempty(externalInputs) || (size(counts, 1) == size(externalInputs, 1) && size(counts, 2) == size(counts, 2)), ...
+                'size(externalInputs) must match size(counts) along dims 1, 2');
 
+            assert((isempty(externalInputs) && r.params_c_ext_input_dim == 0) || size(externalInputs, 2) == r.params.c_ext_input_dim, ...
+                'size(externalInputs, 2) must match params.c_ext_input_dim');
+            
             nTrials = size(counts, 1);
 
             binWidthMs = timeVecMs(2) - timeVecMs(1);
@@ -345,6 +350,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function str = get.paramsString(r)
             if ~isempty(r.params)
                 str = r.params.generateHashName();
+            else
+                str = '';
+            end
+        end
+        
+        function str = get.paramsName(r)
+            if ~isempty(r.params)
+                str = r.params.name;
             else
                 str = '';
             end
@@ -522,7 +535,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 rc = r.runCollection;
                 header = sprintf('%s\n  Path: %s\n  Data: %s\n  %s "%s" : %s\n\n  %d datasets in "%s"\n', ...
                     r.getFirstLineHeader(), r.path, r.pathCommonData, ...
-                    class(r.params), r.paramsString, r.params.generateShortDifferencesString, ...
+                    class(r.params), r.paramsName, r.params.generateShortDifferencesString, ...
                     r.nDatasets, r.datasetCollection.name);
                 for s = 1:r.nDatasets
                     header = cat(2, header, sprintf('    [%2d] %s', s, r.datasets(s).getHeader()));

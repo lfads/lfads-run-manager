@@ -22,51 +22,48 @@ We'll walkthrough this example in more detail in this documentation, but to give
 
 ```matlab
 % Identify the datasets you'll be using
+% Here we'll add one at ~/lorenz_example/datasets/dataset001.mat
 dc = MyExperiment.DatasetCollection('~/lorenz_example/datasets');
 dc.name = 'lorenz_example';
-MyExperiment.Dataset(dc, 'dataset001.mat');
-MyExperiment.Dataset(dc, 'dataset002.mat');
-MyExperiment.Dataset(dc, 'dataset003.mat');
-dc.loadInfo;
+ds = MyExperiment.Dataset(dc, 'dataset001.mat'); % adds this dataset to the collection
+dc.loadInfo; % loads dataset metadata
 
 % Run a single model for each dataset, and one stitched run with all datasets
 runRoot = '~/lorenz_example/runs';
-rc = MyExperiment.RunCollection(runRoot, 'exampleRun', dc);
+rc = MyExperiment.RunCollection(runRoot, 'example', dc);
+
+% run files will live at ~/lorenz_example/runs/example/
 
 % Setup hyperparameters, 4 sets with number of factors swept through 2,4,6,8
 par = MyExperiment.RunParams;
 par.spikeBinMs = 2; % rebin the data at 2 ms
-par.c_co_dim = 0; % no controller --> no inputs to generator
+par.c_co_dim = 0; % no controller outputs --> no inputs to generator
 par.c_batch_size = 150; % must be < 1/5 of the min trial count
-par.useAlignmentMatrix = true; % use alignment matrices initial guess for multisession stitching
 par.c_gen_dim = 64; % number of units in generator RNN
 par.c_ic_enc_dim = 64; % number of units in encoder RNN
 par.c_learning_rate_stop = 1e-3; % we can stop really early for the demo
 parSet = par.generateSweep('c_factors_dim', [2 4 6 8]);
 rc.addParams(parSet);
 
-% Setup which datasets are included in each run, 1 for each dataset individually
-for iR = 1:dc.nDatasets
-    rc.addRunSpec(MyExperiment.RunSpec(dc.datasets(iR).getSingleRunName(), dc, iR));
-end
-% and the final stitching run with all datasets
-rc.addRunSpec(MyExperiment.RunSpec('all', dc, 1:dc.nDatasets));
+% Setup which datasets are included in each run, here just the one
+runName = dc.datasets(1).getSingleRunName(); % == 'single_dataset001'
+rc.addRunSpec(MyExperiment.RunSpec(runName, dc, 1));
 
 % Generate files needed for LFADS input on disk
 rc.prepareForLFADS();
 
 % Write a python script that will train all of the LFADS runs using a
 % load-balancer against the available CPUs and GPUs
-rc.writeShellScriptRunQueue('display', 50, 'maxTasksSimultaneously', 4, 'gpuList', [0 1], 'virtualenv', 'tensorflow');
+rc.writeShellScriptRunQueue('display', 0, 'virtualenv', 'tensorflow');
 ```
 
-You've now setup a 4 x 4 grid of LFADS runs, spanning 4 different hyperparameter settings and 4 different dataset subsets (3 with one dataset, 1 stitching together all datasets).
+You've now setup a 1x 4 grid of LFADS runs, spanning 4 different hyperparameter settings all on the same individual dataset
 
 ```matlab
 >> rc
 
 MyExperiment.RunCollection "exampleRun" (16 runs total)
-  Dataset Collection "lorenz_example" (3 datasets) in ~/lorenz_example/datasets
+  Dataset Collection "lorenz_example" (1 datasets) in ~/lorenz_example/datasets
   Path: ~/lorenz_example/runs/exampleRun
 
   4 parameter settings
@@ -75,11 +72,8 @@ MyExperiment.RunCollection "exampleRun" (16 runs total)
     [3 param_ngqEhM data_GeiefE] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=6 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
     [4 param_Qr2PeG data_RE1kuL] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
-  4 run specifications
+  1 run specifications
   [ 1] MyExperiment.RunSpec "single_dataset001" (1 datasets)
-  [ 2] MyExperiment.RunSpec "single_dataset002" (1 datasets)
-  [ 3] MyExperiment.RunSpec "single_dataset003" (1 datasets)
-  [ 4] MyExperiment.RunSpec "all" (3 datasets)
 
                           name: 'exampleRun'
                        comment: ''
@@ -90,10 +84,10 @@ MyExperiment.RunCollection "exampleRun" (16 runs total)
                         params: [4x1 MyExperiment.RunParams]
                       runSpecs: [4x1 MyExperiment.RunSpec]
                        nParams: 4
-                     nRunSpecs: 4
-                    nRunsTotal: 16
-                     nDatasets: 3
-                  datasetNames: {3x1 cell}
+                     nRunSpecs: 1
+                    nRunsTotal: 4
+                     nDatasets: 1
+                  datasetNames: {1x1 cell}
                           path: '~/lorenz_example/runs/exampleRun'
       pathsCommonDataForParams: {4x1 cell}
                 pathsForParams: {4x1 cell}

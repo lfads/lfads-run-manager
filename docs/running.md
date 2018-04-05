@@ -10,11 +10,141 @@ To train the LFADS model using Python+Tensorflow, you need to generate shell scr
     Alternatively, you can hard-code the location to `run_lfads.py` by passing along the fully specified path to each of the `writeShellScript...` methods as `'path_run_lfads_py', '/path/to/run_lfads.py'`
 
 !!! tip "Virtualenv support"
-    Each of the methods below supports a `:::matlab 'virtualenv', 'environmentName'` parameter-value argument. If specified, a `source activate environmentName` will be prepended to each script that calls Python for you. This is needed when Tensorflow is installed inside a virtual environment.
+    Each of the methods below supports a `:::matlab 'virtualenv', 'environmentName'` parameter-value argument. If specified, a `source activate environmentName` will be prepended to each script that calls Python for you. This is needed when Tensorflow is installed inside a virtual environment (or a conda virtual environment).
+
+## LFADS Queue: Automatically queueing many runs
+
+If you wish to run each LFADS model manually at the command line, [skip ahead](#launching-each-run-individually-from-shell-scripts). However, manually running each of these shell scripts in sequence can be tedious, especially if you don't have enough GPUs or CPUs to run them all in parallel and individual runs take hours or days to complete. To make this part of the process more complete, you can alternatively use the LFADS Queue model queueing system which will take care of training all the LFADS models for you.
+
+!!! warning "Only supported on Linux"
+    Unfortunately, this task queueing system is not supported on Mac OS at the moment, primarily because it depends on `nvidia-smi`, though it's theoretically possible with `cuda-smi` with light code changes. However, Tensorflow has discontinued explicit GPU support on Mac OS anyway. This has also never been tested on Windows, as you'd need to get `tmux` working.
+
+First, we'll generate the Python script from Matlab that enumerates all of the runs:
+
+```matlab
+rc.writeShellScriptRunQueue('display', 0, 'virtualenv', 'tensorflow');
+```
+
+Optional parameters include:
+
+**`display`**:
+: The numeric value of the X display to target. `0` means target display `DISPLAY=:0`. A display is needed to draw plots using `matplotlib`. If you're running on a VM, you may want to launch a VNC Server and point at that display. By default the display will be set according to the `DISPLAY` environment variable as it is seen inside `tmux`.
+
+**`gpuList`**:
+: List of GPU indices to include in the queue. By default, this will include all GPUs detected by `nvidia-smi`.
+
+**`runIdx`**:
+: Scalar indices of all runs to include in the queue. By default this will include all runs in `.runs`.
+
+**`virtualenv`**:
+: String indicating the virtual environment to source before launching the Python LFADS task, where TensorFlow must be installed.
+
+**`rerun`**:
+: By default, any run which already has an `lfads.done` file in the directory will be skipped, allowing you to regenerate and rerun the queue script whenever new runs are added. If `rerun` is `true`, all runs will be executed, although the old LFADS output checkpoint will be used during training. If you want to re-train from scratch, you'll need to delete the `lfadsOutput` directories, or call `rc.deleteLFADSOutput()`.
+
+**`oneTaskPerGPU`**:
+: By default, only one LFADS model will be trained per GPU, as empirically we've found that the switching costs outweigh any benefit from running multiple models simultaneously on each GPU. If you set this to `false`, ensure that you've set `c_allow_gpu_growth` to `true` in the `RunParams`.
+
+**`gpuMemoryRequired`**
+: Estimated maximum MB of GPU RAM needed per model, used to schedule models onto GPUs when `oneTaskPerGPU` is `false`.
+
+**`maxTasksSimultaneously`**
+: A manual cap on the number of models to train simultaneously. This is only relevant when `oneTaskPerGPU` is false, and will default to the number of CPUs minus one.
+
+**`prependPathToLFADSQueue`**
+: If true, automatically appends the path to `lfadsqueue.py` to the `PYTHONPATH` inside the generated script. Defaults to `false` to avoid confusion.
+
+This will generate a Python script `run_lfads.py`, which for our example can be launched via:
+
+```bash
+python ~/lorenz_example/runs/exampleRun/run_lfadsqueue.py
+```
+
+!!! note "Run Manager `src` folder should be added to your `PYTHONPATH`"
+    The `run_lfadsqueue.py` script depends on `lfadsqueue.py`, which lives in `lfads-run-manager/src`. You should add this to your `PYTHONPATH` or request that it be added to your PYTHONPATH environment variable in the `run_lfadsqueue.py` script by setting `prependPathToLFADSQueue` to `true`.
+
+!!! warning "Install and configure `tmux`"
+    The LFADS queue launches each LFADS run inside its own `tmux` session to make it easy to monitor the runs as they are running. You'll need to install `tmux`.
+
+    Also, `tmux` is finnicky about environment variables, which are only loaded when the `tmux` server first launches, not when a new session is started. The main one you need is that `run_lfads.py` must be on your `PATH` somewhere. If Matlab is able to determine this location (meaning that it's own inherited `PATH` was set correctly), it will prepend an `export PATH=...` statement to each `lfads_train.sh` script for you. If not, you can try calling `setenv('PATH', '...')` from within Matlab to add `run_lfads.py` to the path. before generating the shell scripts.
+
+    If you're having trouble, you might want to launch a new `tmux` session using:
+
+    ```bash
+    tmux new-session
+    ```
+
+    Then from inside `tmux`, test that `which run_lfads.py` prints a location and that you are able to launch python and run `import tensorflow as tf` without any issues.
+
+You can then kick everything off by running `python run_lfadsqueue.py` at the command line. It's recommended to do this from inside your own `tmux` session if you're running on a remote server, so you can monitor the task runner.
+
+!!! tip "Python virtual environments"
+
+    If tensorflow is installed in a Python virtual environment, you can have this environment be automatically activated via `source activate` within the training scripts using:
+    ```matlab
+    rc.writeShellScriptRunQueue('virtualenv', 'tensorflow');
+    ```
+
+A few notes on how the system works:
+
+* Output from Python will be `tee`'d into `lfads.out`, so you can check the output during or afterwards either there or in the `tmux` session.
+* When a model finishes training and posterior mean sampling, a file called `lfads.done` will be created
+* If the task runner detects an `lfads.done` file, it will skip that run. Unless you pass `:::matlab 'rerun', true` to `writeShellScriptRunQueue`, in which case every run will be rerun. This is convenient if you've added additional runs and just want the new ones to run.
+* If a run fails, the error will be printed by the task runner and `lfads.done` will not be created
+* A running tally of how many runs are currently running, have finished, or have failed will be printed
+* You can enter a run's `tmux` session directly to monitor it. The list of sessions can be obtained using `tmux list-sessions`. You can also abort it using `Ctrl-C` and it will be marked as failed by the task runner.
+* If you `Ctrl-C` the `run_lfadsqueue.py` script itself, the already launched runs will continue running. If you want to abort them, you can `pkill python` although this will kill all python processes you've created. In either case, you should be able to relaunch the `run_lfadsqueue.py` script and have it pick up where it left off as well.
+
+The `run_lfadsqueue.py` script will periodically output updates about how the runs are proceeding:
+
+```bash
+(tensorflow) ➜  exampleRun python run_lfadsqueue.py
+Warning: tmux sessions will be nested inside the current session
+Queue: Launching TensorBoard on port 42561 in tmux session exampleRun_tensorboard_port42561
+bash /home/djoshea/lorenz_example/runs/exampleRun/launch_tensorboard.sh --port=42561
+Queue: Initializing with 2 GPUs and 12 CPUs, max 4 simultaneous tasks
+Task lfads_param_Qr2PeG__single_dataset001: launching on gpu 0
+Task lfads_param_Qr2PeG__single_dataset001: started in tmux session lfads_param_Qr2PeG__single_dataset001 on GPU 0 with PID 19498
+Task lfads_param_Qr2PeG__single_dataset002: launching on gpu 1
+Task lfads_param_Qr2PeG__single_dataset002: started in tmux session lfads_param_Qr2PeG__single_dataset002 on GPU 1 with PID 19527
+Task lfads_param_Qr2PeG__single_dataset003: launching on gpu 0
+Task lfads_param_Qr2PeG__single_dataset003: started in tmux session lfads_param_Qr2PeG__single_dataset003 on GPU 0 with PID 19551
+Task lfads_param_Qr2PeG__all: launching on gpu 1
+Task lfads_param_Qr2PeG__all: started in tmux session lfads_param_Qr2PeG__all on GPU 1 with PID 19585
+Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009800.
+Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009800.
+Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009604.
+Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009604.
+Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009412.
+Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009412.
+```
+
+As the tasks run, the task queue will print out messages related to decreasing the learning rate, which is one way to measure ongonig progress towards the termination criterion (when the learning rate hits `c_learning_rate_stop`). When a task fails or completes, the queue will print out a running tally.
+
+Note that TensorBoard has automatically been launched on an available port, here on `42561`. You can also directly attach to the tmux sessions whose names are indicated in the script as "Tasks", which can be listed using `tmux list-sessions`.
+
+```bash
+➜  exampleRun tmux list-sessions
+matlab: 4 windows (created Tue Oct  3 21:51:49 2017) [201x114] (attached)
+exampleRun_tensorboard_port42561: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
+lfads_param_Qr2PeG__all: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
+lfads_param_Qr2PeG__single_dataset001: 1 windows (created Fri Oct  6 14:43:16 2017) [201x114]
+lfads_param_Qr2PeG__single_dataset002: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
+lfads_param_Qr2PeG__single_dataset003: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
+```
+
+If you wish to abort ongoing runs, you can either attach to them directly and use `Ctrl-C`, or use `tmux kill-session SESSIONNAME`. When everything has completed, you'll see something like this:
+
+```bash
+Task lfads_param_Qr2PeG__all: Stopping optimization based on learning rate criteria.
+Task lfads_param_Qr2PeG__all: completed successfully
+Queue: All tasks completed.
+Queue: 0 skipped, 4 finished, 0 failed, 0 running
+```
 
 ## Launching each run individually from shell scripts
 
-It is possible to run each model individually, but you'll probably prefer to [queue everything at once](#lfads-queue-automatically-queueing-many-runs).
+Follow these instructions to run each model individually, but you'll probably prefer to [queue everything at once](#lfads-queue-automatically-queueing-many-runs).
 
 ### Training the model
 The first is to manually generate shell scripts for each run and then run them yourself. First, for each run `i`, you will call:
@@ -76,108 +206,3 @@ rc.writeTensorboardShellScript();
 ```
 
 This will create `launch_tensorboard.sh` which will launch Tensorboard which can then be visited at `http://localhost:PORT`.
-
-## LFADS Queue: Automatically queueing many runs
-
-Manually running each of these shell scripts in sequence can be tedious, especially if you don't have enough GPUs or CPUs to run them all in parallel and individual runs take hours or days to complete. To make this part of the process more complete, you can alternatively use the Python task queueing system which will take care of training all the LFADS models for you.
-
-!!! warning "Only supported on Linux"
-    Unfortunately, this task queueing system is not supported on Mac OS at the moment, primarily because it depends on `nvidia-smi`, though it's theoretically possible with `cuda-smi` with light code changes. However, Tensorflow has discontinued explicit GPU support on Mac OS anyway. This has also never been tested on Windows, as you'd need to get `tmux` working.
-
-First, we'll generate the Python script from Matlab that enumerates all of the runs:
-
-```matlab
-rc.writeShellScriptRunQueue('display', 500, 'gpuList', [0 1 2 3]);
-```
-
-The first argument `display` specifies the X11 display for plotting as before. `gpuList` enumerates the indices of GPUs that can be used for the runs. This argument is optional if all of the GPUs are viable for Tensorflow on your system.
-
-!!! note "Capping the number of simultaneous runs"
-    You can also manually specify `maxTasksSimultaneously` if you wish to cap the number of simultaneous runs. By default this is set to the minimum of the number of CPUs on your system and the available GPU memory. By default, each LFADS task is assumed to use 2000 MB of GPU memory, but you can adjust this by specifying `gpuMemoryRequired`.
-
-This will generate a Python script `run_lfads.py`, which for our example lives here:
-
-```bash
-~/lorenz_exajjmple/runs/exampleRun/run_lfadsqueue.py
-```
-
-!!! note "lfads-run-manager repo folder will be added to your PYTHONPATH automatically"
-    The `run_lfadsqueue.py` script depends on `lfadsqueue.py`, which lives in the root of the `lfads-run-manager` repository. This will be added to your PYTHONPATH environment variable in the `run_lfadsqueue.py` script.
-
-!!! warning "Install and configure `tmux`"
-    The LFADS queue launches each LFADS run inside its own `tmux` session to make it easy to monitor the runs as they are running. You'll need to install `tmux`.
-
-    Also, `tmux` is finnicky about environment variables, which are only loaded when the `tmux` server first launches, not when a new session is started. The main one you need is that `run_lfads.py` must be on your `PATH` somewhere. If Matlab is able to determine this location (meaning that it's own inherited `PATH` was set correctly), it will prepend an `export PATH=...` statement to each `lfads_train.sh` script for you. If not, you can try calling `setenv('PATH', '...')` from within Matlab to add `run_lfads.py` to the path. before generating the shell scripts.
-
-    If you're having trouble, you might want to launch a new `tmux` session using:
-
-    ```bash
-    tmux new-session
-    ```
-
-    Then from inside `tmux`, test that `which run_lfads.py` prints a location and that you are able to launch python and run `import tensorflow as tf` without any issues.
-
-You can then kick everything off by running `python run_lfadsqueue.py` at the command line. It's recommended to do this from inside your own `tmux` session if you're running on a remote server, so you can monitor the task runner.
-
-!!! tip "Python virtual environments"
-
-    If tensorflow is installed in a Python virtual environment, you can have this environment be automatically `source activate`d within the training scripts using:
-    ```matlab
-    rc.writeShellScriptRunQueue('display', 500, 'gpuList', [0 1 2 3], 'virtualenv', 'tensorflow');
-    ```
-
-A few notes on how the system works:
-
-* Output from Python will be `tee`'d into `lfads.out`, so you can check the output during or afterwards either there or in the `tmux` session.
-* When a model finishes training and posterior mean sampling, a file called `lfads.done` will be created
-* If the task runner detects an `lfads.done` file, it will skip that run. Unless you pass `:::matlab 'rerun', true` to `writeShellScriptRunQueue`, in which case every run will be rerun. This is convenient if you've added additional runs and just want the new ones to run.
-* If a run fails, the error will be printed by the task runner and `lfads.done` will not be created
-* A running tally of how many runs are currently running, have finished, or have failed will be printed
-* You can enter a run's `tmux` session directly to monitor it. The list of sessions can be obtained using `tmux list-sessions`. You can also abort it using `Ctrl-C` and it will be marked as failed by the task runner.
-
-The `run_lfadsqueue.py` script will periodically output updates about how the runs are proceeding:
-
-```bash
-(tensorflow) ➜  exampleRun python run_lfadsqueue.py
-Warning: tmux sessions will be nested inside the current session
-Queue: Launching TensorBoard on port 42561 in tmux session exampleRun_tensorboard_port42561
-bash /home/djoshea/lorenz_example/runs/exampleRun/launch_tensorboard.sh --port=42561
-Queue: Initializing with 2 GPUs and 12 CPUs, max 4 simultaneous tasks
-Task lfads_param_Qr2PeG__single_dataset001: launching on gpu 0
-Task lfads_param_Qr2PeG__single_dataset001: started in tmux session lfads_param_Qr2PeG__single_dataset001 on GPU 0 with PID 19498
-Task lfads_param_Qr2PeG__single_dataset002: launching on gpu 1
-Task lfads_param_Qr2PeG__single_dataset002: started in tmux session lfads_param_Qr2PeG__single_dataset002 on GPU 1 with PID 19527
-Task lfads_param_Qr2PeG__single_dataset003: launching on gpu 0
-Task lfads_param_Qr2PeG__single_dataset003: started in tmux session lfads_param_Qr2PeG__single_dataset003 on GPU 0 with PID 19551
-Task lfads_param_Qr2PeG__all: launching on gpu 1
-Task lfads_param_Qr2PeG__all: started in tmux session lfads_param_Qr2PeG__all on GPU 1 with PID 19585
-Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009800.
-Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009800.
-Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009604.
-Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009604.
-Task lfads_param_Qr2PeG__single_dataset003:      Decreasing learning rate to 0.009412.
-Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to 0.009412.
-```
-
-As the tasks run, the task queue will print out messages related to decreasing the learning rate, which is one way to measure ongonig progress towards the termination criterion (when the learning rate hits `c_learning_rate_stop`). When a task fails or completes, the queue will print out a running tally.
-
-Note that TensorBoard has automatically been launched on an available port, here on `42561`. You can also directly attach to the tmux sessions whose names are indicated in the script as "Tasks", which can be listed using `tmux list-sessions`.
-
-```bash
-➜  exampleRun tmux list-sessions
-matlab: 4 windows (created Tue Oct  3 21:51:49 2017) [201x114] (attached)
-exampleRun_tensorboard_port42561: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
-lfads_param_Qr2PeG__all: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
-lfads_param_Qr2PeG__single_dataset001: 1 windows (created Fri Oct  6 14:43:16 2017) [201x114]
-lfads_param_Qr2PeG__single_dataset002: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
-lfads_param_Qr2PeG__single_dataset003: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
-```
-
-If you wish to abort ongoing runs, you can either attach to them directly and use `Ctrl-C`, or use `tmux kill-session SESSIONNAME`. When everything has completed, you'll see something like this:
-
-```bash
-Task lfads_param_Qr2PeG__all: Stopping optimization based on learning rate criteria.
-Task lfads_param_Qr2PeG__all: completed successfully
-Queue: All tasks completed.
-Queue: 0 skipped, 4 finished, 0 failed, 0 running
-```

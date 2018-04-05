@@ -1,5 +1,14 @@
 # Installation
 
+These instructions will walk you through the basic setup process to get you up and running with LFADS.
+
+!!! warning "Use Python 2.7"
+    While TensorFlow fully supports Python 3, the LFADS code itself does not yet. We expect to fix the few incompatibilities soon, but for now, use Python 2.7. If you're using [Anaconda](https://www.anaconda.com/download), you can create a `conda` environment like this:
+
+    ```bash
+    conda create --name tensorflow python=2.7
+    ```
+
 ## Install TensorFlow
 
 You'll need to install TensorFlow to run LFADS. Follow the [documentation for installing Tensorflow](https://www.tensorflow.org/install/) and be sure to install the version for GPUs if you wish to take advantage of the LFADS run queue. You may wish to install everything in a Python `virtualenv` or inside a `conda` environment, both of which are supported by `lfads-run-manager`. Be sure to test that you can `import tensorflow` in Python correctly:
@@ -19,10 +28,10 @@ Hello, TensorFlow!
 
 ## Install LFADS
 
-You'll then need to clone the [Tensorflow models repo containing LFADS](https://github.com/tensorflow/models/tree/master/research/lfads) somewhere convenient on your system.
+You'll then need to clone the [Tensorflow models repo containing LFADS](https://github.com/lfads/models/tree/master/research/lfads) somewhere convenient on your system.
 
 ```bash
-git clone https://github.com/tensorflow/models.git
+git clone https://github.com/lfads/models.git
 ```
 
 Then add this LFADS folder both to your `PYTHONPATH` and system `PATH`. Add the following to your `.bashrc`:
@@ -32,6 +41,12 @@ export PATH=$PATH:/path/to/models/research/lfads/
 ```
 
 Ensure that typing `which run_lfads.py` at your terminal prompt shows the path to `run_lfads.py`.
+
+LFADS depends on the Python libraries `h5py` and `matplotlib` being installed as well:
+
+```bash
+pip install h5py matplotlib
+```
 
 ## Install tmux
 
