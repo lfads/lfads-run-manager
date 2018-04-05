@@ -7,59 +7,97 @@ classdef RunParams < matlab.mixin.CustomDisplay
     % with c_, as these have special meaning to the LFADS code and will
     % mess things up.
     
+    % Not yet implemented:
+    %  do_train_io_only - needs more integration into run manager as a post-hoc run 
+    %  do_train_encoder_only - - needs more integration into run manager as a post-hoc run
+    %  do_reset_learning_rate - not sure it makes sense here since it would
+    %    be for post hoc runs only
+
     properties
-        % High-level params unrelated to LFADS internals
-        spikeBinMs double = 2; % Spike bin width in ms
-        trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio    
-        useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together.
-        useSingleDatasetAlignmentMatrix logical = false;  % Whether to use an alignment matrix using a single dataset, for dimensionality reduction upstream of the encoder 
-        scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a Run
-    end
-    
-    properties
-        % Subset of the command-line params to run_lfads.py
-        % Each starts with c_ so it can be differentiated from other params
+        % Command-line params to run_lfads.py start with c_ so they can be 
+        % differentiated from other params internal to the run manager.
         % Avoid naming other parameters the same as these without the c_
         % since the prefix will be stripped from the serialization
         
-        c_cell_clip_value double = 5; % used to avoid stepping too far during training
-        c_factors_dim uint16 = 50;
-        c_ic_enc_dim uint16 = 128; % network size for IC encoder
-        c_ci_enc_dim uint16 = 128; % network size for controller input encoder
-        c_gen_dim uint16 = 100; % generator network size
-        c_keep_prob double = 0.95; % randomly drop units during each training pass
-        c_learning_rate_decay_factor double = 0.98; % how quickly to decrease the learning rate
+        % Data processing
+        spikeBinMs double = 2; % Spike bin width in ms
+        
+        % TensorFlow logistics
+        c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
+        c_max_ckpt_to_keep uint16 = 5; % Max # of checkpoints to keep (rolling)
+        c_max_ckpt_to_keep_lve uint16 = 5; % Max # of checkpoints to keep for lowest validation error models (rolling)
         c_device char = '/gpu:0'; % which visible GPU/CPU to use
         
-        c_co_dim uint16 = 4;
+        % Optimization
+        c_learning_rate_init double = 0.01; % Initial learning rate
+        c_learning_rate_decay_factor double = 0.98; % how quickly to decrease the learning rate
+        c_learning_rate_n_to_compare uint16 = 6; % "Number of previous costs current cost has to be worse than, in order to lower learning rate
+        c_learning_rate_stop double = 0.00001; % when the learning rate reaches this threshold, stop training
+        c_max_grad_norm double = 200; % Max norm of gradient before clipping
+        trainToTestRatio uint16 = 4; % how many train v. test trials, defaults to 4:1 ratio    
+        c_batch_size uint16 = 256; % number of trials to use during each training pass
+        c_cell_clip_value double = 5; % Max value recurrent cell can take before being clipped
+        
+        % Overfitting
+        c_temporal_spike_jitter_width uint16 = 0; % jittering spike times during training, in number of spike bins
+        c_keep_prob double = 0.95; % randomly drop units during each training pass
+        c_l2_gen_scale double = 500; % L2 regularization cost for the generator only.
+        c_l2_con_scale double = 500; % L2 regularization cost for the controller only.
+        c_co_mean_corr_scale double = 0 % Cost of correlation (thru time)in the means of controller output
+        
+        % Underfitting: 
+        c_kl_ic_weight double = 1; % Strength of KL weight on initial conditions KL penatly
+        c_kl_co_weight double = 1; % Strength of KL weight on controller output KL penalty
+        c_kl_start_step uint16 = 0; % Start increasing KL weight after this many steps
+        c_kl_increase_steps uint16 = 900; % Number of steps over which the kl costs increase
+        c_l2_start_step uint16 = 0; % Start increasing L2 weight after this many steps
+        c_l2_increase_steps uint16 = 900; % Number of steps over which the l2 costs increase
+        scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a stitching Run
+        
+        % External inputs`
+        c_ext_input_dim uint16 = 0; % Number of external inputs
+        c_inject_ext_input_to_gen logical = false; % should observed inputs be input to model via encoders (false) or injected directly into generator (true)?
+		
+        % Controller / Inferred inputs
+        c_co_dim uint16 = 4; % number of inferred inputs (controller outputs)
+        c_prior_ar_atau double = 10; % Initial autocorrelation of AR(1) priors (in time bins)
+        c_do_train_prior_ar_atau logical = true; % Is the value for atau an initial value (true) or the constant value (false)
+        c_prior_ar_nvar double = 0.1; % Initial noise variance for AR(1) priors
+        c_do_train_prior_ar_nvar logical = true; % Is the value for the noise var an initial value (true) or the constant value (false)
         c_do_causal_controller logical = false; % restrict input encoder from seeing the future?DO_FEED_FACTORS_TO_CONTROLLER
         c_do_feed_factors_to_controller logical = true; % restrict input encoder from seeing the future?
         c_feedback_factors_or_rates char = 'factors'; % Feedback the factors or the rates to the controller? Acceptable values: 'factors' or 'rates'
         c_controller_input_lag uint16 = 1;
-        
-        c_do_train_readin logical = true; % for stitching models, make the readin matrices trainable (true) or fix them to equal the alignment matrices (false)
-        
-        c_l2_gen_scale double = 500; % how much to weight the generator l2 cost
-        c_l2_con_scale double = 500; % how much to weight the controller l2 cost
-        c_batch_size uint16 = 256; % number of trials to use during each training pass
-        c_kl_increase_steps uint16 = 900; % Number of steps over which the kl costs increase
-        c_l2_increase_steps uint16 = 900; % Number of steps over which the l2 costs increase
-        c_ic_dim uint16 = 64; % dimensionality of the initial conditions
+        c_ci_enc_dim uint16 = 128; % network size for controller input encoder
         c_con_dim uint16 = 128; %controller dimensionality
+        c_co_prior_var_scale = 0.1; % Variance of control input prior distribution
         
-        c_learning_rate_stop = 0.00001; % when the learning rate reaches this threshold, stop training
-        c_temporal_spike_jitter_width uint16 = 0; % jittering spike times during training, in units of bin size
         
-        c_allow_gpu_growth logical = true; %whether to allow the GPU to dynamically allocate memory. default (false) is to allocate all the memory initially
-        c_kl_ic_weight double = 1; % how much to weight the generator l2 cost
-        c_kl_co_weight double = 1; % how much to weight the controller l2 cost
+        % Encoder / Generator initial condition
+        c_num_steps_for_gen_ic uint32 = intmax('uint32'); % Number of steps to train the generator initial condition.
+        c_ic_dim uint16 = 64; % dimensionality of the initial conditions
+        c_ic_enc_dim uint16 = 128; % network size for IC encoder
+        c_ic_prior_var_min double = 0.1; % Minimum variance of IC prior distribution
+        c_ic_prior_var_scale double = 0.1; % Variance of IC prior distribution
+        c_ic_prior_var_max double = 0.1 % Maximum variance of IC prior distribution
+        c_ic_post_var_min double = 0.0001; % Minimum variance of IC posterior distribution
         
-        c_inject_ext_input_to_gen logical = false; % should observed inputs be input to model via encoders (false) or injected directly into generator (true)?
-		
-	c_prior_ar_atau double = 10; % Initial autocorrelation of AR(1) priors (in time bins)
-	c_do_train_prior_ar_atau logical = true; % Is the value for atau an initial value (true) or the constant value (false)
-	c_prior_ar_nvar double = 0.1; % Initial noise variance for AR(1) priors
-	c_do_train_prior_ar_nvar logical = true; % Is the value for the noise var an initial value (true) or the constant value (false)
+        % Generator network
+        c_cell_weight_scale double = 1.0; % Input scaling for input weights in generator
+        c_gen_dim uint16 = 100; % generator network size
+        c_gen_cell_input_weight_scale double = 1.0; % Input scaling for input weights in generator, which will be divided by sqrt(#inputs)
+        c_gen_cell_rec_weight_scale double = 1.0; % Input scaling for recurrent weights in generator.
+       
+        % Factors from generator
+        c_factors_dim uint16 = 50;
+        
+        % Stitching and alignment matrices
+        c_do_train_readin logical = true; % for stitching models, make the readin matrices trainable (true) or fix them to equal the alignment matrices (false)
+        useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together.
+        useSingleDatasetAlignmentMatrix logical = false;  % Whether to use an alignment matrix using a single dataset, for dimensionality reduction upstream of the encoder 
+        
+        % Output distribution for rates
+        c_output_dist char = 'poisson'; % or gaussian, type of output distribution
     end
     
     properties
@@ -67,11 +105,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
         % returned by getListPropertiesNotAffectingParamHash below.
         % They also do not affect data_HASH as they do not begin with c_
         
-        num_samples_posterior = 512; % number of samples 
-        version uint32 = 20171107; % Used for graceful evolution of path settings
         name char = ''; % convenient name for displaying this param
+        version uint32 = 20171107; % Used for graceful evolution of path settings
         
         posterior_mean_kind char = 'posterior_sample_and_average'; % or 'posterior_push_mean'
+        num_samples_posterior = 512; % number of samples when using posterior_sample_and_average
     end
     
     % Retired properties that should be kept around for hash value purposes
