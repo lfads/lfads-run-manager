@@ -2,7 +2,7 @@ classdef FitLog < handle
     properties
         runName char = '';
         filename char = '';
-        
+
         step
         total_train
         total_valid
@@ -10,15 +10,15 @@ classdef FitLog < handle
         recon_valid
         kl_train
         kl_valid
-        
+
         l2
         kl_weight
         l2_weight
     end
-    
+
     properties(Dependent)
         nEpochs
-        
+
         lveIndex % which epoch has the lowest validation error
         total_train_lve
         total_valid_lve
@@ -28,7 +28,7 @@ classdef FitLog < handle
         kl_valid_lve
         l2_lve
     end
-    
+
     methods
         function fitlog = FitLog(csvname, runName)
             fitlog.filename = csvname;
@@ -129,42 +129,42 @@ classdef FitLog < handle
             fitlog.kl_weight = cell2mat(rawNumericColumns(:, 11));
             fitlog.l2_weight = cell2mat(rawNumericColumns(:, 13));
         end
-        
+
         function n = get.nEpochs(fitlog)
             n = numel(fitlog.step);
         end
-        
+
         function idx = get.lveIndex(fitlog)
             eligible = fitlog.kl_weight == 1 & fitlog.l2_weight == 1;
             cost = fitlog.total_valid;
             cost(~eligible) = Inf;
             [~, idx] = min(cost);
         end
-        
+
         function v = get.total_train_lve(fitlog)
             v = fitlog.total_train(fitlog.lveIndex);
         end
-        
+
         function v = get.total_valid_lve(fitlog)
             v = fitlog.total_valid(fitlog.lveIndex);
         end
-        
+
         function v = get.recon_train_lve(fitlog)
             v = fitlog.recon_train(fitlog.lveIndex);
         end
-        
+
         function v = get.recon_valid_lve(fitlog)
             v = fitlog.recon_valid(fitlog.lveIndex);
         end
-        
+
         function v = get.kl_train_lve(fitlog)
             v = fitlog.kl_train(fitlog.lveIndex);
         end
-        
+
         function v = get.kl_valid_lve(fitlog)
             v = fitlog.kl_valid(fitlog.lveIndex);
         end
-        
+
         function v = get.l2_lve(fitlog)
             v = fitlog.l2(fitlog.lveIndex);
         end

@@ -117,6 +117,103 @@ rc.addParams(par);
 ```
 
 You can access the parameter settings added to `rc` using `rc.params`, which will be an array of `RunParams` instances.
+The `RunParams` class will display all of the settings in an organized manner, as well as a summary of those values that differ from their defaults at the top:
+
+```matlab
+>> par
+
+par =
+
+LorenzExperiment.RunParams param_YOs74u data_4MaTKO "first_attempt"
+c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim=64 c_factors_dim=8
+
+   Computed hashes
+                          paramHash: 'YOs74u'
+                    paramHashString: 'param_YOs74u'
+                           dataHash: '4MaTKO'
+                     dataHashString: 'data_4MaTKO'
+
+   Run Manager logistics and data processing
+                               name: 'first_attempt'
+                            version: 20171107
+                         spikeBinMs: 2
+
+   TensorFlow Logistics
+                 c_allow_gpu_growth: 1
+                 c_max_ckpt_to_keep: 5
+             c_max_ckpt_to_keep_lve: 5
+                           c_device: '/gpu:0'
+
+   Optimization
+               c_learning_rate_init: 0.0100
+       c_learning_rate_decay_factor: 0.9800
+       c_learning_rate_n_to_compare: 6
+               c_learning_rate_stop: 1.0000e-03
+                    c_max_grad_norm: 200
+                   trainToTestRatio: 4
+                       c_batch_size: 150
+                  c_cell_clip_value: 5
+
+   Overfitting
+      c_temporal_spike_jitter_width: 0
+                        c_keep_prob: 0.9500
+                     c_l2_gen_scale: 500
+                     c_l2_con_scale: 500
+               c_co_mean_corr_scale: 0
+
+   Underfitting
+                     c_kl_ic_weight: 1
+                     c_kl_co_weight: 1
+                    c_kl_start_step: 0
+                c_kl_increase_steps: 900
+                    c_l2_start_step: 0
+                c_l2_increase_steps: 900
+     scaleIncreaseStepsWithDatasets: 1
+
+   External inputs
+                    c_ext_input_dim: 0
+          c_inject_ext_input_to_gen: 0
+
+   Controller and inferred inputs
+                           c_co_dim: 0
+                    c_prior_ar_atau: 10
+           c_do_train_prior_ar_atau: 1
+                    c_prior_ar_nvar: 0.1000
+           c_do_train_prior_ar_nvar: 1
+             c_do_causal_controller: 0
+    c_do_feed_factors_to_controller: 1
+        c_feedback_factors_or_rates: 'factors'
+             c_controller_input_lag: 1
+                       c_ci_enc_dim: 128
+                          c_con_dim: 128
+               c_co_prior_var_scale: 0.1000
+
+   Encoder and initial conditions for generator
+             c_num_steps_for_gen_ic: 4294967295
+                           c_ic_dim: 64
+                       c_ic_enc_dim: 64
+                 c_ic_prior_var_min: 0.1000
+               c_ic_prior_var_scale: 0.1000
+                 c_ic_prior_var_max: 0.1000
+                  c_ic_post_var_min: 1.0000e-04
+
+   Generator network, factors, rates
+                c_cell_weight_scale: 1
+                          c_gen_dim: 64
+      c_gen_cell_input_weight_scale: 1
+        c_gen_cell_rec_weight_scale: 1
+                      c_factors_dim: 8
+                      c_output_dist: 'poisson'
+
+   Stitching multi-session models
+                  c_do_train_readin: 1
+                 useAlignmentMatrix: 0
+    useSingleDatasetAlignmentMatrix: 0
+
+   Posterior sampling
+                posterior_mean_kind: 'posterior_sample_and_average'
+              num_samples_posterior: 512
+```
 
 ### `RunParams` data and param hashes
 
@@ -258,47 +355,63 @@ LorenzExperiment.RunCollection "exampleSingleSession" (1 runs total)
 
   1 Parameter Settings:
 
-    [1 param_YOs74u data_4MaTKO] LorenzExperiment.RunParams "first_attempt"
-      c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [1 param_YOs74u data_4MaTKO] LorenzExperiment.RunParams "first_attempt" c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim=64 c_factors_dim=8
 
-      spikeBinMs: 2
-      trainToTestRatio: 4
-      useAlignmentMatrix: false
-      useSingleDatasetAlignmentMatrix: false
-      scaleIncreaseStepsWithDatasets: true
-      c_cell_clip_value: 5
-      c_factors_dim: 8
-      c_ic_enc_dim: 64
-      c_ci_enc_dim: 128
-      c_gen_dim: 64
-      c_keep_prob: 0.95
-      c_learning_rate_decay_factor: 0.98
-      c_device: /gpu:0
-      c_co_dim: 0
-      c_do_causal_controller: false
-      c_do_feed_factors_to_controller: true
-      c_feedback_factors_or_rates: factors
-      c_controller_input_lag: 1
-      c_do_train_readin: true
-      c_l2_gen_scale: 500
-      c_l2_con_scale: 500
-      c_batch_size: 150
-      c_kl_increase_steps: 900
-      c_l2_increase_steps: 900
-      c_ic_dim: 64
-      c_con_dim: 128
-      c_learning_rate_stop: 0.001
-      c_temporal_spike_jitter_width: 0
-      c_allow_gpu_growth: true
-      c_kl_ic_weight: 1
-      c_kl_co_weight: 1
-      c_inject_ext_input_to_gen: false
-      c_prior_ar_atau: 10
-      c_do_train_prior_ar_atau: true
-      c_prior_ar_nvar: 0.1
-      c_do_train_prior_ar_nvar: true
-      num_samples_posterior: 512
-      posterior_mean_kind: posterior_sample_and_average
-
-
+         spikeBinMs: 2
+         c_allow_gpu_growth: true
+         c_max_ckpt_to_keep: 5
+         c_max_ckpt_to_keep_lve: 5
+         c_device: /gpu:0
+         c_learning_rate_init: 0.01
+         c_learning_rate_decay_factor: 0.98
+         c_learning_rate_n_to_compare: 6
+         c_learning_rate_stop: 0.001
+         c_max_grad_norm: 200
+         trainToTestRatio: 4
+         c_batch_size: 150
+         c_cell_clip_value: 5
+         c_temporal_spike_jitter_width: 0
+         c_keep_prob: 0.95
+         c_l2_gen_scale: 500
+         c_l2_con_scale: 500
+         c_co_mean_corr_scale: 0
+         c_kl_ic_weight: 1
+         c_kl_co_weight: 1
+         c_kl_start_step: 0
+         c_kl_increase_steps: 900
+         c_l2_start_step: 0
+         c_l2_increase_steps: 900
+         scaleIncreaseStepsWithDatasets: true
+         c_ext_input_dim: 0
+         c_inject_ext_input_to_gen: false
+         c_co_dim: 0
+         c_prior_ar_atau: 10
+         c_do_train_prior_ar_atau: true
+         c_prior_ar_nvar: 0.1
+         c_do_train_prior_ar_nvar: true
+         c_do_causal_controller: false
+         c_do_feed_factors_to_controller: true
+         c_feedback_factors_or_rates: factors
+         c_controller_input_lag: 1
+         c_ci_enc_dim: 128
+         c_con_dim: 128
+         c_co_prior_var_scale: 0.1
+         c_num_steps_for_gen_ic: 4294967295
+         c_ic_dim: 64
+         c_ic_enc_dim: 64
+         c_ic_prior_var_min: 0.1
+         c_ic_prior_var_scale: 0.1
+         c_ic_prior_var_max: 0.1
+         c_ic_post_var_min: 0.0001
+         c_cell_weight_scale: 1
+         c_gen_dim: 64
+         c_gen_cell_input_weight_scale: 1
+         c_gen_cell_rec_weight_scale: 1
+         c_factors_dim: 8
+         c_output_dist: poisson
+         c_do_train_readin: true
+         useAlignmentMatrix: false
+         useSingleDatasetAlignmentMatrix: false
+         posterior_mean_kind: posterior_sample_and_average
+         num_samples_posterior: 512
 ```

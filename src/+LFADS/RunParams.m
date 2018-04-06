@@ -13,11 +13,76 @@ classdef RunParams < matlab.mixin.CustomDisplay
     %  do_reset_learning_rate - not sure it makes sense here since it would
     %    be for post hoc runs only
 
+   methods(Access = protected)
+       function groups = getPropertyGroups(obj)
+          if isscalar(obj)
+             groupTitle = 'Computed hashes';
+             propList = {'paramHash', 'paramHashString', 'dataHash', 'dataHashString'};
+             groups(1) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Run Manager logistics and data processing';
+             propList = {'name', 'version', 'spikeBinMs'};
+             groups(2) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'TensorFlow Logistics';
+             propList = {'c_allow_gpu_growth', 'c_max_ckpt_to_keep', 'c_max_ckpt_to_keep_lve', 'c_device'};
+             groups(3) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Optimization';
+             propList = {'c_learning_rate_init', 'c_learning_rate_decay_factor', 'c_learning_rate_n_to_compare', 'c_learning_rate_stop', 'c_max_grad_norm', 'trainToTestRatio', 'c_batch_size', 'c_cell_clip_value'};
+             groups(4) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Overfitting';
+             propList = {'c_temporal_spike_jitter_width', 'c_keep_prob', 'c_l2_gen_scale', 'c_l2_con_scale', 'c_co_mean_corr_scale'};
+             groups(5) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Underfitting';
+             propList = {'c_kl_ic_weight', 'c_kl_co_weight', 'c_kl_start_step', 'c_kl_increase_steps', 'c_l2_start_step', 'c_l2_increase_steps', 'scaleIncreaseStepsWithDatasets'};
+             groups(6) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'External inputs';
+             propList = {'c_ext_input_dim', 'c_inject_ext_input_to_gen'};
+             groups(7) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Controller and inferred inputs';
+             propList = {'c_co_dim', 'c_prior_ar_atau', 'c_do_train_prior_ar_atau', 'c_prior_ar_nvar', 'c_do_train_prior_ar_nvar', 'c_do_causal_controller', 'c_do_feed_factors_to_controller', ...
+               'c_feedback_factors_or_rates', 'c_controller_input_lag', 'c_ci_enc_dim', 'c_con_dim', ...
+               'c_co_prior_var_scale'};
+             groups(8) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Encoder and initial conditions for generator';
+             propList = {'c_num_steps_for_gen_ic', 'c_ic_dim', 'c_ic_enc_dim', 'c_ic_prior_var_min', 'c_ic_prior_var_scale', 'c_ic_prior_var_max', 'c_ic_post_var_min'};
+             groups(9) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Generator network, factors, rates';
+             propList = {'c_cell_weight_scale', 'c_gen_dim', 'c_gen_cell_input_weight_scale', ...
+               'c_gen_cell_rec_weight_scale', 'c_factors_dim', 'c_output_dist'};
+             groups(10) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Stitching multi-session models';
+             propList = {'c_do_train_readin', 'useAlignmentMatrix', 'useSingleDatasetAlignmentMatrix'};
+             groups(11) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+             groupTitle = 'Posterior sampling';
+             propList = {'posterior_mean_kind', 'num_samples_posterior'};
+             groups(12) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+
+          else
+             % Nonscalar case: call superclass method
+             groups = getPropertyGroups@matlab.mixin.CustomDisplay(obj);
+          end
+       end
+    end
+
     properties
         % Command-line params to run_lfads.py start with c_ so they can be
         % differentiated from other params internal to the run manager.
         % Avoid naming other parameters the same as these without the c_
         % since the prefix will be stripped from the serialization
+
+        % These properties DO NOT affect the param_HASH or the data_HASH
+        name char = ''; % convenient name for displaying this param
+        version uint32 = 20171107; % Used for graceful evolution of path settings
 
         % Data processing
         spikeBinMs double = 2; % Spike bin width in ms
@@ -97,16 +162,9 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_do_train_readin logical = true; % for stitching models, make the readin matrices trainable (true) or fix them to equal the alignment matrices (false)
         useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together.
         useSingleDatasetAlignmentMatrix logical = false;  % Whether to use an alignment matrix using a single dataset, for dimensionality reduction upstream of the encoder
-    end
 
-    properties
-        % These properties DO NOT affect the param_HASH, as they are
-        % returned by getListPropertiesNotAffectingParamHash below.
-        % They also do not affect data_HASH as they do not begin with c_
-
-        name char = ''; % convenient name for displaying this param
-        version uint32 = 20171107; % Used for graceful evolution of path settings
-
+        % Posterior mean sampling
+        % These properties DO NOT affect the param_HASH or the data_HASH
         posterior_mean_kind char = 'posterior_sample_and_average'; % or 'posterior_push_mean'
         num_samples_posterior = 512; % number of samples when using posterior_sample_and_average
     end
