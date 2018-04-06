@@ -789,7 +789,103 @@
 <div class="codehilite"><pre><span></span><span class="n">rc</span><span class="p">.</span><span class="n">addParams</span><span class="p">(</span><span class="n">par</span><span class="p">);</span>
 </pre></div>
 
-<p>You can access the parameter settings added to <code class="codehilite">rc</code> using <code class="codehilite">rc.params</code>, which will be an array of <code class="codehilite">RunParams</code> instances.</p>
+<p>You can access the parameter settings added to <code class="codehilite">rc</code> using <code class="codehilite">rc.params</code>, which will be an array of <code class="codehilite">RunParams</code> instances.
+The <code class="codehilite">RunParams</code> class will display all of the settings in an organized manner, as well as a summary of those values that differ from their defaults at the top:</p>
+<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">par</span>
+
+<span class="n">par</span> <span class="p">=</span>
+
+<span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> <span class="n">param_YOs74u</span> <span class="n">data_4MaTKO</span> &quot;<span class="n">first_attempt</span>&quot;
+<span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span>
+
+   <span class="n">Computed</span> <span class="n">hashes</span>
+                          <span class="n">paramHash</span><span class="p">:</span> <span class="s">&#39;YOs74u&#39;</span>
+                    <span class="n">paramHashString</span><span class="p">:</span> <span class="s">&#39;param_YOs74u&#39;</span>
+                           <span class="n">dataHash</span><span class="p">:</span> <span class="s">&#39;4MaTKO&#39;</span>
+                     <span class="n">dataHashString</span><span class="p">:</span> <span class="s">&#39;data_4MaTKO&#39;</span>
+
+   <span class="n">Run</span> <span class="n">Manager</span> <span class="n">logistics</span> <span class="n">and</span> <span class="n">data</span> <span class="n">processing</span>
+                               <span class="n">name</span><span class="p">:</span> <span class="s">&#39;first_attempt&#39;</span>
+                            <span class="n">version</span><span class="p">:</span> <span class="mi">20171107</span>
+                         <span class="n">spikeBinMs</span><span class="p">:</span> <span class="mi">2</span>
+
+   <span class="n">TensorFlow</span> <span class="n">Logistics</span>
+                 <span class="n">c_allow_gpu_growth</span><span class="p">:</span> <span class="mi">1</span>
+                 <span class="n">c_max_ckpt_to_keep</span><span class="p">:</span> <span class="mi">5</span>
+             <span class="n">c_max_ckpt_to_keep_lve</span><span class="p">:</span> <span class="mi">5</span>
+                           <span class="n">c_device</span><span class="p">:</span> <span class="s">&#39;/gpu:0&#39;</span>
+
+   <span class="n">Optimization</span>
+               <span class="n">c_learning_rate_init</span><span class="p">:</span> <span class="mf">0.0100</span>
+       <span class="n">c_learning_rate_decay_factor</span><span class="p">:</span> <span class="mf">0.9800</span>
+       <span class="n">c_learning_rate_n_to_compare</span><span class="p">:</span> <span class="mi">6</span>
+               <span class="n">c_learning_rate_stop</span><span class="p">:</span> <span class="mf">1.0000e-03</span>
+                    <span class="n">c_max_grad_norm</span><span class="p">:</span> <span class="mi">200</span>
+                   <span class="n">trainToTestRatio</span><span class="p">:</span> <span class="mi">4</span>
+                       <span class="n">c_batch_size</span><span class="p">:</span> <span class="mi">150</span>
+                  <span class="n">c_cell_clip_value</span><span class="p">:</span> <span class="mi">5</span>
+
+   <span class="n">Overfitting</span>
+      <span class="n">c_temporal_spike_jitter_width</span><span class="p">:</span> <span class="mi">0</span>
+                        <span class="n">c_keep_prob</span><span class="p">:</span> <span class="mf">0.9500</span>
+                     <span class="n">c_l2_gen_scale</span><span class="p">:</span> <span class="mi">500</span>
+                     <span class="n">c_l2_con_scale</span><span class="p">:</span> <span class="mi">500</span>
+               <span class="n">c_co_mean_corr_scale</span><span class="p">:</span> <span class="mi">0</span>
+
+   <span class="n">Underfitting</span>
+                     <span class="n">c_kl_ic_weight</span><span class="p">:</span> <span class="mi">1</span>
+                     <span class="n">c_kl_co_weight</span><span class="p">:</span> <span class="mi">1</span>
+                    <span class="n">c_kl_start_step</span><span class="p">:</span> <span class="mi">0</span>
+                <span class="n">c_kl_increase_steps</span><span class="p">:</span> <span class="mi">900</span>
+                    <span class="n">c_l2_start_step</span><span class="p">:</span> <span class="mi">0</span>
+                <span class="n">c_l2_increase_steps</span><span class="p">:</span> <span class="mi">900</span>
+     <span class="n">scaleIncreaseStepsWithDatasets</span><span class="p">:</span> <span class="mi">1</span>
+
+   <span class="n">External</span> <span class="n">inputs</span>
+                    <span class="n">c_ext_input_dim</span><span class="p">:</span> <span class="mi">0</span>
+          <span class="n">c_inject_ext_input_to_gen</span><span class="p">:</span> <span class="mi">0</span>
+
+   <span class="n">Controller</span> <span class="n">and</span> <span class="n">inferred</span> <span class="n">inputs</span>
+                           <span class="n">c_co_dim</span><span class="p">:</span> <span class="mi">0</span>
+                    <span class="n">c_prior_ar_atau</span><span class="p">:</span> <span class="mi">10</span>
+           <span class="n">c_do_train_prior_ar_atau</span><span class="p">:</span> <span class="mi">1</span>
+                    <span class="n">c_prior_ar_nvar</span><span class="p">:</span> <span class="mf">0.1000</span>
+           <span class="n">c_do_train_prior_ar_nvar</span><span class="p">:</span> <span class="mi">1</span>
+             <span class="n">c_do_causal_controller</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="n">c_do_feed_factors_to_controller</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="n">c_feedback_factors_or_rates</span><span class="p">:</span> <span class="s">&#39;factors&#39;</span>
+             <span class="n">c_controller_input_lag</span><span class="p">:</span> <span class="mi">1</span>
+                       <span class="n">c_ci_enc_dim</span><span class="p">:</span> <span class="mi">128</span>
+                          <span class="n">c_con_dim</span><span class="p">:</span> <span class="mi">128</span>
+               <span class="n">c_co_prior_var_scale</span><span class="p">:</span> <span class="mf">0.1000</span>
+
+   <span class="n">Encoder</span> <span class="n">and</span> <span class="n">initial</span> <span class="n">conditions</span> <span class="k">for</span> <span class="n">generator</span>
+             <span class="n">c_num_steps_for_gen_ic</span><span class="p">:</span> <span class="mi">4294967295</span>
+                           <span class="n">c_ic_dim</span><span class="p">:</span> <span class="mi">64</span>
+                       <span class="n">c_ic_enc_dim</span><span class="p">:</span> <span class="mi">64</span>
+                 <span class="n">c_ic_prior_var_min</span><span class="p">:</span> <span class="mf">0.1000</span>
+               <span class="n">c_ic_prior_var_scale</span><span class="p">:</span> <span class="mf">0.1000</span>
+                 <span class="n">c_ic_prior_var_max</span><span class="p">:</span> <span class="mf">0.1000</span>
+                  <span class="n">c_ic_post_var_min</span><span class="p">:</span> <span class="mf">1.0000e-04</span>
+
+   <span class="n">Generator</span> <span class="n">network</span><span class="p">,</span> <span class="n">factors</span><span class="p">,</span> <span class="n">rates</span>
+                <span class="n">c_cell_weight_scale</span><span class="p">:</span> <span class="mi">1</span>
+                          <span class="n">c_gen_dim</span><span class="p">:</span> <span class="mi">64</span>
+      <span class="n">c_gen_cell_input_weight_scale</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="n">c_gen_cell_rec_weight_scale</span><span class="p">:</span> <span class="mi">1</span>
+                      <span class="n">c_factors_dim</span><span class="p">:</span> <span class="mi">8</span>
+                      <span class="n">c_output_dist</span><span class="p">:</span> <span class="s">&#39;poisson&#39;</span>
+
+   <span class="n">Stitching</span> <span class="n">multi</span><span class="o">-</span><span class="n">session</span> <span class="n">models</span>
+                  <span class="n">c_do_train_readin</span><span class="p">:</span> <span class="mi">1</span>
+                 <span class="n">useAlignmentMatrix</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="n">useSingleDatasetAlignmentMatrix</span><span class="p">:</span> <span class="mi">0</span>
+
+   <span class="n">Posterior</span> <span class="n">sampling</span>
+                <span class="n">posterior_mean_kind</span><span class="p">:</span> <span class="s">&#39;posterior_sample_and_average&#39;</span>
+              <span class="n">num_samples_posterior</span><span class="p">:</span> <span class="mi">512</span>
+</pre></div>
+
 <h3 id="runparams-data-and-param-hashes"><code class="codehilite">RunParams</code> data and param hashes<a class="headerlink" href="#runparams-data-and-param-hashes" title="Permanent link">&para;</a></h3>
 <p>If we look at the printed representation of the <code class="codehilite">RunParams</code> instance, we see two hash values:</p>
 <div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">par</span>
@@ -908,47 +1004,65 @@
 
   <span class="mi">1</span> <span class="n">Parameter</span> <span class="n">Settings</span><span class="p">:</span>
 
-    <span class="p">[</span><span class="mi">1</span> <span class="n">param_YOs74u</span> <span class="n">data_4MaTKO</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> &quot;<span class="n">first_attempt</span>&quot;
-      <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
+    <span class="p">[</span><span class="mi">1</span> <span class="n">param_YOs74u</span> <span class="n">data_4MaTKO</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> &quot;<span class="n">first_attempt</span>&quot; <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span>
 
-      <span class="n">spikeBinMs</span><span class="p">:</span> <span class="mi">2</span>
-      <span class="n">trainToTestRatio</span><span class="p">:</span> <span class="mi">4</span>
-      <span class="n">useAlignmentMatrix</span><span class="p">:</span> <span class="n">false</span>
-      <span class="n">useSingleDatasetAlignmentMatrix</span><span class="p">:</span> <span class="n">false</span>
-      <span class="n">scaleIncreaseStepsWithDatasets</span><span class="p">:</span> <span class="n">true</span>
-      <span class="n">c_cell_clip_value</span><span class="p">:</span> <span class="mi">5</span>
-      <span class="n">c_factors_dim</span><span class="p">:</span> <span class="mi">8</span>
-      <span class="n">c_ic_enc_dim</span><span class="p">:</span> <span class="mi">64</span>
-      <span class="n">c_ci_enc_dim</span><span class="p">:</span> <span class="mi">128</span>
-      <span class="n">c_gen_dim</span><span class="p">:</span> <span class="mi">64</span>
-      <span class="n">c_keep_prob</span><span class="p">:</span> <span class="mf">0.95</span>
-      <span class="n">c_learning_rate_decay_factor</span><span class="p">:</span> <span class="mf">0.98</span>
-      <span class="n">c_device</span><span class="p">:</span> <span class="o">/</span><span class="n">gpu</span><span class="p">:</span><span class="mi">0</span>
-      <span class="n">c_co_dim</span><span class="p">:</span> <span class="mi">0</span>
-      <span class="n">c_do_causal_controller</span><span class="p">:</span> <span class="n">false</span>
-      <span class="n">c_do_feed_factors_to_controller</span><span class="p">:</span> <span class="n">true</span>
-      <span class="n">c_feedback_factors_or_rates</span><span class="p">:</span> <span class="n">factors</span>
-      <span class="n">c_controller_input_lag</span><span class="p">:</span> <span class="mi">1</span>
-      <span class="n">c_do_train_readin</span><span class="p">:</span> <span class="n">true</span>
-      <span class="n">c_l2_gen_scale</span><span class="p">:</span> <span class="mi">500</span>
-      <span class="n">c_l2_con_scale</span><span class="p">:</span> <span class="mi">500</span>
-      <span class="n">c_batch_size</span><span class="p">:</span> <span class="mi">150</span>
-      <span class="n">c_kl_increase_steps</span><span class="p">:</span> <span class="mi">900</span>
-      <span class="n">c_l2_increase_steps</span><span class="p">:</span> <span class="mi">900</span>
-      <span class="n">c_ic_dim</span><span class="p">:</span> <span class="mi">64</span>
-      <span class="n">c_con_dim</span><span class="p">:</span> <span class="mi">128</span>
-      <span class="n">c_learning_rate_stop</span><span class="p">:</span> <span class="mf">0.001</span>
-      <span class="n">c_temporal_spike_jitter_width</span><span class="p">:</span> <span class="mi">0</span>
-      <span class="n">c_allow_gpu_growth</span><span class="p">:</span> <span class="n">true</span>
-      <span class="n">c_kl_ic_weight</span><span class="p">:</span> <span class="mi">1</span>
-      <span class="n">c_kl_co_weight</span><span class="p">:</span> <span class="mi">1</span>
-      <span class="n">c_inject_ext_input_to_gen</span><span class="p">:</span> <span class="n">false</span>
-      <span class="n">c_prior_ar_atau</span><span class="p">:</span> <span class="mi">10</span>
-      <span class="n">c_do_train_prior_ar_atau</span><span class="p">:</span> <span class="n">true</span>
-      <span class="n">c_prior_ar_nvar</span><span class="p">:</span> <span class="mf">0.1</span>
-      <span class="n">c_do_train_prior_ar_nvar</span><span class="p">:</span> <span class="n">true</span>
-      <span class="n">num_samples_posterior</span><span class="p">:</span> <span class="mi">512</span>
-      <span class="n">posterior_mean_kind</span><span class="p">:</span> <span class="n">posterior_sample_and_average</span>
+         <span class="n">spikeBinMs</span><span class="p">:</span> <span class="mi">2</span>
+         <span class="n">c_allow_gpu_growth</span><span class="p">:</span> <span class="n">true</span>
+         <span class="n">c_max_ckpt_to_keep</span><span class="p">:</span> <span class="mi">5</span>
+         <span class="n">c_max_ckpt_to_keep_lve</span><span class="p">:</span> <span class="mi">5</span>
+         <span class="n">c_device</span><span class="p">:</span> <span class="o">/</span><span class="n">gpu</span><span class="p">:</span><span class="mi">0</span>
+         <span class="n">c_learning_rate_init</span><span class="p">:</span> <span class="mf">0.01</span>
+         <span class="n">c_learning_rate_decay_factor</span><span class="p">:</span> <span class="mf">0.98</span>
+         <span class="n">c_learning_rate_n_to_compare</span><span class="p">:</span> <span class="mi">6</span>
+         <span class="n">c_learning_rate_stop</span><span class="p">:</span> <span class="mf">0.001</span>
+         <span class="n">c_max_grad_norm</span><span class="p">:</span> <span class="mi">200</span>
+         <span class="n">trainToTestRatio</span><span class="p">:</span> <span class="mi">4</span>
+         <span class="n">c_batch_size</span><span class="p">:</span> <span class="mi">150</span>
+         <span class="n">c_cell_clip_value</span><span class="p">:</span> <span class="mi">5</span>
+         <span class="n">c_temporal_spike_jitter_width</span><span class="p">:</span> <span class="mi">0</span>
+         <span class="n">c_keep_prob</span><span class="p">:</span> <span class="mf">0.95</span>
+         <span class="n">c_l2_gen_scale</span><span class="p">:</span> <span class="mi">500</span>
+         <span class="n">c_l2_con_scale</span><span class="p">:</span> <span class="mi">500</span>
+         <span class="n">c_co_mean_corr_scale</span><span class="p">:</span> <span class="mi">0</span>
+         <span class="n">c_kl_ic_weight</span><span class="p">:</span> <span class="mi">1</span>
+         <span class="n">c_kl_co_weight</span><span class="p">:</span> <span class="mi">1</span>
+         <span class="n">c_kl_start_step</span><span class="p">:</span> <span class="mi">0</span>
+         <span class="n">c_kl_increase_steps</span><span class="p">:</span> <span class="mi">900</span>
+         <span class="n">c_l2_start_step</span><span class="p">:</span> <span class="mi">0</span>
+         <span class="n">c_l2_increase_steps</span><span class="p">:</span> <span class="mi">900</span>
+         <span class="n">scaleIncreaseStepsWithDatasets</span><span class="p">:</span> <span class="n">true</span>
+         <span class="n">c_ext_input_dim</span><span class="p">:</span> <span class="mi">0</span>
+         <span class="n">c_inject_ext_input_to_gen</span><span class="p">:</span> <span class="n">false</span>
+         <span class="n">c_co_dim</span><span class="p">:</span> <span class="mi">0</span>
+         <span class="n">c_prior_ar_atau</span><span class="p">:</span> <span class="mi">10</span>
+         <span class="n">c_do_train_prior_ar_atau</span><span class="p">:</span> <span class="n">true</span>
+         <span class="n">c_prior_ar_nvar</span><span class="p">:</span> <span class="mf">0.1</span>
+         <span class="n">c_do_train_prior_ar_nvar</span><span class="p">:</span> <span class="n">true</span>
+         <span class="n">c_do_causal_controller</span><span class="p">:</span> <span class="n">false</span>
+         <span class="n">c_do_feed_factors_to_controller</span><span class="p">:</span> <span class="n">true</span>
+         <span class="n">c_feedback_factors_or_rates</span><span class="p">:</span> <span class="n">factors</span>
+         <span class="n">c_controller_input_lag</span><span class="p">:</span> <span class="mi">1</span>
+         <span class="n">c_ci_enc_dim</span><span class="p">:</span> <span class="mi">128</span>
+         <span class="n">c_con_dim</span><span class="p">:</span> <span class="mi">128</span>
+         <span class="n">c_co_prior_var_scale</span><span class="p">:</span> <span class="mf">0.1</span>
+         <span class="n">c_num_steps_for_gen_ic</span><span class="p">:</span> <span class="mi">4294967295</span>
+         <span class="n">c_ic_dim</span><span class="p">:</span> <span class="mi">64</span>
+         <span class="n">c_ic_enc_dim</span><span class="p">:</span> <span class="mi">64</span>
+         <span class="n">c_ic_prior_var_min</span><span class="p">:</span> <span class="mf">0.1</span>
+         <span class="n">c_ic_prior_var_scale</span><span class="p">:</span> <span class="mf">0.1</span>
+         <span class="n">c_ic_prior_var_max</span><span class="p">:</span> <span class="mf">0.1</span>
+         <span class="n">c_ic_post_var_min</span><span class="p">:</span> <span class="mf">0.0001</span>
+         <span class="n">c_cell_weight_scale</span><span class="p">:</span> <span class="mi">1</span>
+         <span class="n">c_gen_dim</span><span class="p">:</span> <span class="mi">64</span>
+         <span class="n">c_gen_cell_input_weight_scale</span><span class="p">:</span> <span class="mi">1</span>
+         <span class="n">c_gen_cell_rec_weight_scale</span><span class="p">:</span> <span class="mi">1</span>
+         <span class="n">c_factors_dim</span><span class="p">:</span> <span class="mi">8</span>
+         <span class="n">c_output_dist</span><span class="p">:</span> <span class="n">poisson</span>
+         <span class="n">c_do_train_readin</span><span class="p">:</span> <span class="n">true</span>
+         <span class="n">useAlignmentMatrix</span><span class="p">:</span> <span class="n">false</span>
+         <span class="n">useSingleDatasetAlignmentMatrix</span><span class="p">:</span> <span class="n">false</span>
+         <span class="n">posterior_mean_kind</span><span class="p">:</span> <span class="n">posterior_sample_and_average</span>
+         <span class="n">num_samples_posterior</span><span class="p">:</span> <span class="mi">512</span>
 </pre></div>
                 
                   
