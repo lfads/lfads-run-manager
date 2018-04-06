@@ -2,91 +2,91 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
     
+        
     <url>
      <loc>/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
+        
     <url>
      <loc>/install/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
+        
     <url>
      <loc>/matlab/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
+        
     <url>
      <loc>/concepts/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
+        
     <url>
      <loc>/interfacing/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
     
 
     
+        
     <url>
-     <loc>/preparing/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <loc>/single-session/</loc>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
-    <url>
-     <loc>/files/</loc>
-     <lastmod>2017-11-07</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    
-
-    
-    <url>
-     <loc>/multisession/</loc>
-     <lastmod>2017-11-07</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    
-
-    
+        
     <url>
      <loc>/running/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
+    <url>
+     <loc>/hyperparameters/</loc>
+     <lastmod>2018-04-05</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/multisession/</loc>
+     <lastmod>2018-04-05</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
     
+        
     <url>
      <loc>/analysis/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
+    <url>
+     <loc>/trained-params/</loc>
+     <lastmod>2018-04-05</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
     
+        
     <url>
-     <loc>/trained_params/</loc>
-     <lastmod>2017-11-07</lastmod>
+     <loc>/files/</loc>
+     <lastmod>2018-04-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
     
 
 </urlset>

@@ -1,0 +1,1357 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Documentation of LFADS Run Manager for Matlab">
+      
+      
+      
+        <meta name="author" content="Daniel J. O'Shea">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-0.17.1, mkdocs-material-2.0.2">
+    
+    
+      
+        <title>Hyperparameters - LFADS Run Manager</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application-5b1b46901f.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-23f75ab9c7.palette.css">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr-e826f8942a.js"></script>
+    
+    
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+    
+    
+    
+      <body data-md-color-primary="red" data-md-color-accent="red">
+    
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="LFADS Run Manager" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+                <span class="md-header-nav__parent">
+                  Training LFADS
+                </span>
+              
+            
+            Hyperparameters
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/lfads/lfads-run-manager/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      lfads/lfads-run-manager
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href=".." title="LFADS Run Manager" class="md-tabs__link">
+          LFADS Run Manager
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../single-session/" title="Training LFADS" class="md-tabs__link md-tabs__link--active">
+          Training LFADS
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../analysis/" title="Analyzing LFADS" class="md-tabs__link">
+          Analyzing LFADS
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../files/" title="More details" class="md-tabs__link">
+          More details
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <span class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </span>
+    LFADS Run Manager
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/lfads/lfads-run-manager/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      lfads/lfads-run-manager
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      LFADS Run Manager
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        LFADS Run Manager
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../matlab/" title="Matlab Classes and Packages" class="md-nav__link">
+      Matlab Classes and Packages
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../concepts/" title="Key Concepts" class="md-nav__link">
+      Key Concepts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../interfacing/" title="Interfacing with your Datasets" class="md-nav__link">
+      Interfacing with your Datasets
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Training LFADS
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Training LFADS
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../single-session/" title="Setting up a single-session run" class="md-nav__link">
+      Setting up a single-session run
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../running/" title="Running LFADS" class="md-nav__link">
+      Running LFADS
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Hyperparameters
+      </label>
+    
+    <a href="./" title="Hyperparameters" class="md-nav__link md-nav__link--active">
+      Hyperparameters
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#run-manager-logistics-and-data-processing" title="Run Manager logistics and data Processing" class="md-nav__link">
+    Run Manager logistics and data Processing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tensorflow-logistics" title="TensorFlow logistics" class="md-nav__link">
+    TensorFlow logistics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimization" title="Optimization" class="md-nav__link">
+    Optimization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overfitting" title="Overfitting" class="md-nav__link">
+    Overfitting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#underfitting" title="Underfitting" class="md-nav__link">
+    Underfitting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-inputs" title="External inputs" class="md-nav__link">
+    External inputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controller-and-inferred-inputs" title="Controller and inferred inputs" class="md-nav__link">
+    Controller and inferred inputs
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../multisession/" title="Multisession Stitched Models" class="md-nav__link">
+      Multisession Stitched Models
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Analyzing LFADS
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Analyzing LFADS
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../analysis/" title="Analyzing LFADS Posterior Means" class="md-nav__link">
+      Analyzing LFADS Posterior Means
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../trained-params/" title="Loading the Model Trained Parameters" class="md-nav__link">
+      Loading the Model Trained Parameters
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      More details
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        More details
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../files/" title="File Organization" class="md-nav__link">
+      File Organization
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#run-manager-logistics-and-data-processing" title="Run Manager logistics and data Processing" class="md-nav__link">
+    Run Manager logistics and data Processing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tensorflow-logistics" title="TensorFlow logistics" class="md-nav__link">
+    TensorFlow logistics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimization" title="Optimization" class="md-nav__link">
+    Optimization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overfitting" title="Overfitting" class="md-nav__link">
+    Overfitting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#underfitting" title="Underfitting" class="md-nav__link">
+    Underfitting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-inputs" title="External inputs" class="md-nav__link">
+    External inputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controller-and-inferred-inputs" title="Controller and inferred inputs" class="md-nav__link">
+    Controller and inferred inputs
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/lfads/lfads-run-manager/edit/master/docs/hyperparameters.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="lfads-hyperparameters">LFADS Hyperparameters<a class="headerlink" href="#lfads-hyperparameters" title="Permanent link">&para;</a></h1>
+<p>The following is an nearly exhaustive list of hyperparameters that affect the training and posterior mean sampling of the model. If the parameter name begins with <code class="codehilite">c_</code>, this parameter will be passed to the LFADS Python code directly, without the <code class="codehilite">c_</code> prefix. All of these values are specified in the <code class="codehilite">RunParams</code> instance that accompanies each <code class="codehilite">Run</code>.</p>
+<p>While there are many parameters, you will likely care about only a small subset of them. We have color-coded the hyperparameters below according to how often they require tuning:</p>
+<style>
+th { font-weight: bold; }
+tr.hp-common td:first-child { background: #F44336; font-weight: bold; color: #ffffff; }
+tr.hp-medium td:first-child { background: #FFCDD2; }
+tr.hp-rare td:first-child { background: #ffffff; color: #455A64; }
+
+tbody.hp tr td:first-child { font-family: "Roboto Mono","Courier New",Courier,monospace; }
+
+</style>
+
+<table>
+<thead>
+<th>Tuning Frequency</th>
+<th>Description</th>
+</thead>
+<tbody>
+<tr class="hp-common">
+<td>Common</td>
+<td>Typically requires tuning on a per-project basis and/or is important to set appropriately upfront.</td>
+</tr>
+<tr class="hp-medium">
+<td>Occasional</td>
+<td>Might be adjusted for fine tuning.</td>
+</tr>
+<tr class="hp-rare">
+<td>Rare</td>
+<td>Infrequently requires tuning and/r primarily intended for advanced users.</td>
+</tr>
+</table>
+
+<h2 id="run-manager-logistics-and-data-processing">Run Manager logistics and data Processing<a class="headerlink" href="#run-manager-logistics-and-data-processing" title="Permanent link">&para;</a></h2>
+<p><table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp"></p>
+<tr class="hp-medium">
+<td>name</td>
+<td><code>''</code></td>
+<td>Name of this set of parameters, used for convenience only. <em>Note that this parameter does not affect either the param or data hash.</em></td>
+</tr>
+
+<tr class="hp-rare">
+<td>version</td>
+<td>n/a</td>
+<td><strong>This value you should not assign directly</strong>, as it will automatically be set to match the version of the <code>RunCollection</code> to which it is added. This is used for graceful backwards compatibility. <em>Note that this parameter does not affect either the param or data hash.</em></td>
+</tr>
+
+<tr class="hp-common">
+<td>spikeBinMs</td>
+<td>2</td>
+<td>Spike bin width in milliseconds. This must be an integer multiple of the original bin width provided by the `Run` class by `generateCountsForDataset`.</td>
+</tr>
+
+<p></tbody>
+</table></p>
+<h2 id="tensorflow-logistics">TensorFlow logistics<a class="headerlink" href="#tensorflow-logistics" title="Permanent link">&para;</a></h2>
+<p><table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp"></p>
+<tr class="hp-medium">
+<td>c_allow_gpu_growth</td>
+<td>true</td>
+<td>Allow the GPU to dynamically allocate memory instead of allocating all the GPU's memory at the start</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_max_ckpt_to_keep</td>
+<td>5</td>
+<td>Max number of checkpoints to keep (rolling)</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_max_ckpt_to_keep_lve</td>
+<td>5</td>
+<td>Max number of checkpoints to keep for lowest validation error models (rolling)</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_device</td>
+<td><code>'gpu:0'</code></td>
+<td>Which visible GPU or CPU to use. Note that GPUs are typically scheduled by setting `CUDA_VISIBLE_DEVICES` rather than using this parameter.</td>
+</tr>
+
+<p></tbody>
+</table></p>
+<h2 id="optimization">Optimization<a class="headerlink" href="#optimization" title="Permanent link">&para;</a></h2>
+<p>Rather put the learning rate on an exponentially decreasiong schedule,
+the current algorithm pays attention to the learning rate, and if it
+isn&rsquo;t regularly decreasing, it will decrease the learning rate.  So far,
+it works fine, though it is not perfect.</p>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-rare">
+<td>c_learning_rate_init</td>
+<td>0.01</td>
+<td>Initial learning rate</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_learning_rate_decay_factor</td>
+<td>0.95</td>
+<td>Factor by which to decrease the learning rate if progress isn't being made.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_learning_rate_n_to_compare</td>
+<td>6</td>
+<td>Number of previous costs current cost has to be worse than, in order to lower learning rate.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_learning_rate_stop</td>
+<td>0.00001</td>
+<td>Stop training when the learning rate reaches this threshold.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_max_grad_norm</td>
+<td>200</td>
+<td>Max norm of gradient before clipping. This sets a value, above which, the gradients will be clipped.  This hp
+is extremely useful to avoid an infrequent, but highly pathological
+problem whereby the gradient is so large that it destroys the
+optimization by setting parameters too large, leading to a vicious cycle
+that ends in NaNs.  If it's too large, it's useless, if it's too small,
+it essentially becomes the learning rate. It's pretty insensitive, though.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>trainToTestRatio</td>
+<td>4</td>
+<td>Ratio of training vs testing trials used.</td>
+</tr>
+
+<tr class="hp-common">
+<td>c_batch_size</td>
+<td>256</td>
+<td>Number of trials to use during each training pass. The total trial count must be &ge; <code>c_batch_size * (trainToTestRatio + 1)</code>.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_cell_clip_value</td>
+<td>5</td>
+<td>Max value recurrent cell can take before being clipped. If your optimizations start "NaN-ing out", reduce this value so that the values of the network don't grow out of control.  Typically, once this parameter is set to a reasonable value, one stops having numerical problems.</td>
+</tr>
+
+</tbody>
+</table>
+
+<h2 id="overfitting">Overfitting<a class="headerlink" href="#overfitting" title="Permanent link">&para;</a></h2>
+<p>If controller is heavily penalized, then it won&rsquo;t have any output. If dynamics are heavily penalized, then generator won&rsquo;t make dynamics.  Note this l2 penalty is only on the recurrent portion of the RNNs, as dropout is also available, penalizing the feed-forward connections.</p>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-rare">
+<td>c_temporal_spike_jitter_width</td>
+<td>0</td>
+<td>Enables jittering spike times during training. It appears that the system will happily fit spikes (blessing or curse, depending).  You may not want this.  Jittering the spikes a bit may help (-/+ bin size, as specified here). The idea is to prevent LFADS from trying to learn very fine temporal structure in the data if you believe this to be noise.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_keep_prob</td>
+<td>0.95</td>
+<td>Fraction of units to randomly drop during each training pass. Dropout is done on the input data, on controller inputs (from encoder), and on outputs from generator to factors.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_l2_gen_scale</td>
+<td>500</td>
+<td>L2 regularization cost for the generator only.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_l2_con_scale</td>
+<td>500</td>
+<td>L2 regularization cost for the controller only.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_co_mean_corr_scale</td>
+<td>0</td>
+<td>Cost of correlation (through time) in the means of controller output.</td>
+</tr>
+
+</tbody>
+</table>
+
+<h2 id="underfitting">Underfitting<a class="headerlink" href="#underfitting" title="Permanent link">&para;</a></h2>
+<p>If the primary task of LFADS is &ldquo;filtering&rdquo; of data and not
+generation, then it is possible that the KL penalty is too strong.
+Empirically, we have found this to be the case.  So we add a
+hyperparameter in front of the the two KL terms (one for the initial
+conditions to the generator, the other for the controller outputs).
+You should always think of the the default values as 1.0, and that
+leads to a standard VAE formulation whereby the numbers that are
+optimized are a lower-bound on the log-likelihood of the data. When
+these 2 HPs deviate from 1.0, one cannot make any statement about
+what those LL lower bounds mean anymore, and they cannot be compared
+(AFAIK).</p>
+<p>Sometimes the task can be sufficiently hard to learn that the
+optimizer takes the &lsquo;easy route&rsquo;, and simply minimizes the KL
+divergence, setting it to near zero, and the optimization gets
+stuck. The same possibility is true for the L2 regularizer. One wants a simple generator, for scientific
+reasons, but not at the expense of hosing the optimization. The last 5 parameters help avoid that by by getting the
+optimization to &lsquo;latch&rsquo; on to the main optimization, and only turning on the regularizers gradually by increasing their weighting in the overall cost functions later.</p>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-medium">
+<td>c_kl_ic_weight</td>
+<td>1</td>
+<td>Strength of KL weight on initial conditions KL penalty.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_kl_co_weight</td>
+<td>1</td>
+<td>Strength of KL weight on controller output KL penalty.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_kl_start_step</td>
+<td>0</td>
+<td>Start increasing KL weight after this many steps.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_kl_increase_steps</td>
+<td>900</td>
+<td>Number of steps over which the KL weight increases.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_l2_start_step</td>
+<td>0</td>
+<td>Start increasing L2 weight after this many steps.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_l2_increase_steps</td>
+<td>900</td>
+<td>Number of steps over which the L2 weight increases.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_l2_start_step</td>
+<td>0</td>
+<td>Start increasing L2 weight after this many steps</td>
+</tr>
+
+<tr class="hp-medium">
+<td>scaleIncreaseStepsWithDatasets</td>
+<td>true</td>
+<td>If true, <code>c_kl_increase_steps</code> and <code>c_l2_increase_steps</code> will be multiplied by the number of datasets in a stitching run.</td>
+</tr>
+
+</tbody>
+</table>
+
+<h2 id="external-inputs">External inputs<a class="headerlink" href="#external-inputs" title="Permanent link">&para;</a></h2>
+<p>If there are observed inputs, there are two ways to add that observed
+input to the model.  The first is by treating as something to be
+inferred, and thus encoding the observed input via the encoders, and then
+input to the generator via the &ldquo;inferred inputs&rdquo; channel.  Second, one
+can input the input directly into the generator.  This has the downside
+of making the generation process strictly dependent on knowing the
+observed input for any generated trial.</p>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-common">
+<td>c_ext_input_dim</td>
+<td>0</td>
+<td>Number of external, known (or observed) inputs.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_inject_ext_input_to_gen</td>
+<td>false</td>
+<td>Should the known inputs be input to model via encoders (false) or injected directly into generator (true)?</td>
+</tr>
+
+</tbody>
+</table>
+
+<h2 id="controller-and-inferred-inputs">Controller and inferred inputs<a class="headerlink" href="#controller-and-inferred-inputs" title="Permanent link">&para;</a></h2>
+<p>The controller will be more powerful if it can see the encoding of the entire
+trial.  However, this allows the controller to create inferred inputs that are
+acausal with respect to the actual data generation process.  For example, the data
+generator could have an input at time <code class="codehilite">t</code>, but the controller, after seeing the
+entirety of the trial could infer that the input is coming a little before
+time <code class="codehilite">t</code>, because there are no restrictions on the data the controller sees.
+One can force the controller to be causal (with respect to perturbations in
+the data generator) so that it only sees forward encodings of the data at time
+<code class="codehilite">t</code> that originate at times before or at time <code class="codehilite">t</code>.  One can also control the data
+the controller sees by using an input lag (forward encoding at time <code class="codehilite">t-tlag</code>
+for controller input at time <code class="codehilite">t</code>.  The same can be done in the reverse direction
+(controller input at time <code class="codehilite">t</code> from reverse encoding at time <code class="codehilite">t+tlag</code>, in the
+case of an acausal controller).  Setting this lag &gt; 0 (even lag=1) can be a
+powerful way of avoiding very spiky decodes. Finally, one can manually control
+whether the factors at time <code class="codehilite">t-1</code> are fed to the controller at time <code class="codehilite">t</code>.</p>
+<p>If you don&rsquo;t care about any of this, and just want to smooth your data, set
+<code class="codehilite">do_causal_controller = False</code>, <code class="codehilite">do_feed_factors_to_controller = True</code>, <code class="codehilite">controller_input_lag = 0</code>.</p>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-common">
+<td>c_co_dim</td>
+<td>4</td>
+<td>Number of inferred inputs (controller outputs). This parameter critically controls whether or not there is a controller (along with controller encoders placed into the LFADS graph. If equal to 0, no controller will be added.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_prior_ar_atau</td>
+<td>10</td>
+<td>Initial autocorrelation of AR(1) priors (in time bins)</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_do_train_prior_ar_atau</td>
+<td>true</td>
+<td>Is the value for atau an initial value (true) or the constant value (false)?</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_prior_ar_nvar</td>
+<td>0.1</td>
+<td>Initial noise variance for AR(1) priors</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_do_train_prior_ar_nvar</td>
+<td>true</td>
+<td>Is the value for the noise var an initial value (true) or the constant value (false)?</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_do_causal_controller</td>
+<td>false</td>
+<td>Restrict input encoder from seeing the future?</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_do_feed_factors_to_controller</td>
+<td>true</td>
+<td>Should <code>factors[t-1]</code> be input to controller at time t? Strictly speaking, feeding either the factors or the rates to the controller violates causality, since the g0 gets to see all the data. This may or may not be only a theoretical concern.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_feedback_factors_or_rates</td>
+<td><code>'factors'</code></td>
+<td>Feedback the factors or the rates to the controller? Set to either <code>'factors'</code> or <code>'rates'</code></td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_controller_input_lag</td>
+<td>1</td>
+<td>Time lag on the encoding to controller <code>t-lag</code> for forward, <code>t+lag</code> for reverse.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_ci_enc_dim</td>
+<td>128</td>
+<td>Network size for controller input encoder.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>c_con_dim</td>
+<td>128</td>
+<td>Controller dimensionality.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_co_prior_var_scale</td>
+<td>0.1</td>
+<td>Variance of control input prior distribution.</td>
+</tr>
+
+</tbody>
+</table>
+
+<h1 id="encoder-and-initial-conditions-for-generator">Encoder and initial conditions for generator<a class="headerlink" href="#encoder-and-initial-conditions-for-generator" title="Permanent link">&para;</a></h1>
+<p>Note that the dimension of the initial conditions is separated from the
+dimensions of the generator initial conditions (and a linear matrix will
+adapt the shapes if necessary).  This is just another way to control
+complexity.  In all likelihood, setting the IC dims to the size of the
+generator hidden state is just fine.</p>
+<p>For the initial condition prior variance parameters, it&rsquo;s best to leave them alone.
+IThe defaults should be fine for most cases, irregardless of other parameters.
+If you don&rsquo;t want the prior variance to be learned, set the
+following values to the same thing: <code class="codehilite">ic_prior_var_min</code>, <code class="codehilite">ic_prior_var_scale</code>, <code class="codehilite">ic_prior_var_max</code>.
+The prior mean will still be learned. If you really want to limit the information from encoder to decoder,
+increase <code class="codehilite">ic_post_var_min</code> above 0.</p>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-rare">
+<td>c_num_steps_for_gen_ic</td>
+<td><code>MAXINT</code></td>
+<td>Number of steps to train the generator initial condition.</td>
+</tr>
+
+<tr class="hp-common">
+<td>c_ic_dim</td>
+<td>64</td>
+<td>Dimensionality of the initial conditions.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_ic_enc_dim</td>
+<td>128</td>
+<td>Network size for IC encoder.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_ic_prior_var_min</td>
+<td>0.1</td>
+<td>Minimum variance of IC prior distribution</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_ic_prior_var_scale</td>
+<td>0.1</td>
+<td>Variance of IC prior distribution</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_ic_prior_var_max</td>
+<td>0.1</td>
+<td>Maximum variance of IC prior distribution</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_ic_post_var_min</td>
+<td>0.0001</td>
+<td>Minimum variance of IC posterior distribution</td>
+</tr>
+
+</tbody>
+</table>
+
+<h2 id="generator-network-factors-rates">Generator network, factors, rates<a class="headerlink" href="#generator-network-factors-rates" title="Permanent link">&para;</a></h2>
+<p>Controlling the size of the generator is one way to control complexity of
+the dynamics (there is also l2, which will squeeze out unnecessary
+dynamics also).  The modern deep learning approach is to make these cells
+as large as tolerable (from a waiting perspective), and then regularize
+them to death with drop out or whatever. It is not clear if this is correct
+for the LFADS application or not.</p>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-rare">
+<td>c_cell_weight_scale</td>
+<td>1.0</td>
+<td>Input scaling for input weights in generator. The combined recurrent and input weights of the encoder and controller cells are by default set to scale at ws/sqrt(#inputs) with ws=1.0.  You can change this scaling with this parameter.</td>
+</tr>
+
+<tr class="hp-common">
+<td>c_gen_dim</td>
+<td>100</td>
+<td>Generator network size/td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_gen_cell_input_weight_scale</td>
+<td>1.0</td>
+<td>Input scaling for input weights in generator, which will be divided by sqrt(#inputs)</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_gen_cell_rec_weight_scale</td>
+<td>1.0</td>
+<td>Input scaling for recurrent weights in generator.</td>
+</tr>
+
+<tr class="hp-common">
+<td>c_factors_dim</td>
+<td>50</td>
+<td>Dimensionality of factors read out from generator network. This provides dimensionality reduction from generator dimensionality down to factors and then back out to the neural rates. <em>Note that this property does affect the data and param hashes, unlikely the other <code>c_</code> prefixed parameters, which only affect the param hash.</td>
+</tr>
+
+<tr class="hp-rare">
+<td>c_output_dist</td>
+<td>'poisson'</td>
+<td>Type of output distribution for rates, either <code>'poisson'</code> or <code>'gaussian'</code></td>
+</tr>
+
+</tbody>
+</table>
+
+<h2 id="stitching-multi-session-models">Stitching multi-session models<a class="headerlink" href="#stitching-multi-session-models" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-common">
+<td>c_do_train_readin</td>
+<td>true</td>
+<td>For stitching models, make the readin matrices trainable (true) or fix them to equal the alignment matrices (false). The per-session readin matrices map from neurons to input factors which are fed into the shared encoder. These are initialized by the alignment matrices and can subsequently be fixed or made trainable.</td>
+</tr>
+
+<tr class="hp-common">
+<td>useAlignmentMatrix</td>
+<td>false</td>
+<td>Whether to use an alignment matrix when stitching datasets together./td>
+</tr>
+
+<tr class="hp-rare">
+<td>useSingleDatasetAlignmentMatrix</td>
+<td>false</td>
+<td>When only using a single dataset, it is also possible to use a readin matrix that reduces the dimensionality of the spikes before inputting these input factors to the encoder networks. If set true, this will set up this readin matrix and seed it with an alignment matrix computed using PCA.</td>
+</tr>
+
+</tbody>
+</table>
+
+<h2 id="posterior-sampling">Posterior sampling<a class="headerlink" href="#posterior-sampling" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</thead>
+<tbody class="hp">
+
+<tr class="hp-common">
+<td>posterior_mean_kind</td>
+<td><code>'posterior_sample_and_average'</code></td>
+<td>Mechanism to obtain the posterior mean. Either <code>'posterior_sample_and_average'</code> to take a specified number of samples from the posterior distribution, run them through the model, and average the results. Or <code>'posterior_push_mean'</code> to use the posterior mean of the ICs and inputs and push those through the model directly. Since there are nonlinearities in the network, this need not be equivalent to the mean of the samples, but in practice it's usually pretty close, and is much faster to compute. <em>Note that this parameter does not affect either the param or data hash.</em></td>
+</tr>
+
+<tr class="hp-medium">
+<td>num_samples_posterior</td>
+<td>512</td>
+<td>Number of samples of the posterior to use when using <code>'posterior_sample_and_average'</code>. <em>Note that this parameter does not affect either the param or data hash.</em></td>
+</tr>
+
+</tbody>
+</table>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../running/" title="Running LFADS" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Running LFADS
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../multisession/" title="Multisession Stitched Models" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Multisession Stitched Models
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 &mdash; <a href="http://djoshea.com">Daniel J. O&#39;Shea</a>
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/lfads" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/djoshea" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application-84693e5e49.js"></script>
+      
+      <script>app.initialize({version:"0.17.1",url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

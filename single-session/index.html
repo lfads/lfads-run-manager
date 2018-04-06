@@ -36,7 +36,7 @@
     
     
       
-        <title>Multisession Stitched Models - LFADS Run Manager</title>
+        <title>Setting up a single-session run - LFADS Run Manager</title>
       
     
     
@@ -100,7 +100,7 @@
                 </span>
               
             
-            Multisession Stitched Models
+            Setting up a single-session run
           
         </span>
       </div>
@@ -189,7 +189,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../single-session/" title="Training LFADS" class="md-tabs__link md-tabs__link--active">
+        <a href="./" title="Training LFADS" class="md-tabs__link md-tabs__link--active">
           Training LFADS
         </a>
       
@@ -377,11 +377,102 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../single-session/" title="Setting up a single-session run" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Setting up a single-session run
+      </label>
+    
+    <a href="./" title="Setting up a single-session run" class="md-nav__link md-nav__link--active">
       Setting up a single-session run
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lorenz-attractor-example" title="Lorenz attractor example" class="md-nav__link">
+    Lorenz attractor example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-a-dataset-collection-and-adding-datasets" title="Building a dataset collection and adding datasets" class="md-nav__link">
+    Building a dataset collection and adding datasets
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-runcollection" title="Create a RunCollection" class="md-nav__link">
+    Create a RunCollection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#specify-the-hyperparameters-in-runparams" title="Specify the hyperparameters in RunParams" class="md-nav__link">
+    Specify the hyperparameters in RunParams
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runparams-data-and-param-hashes" title="RunParams data and param hashes" class="md-nav__link">
+    RunParams data and param hashes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#specify-the-runspec" title="Specify the RunSpec" class="md-nav__link">
+    Specify the RunSpec
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check-the-runcollection" title="Check the RunCollection" class="md-nav__link">
+    Check the RunCollection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prepare-for-lfads" title="Prepare for LFADS" class="md-nav__link">
+    Prepare for LFADS
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -413,103 +504,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="toc">
-        Multisession Stitched Models
-      </label>
-    
-    <a href="./" title="Multisession Stitched Models" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../multisession/" title="Multisession Stitched Models" class="md-nav__link">
       Multisession Stitched Models
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#generating-alignment-matrices" title="Generating alignment matrices" class="md-nav__link">
-    Generating alignment matrices
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-up-a-multi-session-lfads-run" title="Setting up a multi-session LFADS run" class="md-nav__link">
-    Setting up a multi-session LFADS run
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#building-a-dataset-collection-and-adding-datasets" title="Building a dataset collection and adding datasets" class="md-nav__link">
-    Building a dataset collection and adding datasets
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#create-a-runcollection" title="Create a RunCollection" class="md-nav__link">
-    Create a RunCollection
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#specify-the-hyperparameters-in-runparams" title="Specify the hyperparameters in RunParams" class="md-nav__link">
-    Specify the hyperparameters in RunParams
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#specify-the-runspec-set" title="Specify the RunSpec set" class="md-nav__link">
-    Specify the RunSpec set
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#check-the-runcollection-and-the-run" title="Check the RunCollection and the Run" class="md-nav__link">
-    Check the RunCollection and the Run
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verifying-the-alignment-matrices" title="Verifying the alignment matrices" class="md-nav__link">
-    Verifying the alignment matrices
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prepare-for-lfads" title="Prepare for LFADS" class="md-nav__link">
-    Prepare for LFADS
-  </a>
-  
-</li>
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -623,15 +622,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#generating-alignment-matrices" title="Generating alignment matrices" class="md-nav__link">
-    Generating alignment matrices
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-up-a-multi-session-lfads-run" title="Setting up a multi-session LFADS run" class="md-nav__link">
-    Setting up a multi-session LFADS run
+  <a href="#lorenz-attractor-example" title="Lorenz attractor example" class="md-nav__link">
+    Lorenz attractor example
   </a>
   
 </li>
@@ -655,25 +647,31 @@
     Specify the hyperparameters in RunParams
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runparams-data-and-param-hashes" title="RunParams data and param hashes" class="md-nav__link">
+    RunParams data and param hashes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#specify-the-runspec-set" title="Specify the RunSpec set" class="md-nav__link">
-    Specify the RunSpec set
+  <a href="#specify-the-runspec" title="Specify the RunSpec" class="md-nav__link">
+    Specify the RunSpec
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#check-the-runcollection-and-the-run" title="Check the RunCollection and the Run" class="md-nav__link">
-    Check the RunCollection and the Run
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verifying-the-alignment-matrices" title="Verifying the alignment matrices" class="md-nav__link">
-    Verifying the alignment matrices
+  <a href="#check-the-runcollection" title="Check the RunCollection" class="md-nav__link">
+    Check the RunCollection
   </a>
   
 </li>
@@ -699,39 +697,26 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/lfads/lfads-run-manager/edit/master/docs/multisession.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/lfads/lfads-run-manager/edit/master/docs/single-session.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="multi-dataset-stitching-models">Multi-dataset Stitching Models<a class="headerlink" href="#multi-dataset-stitching-models" title="Permanent link">&para;</a></h1>
-<p>If you specify multiple datasets to be included in an LFADS run by selecting multiple datasets in a <code class="codehilite">RunSpec</code>, the resulting model will stitch together the multiple datasets. The concept is to generate the spiking data in all of the included datasets using the same encoder and generator RNNs, but to interface to the separate neural datasets through <em>read-in</em> and <em>readout</em> alignment matrices.</p>
-<p>Below is a schematic of the readout side. Here, the generator RNN and readout from generator units to factors is the same for all datasets. Therefore, one intends that the factor trajectories would be similar for similar trials / conditions across the datasets. Going from factors to rates, however, the recorded neurons are, in general, not the same across datasets, and the cardinality may differ. Thus, dataset-specific readout matrices are used to combine the factors to produce each of the recorded neurons&rsquo; rates on each dataset.</p>
-<p><img alt="Multi-session stitching schematic" src="../images/stitching_schematic.png" /></p>
-<p>A similar set of dataset specific read-in matrices are used to connect the spiking data to the encoder RNN in order to produce initial conditions and inferred inputs for each trial.</p>
-<h2 id="generating-alignment-matrices">Generating alignment matrices<a class="headerlink" href="#generating-alignment-matrices" title="Permanent link">&para;</a></h2>
-<p>These read-in and readout alignment matrices are learned from the data along with the other parameters. However, it&rsquo;s useful to seed the alignment matrices with an initial guess that suggests the correspondence between the datasets. If you have multiple datasets in a <code class="codehilite">RunSpec</code>, and the hyperparameter <code class="codehilite">useAlignmentMatrix</code> is set to <code class="codehilite">true</code> in the <code class="codehilite">RunParams</code>, then <code class="codehilite">lfads-run-manager</code> will automatically generate read-in alignment matrices from your data using a principal components regression algorithm that proceeds as:</p>
-<ul>
-<li>Generate condition-averaged firing rates for each neuron for each condition for each dataset</li>
-<li>Concatenate all of neurons from all datasets together to build a matrix which is (<code class="codehilite">nTime * nConditions</code>) <code class="codehilite">nNeuronsTotal</code></li>
-<li>Perform PCA on this matrix and keep the projections of the data into the top <code class="codehilite">nFactors</code> components. These represent the global shared structure of the data across all datasets.</li>
-<li>For each dataset individually, regress these projection scores onto the condition-averaged rates from that dataset alone. The regression coefficients thus transform from that dataset&rsquo;s neurons to the global shared structure, and consequently, we take this matrix of regression coefficients as the readout matrix.</li>
-</ul>
-<p>These matrices will be computed for you automatically by <code class="codehilite">run.prepareForLFADS()</code> and exported in the LFADS input folder. LFADS will generate an initial guess for the readout alignment matrix, which transforms from common factors back to dataset-specific rates, using the pseudo-inverse of the read-in alignment matrix computed by <code class="codehilite">lfads-run-manager</code>.</p>
-<div class="admonition tip">
-<p class="admonition-title">Alignment biases</p>
-<p>In addition to this alignment read-in matrix, there is also an alignment bias vector which will be added to each neuron&rsquo;s counts before projecting through the matrix. Consequently, <code class="codehilite">lfads-run-manager</code> seeds this bias with the negative mean of the rates of each neuron.</p>
-</div>
-<h2 id="setting-up-a-multi-session-lfads-run">Setting up a multi-session LFADS run<a class="headerlink" href="#setting-up-a-multi-session-lfads-run" title="Permanent link">&para;</a></h2>
-<p>Assuming you have finished reading through the <a href="../single-session/">single-dataset LFADS walkthrough</a>, you should be all set to generate some LFADS runs and start training. We&rsquo;ll be setting up another <em>drive script</em> that will do the work of creating the appropriate instances, pointing at the datasets, creating the runs, and telling <code class="codehilite">LFADS Run Manager</code> to generate the files needed for LFADS. Below, we&rsquo;ll refer to the package name as <code class="codehilite">LorenzExperiment</code>, but you should substitute this with your package name.</p>
+                <h1 id="setting-up-a-single-session-lfads-run">Setting up a single-session LFADS run<a class="headerlink" href="#setting-up-a-single-session-lfads-run" title="Permanent link">&para;</a></h1>
+<p>Assuming you have finished <a href="../interfacing">adapting the LFADS run manager classes to your dataset</a>, you should be all set to generate some LFADS runs and start training. We&rsquo;ll be setting up a <em>drive script</em> that will do the work of creating the appropriate instances, pointing at the datasets, creating the runs, and telling <code class="codehilite">LFADS Run Manager</code> to generate the files needed for LFADS. Below, we&rsquo;ll refer to the package name as <code class="codehilite">LorenzExperiment</code>, but you should substitute this with your package name.</p>
 <div class="admonition tip">
 <p class="admonition-title">Follow along with <code class="codehilite">LorenzExperiment.drive_script</code></p>
 <p>A complete drive script is available as a starting point in <code class="codehilite">+LorenzExperiment/drive_script.m</code> for you to copy/paste from.</p>
 </div>
-<p>For this demo, as before, we&rsquo;ll generate a few datasets of synthetic spiking data generated by a Lorenz attractor using the following code:</p>
+<h2 id="lorenz-attractor-example">Lorenz attractor example<a class="headerlink" href="#lorenz-attractor-example" title="Permanent link">&para;</a></h2>
+<p>For this demo, we&rsquo;ll generate a few datasets of synthetic spiking data generated by a Lorenz attractor using the following code:</p>
 <div class="codehilite"><pre><span></span><span class="n">datasetPath</span> <span class="p">=</span> <span class="s">&#39;~/lorenz_example/datasets&#39;</span><span class="p">;</span>
 <span class="n">LFADS</span><span class="p">.</span><span class="n">Utils</span><span class="p">.</span><span class="n">generateDemoDatasets</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="s">&#39;nDatasets&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
 </pre></div>
 
-<p>This will simulate a chaotic 3 dimensional <a href="https://en.wikipedia.org/wiki/Lorenz_system">Lorenz attractor</a> as the underlying dynamical system, initialized from 65 initial conditions. The key in these demonstration datasets is that the 65 conditions start from the same initial state and evolve identically across all 3 datasets. Each dataset, however, contains a disjoint set of neurons that are each a different linear recombination of the 3 dimensions of the Lorenz attractor state. This is analogous to the assumption we make in LFADS stitching&ndash;each dataset contains different sets of neurons, which are reconstructed from a shared low-dimensional set of factors.</p>
+<p>This will simulate a chaotic 3 dimensional <a href="https://en.wikipedia.org/wiki/Lorenz_system">Lorenz attractor</a> as the underlying dynamical system, initialized from 65 initial conditions. Here is a subset of 10 conditions&rsquo; trajectories:</p>
+<p><img alt="Lorenz trajectories for 10 conditions" src="../images/lorenz_10conditions.png" /></p>
+<p>From these 3 dimensions, we generate random matrices along which to project these 3 dimensions to produce the firing rates of individual units (plus a constant bias term). The initial conditions (defining the <em>conditions</em>) and subsequent dynamical trajectories are the same across datasets. Each dataset will contain a variable number of neurons (between 25&ndash;35). The rates of these neurons are then constructed by projecting the 3-d Lorenz trajectory through a dataset-specific readout matrix, adding the bias, and exponentiating. We then draw spikes from the inhomogenous Poisson process for 20-30 trials for each condition.</p>
+<p>Here are a few examples of single trial spike rasters. The units have been sorted according to their loading onto the first dimension of the attractor:</p>
+<p><img alt="Example single trial spike rasters" src="../images/raster_examples.png" /></p>
 <h2 id="building-a-dataset-collection-and-adding-datasets">Building a dataset collection and adding datasets<a class="headerlink" href="#building-a-dataset-collection-and-adding-datasets" title="Permanent link">&para;</a></h2>
 <p>First, create a dataset collection that points to a folder on disk where datasets are stored:</p>
 <div class="codehilite"><pre><span></span><span class="n">dataPath</span> <span class="p">=</span> <span class="s">&#39;~/lorenz_example/datasets&#39;</span><span class="p">;</span>
@@ -741,24 +726,19 @@
 
 <p>Then, we can add the individual datasets within based on their individual paths. Note that when a new dataset instance is created, it is automatically added to the <code class="codehilite">DatasetCollection</code> and will replace any dataset that has the same name if present.</p>
 <div class="codehilite"><pre><span></span><span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dc</span><span class="p">,</span> <span class="s">&#39;dataset001.mat&#39;</span><span class="p">);</span>
-<span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dc</span><span class="p">,</span> <span class="s">&#39;dataset002.mat&#39;</span><span class="p">);</span>
-<span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dc</span><span class="p">,</span> <span class="s">&#39;dataset003.mat&#39;</span><span class="p">);</span>
 </pre></div>
 
 <p>You can verify that the datasets have been added to the collection:</p>
 <div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">dc</span>
 <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">DatasetCollection</span> &quot;<span class="n">lorenz_example</span>&quot;
-  <span class="mi">3</span> <span class="n">datasets</span> <span class="n">in</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">datasets</span>
+  <span class="mi">1</span> <span class="n">datasets</span> <span class="n">in</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">datasets</span>
   <span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset001</span>&quot;
-  <span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset002</span>&quot;
-  <span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset003</span>&quot;
 
-            <span class="n">name</span><span class="p">:</span> <span class="s">&#39;lorenz_example&#39;</span>
-         <span class="n">comment</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-            <span class="n">path</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/datasets&#39;</span>
-        <span class="n">datasets</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="n">x1</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span><span class="p">]</span>
-       <span class="n">nDatasets</span><span class="p">:</span> <span class="mi">3</span>
-    <span class="n">datasetNames</span><span class="p">:</span> <span class="p">{</span><span class="mi">3</span><span class="n">x1</span> <span class="n">cell</span><span class="p">}</span>
+         <span class="n">name</span><span class="p">:</span> <span class="s">&#39;lorenz_example&#39;</span>
+      <span class="n">comment</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+         <span class="n">path</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/datasetss&#39;</span>
+     <span class="n">datasets</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="n">x1</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span><span class="p">]</span>
+    <span class="n">nDatasets</span><span class="p">:</span> <span class="mi">1</span>
 </pre></div>
 
 <p>You can access individual datasets using <code class="codehilite"><span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code> or by name with <code class="codehilite"><span class="n">dc</span><span class="p">.</span><span class="n">matchDatasetsByName</span><span class="p">(</span><span class="s">&#39;dataset001&#39;</span><span class="p">)</span></code>.</p>
@@ -770,46 +750,84 @@
 
                   <span class="n">subject</span>                  <span class="n">date</span>             <span class="n">saveTags</span>    <span class="n">nTrials</span>    <span class="n">nChannels</span>
               <span class="n">________________</span>    <span class="n">______________________</span>    <span class="n">________</span>    <span class="n">_______</span>    <span class="n">_________</span>
-<span class="n">dataset001</span>    <span class="s">&#39;lorenz_example&#39;</span>    <span class="p">[</span><span class="mi">31</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2018</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">]</span>      <span class="s">&#39;1&#39;</span>        <span class="mi">1820</span>         <span class="mi">35</span>    
-<span class="n">dataset002</span>    <span class="s">&#39;lorenz_example&#39;</span>    <span class="p">[</span><span class="mi">31</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2018</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">]</span>      <span class="s">&#39;1&#39;</span>        <span class="mi">1885</span>         <span class="mi">26</span>    
-<span class="n">dataset003</span>    <span class="s">&#39;lorenz_example&#39;</span>    <span class="p">[</span><span class="mi">31</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2018</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">]</span>      <span class="s">&#39;1&#39;</span>        <span class="mi">1365</span>         <span class="mi">35</span>    
+
+<span class="n">dataset001</span>    <span class="s">&#39;lorenz_example&#39;</span>    <span class="p">[</span><span class="mi">31</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2018</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">]</span>    <span class="s">&#39;1&#39;</span>         <span class="mi">1820</span>       <span class="mi">35</span>
 </pre></div>
 
 <h2 id="create-a-runcollection">Create a <code class="codehilite">RunCollection</code><a class="headerlink" href="#create-a-runcollection" title="Permanent link">&para;</a></h2>
 <p>We&rsquo;ll now setup a <code class="codehilite">RunCollection</code> that will contain all of the LFADS runs we&rsquo;ll be training. Inside this folder will be stored all of the processed data and LFADS output, nicely organized within subfolders.</p>
 <div class="codehilite"><pre><span></span><span class="n">runRoot</span> <span class="p">=</span> <span class="s">&#39;~/lorenz_example/runs&#39;</span><span class="p">;</span>
-<span class="n">rc</span> <span class="p">=</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">runRoot</span><span class="p">,</span> <span class="s">&#39;exampleStitching&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">);</span>
+<span class="n">rc</span> <span class="p">=</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunCollection</span><span class="p">(</span><span class="n">runRoot</span><span class="p">,</span> <span class="s">&#39;exampleSingleRun&#39;</span><span class="p">,</span> <span class="n">dc</span><span class="p">);</span>
 
 <span class="c">% replace with approximate date script authored as YYYYMMDD</span>
 <span class="c">% to ensure forwards compatibility</span>
 <span class="n">rc</span><span class="p">.</span><span class="n">version</span> <span class="p">=</span> <span class="mi">20180131</span><span class="p">;</span>
 </pre></div>
 
+<div class="admonition tip">
+<p class="admonition-title">Versioning and backwards compatibility</p>
+<p>You can optionally set <code class="codehilite">rc.version</code> just after creating the <code class="codehilite">RunCollection</code>. Version should be set to the date the script was first used to generate the LFADS files on disk, in the format <code class="codehilite">YYYYMMDD</code>. Specifying this here allows for backwards compatibility in case we need to change aspects of where LFADS Run Manager organizes files on disk or how the <code class="codehilite">RunParams</code> hashes are generated. The default <code class="codehilite">rc.version</code> will be updated if significant changes are made in the code, so manually specifying it in the drive script can be useful to &ldquo;freeze&rdquo; the LFADS Run Manager logic for this specific collection of runs.</p>
+</div>
 <h2 id="specify-the-hyperparameters-in-runparams">Specify the hyperparameters in <code class="codehilite">RunParams</code><a class="headerlink" href="#specify-the-hyperparameters-in-runparams" title="Permanent link">&para;</a></h2>
-<p>We&rsquo;ll next specify a single set of hyperparameters to begin with. Since this is a simple dataset, we&rsquo;ll reduce the size of the generator network to 64 and reduce the number of factors to 8. The key change we&rsquo;ll make is to set <code class="codehilite">useAlignmentMatrix</code> to <code class="codehilite">true</code> in order to seed the read-in matrices.</p>
+<p>We&rsquo;ll next specify a single set of hyperparameters to begin with. Since this is a simple dataset, we&rsquo;ll reduce the size of the generator network to 64 and reduce the number of factors to 8.</p>
 <div class="codehilite"><pre><span></span><span class="n">par</span> <span class="p">=</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span><span class="p">;</span>
-<span class="n">par</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="s">&#39;first_attempt_stitching&#39;</span><span class="p">;</span> <span class="c">% completely optional</span>
-<span class="n">par</span><span class="p">.</span><span class="n">useAlignmentMatrix</span> <span class="p">=</span> <span class="n">true</span><span class="p">;</span> <span class="c">% use alignment matrices initial guess for multisession stitching</span>
-
+<span class="n">par</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="s">&#39;first_attempt&#39;</span><span class="p">;</span> <span class="c">% completely optional</span>
 <span class="n">par</span><span class="p">.</span><span class="n">spikeBinMs</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c">% rebin the data at 2 ms</span>
 <span class="n">par</span><span class="p">.</span><span class="n">c_co_dim</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c">% no controller --&gt; no inputs to generator</span>
 <span class="n">par</span><span class="p">.</span><span class="n">c_batch_size</span> <span class="p">=</span> <span class="mi">150</span><span class="p">;</span> <span class="c">% must be &lt; 1/5 of the min trial count</span>
 <span class="n">par</span><span class="p">.</span><span class="n">c_factors_dim</span> <span class="p">=</span> <span class="mi">8</span><span class="p">;</span> <span class="c">% and manually set it for multisession stitched models</span>
 <span class="n">par</span><span class="p">.</span><span class="n">c_gen_dim</span> <span class="p">=</span> <span class="mi">64</span><span class="p">;</span> <span class="c">% number of units in generator RNN</span>
 <span class="n">par</span><span class="p">.</span><span class="n">c_ic_enc_dim</span> <span class="p">=</span> <span class="mi">64</span><span class="p">;</span> <span class="c">% number of units in encoder RNN</span>
-<span class="n">par</span><span class="p">.</span><span class="n">c_learning_rate_stop</span> <span class="p">=</span> <span class="mf">1e-3</span><span class="p">;</span> <span class="c">% we can stop really early for the demo</span>
+<span class="n">par</span><span class="p">.</span><span class="n">c_learning_rate_stop</span> <span class="p">=</span> <span class="mf">1e-3</span><span class="p">;</span> <span class="c">% we can stop training early for the demo</span>
 </pre></div>
 
+<div class="admonition warning">
+<p class="admonition-title">Setting batch size</p>
+<p>The number of trials in your smallest dataset determines the largest batch size you can pick. If <code class="codehilite">trainToTestRatio</code> is 4 (the default), then you will need at least 4+1 = 5 times as many trials in every dataset as <code class="codehilite">c_batch_size</code>. If you choose a batch size which is too large, LFADS Run Manager will generate an error to alert you.</p>
+</div>
 <p>We then add this <code class="codehilite">RunParams</code> to the <code class="codehilite">RunCollection</code>:</p>
 <div class="codehilite"><pre><span></span><span class="n">rc</span><span class="p">.</span><span class="n">addParams</span><span class="p">(</span><span class="n">par</span><span class="p">);</span>
 </pre></div>
 
 <p>You can access the parameter settings added to <code class="codehilite">rc</code> using <code class="codehilite">rc.params</code>, which will be an array of <code class="codehilite">RunParams</code> instances.</p>
-<h2 id="specify-the-runspec-set">Specify the <code class="codehilite">RunSpec</code> set<a class="headerlink" href="#specify-the-runspec-set" title="Permanent link">&para;</a></h2>
-<p>Recall that <code class="codehilite">RunSpec</code> instances specify which datasets are included in a specific run. For stitching, we&rsquo;ll want to include all three datasets into a single model.</p>
-<div class="codehilite"><pre><span></span><span class="c">% include all datasets</span>
-<span class="n">runSpecName</span> <span class="p">=</span> <span class="s">&#39;all&#39;</span><span class="p">;</span>
-<span class="n">runSpec</span> <span class="p">=</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunSpec</span><span class="p">(</span><span class="n">runSpecName</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span><span class="p">);</span>
+<h3 id="runparams-data-and-param-hashes"><code class="codehilite">RunParams</code> data and param hashes<a class="headerlink" href="#runparams-data-and-param-hashes" title="Permanent link">&para;</a></h3>
+<p>If we look at the printed representation of the <code class="codehilite">RunParams</code> instance, we see two hash values:</p>
+<div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">par</span>
+
+<span class="n">par</span> <span class="p">=</span>
+
+<span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> <span class="n">param_YOs74u</span> <span class="n">data_4MaTKO</span>
+<span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
+<span class="c">...</span>
+</pre></div>
+
+<p>These six digit alphanumeric hash values are used to uniquely and concisely identify the runs so that they can be conveniently located on disk in a predictable fashion. The first is the &ldquo;param&rdquo; hash of the whole collection of parameter settings which differ from their defaults, which is prefixed with <code class="codehilite">param_</code>.  The second is a hash of only those parameter settings that affect the input data used by LFADS, prefixed by <code class="codehilite">data_</code>. We use two separate hashes here to save space on disk; many parameters like <code class="codehilite">c_co_dim</code> only affect LFADS internally, but the input data is the same. Consequently, generating a large sweep of parameters like <code class="codehilite">c_co_dim</code> would otherwise require many copies of identical data to be saved on disk. Instead, we store the data in folders according to the <code class="codehilite">data_</code> hash and symlink copies for each run. If you add additional parameters that do not affect the data used by LFADS, you should specify them in your <code class="codehilite">RunParams</code> class as described <a href="../interfacing/##editing-runparamsm-optional">here</a>.</p>
+<p>Below the hash values are the set of properties whose values differ from their specified defaults (as specified next to the property in the class definition). Properties which are equal to their default values are not included in the hash calculation. This allows you to add new properties to your <code class="codehilite">RunParams</code> class without altering the computed hashes for older runs. See this <a href="../interfacing/#editing-runparamsm-optional">warning note</a> for more details.</p>
+<div class="admonition tip">
+<p class="admonition-title"><code class="codehilite">RunParams</code> is a value class</p>
+<p>Unlike all of the other classes, <code class="codehilite">RunParams</code> is not a handle but a value class, which acts similarly to a <code class="codehilite">struct</code> in that it is passed by value. This means that after adding the <code class="codehilite">RunParams</code> instance <code class="codehilite">par</code> to the <code class="codehilite">RunCollection</code>, we can modify <code class="codehilite">par</code> and then add it again to define a second set of parameters, like this:
+<div class="codehilite"><pre><span></span><span class="n">par</span><span class="p">.</span><span class="n">c_gen_dim</span> <span class="p">=</span> <span class="mi">96</span><span class="p">;</span>
+<span class="n">rc</span><span class="p">.</span><span class="n">addParams</span><span class="p">(</span><span class="n">par</span><span class="p">);</span>
+<span class="n">par</span><span class="p">.</span><span class="n">c_gen_dim</span> <span class="p">=</span> <span class="mi">128</span><span class="p">;</span>
+<span class="n">rc</span><span class="p">.</span><span class="n">addParams</span><span class="p">(</span><span class="n">par</span><span class="p">);</span>
+</pre></div></p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Generating hyperparameter value sweeps</p>
+<p>If you wish to sweep a specific property or set of properties, you can create a <code class="codehilite">RunParams</code> instance, set the other properties as needed, and then call <code class="codehilite">generateSweep</code> to build an array of <code class="codehilite">RunParams</code> instances:
+<div class="codehilite"><pre><span></span><span class="n">parSet</span> <span class="p">=</span> <span class="n">par</span><span class="p">.</span><span class="n">generateSweep</span><span class="p">(</span><span class="s">&#39;c_gen_dim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span> <span class="mi">64</span> <span class="mi">96</span> <span class="mi">128</span><span class="p">]);</span>
+<span class="n">rc</span><span class="p">.</span><span class="n">addParams</span><span class="p">(</span><span class="n">parSet</span><span class="p">);</span>
+</pre></div></p>
+<p>Or along multiple parameters in a grid:
+<div class="codehilite"><pre><span></span><span class="n">parSet</span> <span class="p">=</span> <span class="n">par</span><span class="p">.</span><span class="n">generateSweep</span><span class="p">(</span><span class="s">&#39;c_gen_dim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span> <span class="mi">64</span> <span class="mi">96</span> <span class="mi">128</span><span class="p">],</span> <span class="s">&#39;c_co_dim&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">);</span>
+<span class="n">rc</span><span class="p">.</span><span class="n">addParams</span><span class="p">(</span><span class="n">parSet</span><span class="p">);</span>
+</pre></div></p>
+</div>
+<h2 id="specify-the-runspec">Specify the <code class="codehilite">RunSpec</code><a class="headerlink" href="#specify-the-runspec" title="Permanent link">&para;</a></h2>
+<p>Recall that <code class="codehilite">RunSpec</code> instances specify which datasets are included in a specific run. For this example, we&rsquo;ve only included a single dataset, so we don&rsquo;t have any choices to make. We&rsquo;ll run LFADS on first dataset by itself:</p>
+<div class="codehilite"><pre><span></span><span class="n">ds_index</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">runSpecName</span> <span class="p">=</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">ds_index</span><span class="p">).</span><span class="n">getSingleRunName</span><span class="p">();</span> <span class="c">% generates a simple run name from this datasets name</span>
+<span class="n">runSpec</span> <span class="p">=</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunSpec</span><span class="p">(</span><span class="n">runSpecName</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">ds_index</span><span class="p">);</span>
 <span class="n">rc</span><span class="p">.</span><span class="n">addRunSpec</span><span class="p">(</span><span class="n">runSpec</span><span class="p">);</span>
 </pre></div>
 
@@ -819,33 +837,24 @@
 <li>the <code class="codehilite">DatasetCollection</code> from which datasets will be retrieved</li>
 <li>the indices or names of datasets (as a string or cell array of strings) to include</li>
 </ul>
-<p>If you like you can also add RunSpecs to train individual models for each dataset as well to facilitate comparison.</p>
-<div class="codehilite"><pre><span></span><span class="c">% add one run for each single dataset</span>
-<span class="k">for</span> <span class="n">iR</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">dc</span><span class="p">.</span><span class="n">nDatasets</span>
-    <span class="n">runSpecName</span> <span class="p">=</span> <span class="n">dc</span><span class="p">.</span><span class="n">datasets</span><span class="p">(</span><span class="n">iR</span><span class="p">).</span><span class="n">getSingleRunName</span><span class="p">();</span> <span class="c">% &#39;single_dataset###&#39;</span>
-    <span class="n">runSpec</span> <span class="p">=</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunSpec</span><span class="p">(</span><span class="n">runSpecName</span><span class="p">,</span> <span class="n">dc</span><span class="p">,</span> <span class="n">iR</span><span class="p">);</span>
-    <span class="n">rc</span><span class="p">.</span><span class="n">addRunSpec</span><span class="p">(</span><span class="n">runSpec</span><span class="p">);</span>
-<span class="k">end</span>
-</pre></div>
-
-<h2 id="check-the-runcollection-and-the-run">Check the <code class="codehilite">RunCollection</code> and the <code class="codehilite">Run</code><a class="headerlink" href="#check-the-runcollection-and-the-run" title="Permanent link">&para;</a></h2>
+<h2 id="check-the-runcollection">Check the <code class="codehilite">RunCollection</code><a class="headerlink" href="#check-the-runcollection" title="Permanent link">&para;</a></h2>
 <p>The <code class="codehilite">RunCollection</code> will now display information about the parameter settings and run specifications that have been added. Here there is only one parameter setting by one run specification, so we&rsquo;re only performing 1 run total.</p>
 <div class="codehilite"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">rc</span>
 
-<span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunCollection</span> &quot;<span class="n">exampleStitching</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">runs</span> <span class="n">total</span><span class="p">)</span>
-  <span class="n">Dataset</span> <span class="n">Collection</span> &quot;<span class="n">lorenz_example</span>&quot; <span class="p">(</span><span class="mi">3</span> <span class="n">datasets</span><span class="p">)</span> <span class="n">in</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">datasets</span>
-  <span class="n">Path</span><span class="p">:</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">exampleStitching</span>
+<span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunCollection</span> &quot;<span class="n">exampleSingleSession</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">runs</span> <span class="n">total</span><span class="p">)</span>
+  <span class="n">Dataset</span> <span class="n">Collection</span> &quot;<span class="n">lorenz_example</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">datasets</span><span class="p">)</span> <span class="n">in</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">datasets</span>
+  <span class="n">Path</span><span class="p">:</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">exampleSingleSession</span>
 
   <span class="mi">1</span> <span class="n">parameter</span> <span class="n">settings</span>
-  <span class="p">[</span><span class="mi">1</span> <span class="n">param_Qr2PeG</span> <span class="n">data_RE1kuL</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> &quot;<span class="n">first_attempt_stitching</span>&quot; <span class="n">useAlignmentMatrix</span><span class="p">=</span><span class="n">true</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
+  <span class="p">[</span><span class="mi">1</span> <span class="n">param_YOs74u</span> <span class="n">data_4MaTKO</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> &quot;<span class="n">first_attempt</span>&quot; <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
 
   <span class="mi">1</span> <span class="n">run</span> <span class="n">specifications</span>
-  <span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunSpec</span> &quot;<span class="n">all</span>&quot; <span class="p">(</span><span class="mi">3</span> <span class="n">datasets</span><span class="p">)</span>
+  <span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunSpec</span> &quot;<span class="n">single_dataset001</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">datasets</span><span class="p">)</span>
 
-                          <span class="n">name</span><span class="p">:</span> <span class="s">&#39;exampleStitching&#39;</span>
+                          <span class="n">name</span><span class="p">:</span> <span class="s">&#39;exampleSingleSession&#39;</span>
                        <span class="n">comment</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
                       <span class="n">rootPath</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs&#39;</span>
-                       <span class="n">version</span><span class="p">:</span> <span class="mi">201801</span>
+                       <span class="n">version</span><span class="p">:</span> <span class="mi">20180131</span>
              <span class="n">datasetCollection</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="n">x1</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">DatasetCollection</span><span class="p">]</span>
                           <span class="n">runs</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="n">x1</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Run</span><span class="p">]</span>
                         <span class="n">params</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="n">x1</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span><span class="p">]</span>
@@ -853,50 +862,16 @@
                        <span class="n">nParams</span><span class="p">:</span> <span class="mi">1</span>
                      <span class="n">nRunSpecs</span><span class="p">:</span> <span class="mi">1</span>
                     <span class="n">nRunsTotal</span><span class="p">:</span> <span class="mi">1</span>
-                     <span class="n">nDatasets</span><span class="p">:</span> <span class="mi">3</span>
-                  <span class="n">datasetNames</span><span class="p">:</span> <span class="p">{</span><span class="mi">3</span><span class="n">x1</span> <span class="n">cell</span><span class="p">}</span>
-                          <span class="n">path</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleStitching&#39;</span>
-      <span class="n">pathsCommonDataForParams</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;~/lorenz_example/runs/exampleStitching/data_RE1kuL&#39;</span><span class="p">}</span>
-                <span class="n">pathsForParams</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;~/lorenz_example/runs/exampleStitching/param_Qr2PeG&#39;</span><span class="p">}</span>
-    <span class="n">fileShellScriptTensorboard</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleStitching/launch_tensorboard.sh&#39;</span>
-               <span class="n">fileSummaryText</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleStitching/summary.txt&#39;</span>
-       <span class="n">fileShellScriptRunQueue</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleStitching/run_lfadsqueue.py&#39;</span>
-
-<span class="o">&gt;&gt;</span> <span class="n">run</span> <span class="p">=</span> <span class="n">rc</span><span class="p">.</span><span class="n">findRuns</span><span class="p">(</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-
-<span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Run</span> &quot;<span class="n">all</span>&quot; <span class="p">(</span><span class="mi">3</span> <span class="n">datasets</span><span class="p">)</span>
-
-  <span class="n">Path</span><span class="p">:</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">exampleStitching</span><span class="o">/</span><span class="n">param_Qr2PeG</span><span class="o">/</span><span class="n">all</span>
-  <span class="n">Data</span><span class="p">:</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">exampleStitching</span><span class="o">/</span><span class="n">data_RE1kuL</span>
-  <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> &quot;<span class="n">first_attempt_stitching</span>&quot; <span class="p">:</span> <span class="n">useAlignmentMatrix</span><span class="p">=</span><span class="n">true</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
-
-  <span class="mi">3</span> <span class="n">datasets</span> <span class="n">in</span> &quot;<span class="n">lorenz_example</span>&quot;
-    <span class="p">[</span> <span class="mi">1</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset001</span>&quot;
-    <span class="p">[</span> <span class="mi">2</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset002</span>&quot;
-    <span class="p">[</span> <span class="mi">3</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset003</span>&quot;
-
-<span class="c">...</span>
+                     <span class="n">nDatasets</span><span class="p">:</span> <span class="mi">1</span>
+                  <span class="n">datasetNames</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;dataset001&#39;</span><span class="p">}</span>
+                          <span class="n">path</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleSingleSession&#39;</span>
+      <span class="n">pathsCommonDataForParams</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;~/lorenz_example/runs/exampleSingleSession/data_4MaTKO&#39;</span><span class="p">}</span>
+                <span class="n">pathsForParams</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;~/lorenz_example/runs/exampleSingleSession/param_YOs74u&#39;</span><span class="p">}</span>
+    <span class="n">fileShellScriptTensorboard</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleSingleSession/launch_tensorboard.sh&#39;</span>
+               <span class="n">fileSummaryText</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleSingleSession/summary.txt&#39;</span>
+       <span class="n">fileShellScriptRunQueue</span><span class="p">:</span> <span class="s">&#39;~/lorenz_example/runs/exampleSingleSession/run_lfadsqueue.py&#39;</span>
 </pre></div>
 
-<h2 id="verifying-the-alignment-matrices">Verifying the alignment matrices<a class="headerlink" href="#verifying-the-alignment-matrices" title="Permanent link">&para;</a></h2>
-<p>Next, we&rsquo;ll run the principal components regression that generates the alignment matrices using the algorithm described <a href="#generating-alignment-matrices">above</a>. Then we&rsquo;ll verify that these matrices are able to project the data from each dataset into similar looking low-dimensional trajectories.</p>
-<p>To visualize how well these initial alignment matrices are working, we can compare the common global PCs from all datasets against the projection of each dataset through the read-in matrices. That is, we can plot the regression target (global PCs) against the best possible reconstruction from each dataset.</p>
-<div class="codehilite"><pre><span></span><span class="n">run</span><span class="p">.</span><span class="n">doMultisessionAlignment</span><span class="p">();</span>
-</pre></div>
-
-<p>Under the hood, the alignment matrix calculations are performed by an instance of <code class="codehilite">LFADS.MutlisessionAlignmentTool</code>. To plot the reconstruction quality, you can call <code class="codehilite">tool.plotAlignmentReconstruction(numberOrIndicesOfFactorsToPlot, numberOrIndicesOfConditionsToPlot)</code>, like so:</p>
-<div class="codehilite"><pre><span></span><span class="n">tool</span> <span class="p">=</span> <span class="n">run</span><span class="p">.</span><span class="n">multisessionAlignmentTool</span><span class="p">;</span>
-
-<span class="n">nFactorsPlot</span> <span class="p">=</span> <span class="mi">3</span><span class="p">;</span>
-<span class="n">conditionsToPlot</span> <span class="p">=</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">20</span> <span class="mi">40</span><span class="p">];</span>
-<span class="n">tool</span><span class="p">.</span><span class="n">plotAlignmentReconstruction</span><span class="p">(</span><span class="n">nFactorsPlot</span><span class="p">,</span> <span class="n">conditionsToPlot</span><span class="p">);</span>
-</pre></div>
-
-<p><img alt="Alignment matrix reconstruction quality" src="../images/alignment_reconstruction.png" /></p>
-<p>In this example, the single-dataset predictions look quite similar to the global target, especially in the first 2 principal components which capture most of the variance.</p>
-<p>The actual alignment matrices can be accessed using:
-<div class="codehilite"><pre><span></span><span class="n">tool</span><span class="p">.</span><span class="n">alignmentMatrices</span> <span class="c">% nDatasets x 1 cell array of read-in matrices</span>
-</pre></div></p>
 <h2 id="prepare-for-lfads">Prepare for LFADS<a class="headerlink" href="#prepare-for-lfads" title="Permanent link">&para;</a></h2>
 <p>Now that you&rsquo;ve set up your run collection with all of your runs, you can run the following to generate the files needed for running LFADS.</p>
 <div class="codehilite"><pre><span></span><span class="n">rc</span><span class="p">.</span><span class="n">prepareForLFADS</span><span class="p">();</span>
@@ -904,50 +879,41 @@
 
 <p>This will generate files for all runs. If you decide to add new runs, by adding additional run specifications or parameters, you can simply call <code class="codehilite">prepareForLFADS</code> again. Existing files won&rsquo;t be overwritten unless you call <code class="codehilite">rc.prepareForLFADS(true)</code>.</p>
 <p>After running <code class="codehilite">prepareForLFADS</code>, the run manager will create the following files on disk under <code class="codehilite">rc.path</code>:</p>
-<div class="codehilite"><pre><span></span>~/lorenz_example/runs/exampleStitching
+<div class="codehilite"><pre><span></span>~/lorenz_example/runs/exampleSingleSession
 ├── data_4MaTKO
-│   ├── inputInfo_dataset001.mat
-│   ├── inputInfo_dataset002.mat
-│   ├── inputInfo_dataset003.mat
-│   ├── lfads_dataset001.h5
-│   ├── lfads_dataset002.h5
-│   └── lfads_dataset003.h5
+│   └── single_dataset001
+│       ├── inputInfo_dataset001.mat
+│       └── lfads_dataset001.h5
 ├── param_YOs74u
-│   └── all
+│   └── single_dataset001
 │       └── lfadsInput
-│           ├── inputInfo_dataset001.mat -&gt; ../../../data_4MaTKO/inputInfo_dataset001.mat
-│           ├── inputInfo_dataset002.mat -&gt; ../../../data_4MaTKO/inputInfo_dataset002.mat
-│           ├── inputInfo_dataset003.mat -&gt; ../../../data_4MaTKO/inputInfo_dataset003.mat
-│           ├── lfads_dataset001.h5 -&gt; ../../../data_4MaTKO/lfads_dataset001.h5
-│           ├── lfads_dataset002.h5 -&gt; ../../../data_4MaTKO/lfads_dataset002.h5
-│           └── lfads_dataset003.h5 -&gt; ../../../data_4MaTKO/lfads_dataset003.h5
+│           ├── inputInfo_dataset001.mat -&gt; ../../../data_4MaTKO/single_dataset001/inputInfo_dataset001.mat
+│           └── lfads_dataset001.h5 -&gt; ../../../data_4MaTKO/single_dataset001/lfads_dataset001.h5
 └── summary.txt
 </pre></div>
 
 <p>The organization of these files on disk is discussed in more detail <a href="../files/">here</a>. Also, a <code class="codehilite">summary.txt</code> file will be generated which can be useful for identifying all of the runs and their locations on disk. You can also generate this text from within Matlab by calling <code class="codehilite">rc.generateSummaryText()</code>.</p>
-<div class="codehilite"><pre><span></span><span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunCollection</span> &quot;<span class="n">exampleStitching2</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">runs</span> <span class="n">total</span><span class="p">)</span>
-  <span class="n">Path</span><span class="p">:</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">exampleStitching2</span>
-  <span class="n">Dataset</span> <span class="n">Collection</span> &quot;<span class="n">lorenz_example</span>&quot; <span class="p">(</span><span class="mi">3</span> <span class="n">datasets</span><span class="p">)</span> <span class="n">in</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">datasets</span>
+<div class="codehilite"><pre><span></span><span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunCollection</span> &quot;<span class="n">exampleSingleSession</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">runs</span> <span class="n">total</span><span class="p">)</span>
+  <span class="n">Path</span><span class="p">:</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">exampleSingleSession</span>
+  <span class="n">Dataset</span> <span class="n">Collection</span> &quot;<span class="n">lorenz_example</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">datasets</span><span class="p">)</span> <span class="n">in</span> <span class="o">~/</span><span class="n">lorenz_example</span><span class="o">/</span><span class="n">datasets</span>
 
   <span class="o">------------------------</span>
 
   <span class="mi">1</span> <span class="n">Run</span> <span class="n">Specifications</span><span class="p">:</span>
 
-    <span class="p">[</span><span class="n">runSpec</span> <span class="mi">1</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunSpec</span> &quot;<span class="n">all</span>&quot; <span class="p">(</span><span class="mi">3</span> <span class="n">datasets</span><span class="p">)</span>
+    <span class="p">[</span><span class="n">runSpec</span> <span class="mi">1</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunSpec</span> &quot;<span class="n">single_dataset001</span>&quot; <span class="p">(</span><span class="mi">1</span> <span class="n">datasets</span><span class="p">)</span>
       <span class="p">[</span><span class="n">ds</span> <span class="mi">1</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset001</span>&quot;
-      <span class="p">[</span><span class="n">ds</span> <span class="mi">2</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset002</span>&quot;
-      <span class="p">[</span><span class="n">ds</span> <span class="mi">3</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">Dataset</span> &quot;<span class="n">dataset003</span>&quot;
 
   <span class="o">------------------------</span>
 
   <span class="mi">1</span> <span class="n">Parameter</span> <span class="n">Settings</span><span class="p">:</span>
 
-    <span class="p">[</span><span class="mi">1</span> <span class="n">param_Qr2PeG</span> <span class="n">data_RE1kuL</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> &quot;<span class="n">first_attempt_stitching</span>&quot;
-      <span class="n">useAlignmentMatrix</span><span class="p">=</span><span class="n">true</span> <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
+    <span class="p">[</span><span class="mi">1</span> <span class="n">param_YOs74u</span> <span class="n">data_4MaTKO</span><span class="p">]</span> <span class="n">LorenzExperiment</span><span class="p">.</span><span class="n">RunParams</span> &quot;<span class="n">first_attempt</span>&quot;
+      <span class="n">c_factors_dim</span><span class="p">=</span><span class="mi">8</span> <span class="n">c_ic_enc_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_gen_dim</span><span class="p">=</span><span class="mi">64</span> <span class="n">c_co_dim</span><span class="p">=</span><span class="mi">0</span> <span class="n">c_batch_size</span><span class="p">=</span><span class="mi">150</span> <span class="n">c_learning_rate_stop</span><span class="p">=</span><span class="mf">0.001</span>
 
       <span class="n">spikeBinMs</span><span class="p">:</span> <span class="mi">2</span>
       <span class="n">trainToTestRatio</span><span class="p">:</span> <span class="mi">4</span>
-      <span class="n">useAlignmentMatrix</span><span class="p">:</span> <span class="n">true</span>
+      <span class="n">useAlignmentMatrix</span><span class="p">:</span> <span class="n">false</span>
       <span class="n">useSingleDatasetAlignmentMatrix</span><span class="p">:</span> <span class="n">false</span>
       <span class="n">scaleIncreaseStepsWithDatasets</span><span class="p">:</span> <span class="n">true</span>
       <span class="n">c_cell_clip_value</span><span class="p">:</span> <span class="mi">5</span>
@@ -984,8 +950,6 @@
       <span class="n">num_samples_posterior</span><span class="p">:</span> <span class="mi">512</span>
       <span class="n">posterior_mean_kind</span><span class="p">:</span> <span class="n">posterior_sample_and_average</span>
 </pre></div>
-
-<p>After running <code class="codehilite">prepareForLFADS</code>, you can then run the LFADS model or models in the same way as with single-session models, using the instructions <a href="../running/">here</a>.</p>
                 
                   
                 
@@ -1004,7 +968,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../hyperparameters/" title="Hyperparameters" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../interfacing/" title="Interfacing with your Datasets" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1013,19 +977,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Hyperparameters
+                Interfacing with your Datasets
               </span>
             </div>
           </a>
         
         
-          <a href="../analysis/" title="Analyzing LFADS Posterior Means" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../running/" title="Running LFADS" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Analyzing LFADS Posterior Means
+                Running LFADS
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
