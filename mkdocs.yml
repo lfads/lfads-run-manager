@@ -8,6 +8,8 @@ repo_url: 'https://github.com/lfads/lfads-run-manager'
 theme:
   name: material
   custom_dir: docs/theme/
+  feature:
+    tabs: true
   palette:
     primary: 'red'
     accent: 'red'
@@ -29,15 +31,16 @@ markdown_extensions:
   - toc(permalink=true)
 
 pages:
-  - Overview: index.md
-  - Installation: install.md
-  - Using the Run Manager:
+  - LFADS Run Manager:
+    - Overview: index.md
+    - Installation: install.md
     - Matlab Classes and Packages: matlab.md
     - Key Concepts: concepts.md
     - Interfacing with your Datasets : interfacing.md
   - Training LFADS:
     - Setting up a single-session run: single-session.md
     - Running LFADS: running.md
+    - Hyperparameters: hyperparameters.md
     - Multisession Stitched Models: multisession.md
   - Analyzing LFADS:
     - Analyzing LFADS Posterior Means: analysis.md
