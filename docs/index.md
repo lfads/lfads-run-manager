@@ -1,6 +1,8 @@
 # LFADS Run Manager for Matlab Documentation
 
-LFADS Run Manager is a set of tools, written in Matlab, that help organize, train, and analyze LFADS models using the [Python+Tensorflow LFADS code](https://github.com/tensorflow/models/tree/master/research/lfads). LFADS, or [Latent Factor Analysis via Dynamical Systems](https://www.biorxiv.org/content/early/2017/06/20/152884), is a deep learning method to infer latent dynamics from single-trial neural spiking data. LFADS uses a nonlinear dynamical system (a recurrent neural network) to infer the dynamics underlying observed population activity and to extract ‘de-noised’ single-trial firing rates from neural spiking data.
+LFADS Run Manager is a set of tools, written in Matlab with some accompanying Python code, that help organize, train, and analyze LFADS models using the [Python+Tensorflow LFADS code](https://github.com/tensorflow/models/tree/master/research/lfads). LFADS, or [Latent Factor Analysis via Dynamical Systems](https://www.biorxiv.org/content/early/2017/06/20/152884), is a deep learning method to infer latent dynamics from single-trial neural spiking data. LFADS uses a nonlinear dynamical system (a recurrent neural network) to infer the dynamics underlying observed population activity and to extract ‘de-noised’ single-trial firing rates from neural spiking data.
+
+LFADS Run Manager was authored by [Daniel O'Shea](http://djoshea.com) with contributions from [Chethan Pandarinath](http://snel.gatech.edu/), [David Sussillo](https://research.google.com/pubs/DavidSussillo.html), and Reza Keshtkaran.
 
 Read the [LFADS pre-print](https://www.biorxiv.org/content/early/2017/06/20/152884) for more details.
 
@@ -23,19 +25,19 @@ We'll walkthrough this example in more detail in this documentation, but to give
 ```matlab
 % Identify the datasets you'll be using
 % Here we'll add one at ~/lorenz_example/datasets/dataset001.mat
-dc = MyExperiment.DatasetCollection('~/lorenz_example/datasets');
+dc = LorenzExperiment.DatasetCollection('~/lorenz_example/datasets');
 dc.name = 'lorenz_example';
-ds = MyExperiment.Dataset(dc, 'dataset001.mat'); % adds this dataset to the collection
+ds = LorenzExperiment.Dataset(dc, 'dataset001.mat'); % adds this dataset to the collection
 dc.loadInfo; % loads dataset metadata
 
 % Run a single model for each dataset, and one stitched run with all datasets
 runRoot = '~/lorenz_example/runs';
-rc = MyExperiment.RunCollection(runRoot, 'example', dc);
+rc = LorenzExperiment.RunCollection(runRoot, 'example', dc);
 
 % run files will live at ~/lorenz_example/runs/example/
 
 % Setup hyperparameters, 4 sets with number of factors swept through 2,4,6,8
-par = MyExperiment.RunParams;
+par = LorenzExperiment.RunParams;
 par.spikeBinMs = 2; % rebin the data at 2 ms
 par.c_co_dim = 0; % no controller outputs --> no inputs to generator
 par.c_batch_size = 150; % must be < 1/5 of the min trial count
@@ -47,7 +49,7 @@ rc.addParams(parSet);
 
 % Setup which datasets are included in each run, here just the one
 runName = dc.datasets(1).getSingleRunName(); % == 'single_dataset001'
-rc.addRunSpec(MyExperiment.RunSpec(runName, dc, 1));
+rc.addRunSpec(LorenzExperiment.RunSpec(runName, dc, 1));
 
 % Generate files needed for LFADS input on disk
 rc.prepareForLFADS();
@@ -62,27 +64,27 @@ You've now setup a 1x 4 grid of LFADS runs, spanning 4 different hyperparameter 
 ```matlab
 >> rc
 
-MyExperiment.RunCollection "exampleRun" (16 runs total)
+LorenzExperiment.RunCollection "exampleRun" (16 runs total)
   Dataset Collection "lorenz_example" (1 datasets) in ~/lorenz_example/datasets
   Path: ~/lorenz_example/runs/exampleRun
 
   4 parameter settings
-    [1 param_7I6XSW data_cgrfui] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=2 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-    [2 param_O4V73g data_2_zdvC] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=4 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-    [3 param_ngqEhM data_GeiefE] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=6 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-    [4 param_Qr2PeG data_RE1kuL] MyExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [1 param_7I6XSW data_cgrfui] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=2 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [2 param_O4V73g data_2_zdvC] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=4 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [3 param_ngqEhM data_GeiefE] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=6 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+    [4 param_Qr2PeG data_RE1kuL] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
 
   1 run specifications
-  [ 1] MyExperiment.RunSpec "single_dataset001" (1 datasets)
+  [ 1] LorenzExperiment.RunSpec "single_dataset001" (1 datasets)
 
                           name: 'exampleRun'
                        comment: ''
                       rootPath: '~/lorenz_example/runs'
                        version: 20171107
-             datasetCollection: [1x1 MyExperiment.DatasetCollection]
-                          runs: [4x4 MyExperiment.Run]
-                        params: [4x1 MyExperiment.RunParams]
-                      runSpecs: [4x1 MyExperiment.RunSpec]
+             datasetCollection: [1x1 LorenzExperiment.DatasetCollection]
+                          runs: [1x4 LorenzExperiment.Run]
+                        params: [4x1 LorenzExperiment.RunParams]
+                      runSpecs: [1x1 LorenzExperiment.RunSpec]
                        nParams: 4
                      nRunSpecs: 1
                     nRunsTotal: 4
