@@ -122,7 +122,7 @@ classdef MultisessionAlignmentTool < handle
             end
         end
         
-        function [alignmentMatrices, alignmentBiases] = computeAlignmentMatricesUsingTrialAveragedPCR(tool)
+        function [alignmentMatrices, alignmentBiases] = computeAlignmentMatricesUsingTrialAveragedPCR(tool, varargin)
             % Prepares alignment matrices to seed the stitching process when 
             % using multiple days of sequence data for LFADS input file generation. 
             % Generate alignment matrices which specify the initial guess at the 
@@ -145,8 +145,11 @@ classdef MultisessionAlignmentTool < handle
             %
             % Parameters
             % ------------
-            % seqData : `nDatasets` cell of struct arrays of sequence data
-            %   Sequence data for each dataset as returned by `convertDatasetToSequenceStruct`
+            % useRidgeRegression : true or false (default), if true, uses ridge regression to obtain a robust regression
+            %   from each session's data to the global PCs. The lambda hyperparameter will be optimized via
+            %   cross-validation.
+            % ridgeNormalizeEach : true or false (default). if true, each neuron will be separately z-scored before
+            %   the ridge penalty is applied.
             %
             % Returns
             % ----------
@@ -154,6 +157,11 @@ classdef MultisessionAlignmentTool < handle
             %   For each dataset, an initial guess at the encoder matrices which maps `nNeuronsThisSession` (for that dataset) to a
             %   common set of `nFactors` (up to you to pick this). Seeding this well helps the stitching process. Typically,
             %   PC regression can provide a reasonable set of guesses.
+            
+            p = inputParser();
+            p.addParameter('useRidgeRegression', false, @islogical);
+            p.addParameter('ridgeNormalizeEach', false, @islogical);
+            p.parse(varargin{:});
             
             all_data_tensor = cat(1, tool.conditionAvgsByDataset{:}); % nChannelsTotal x nTime x nConditions
             all_data = all_data_tensor(:, :);
@@ -211,8 +219,16 @@ classdef MultisessionAlignmentTool < handle
                         nanmean(this_dataset_data(:, tMask), 2));
 
                     % regress this day's data against the global PCs -
-                    % nChannelsByDataset(iDS) x nFactors
-                   alignmentMatrices{iDS} = (this_dataset_centered' \ dim_reduced_data_this');
+                    % alignmentMatrix is nChannelsByDataset(iDS) x nFactors
+                    % this_dataset_centered' is (TC x nChannels)
+                    % dim_reduced_data_this' is (TC x nFactors)
+                    
+                    if p.Results.useRidgeRegression
+                        alignmentMatrices{iDS} = LFADS.Utils.ridge_cv(dim_reduced_data_this', this_dataset_centered', ...
+                            'normalizeEach', p.Results.ridgeNormalizeEach, 'KFold', 10);
+                    else
+                       alignmentMatrices{iDS} = (this_dataset_centered' \ dim_reduced_data_this');
+                    end
                     % and set mean as it will be subtracted from the data
                     % before projecting by the alignment matrix
                     % nChannelsByDataset(iDS) x 1
@@ -248,6 +264,7 @@ classdef MultisessionAlignmentTool < handle
         end
     
         function plotAlignmentReconstruction(tool, factorIdx, conditionIdx, varargin)
+            % plotAlignmentReconstruction(tool, factorIdx, conditionIdx, varargin)
             p = inputParser();
             p.addParameter('flip', false, @islogical); % stack conditions vertically and factors horizontally instead of vice versa
             p.addParameter('datasetIdx', 1:tool.nDatasets, @isvector);
@@ -260,7 +277,7 @@ classdef MultisessionAlignmentTool < handle
             end
             
             if nargin < 2 || isempty(factorIdx)
-                factorIdx = 1:tool.nFactors;
+                factorIdx = 1:min(6, tool.nFactors);
             elseif isscalar(factorIdx)
                 factorIdx = 1:factorIdx;
             end

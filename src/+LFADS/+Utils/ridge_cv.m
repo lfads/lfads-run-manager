@@ -55,12 +55,7 @@ function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
             end
         end
 
-        mse = sum(loss, 2);
-        clf;
-        plot(log10(lambdas), mse);
-        xlabel('Log(10) lambda');
-        ylabel('mse');
-        
+        mse = mean(loss, 2);
         [~, idxBestLambda] = min(mse);
         lambda = lambdas(idxBestLambda);
     else

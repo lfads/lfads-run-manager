@@ -201,10 +201,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             
             assert(isstruct(out) && isscalar(out) && isfield(out, 'counts'));
             counts = out.counts;
+            
+            if any(isnan(counts(:)))
+                error('Run %s: Spike counts generated for dataset %s has NaN values', r.name, dataset.name);
+            end
+            
             if isfield(out, 'timeVecMs')
                 timeVecMs = out.timeVecMs;
             else
                 timeVecMs = 1:size(counts, 3);
+            end
+            if any(isnan(timeVecMs))
+                error('Run %s: Time vector generated for dataset %s has NaN values', r.name, dataset.name);
             end
                 
             if isfield(out, 'conditionId') 
@@ -308,7 +316,28 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   PC regression can provide a reasonable set of guesses.
 
             r.multisessionAlignmentTool = LFADS.MultisessionAlignmentTool(r, seqData, {r.datasets.name}');
-            [alignmentMatrices, alignmentBiases] = r.multisessionAlignmentTool.computeAlignmentMatricesUsingTrialAveragedPCR();
+            
+            args = r.params.alignmentExtraArgs;
+            switch r.params.alignmentApproach
+                case 'regressGlobalPCs'
+                    [alignmentMatrices, alignmentBiases] = r.multisessionAlignmentTool.computeAlignmentMatricesUsingTrialAveragedPCR(...
+                        'useRidgeRegression', false, args{:});
+                case 'ridgeRegressGlobalPCs'
+                    [alignmentMatrices, alignmentBiases] = r.multisessionAlignmentTool.computeAlignmentMatricesUsingTrialAveragedPCR(...
+                        'useRidgeRegression', true, args{:});
+                
+                otherwise
+                    error('Unknown alignmentApproach ''%s''', r.params.alignmentApproach);
+            end
+        
+            assert(iscell(alignmentMatrices) && numel(alignmentMatrices) == r.nDatasets);
+            assert(iscell(alignmentBiases) && numel(alignmentBiases) == r.nDatasets);
+            for iDS = 1:r.nDatasets
+                if any(isnan(alignmentMatrices{iDS}(:))) || any(isnan(alignmentBiases{iDS}(:)))
+                    error('Run %s: NaNs found in alignmentMatrices or alignmentBiases for dataset %s', r.name, r.datasets(iDS).name);
+                end
+            end
+                    
         end
 
         function visualizeAlignmentMatrixReconstructions(r, nFactorsOrFactorIdx, nConditionsOrConditionIdx)
@@ -842,7 +871,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
 
             if any(maskGenerate)
-                regenerate = false;
+                %regenerate = false;
                 seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
 
                 r.assertParamsOkayForSequenceData(seqData);

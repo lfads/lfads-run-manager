@@ -60,7 +60,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
              groups(10) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
              groupTitle = 'Stitching multi-session models';
-             propList = {'c_do_train_readin', 'useAlignmentMatrix', 'useSingleDatasetAlignmentMatrix'};
+             propList = {'c_do_train_readin', 'useAlignmentMatrix', 'useSingleDatasetAlignmentMatrix', 'alignmentApproach', 'alignmentExtraArgs'};
              groups(11) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
              groupTitle = 'Posterior sampling';
@@ -162,7 +162,9 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_do_train_readin logical = true; % for stitching models, make the readin matrices trainable (true) or fix them to equal the alignment matrices (false)
         useAlignmentMatrix logical = false; % Whether to use an alignment matrix when stitching datasets together.
         useSingleDatasetAlignmentMatrix logical = false;  % Whether to use an alignment matrix using a single dataset, for dimensionality reduction upstream of the encoder
-
+        alignmentApproach char = 'regressGlobalPCs'; % one of 'regressGlobalPCs' or 'ridgeRegressGlobalPCs'. see LFADS.Run/prepareAlignmentMatrices
+        alignmentExtraArgs cell = {}; % extra args to pass to MutlisessionAlignmentTool
+          
         % Posterior mean sampling
         % These properties DO NOT affect the param_HASH or the data_HASH
         posterior_mean_kind char = 'posterior_sample_and_average'; % or 'posterior_push_mean'
@@ -547,6 +549,14 @@ classdef RunParams < matlab.mixin.CustomDisplay
                     valstr = sprintf('%g', value);
                 case {'char'}
                     valstr = value;
+                case {'cell'}
+                    assert(isempty(value) || isvector(value), 'Cell value for property %s must be vector');
+                    parts = cell(numel(value), 1);
+                    for i = 1:numel(value)
+                        parts{i} = p.serializePropertyValue('', value{i});
+                    end
+                    valstr = sprintf('{%s}', strjoin(parts, ', '));
+                        
                 otherwise
                     error(['don''t know this type: ' class(value)]);
             end
