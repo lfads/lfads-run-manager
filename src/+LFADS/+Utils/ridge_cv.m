@@ -1,4 +1,4 @@
-function [W, b] = ridge_cv(Y, X, varargin)
+function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
 % fits the regression problem Y = X * W + b where coefficients in W are L^2 regularized.
 
 % where Y is T x K outputs
@@ -8,12 +8,14 @@ function [W, b] = ridge_cv(Y, X, varargin)
 
 % uses L2 penalty (ridge regression) and then k-fold cross-validation to
 % optimize the ridge hyperparameter
-
     
     p = inputParser();
-    p.addParameter('lambdas',  logspace(-5,0,15), @isvector);
-    p.addParameter('KFold', 5, @isscalar);
+    p.addParameter('lambdas',  logspace(-5, 0, 15), @isvector);
+    p.addParameter('KFold', 10, @isscalar);
     p.addParameter('normalizeEach', false, @isscalar); % zscore each column individually
+    p.addParameter('plotFitAllLambdas', false, @islogical);
+    p.addParameter('plotWeightsEachLambda', false, @islogical);
+    
     p.parse(varargin{:});
     
     T = size(X, 1);
@@ -47,17 +49,76 @@ function [W, b] = ridge_cv(Y, X, varargin)
         loss = nan(nL, nFolds);
         for iL = 1:nL
             for iF = 1:nFolds
-                maskTrain = cv.training(iF);
-                loss(iL, iF) = loss_single(Y(maskTrain, :), X(maskTrain, :), lambdas(iL));
+%                 maskTrain = cv.training(iF);
+                maskTrain = mod((1:T)', nFolds) == iF-1;
+                loss(iL, iF) = loss_single(Y, X, maskTrain, lambdas(iL));
             end
         end
 
         mse = sum(loss, 2);
+        clf;
+        plot(log10(lambdas), mse);
+        xlabel('Log(10) lambda');
+        ylabel('mse');
+        
         [~, idxBestLambda] = min(mse);
         lambda = lambdas(idxBestLambda);
     else
         lambda = lambdas(1);
     end
+    
+    %% Plot fit to Y(:, 1) with all lambdas if requested
+    if p.Results.plotFitAllLambdas
+        y = Y(:, 1);
+        
+        figure(1);
+        clf;
+        plot(y, 'k-');
+        hold on;
+        
+        cmap = parula(nL);
+        for iL = 1:nL
+            w = fit_single(y, X, lambdas(iL));
+            yhat = X * w;
+            
+            if iL == idxBestLambda
+                plot(yhat, 'Color', 'r');
+            else
+                plot(yhat, 'Color', cmap(iL, :));
+            end
+        end
+        hold off;
+    end
+    
+    if p.Results.plotWeightsEachLambda
+        wnorm = nanvec(nL);
+        y = Y(:, 1);
+        
+        figure(2);
+        clf;
+        
+        cmap = parula(nL);
+        for iL = 1:nL
+            w = fit_single(y, X, lambdas(iL));
+            
+            if iL == idxBestLambda
+                stem((1:numel(w)) + iL/nL*0.4, w, 'Color', 'r');
+            else
+                stem((1:numel(w)) + iL/nL*0.4, w, 'Color', cmap(iL, :));
+            end
+            hold on;
+            wnorm(iL) = norm(w);
+        end
+        hold off;
+        
+        figure(3);
+        clf;
+        ax = plotyy(log10(lambdas), wnorm, log10(lambdas), mse);
+        xlabel('Log(10) lambda');
+        ylabel(ax(1), 'weights norm');
+        ylabel(ax(2), 'cv mse');
+    end
+    
     %% Fit whole dataset with single lambda
     W = fit_single(Y, X, lambda);
     W = W ./ divisors';
@@ -79,9 +140,11 @@ function W = fit_single(Y, X, lambda)
     W = (X'*X + lambda * I) \ (X' * Y); 
 end
 
-function mse = loss_single(Y, X, lambda)
-    W = fit_single(Y, X, lambda);
-%     W = ridge(Y, X, lambda, 0); W = W(2:end);
-    Yhat = X * W;
-    mse = sum((Yhat(:) - Y(:)).^2);
+function mse = loss_single(Y, X, maskTrain, lambda)
+    W = fit_single(Y(maskTrain, :), X(maskTrain, :), lambda);
+    
+    maskTest = ~maskTrain;
+    Yhat = X(maskTest, :) * W;
+    Ytest = Y(maskTest, :);
+    mse = mean((Yhat(:) - Ytest(:)).^2);
 end
