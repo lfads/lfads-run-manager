@@ -30,7 +30,7 @@ tbody.hp tr td:first-child { font-family: "Roboto Mono","Courier New",Courier,mo
 </tr>
 <tr class="hp-rare">
 <td>Rare</td>
-<td>Infrequently requires tuning and/r primarily intended for advanced users.</td>
+<td>Infrequently requires tuning and/or primarily intended for advanced users.</td>
 </tr>
 </table>
 
@@ -102,7 +102,7 @@ tbody.hp tr td:first-child { font-family: "Roboto Mono","Courier New",Courier,mo
 
 ## Optimization
 
-Rather put the learning rate on an exponentially decreasiong schedule,
+Rather put the learning rate on an exponentially decreasing schedule,
 the current algorithm pays attention to the learning rate, and if it
 isn't regularly decreasing, it will decrease the learning rate.  So far,
 it works fine, though it is not perfect.
@@ -115,7 +115,7 @@ it works fine, though it is not perfect.
 </thead>
 <tbody class="hp">
 
-<tr class="hp-rare">
+<tr class="hp-medium">
 <td>c_learning_rate_init</td>
 <td>0.01</td>
 <td>Initial learning rate</td>
@@ -139,7 +139,7 @@ it works fine, though it is not perfect.
 <td>Stop training when the learning rate reaches this threshold.</td>
 </tr>
 
-<tr class="hp-rare">
+<tr class="hp-medium">
 <td>c_max_grad_norm</td>
 <td>200</td>
 <td>Max norm of gradient before clipping. This sets a value, above which, the gradients will be clipped.  This hp
@@ -150,7 +150,7 @@ that ends in NaNs.  If it's too large, it's useless, if it's too small,
 it essentially becomes the learning rate. It's pretty insensitive, though.</td>
 </tr>
 
-<tr class="hp-rare">
+<tr class="hp-medium">
 <td>trainToTestRatio</td>
 <td>4</td>
 <td>Ratio of training vs testing trials used.</td>
@@ -201,7 +201,7 @@ If controller is heavily penalized, then it won't have any output. If dynamics a
 <td>L2 regularization cost for the generator only.</td>
 </tr>
 
-<tr class="hp-rare">
+<tr class="hp-medium>
 <td>c_l2_con_scale</td>
 <td>500</td>
 <td>L2 regularization cost for the controller only.</td>
@@ -406,7 +406,7 @@ If you don't care about any of this, and just want to smooth your data, set
 <td>Feedback the factors or the rates to the controller? Set to either <code>'factors'</code> or <code>'rates'</code></td>
 </tr>
 
-<tr class="hp-medium">
+<tr class="hp-common">
 <td>c_controller_input_lag</td>
 <td>1</td>
 <td>Time lag on the encoding to controller <code>t-lag</code> for forward, <code>t+lag</code> for reverse.</td>
@@ -468,7 +468,7 @@ increase `ic_post_var_min` above 0.
 <td>Dimensionality of the initial conditions.</td>
 </tr>
 
-<tr class="hp-rare">
+<tr class="hp-medium">
 <td>c_ic_enc_dim</td>
 <td>128</td>
 <td>Network size for IC encoder.</td>
@@ -548,7 +548,7 @@ for the LFADS application or not.
 <td>Dimensionality of factors read out from generator network. This provides dimensionality reduction from generator dimensionality down to factors and then back out to the neural rates. <em>Note that this property does affect the data and param hashes, unlikely the other <code>c_</code> prefixed parameters, which only affect the param hash.</td>
 </tr>
 
-<tr class="hp-rare">
+<tr class="hp-medium">
 <td>c_output_dist</td>
 <td>'poisson'</td>
 <td>Type of output distribution for rates, either <code>'poisson'</code> or <code>'gaussian'</code></td>
@@ -583,6 +583,18 @@ for the LFADS application or not.
 <td>useSingleDatasetAlignmentMatrix</td>
 <td>false</td>
 <td>When only using a single dataset, it is also possible to use a readin matrix that reduces the dimensionality of the spikes before inputting these input factors to the encoder networks. If set true, this will set up this readin matrix and seed it with an alignment matrix computed using PCA.</td>
+</tr>
+
+<tr class="hp-common">
+<td>alignmentApproach</td>
+<td><code>'regressGlobalPCs'</code></td>
+<td>Algorithm to use when calculating the initial alignment (readin) matrices that map from each session-specific set of neurons to common input factors. Default 'regressGlobalPCs' computes the PCs of all neurons together, and then regresses those PCs on the neurons from each session separately. This mapping produces the best possible linear reconstruction of the global PCs from each session. <code>'ridgeRegressGlobalPCs'</code> does the same but uses ridge regression (L2 regularization) for more robustness, using a lambda value optimized via cross-validation. This approach may yield better results if some neurons are quite variable or exhibit sparse firing. Additional modes can be implemented; see <code>LFADS.Run/prepareAlignmentMatrices</code> which you may override in your derived `Run` class.</td>
+</tr>
+
+<tr class="hp-medium">
+<td>alignmentExtraArgs</td>
+<td><code>{}</code></td>
+<td>Extra arguments to be passed by <code>LFADS.Run/prepareAlignmentMatrices</code>, either to  <code>LFADS.MultisessionAlignmentTool.computeAlignmentMatricesUsingTrialAveragedPCR</code> in the default implementation, or as additional parameters to a custom alignment algorithm.</td>
 </tr>
 
 </tbody>
