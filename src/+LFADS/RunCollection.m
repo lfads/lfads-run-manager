@@ -34,14 +34,16 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
         nDatasets % number of datasets within the datasetCollection
         datasetNames % nDatasets x 1 cell array of dataset names
-        
+
         path % unique folder given by rootPath/name
         pathsCommonDataForParams % cellstr of folders given by rootPath/name/{data_HASH} for each params
         pathsForParams % cellstr of folders given by rootPath/name/{paramStr}
         fileShellScriptTensorboard % path the location where a shell script to launch TensorBoard for all runs will be written
         fileSummaryText % path where summary text info will be written
 
-        fileShellScriptRunQueue % path of shell script to launch lfadsqueue to train and sample all runs within
+        fileShellScriptRunQueue % path of shell script to launch lfadsqueue to train, sample, and write model params for all runs within
+        
+        fileShellScriptRunQueuePosteriorMeanOnly % path of shell script to launch lfadsqueue to posterior sample all runs within
     end
 
     methods
@@ -143,7 +145,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 for iP = 1:numel(params)
                     params.version = rc.version;
                 end
-                
+
                 % check for existing runs by name and replace them
                 [tf, idx] = rc.ismemberParams(params);
                 if any(tf)
@@ -213,7 +215,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                         new.params = rc.params(iP);
                         new.paramIndexInRunCollection = iP;
                         new.datasets = spec.datasets;
-                        
+
                         % set the Run version to match RunCollectionVersion
                         new.version = rc.version;
 
@@ -241,7 +243,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             if nargin < 2
                 regenerate = false;
             end
-            
+
             if rc.nRunsTotal == 0
                 if rc.nParams == 0
                     error('No RunParams have been added. Use rc.addParams');
@@ -249,7 +251,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     error('No RunSpecs have been added. Use rc.addRunSpec');
                 end
             end
-            
+
             prog = LFADS.Utils.ProgressBar(rc.nRunsTotal, 'Generating input data for each run');
             for iR = 1:rc.nRunsTotal
                 prog.update(iR);
@@ -279,15 +281,38 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             p.addParameter('oneTaskPerGPU', true, @islogical); % false allows GPUs to multi-task, which seems to be slower than just running tasks sequentially
             p.addParameter('maxTasksSimultaneously', [], @(x) isempty(x) || isscalar(x));
             p.addParameter('gpuMemoryRequired', 2000, @isscalar); % in MB
-            
+
             p.addParameter('runIdx', 1:rc.nRunsTotal, @isvector); % subsets and orders the runs to include in the script
-            
+
             p.addParameter('prependPythonPathToLFADSQueue', false, @islogical); % prepend PYTHONPATH to lfadsqueue.py
             p.addParameter('prependPathToRunLFADS', false, @islogical); % prepend PATH to run_lfads.py
-            
+
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
+
+            % either 'all' to do train, posterior sample, write model params
+            % or 'posteriorMeanOnly' to do only posterior sample (useful when trying multiple settings for posterior_mean_kind)
+            p.addParameter('mode', 'all', @ischar);
             
+            p.addParameter('posterior_mean_kind', '', @ischar); % for posterior mean sampling
+
             p.parse(varargin{:});
+
+            switch p.Results.mode
+                case 'all'
+                    mode = 'all';
+                    out_file = rc.fileShellScriptRunQueue;
+                    doneFileStem = 'lfads.done';
+                    outFileSuffix = 'lfads.out';
+                    
+                case 'posteriorMeanOnly'
+                    mode = 'posteriorMeanOnly';
+                    out_file = rc.fileShellScriptRunQueuePosteriorMeanOnly;
+                    doneFileStem = 'lfads.done.posteriorMeanOnly';
+                    outFileSuffix = '.posteriorMeanOnly';
+
+                otherwise
+                    error('Unknown mode. Valid values include all and posterior');
+            end
 
             rc.writeTensorboardShellScript();
 
@@ -300,10 +325,8 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                 display = p.Results.display;
             end
 
-            out_file = rc.fileShellScriptRunQueue;
-
             fid = fopen(out_file, 'w');
-            
+
             if p.Results.prependPythonPathToLFADSQueue
                 folder = LFADS.Utils.find_lfadsqueue_py();
                 if ~isempty(folder)
@@ -311,7 +334,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     fprintf(fid, 'sys.path.append("%s")\n', folder);
                 end
             end
-            
+
             fprintf(fid, 'import lfadsqueue as lq\n\n');
             fprintf(fid, 'queue_name = "%s"\n', rc.name);
             fprintf(fid, 'tensorboard_script = "%s"\n', LFADS.Utils.GetFullPath(rc.fileShellScriptTensorboard));
@@ -324,31 +347,47 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
 
             fprintf(fid, 'task_specs = [');
-            
+
             % determine full ordering
             runIdx = p.Results.runIdx;
             assert(all(ismember(runIdx, 1:rc.nRunsTotal)), 'runIdx must be in 1:nRuns');
-            
+
             nRunsIncluded = numel(runIdx);
             prog = LFADS.Utils.ProgressBar(nRunsIncluded, 'Writing shell scripts for each run');
-            
+
             for iiR = 1:nRunsIncluded
                 prog.update(iiR);
                 iR = runIdx(iiR);
-                rc.runs(iR).writeShellScriptLFADSTrain('display', display, 'useTmuxSession', false, ...
-                    'appendPosteriorMeanSample', true, ...
-                    'appendWriteModelParams', true, ...
-                    'teeOutput', true, ...
-                    'prependPathToRunLFADS', p.Results.prependPathToRunLFADS, ...
-                    'virtualenv', p.Results.virtualenv);
-                
-                outfile = LFADS.Utils.GetFullPath(rc.runs(iR).fileLFADSOutput);
-                donefile = LFADS.Utils.GetFullPath(fullfile(rc.runs(iR).path, 'lfads.done'));
+                if strcmp(mode, 'all')
+                    rc.runs(iR).writeShellScriptLFADSTrain('display', display, 'useTmuxSession', false, ...
+                        'appendPosteriorMeanSample', true, ...
+                        'appendWriteModelParams', true, ...
+                        'teeOutput', true, ...
+                        'prependPathToRunLFADS', p.Results.prependPathToRunLFADS, ...
+                        'virtualenv', p.Results.virtualenv, ...
+                        'posterior_mean_kind', p.Results.posterior_mean_kind);
+                    cmdfile = LFADS.Utils.GetFullPath(rc.runs(iR).fileShellScriptLFADSTrain);
 
+                elseif strcmp(mode, 'posteriorMeanOnly')
+                    rc.runs(iR).writeShellScriptLFADSPosteriorMeanSample(...
+                        'useTmuxSession', false, ...
+                        'teeOutput', true, ...
+                        'prependPathToRunLFADS', p.Results.prependPathToRunLFADS, ...
+                        'virtualenv', p.Results.virtualenv, ...
+                        'posterior_mean_kind', p.Results.posterior_mean_kind);
+                    cmdfile = LFADS.Utils.GetFullPath(rc.runs(iR).fileShellScriptLFADSPosteriorMeanSample);
+
+                else
+                    error('Internal error: mode not handled');
+                end
+
+                outfile = LFADS.Utils.GetFullPath([rc.runs(iR).fileLFADSOutput, outFileSuffix]);
+                donefile = LFADS.Utils.GetFullPath(fullfile(rc.runs(iR).path, doneFileStem));
+                
                 name = sprintf('lfads_%s_run%03d_%s', rc.runs(iR).paramsString, iR, rc.runs(iR).name); %#ok<*PROPLC>
                 name = strrep(name, '.', '_');
                 fprintf(fid, '{"name": "%s", "command": "bash %s", "memory_req": %d, "outfile": "%s", "donefile": "%s"}, \n', ...
-                    name, LFADS.Utils.GetFullPath(rc.runs(iR).fileShellScriptLFADSTrain), ...
+                    name, cmdfile, ...
                     p.Results.gpuMemoryRequired, outfile, donefile);
             end
             prog.finish();
@@ -365,7 +404,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             else
                 maxStr = '';
             end
-            
+
             if p.Results.oneTaskPerGPU
                 oneTaskStr = ', one_task_per_gpu=True';
             else
@@ -373,6 +412,17 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             fprintf(fid, 'tasks = lq.run_lfads_queue(queue_name, tensorboard_script, task_specs, gpu_list=gpu_list%s%s%s)\n\n', maxStr, donefileStr, oneTaskStr);
             fclose(fid);
+        end
+        
+        function out_file = writeShellScriptRunQueuePosteriorMeanOnly(rc, varargin)
+            p = inputParser();
+            p.addParameter('posterior_mean_kind', '', @ischar); % for posterior mean sampling
+            p.KeepUnmatched = true;
+            p.parse(varargin{:});
+            
+            p.KeepUnmatched = true;
+            out_file = rc.writeShellScriptRunQueue('posterior_mean_kind', p.Results.posterior_mean_kind, p.Unmatched, ...
+                'mode', 'posteriorMeanOnly');
         end
     end
 
@@ -416,6 +466,10 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             f = fullfile(rc.path, 'run_lfadsqueue.py');
         end
 
+        function f = get.fileShellScriptRunQueuePosteriorMeanOnly(rc)
+            f = fullfile(rc.path, 'run_lfadsqueue_posteriorMeanOnly.py');
+        end
+        
         function n = get.nParams(rc)
             n = numel(rc.params);
         end
@@ -431,7 +485,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         function n = get.nDatasets(rc)
             n = rc.datasetCollection.nDatasets;
         end
-        
+
         function names = get.datasetNames(r)
             names = {r.datasetCollection.datasets.name}';
         end
@@ -520,16 +574,16 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
 
             elseif ischar(paramSearch) || iscellstr(paramSearch)
                 if ischar(paramSearch)
-                    paramSearch = {paramSearch}; 
+                    paramSearch = {paramSearch};
                 end
-                
+
                 for i = 1:numel(paramSearch)
                     if ~strncmp(paramSearch{i}, 'param_', 6)
                         paramSearch{i} = ['param_' paramSearch{i}];
                     end
                 end
                 [tf, idx] = ismember(paramSearch, {rc.params.paramHashString});
-                
+
             else
                 % assume is selection
                 idx = paramSearch;
@@ -687,13 +741,13 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             end
             prog.finish();
         end
-        
+
         function tf = checkPosteriorMeansExist(rc, verbose)
             if nargin < 2
                 verbose = false;
             end
             tf = false(rc.nRunSpecs, rc.nParams);
-            
+
             for iR = 1:rc.nRunsTotal
                 tf(iR) = rc.runs(iR).checkPosteriorMeansExist(verbose);
             end

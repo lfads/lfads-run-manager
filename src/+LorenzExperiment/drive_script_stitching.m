@@ -47,7 +47,7 @@ par.c_learning_rate_stop = 1e-3; % we can stop really early for the demo
 % leverages all 3 of the datasets in a common shared model.
 
 runRoot = '~/lorenz_example/runs';
-rc = LorenzExperiment.RunCollection(runRoot, 'exampleStitching2', dc);
+rc = LorenzExperiment.RunCollection(runRoot, 'exampleStitching', dc);
 
 % replace this with the date this script was authored as YYYYMMDD
 % This ensures that updates to lfads-run-manager won't invalidate older
