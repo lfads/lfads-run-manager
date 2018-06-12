@@ -249,7 +249,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             binWidthMs = timeVecMs(2) - timeVecMs(1);
 
             for iTrial = nTrials:-1:1
-                seq(iTrial).y = squeeze(counts(iTrial, :, :)); % nChannels x nTime
+                seq(iTrial).y = LFADS.Utils.squeezeDims(counts(iTrial, :, :), 1); % nChannels x nTime
                 seq(iTrial).y_time = timeVecMs;
                 seq(iTrial).binWidthMs = binWidthMs;
                 if ~isempty(conditionId)
@@ -743,6 +743,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if strcmp(mode, 'export')
                 r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
             end
+            
+            r.sequenceData = LFADS.Utils.makecol(r.sequenceData);
         end
 
         function seq = checkSequenceStruct(r, seq) %#ok<INUSL>

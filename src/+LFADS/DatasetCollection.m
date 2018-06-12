@@ -166,5 +166,11 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
              end
           end
        end
+       
+       function cp = copyElement(obj)
+           % Deep copy datasets
+           cp = copyElement@matlab.mixin.Copyable(obj);
+           cp.datasets = copy(cp.datasets);
+       end
     end
 end

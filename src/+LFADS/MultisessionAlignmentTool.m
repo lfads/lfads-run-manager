@@ -200,7 +200,7 @@ classdef MultisessionAlignmentTool < handle
                 % project all data into pca space
                 % dim_reduced_data will be nFactors x nTime*nConditions
                 dim_reduced_data = pca_proj_mat' * all_data_centered;
-                tool.pcAvg_allDatasets = reshape(dim_reduced_data, [tool.nFactors, tool.nTime, tool.nConditions]);
+                tool.pcAvg_allDatasets = reshape(dim_reduced_data, [nFactorsRequested, tool.nTime, tool.nConditions]);
 
                 % get a mapping from each day to the lowD space
                 for iDS = 1:tool.nDatasets

@@ -86,7 +86,10 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         % Full path to data which will be loaded by load data, a concatenation of the DatasetCollection path and relPath
 
         datestr
-        % a string version of datenum
+        % a string version of datenum YYYY-MM-DD
+        
+        datestrNoHyphen
+        % a string version of datenum YYYYMMDD
     end
 
     methods
@@ -125,6 +128,14 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
                 ds = '';
             else
                 ds = datestr(ds.datenum, 'yyyy-mm-dd'); %#ok<CPROP>
+            end
+        end
+        
+        function ds = get.datestrNoHyphen(ds)
+            if isempty(ds.datenum) || isnan(ds.datenum)
+                ds = '';
+            else
+                ds = datestr(ds.datenum, 'yyyymmdd'); %#ok<CPROP>
             end
         end
         
