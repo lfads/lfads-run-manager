@@ -1174,8 +1174,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
+            p.addParameter('posterior_mean_kind', r.params.posterior_mean_kind, @ischar);
             p.parse(varargin{:});
 
+            posteriorMeanKind = p.Results.posterior_mean_kind;
+            
             if p.Results.loadHyperparametersFromFile
                 % this is the old way of doing it that isn't necessary now
                 % that the LFADS run_lfads.py code has stabilized
@@ -1227,7 +1230,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     optstr = strcat(optstr, sprintf(' --%s=%s',f{nf}, fval));
                 end
 
-                optstr = strcat(optstr, sprintf(' --kind=posterior_sample_and_average'));
+                optstr = strcat(optstr, sprintf(' --kind=%s', posteriorMeanKind));
 
                 % put the command together
                 cmd = sprintf('%s %s %s', execstr, p.Results.path_run_lfads_py, optstr);
@@ -1236,9 +1239,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 paramsString = r.params.generateCommandLineOptionsString(r, 'omitFields', {'c_temporal_spike_jitter_width', 'c_batch_size'});
                 
                 cmd = sprintf(['python %s --data_dir=%s --data_filename_stem=lfads ' ...
-                '--lfads_save_dir=%s --kind=posterior_sample_and_average --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
+                '--lfads_save_dir=%s --kind=%s --batch_size=%d --checkpoint_pb_load_name=checkpoint_lve %s'], ...
                 p.Results.path_run_lfads_py, ...
-                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), p.Results.num_samples_posterior, paramsString);
+                LFADS.Utils.GetFullPath(r.pathLFADSInput), LFADS.Utils.GetFullPath(r.pathLFADSOutput), ...
+                posteriorMeanKind, p.Results.num_samples_posterior, paramsString);
             end
 
             % set cuda visible devices
