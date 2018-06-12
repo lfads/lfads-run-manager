@@ -609,6 +609,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if exist(donefile, 'file')
                 delete(donefile);
             end
+
+            donefile = fullfile(r.path, 'lfads.done.posteriorMeanOnly');
+            if exist(donefile, 'file')
+                delete(donefile);
+            end
         end
 
         function makeSequenceFiles(r)
@@ -1355,6 +1360,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 'useTmuxSession', false, ...
                 'teeOutput', false, p.Unmatched); % teeify later
 
+            pmString = sprintf('(%s)', pmString);
             if p.Results.teeOutput
                 pmString = LFADS.Utils.teeify_string(pmString, p.Results.teeOutputFile, false);
             end
