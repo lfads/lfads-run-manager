@@ -743,7 +743,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if strcmp(mode, 'export')
                 r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
             end
-            
+
             r.sequenceData = LFADS.Utils.makecol(r.sequenceData);
         end
 
@@ -1040,11 +1040,13 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('appendPosteriorMeanSample', false, @islogical);
             p.addParameter('appendWriteModelParams', false, @islogical);
             p.addParameter('teeOutput', false, @islogical);
+            p.addParameter('teeOutputFile', r.fileLFADSOutput, @ischar);
+
             p.addParameter('prependPathToRunLFADS', false, @islogical); % prepend an export path to run_lfads.py
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
-            
+
             p.addParameter('posterior_mean_kind', '', @ischar); % for posterior mean sampling
-            
+
             p.parse(varargin{:});
 
             f = r.fileShellScriptLFADSTrain;
@@ -1087,7 +1089,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
 
             if p.Results.teeOutput
-                trainString = LFADS.Utils.teeify_string(trainString, r.fileLFADSOutput, false);
+                trainString = LFADS.Utils.teeify_string(trainString, p.Results.teeOutputFile, false);
             end
 
             % we do all of the tmux at once on the combined commands
@@ -1335,6 +1337,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', true, @islogical);
             p.addParameter('teeOutput', false, @islogical);
+            p.addParameter('teeOutputFile', r.fileLFADSOutput, @ischar);
 
             p.addParameter('path_run_lfads_py', '$(which run_lfads.py)', @ischar);
             p.addOptional('cuda_visible_devices', [], @isscalar);
@@ -1353,7 +1356,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 'teeOutput', false, p.Unmatched); % teeify later
 
             if p.Results.teeOutput
-                pmString = LFADS.Utils.teeify_string(pmString, r.fileLFADSOutput, false);
+                pmString = LFADS.Utils.teeify_string(pmString, p.Results.teeOutputFile, false);
             end
 
             % we do all of the tmux at once on the combined commands
