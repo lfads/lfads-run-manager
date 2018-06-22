@@ -32,7 +32,7 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             ds.infoLoaded = true;
         end
 
-        function loadInfoFromData(data)
+        function loadInfoFromData(data) %#ok<MANU>
             % This method should load any metadata about the dataset from
             % the loaded data. You should provide an implementation for
             % this method yourself, or override loadInfo directly
