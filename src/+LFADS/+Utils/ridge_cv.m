@@ -22,15 +22,12 @@ function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
     assert(size(Y, 1) == T, 'X and Y must have same number or rows (observations)');
     
     % center and scale overall or per-channel variance of X
-    muX = mean(X, 1, 'omitnan');
-    muY = mean(Y, 1, 'omitnan');
     if p.Results.normalizeEach
         divisors = std(X, [], 1, 'omitnan');
     else
         divisors = std(X(:), 'omitnan');
     end
-    X = (X - muX) ./ divisors;
-    Y = Y - muY;
+    X = X ./ divisors;
     
     % remove all nan-time points
     nanmask = any(isnan(Y), 2) | any(isnan(X), 2);
@@ -44,12 +41,10 @@ function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
     
     if nL > 1
         nFolds = p.Results.KFold;
-        cv = cvpartition(T, 'KFold', nFolds);
-
+        
         loss = nan(nL, nFolds);
         for iL = 1:nL
             for iF = 1:nFolds
-%                 maskTrain = cv.training(iF);
                 maskTrain = mod((1:T)', nFolds) == iF-1;
                 loss(iL, iF) = loss_single(Y, X, maskTrain, lambdas(iL));
             end
@@ -115,31 +110,36 @@ function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
     end
     
     %% Fit whole dataset with single lambda
-    W = fit_single(Y, X, lambda);
+    [W, b] = fit_single(Y, X, lambda);
     W = W ./ divisors';
     
     % correct overall shrinkage of coefficients
 %     correction = mean(Y ./ (X*W));
 %     W = W * correction;
-   
-    b = muY - muX*W;
 end
 
-function W = fit_single(Y, X, lambda)
+function [W, b] = fit_single(Y, X, lambda)
+    X = [ones(size(X, 1), 1) X]; % add leading column of ones
+    
     I = eye(size(X, 2));
+    
+    % don't penalize the intercept term
+    I(1, 1) = 0;
     
     % solve the problem Y = X*B
     % unregularized solution is B^ = inv(X'*X) * X' * Y
     % tikhonov regularized solution is B^ = inv(X'*X + lambda*I) * X' * Y
     % which maps to:
     W = (X'*X + lambda * I) \ (X' * Y); 
+    b = W(1, :);
+    W = W(2:end, :);
 end
 
 function mse = loss_single(Y, X, maskTrain, lambda)
-    W = fit_single(Y(maskTrain, :), X(maskTrain, :), lambda);
+    [W, b] = fit_single(Y(maskTrain, :), X(maskTrain, :), lambda);
     
     maskTest = ~maskTrain;
-    Yhat = X(maskTest, :) * W;
+    Yhat = X(maskTest, :) * W + b;
     Ytest = Y(maskTest, :);
     mse = mean((Yhat(:) - Ytest(:)).^2);
 end

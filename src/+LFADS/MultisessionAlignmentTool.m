@@ -19,6 +19,7 @@ classdef MultisessionAlignmentTool < handle
         alignmentBiases % nDatasets x 1 cell of nChannelsByDataset(iDS) x 1
         
         % results of prepareAlignmentMatricesUsingTrialAveragedPCR
+        usingRidgeRegression logical = false;
         pcAvg_allDatasets % nFactors x nTimepoints x nConditions tensor of PCs using all datasets
         pcAvg_reconstructionByDataset % nFactors x nTimepoints x nConditions x nDatasets tensor of best reconstruction of pcAvg_allDatasets through the alignment matrices
     end
@@ -180,6 +181,8 @@ classdef MultisessionAlignmentTool < handle
             % pca_proj_mat is nNeuronsTotal x nFactorsRequested
             % pc_data is nTime*nConditions x nFactorsRequested
             
+            tool.usingRidgeRegression = false; % altered below if we end up actually aligning
+            
             [alignmentMatrices, alignmentBiases] = deal(cell(tool.nDatasets, 1));
             tool.pcAvg_reconstructionByDataset = zeros(tool.nFactors, tool.nTime, tool.nConditions, tool.nDatasets);
             if tool.nDatasets == 1
@@ -194,6 +197,8 @@ classdef MultisessionAlignmentTool < handle
                 tool.pcAvg_reconstructionByDataset(1:nFactorsRequested, :, :, 1) = reshape(pc_data', [nFactorsRequested, tool.nTime, tool.nConditions]);
                 
             else
+                tool.usingRidgeRegression = p.Results.useRidgeRegression;
+            
                 % multi-dataset PC regression to reconstruct the global PCs
                 % from each dataset's neurons alone
                 
