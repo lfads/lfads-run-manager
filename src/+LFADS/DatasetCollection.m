@@ -89,13 +89,17 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
             prog.finish();
         end
 
-        function loadInfo(dc)
+        function loadInfo(dc, reload)
             % Call `loadInfo` on each dataset in this collection
+
+            if nargin < 2
+                reload = false;
+            end
 
             prog = LFADS.Utils.ProgressBar(dc.nDatasets, 'Loading info');
             for i = 1:dc.nDatasets
                 prog.update(i, 'Loading info for dataset %s', dc.datasets(i).name);
-                dc.datasets(i).loadInfo();
+                dc.datasets(i).loadInfo(reload);
             end
             prog.finish();
         end
