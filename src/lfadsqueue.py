@@ -20,6 +20,7 @@ import shlex
 from multiprocessing import Process, Queue, cpu_count, Lock
 from Queue import Empty
 import sys, traceback
+import errno
 
 # needed for synchronization to ensure tmux isn't called by multiple processes simultaneously
 mutex = Lock()
