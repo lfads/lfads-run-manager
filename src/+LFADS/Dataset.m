@@ -90,6 +90,9 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         
         datestrNoHyphen
         % a string version of datenum YYYYMMDD
+        
+        indexInCollection
+        % my index in the collection
     end
 
     methods
@@ -137,6 +140,10 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             else
                 ds = datestr(ds.datenum, 'yyyymmdd'); %#ok<CPROP>
             end
+        end
+        
+        function index = get.indexInCollection(ds)
+            index = find(ds == ds.collection.datasets);
         end
         
         function name = getSingleRunName(ds)

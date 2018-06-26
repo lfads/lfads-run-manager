@@ -175,6 +175,11 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
            % Deep copy datasets
            cp = copyElement@matlab.mixin.Copyable(obj);
            cp.datasets = copy(cp.datasets);
+           
+           % and assign the copy the owner of the copied datasets dataset
+           for iDS = 1:cp.nDatasets
+               cp.datasets(iDS).collection = cp;
+           end
        end
     end
 end
