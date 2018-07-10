@@ -1618,7 +1618,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         function mtp = loadModelTrainedParams(r, varargin)
             fname = r.fileModelParams;
-            assert(exist(fname, 'file') > 1, 'model_params file not found. Ensure that runCommandLFADSWriteModelParams has been run');
+            if exist(fname, 'file') <= 1
+                %warning('model_params file not found. Ensure that runCommandLFADSWriteModelParams has been run');
+                mtp = [];
+                return;
+            end
 
             r.modelTrainedParams = LFADS.ModelTrainedParams(fname, r.datasetNames, varargin{:});
             mtp = r.modelTrainedParams;
