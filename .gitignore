@@ -2,5 +2,5 @@
 *~
 *.pyc
 site
-.ipynb_checkpoints
+*.ipynb_checkpoints
 
