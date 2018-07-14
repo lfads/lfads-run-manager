@@ -34,9 +34,9 @@ You'll then need to clone the [Tensorflow models repo containing LFADS](https://
 git clone https://github.com/lfads/models.git
 ```
 
-Then add this LFADS folder both to your `PYTHONPATH` and system `PATH`. Add the following to your `.bashrc`:
+Then add this LFADS folder both to your `PYTHONPATH` and system `PATH`. The LFADS Run Manager src folder should also be added to your `PYTHONPATH`. Add the following to your `.bashrc`:
 ```bash
-export PYTHONPATH=$PYTHONPATH:/path/to/models/research/lfads/
+export PYTHONPATH=$PYTHONPATH:/path/to/models/research/lfads/:/path/to/lfads-run-manager/src
 export PATH=$PATH:/path/to/models/research/lfads/
 ```
 

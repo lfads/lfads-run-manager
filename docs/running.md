@@ -57,7 +57,7 @@ Optional parameters include:
 This will generate a Python script `run_lfads.py`, which for our example can be launched via:
 
 ```bash
-python ~/lorenz_example/runs/exampleRun/run_lfadsqueue.py
+python ~/lorenz_example/runs/exampleSingleRun/run_lfadsqueue.py
 ```
 
 !!! note "Run Manager `src` folder should be added to your `PYTHONPATH`"
