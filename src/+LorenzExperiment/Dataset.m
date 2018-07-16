@@ -12,10 +12,13 @@ classdef Dataset < LFADS.Dataset
             data = load(ds.path);
         end
 
-        function loadInfo(ds)
+        function loadInfo(ds, reload)
             % Load this Dataset's metadata if not already loaded
 
-            if ds.infoLoaded, return; end
+            if nargin < 2 
+                reload = false;
+            end
+            if ds.infoLoaded && ~reload, return; end
 
             % modify this to extract the metadata loaded from the data file
             data = ds.loadData();
