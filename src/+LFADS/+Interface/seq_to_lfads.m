@@ -2,7 +2,7 @@ function seq_to_lfads(seqs, outpath, outfiles, varargin)
 % function seq_to_lfads(seqs, varargin)
 %   pass in a cell array of 'seq' structs - one element per trial
 %   if there are different 'runID' elements, then the struct is split
-%   
+%
 %
 %   seq must contain:
 %     y (ms binned spikes, N neurons x T ms)
@@ -26,6 +26,12 @@ p.addParameter('inputBinSizeMs', 1, @isscalar);
 p.addParameter('conversion_factor', 1, @isscalar);
 p.addParameter('alignment_matrix_cxf', {}, @iscell);
 p.addParameter('alignment_bias_c', {}, @iscell);
+
+ % extra args will be written to out file provided each field is
+ % nDatasets x 1 cell of values per dataset
+p.addParameter('extraArgsByDataset', struct([]), @isstruct);
+
+p.KeepUnmatched = false;
 p.parse(varargin{:});
 trainInds = p.Results.trainInds;
 testInds = p.Results.testInds;
@@ -103,19 +109,19 @@ end
 prog = LFADS.Utils.ProgressBar(numel(seqs), 'Writing LFADS Input files');
 for ndset = 1:numel(seqs)
     prog.update(ndset);
-    
+
     seq = seqs{ndset};
     trainInds = allTrainInds{ndset};
     testInds = allTestInds{ndset};
     whichChannelsThisSet = whichChannels{ndset};
 
     outfile = fullfile(outpath, outfiles{ndset});
-    
+
 %     if numel(seqs) == 1
 %         outfile = fullfile(spikesDir,'lfads_spikes.h5');
 %     else
 %     end
-    
+
 %     delete old spikes
     if exist(outfile,'file')
 %         warning(sprintf('Deleting file %s...', outfile));
@@ -154,7 +160,7 @@ for ndset = 1:numel(seqs)
         train_extinput = zeros(nTrainTrials, nTimeBins, nExtInputs);
         test_extinput = zeros(nTestTrials, nTimeBins, nExtInputs);
     end
-    
+
     % compile the train data
     for it = 1:nTrainTrials
         nn = trainInds(it);
@@ -210,13 +216,13 @@ for ndset = 1:numel(seqs)
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
             tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             ytest_true(it,:,:) = tmp2;
-        end  
+        end
         if isfield(seq,'externalInputs')
             ykeep = seq(nn).externalInputs(:, 1:inputTimeBinsToKeep);
             tmp = reshape(ykeep',[],nTimeBins,size(ykeep,1));
             tmp2=squeeze(sum(tmp, 1))/binSizeMS;
             test_extinput(it,:,:) = tmp2;
-        end  
+        end
     end
 
     varout = {};
@@ -229,7 +235,7 @@ for ndset = 1:numel(seqs)
         varout{end+1} = ytest_true;
         assert(~any(isnan(ytrain_true(:))) && ~any(isnan(ytest_true(:))), 'NaNs found in ground truth data');
     end
-    
+
     if isfield(seq, 'externalInputs')
         varout{end+1} = 'train_ext_input'; %#ok<*AGROW>
         varout{end+1} = train_extinput;
@@ -254,12 +260,19 @@ for ndset = 1:numel(seqs)
         varout{end+1} = LFADS.Utils.makecol(alignment_bias_c{ndset});
     end
 
+    % send out extra args
+    extraFlds = fieldnames(p.Results.extraArgsByDataset);
+    for iF = 1:numel(extraFlds)
+        varargout{end+1} = extraFlds{iF};
+        varargout{end+1} = p.Results.extraArgsByDataset.(extraFlds{iF}){ndset};
+    end
+
     % also store down the train and test inds, for posterity
     varout{end+1} = 'train_inds';
     varout{end+1} = trainInds;
     varout{end+1} = 'valid_inds';
     varout{end+1} = testInds;
-    
+
 
     %% export the spikes
     LFADS.Interface.export_spikes(outfile, ytrain, ytest, varout{:})
@@ -269,4 +282,3 @@ prog.finish();
 
 % tmp = comparisonDefaults();
 % lfads_python_path = tmp.lfads_run_path_no_controller;
-

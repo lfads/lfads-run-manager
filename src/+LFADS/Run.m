@@ -932,6 +932,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     seqToLFADSArgs{end+1} = alignmentBiases(maskGenerate);
                 end
 
+                % this must be a struct where each field value is a
+                % num_datasets_gneerated cell of values for each dataset
+                % that will be dumped into the LFADS input file
+                extraArgsByDataset = r.generateExtraLFADSInputsByDataset(seqData, maskGenerate);
+                if ~isempty(extraArgsByDataset)
+                    seqToLFADSArgs{end+1} = 'extraArgsByDataset';
+                    seqToLFADSArgs{end+1} = extraArgsByDataset;
+                end
+
                 % write the actual lfads input file
                 LFADS.Utils.mkdirRecursive(r.pathCommonData);
 
@@ -1012,6 +1021,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     LFADS.Utils.makeSymLink(origName, linkName, false);
                 end
             end
+        end
+
+        function v = generateExtraLFADSInputsByDataset(r, seqData, maskDatasetsGenerate)
+            % override this method to include extra fields in the LFADS input h5 files (e.g. for modified versions of LFADS)
+            % seqData will have all dataset
+            v = struct([]);
         end
 
         function f = writeShellScriptLFADSTrain(r, varargin)
