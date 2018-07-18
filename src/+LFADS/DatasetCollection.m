@@ -73,11 +73,11 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
         function n = get.nDatasets(dc)
             n = numel(dc.datasets);
         end
-        
+
         function names = get.datasetNames(dc)
             names = {dc.datasets.name}';
         end
-        
+
         function reloadInfo(dc)
             % Call `reloadInfo` on each dataset in this collection
 
@@ -114,12 +114,12 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
 
             dc.datasets = dc.datasets(mask);
         end
-        
+
         function filterHavingMinimumTrials(dc, minTrials)
             nTrials = cat(1, dc.datasets.nTrials);
             dc.filterDatasets(nTrials >= minTrials);
         end
-        
+
         function filterHavingMinimumTrialsForBatchSize(dc, runParams)
             minTrials = max(ceil([runParams.c_batch_size] .* ([runParams.trainToTestRatio]+1)));
             dc.filterHavingMinimumTrials(minTrials);
@@ -154,6 +154,11 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
 
             t = table(subject, date, saveTags, nTrials, nChannels, 'RowNames', rowNames);
         end
+
+        function [maxBatchSize, minTrials] = computeMaxBatchSizeForTrainToRatio(dc, trainToTestRatio)
+            minTrials = min(cat(1, dc.datasets.nTrials));
+            maxBatchSize = floor(minTrials / (trainToTestRatio+1));
+        end
     end
 
     methods (Access = protected)
@@ -170,12 +175,12 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
              end
           end
        end
-       
+
        function cp = copyElement(obj)
            % Deep copy datasets
            cp = copyElement@matlab.mixin.Copyable(obj);
            cp.datasets = copy(cp.datasets);
-           
+
            % and assign the copy the owner of the copied datasets dataset
            for iDS = 1:cp.nDatasets
                cp.datasets(iDS).collection = cp;
