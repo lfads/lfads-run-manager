@@ -64,6 +64,9 @@ function export_spikes(outfile, ytrain, ytest, varargin)
             end
             
             h5create(outfile, sprintf('/%s', varargin{nv}), sz);
+            if islogical(data)
+                data = uint8(data); % boolean not supported by Matlab
+            end
             h5write(outfile, sprintf('/%s', varargin{nv}), data);
             nv = nv+2;
         end

@@ -263,8 +263,8 @@ for ndset = 1:numel(seqs)
     % send out extra args
     extraFlds = fieldnames(p.Results.extraArgsByDataset);
     for iF = 1:numel(extraFlds)
-        varargout{end+1} = extraFlds{iF};
-        varargout{end+1} = p.Results.extraArgsByDataset.(extraFlds{iF}){ndset};
+        varout{end+1} = extraFlds{iF};
+        varout{end+1} = p.Results.extraArgsByDataset.(extraFlds{iF}){ndset};
     end
 
     % also store down the train and test inds, for posterity

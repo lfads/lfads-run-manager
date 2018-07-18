@@ -749,6 +749,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 r.sequenceData = r.modifySequenceDataPostLoading(seqCell);
             end
 
+            r.sequenceData = cellfun(@LFADS.Utils.makecol, r.sequenceData, 'UniformOutput', false);
             r.sequenceData = LFADS.Utils.makecol(r.sequenceData);
         end
 
@@ -880,7 +881,6 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if any(maskGenerate)
                 %regenerate = false;
                 seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
-
                 r.assertParamsOkayForSequenceData(seqData);
 
                 % no need to regenerate if alignment and export use the
@@ -935,7 +935,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 % this must be a struct where each field value is a
                 % num_datasets_gneerated cell of values for each dataset
                 % that will be dumped into the LFADS input file
-                extraArgsByDataset = r.generateExtraLFADSInputsByDataset(seqData, maskGenerate);
+                extraArgsByDataset = r.generateExtraLFADSInputsByDataset(seqData, regenerate, maskGenerate);
                 if ~isempty(extraArgsByDataset)
                     seqToLFADSArgs{end+1} = 'extraArgsByDataset';
                     seqToLFADSArgs{end+1} = extraArgsByDataset;
@@ -984,6 +984,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         save(fname, 'trainInds', 'validInds', 'paramInputDataHash', 'seq_timeVector', 'seq_binSizeMs', 'conditionId', 'counts', extra{:});
                     end
                 end
+            else
+                seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
+                r.assertParamsOkayForSequenceData(seqData);
             end
 
             % check which files need to be symlinked from pathCommonData
@@ -1021,12 +1024,24 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     LFADS.Utils.makeSymLink(origName, linkName, false);
                 end
             end
+            
+            % do any custom additional processing needed
+            r.generateExtraLFADSInputFiles(seqData, regenerate, maskGenerate);
         end
 
-        function v = generateExtraLFADSInputsByDataset(r, seqData, maskDatasetsGenerate)
-            % override this method to include extra fields in the LFADS input h5 files (e.g. for modified versions of LFADS)
-            % seqData will have all dataset
+        function v = generateExtraLFADSInputsByDataset(r, seqData, regenerate, maskDatasetsGenerate) %#ok<INUSD>
+            % override this method to generate extra fields in the LFADS input h5 files (e.g. for modified versions of LFADS)
+            % seqData will have all dataset. 
+            % You should generate the values as nDatasets x 1 cells of values, where the i'th element will be saved into the
+            % h5 file for the ith dataset
+            % e.g. v.extra_field_in_each_dataset_h5 = cell(nDatasets, 1);
             v = struct([]);
+        end
+        
+        function generateExtraLFADSInputFiles(r, seqData, regenerate, maskGenerate) %#ok<INUSD>
+            % override this moethods to generate any additional LFADS input files
+            % this will be called at the end of makeLFADSInput() c
+            
         end
 
         function f = writeShellScriptLFADSTrain(r, varargin)

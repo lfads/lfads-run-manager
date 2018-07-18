@@ -40,7 +40,7 @@ function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
     nL = numel(lambdas);
     
     if nL > 1
-        nFolds = p.Results.KFold;
+        nFolds = min(p.Results.KFold, T);
         
         loss = nan(nL, nFolds);
         for iL = 1:nL
