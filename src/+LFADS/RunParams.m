@@ -67,6 +67,17 @@ classdef RunParams < matlab.mixin.CustomDisplay
              propList = {'posterior_mean_kind', 'num_samples_posterior'};
              groups(12) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
+             propsPrinted = arrayfun(@(grp) grp.PropertyList', groups, 'UniformOutput', false);
+             propsPrinted = cat(1, propsPrinted{:});
+
+             customProps = obj.listNonTransientProperties('ignoreProperties', propsPrinted, ...
+                'onlyRootClassProperties', false, ...
+                'ignoreHidden', true);
+
+             groupTitle = sprintf('%s Specific Properties', class(obj));
+             customGroup = matlab.mixin.util.PropertyGroup(customProps,groupTitle);
+             groups = [customGroup, groups];
+
           else
              % Nonscalar case: call superclass method
              groups = getPropertyGroups@matlab.mixin.CustomDisplay(obj);
@@ -164,7 +175,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
         useSingleDatasetAlignmentMatrix logical = false;  % Whether to use an alignment matrix using a single dataset, for dimensionality reduction upstream of the encoder
         alignmentApproach char = 'regressGlobalPCs'; % one of 'regressGlobalPCs' or 'ridgeRegressGlobalPCs'. see LFADS.Run/prepareAlignmentMatrices
         alignmentExtraArgs cell = {}; % extra args to pass to MutlisessionAlignmentTool
-          
+
         % Posterior mean sampling
         % These properties DO NOT affect the param_HASH or the data_HASH
         posterior_mean_kind char = 'posterior_sample_and_average'; % or 'posterior_push_mean'
@@ -338,7 +349,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 % hidden on
                 if (propMeta(i).Hidden && parser.Results.ignoreHiddenUnlessDifferentFromDefault) || parser.Results.onlyDifferentFromDefault
                     if parser.Results.defaultsFromClassDefinition
-                        def = propMeta(i).DefaultValue;
+                        if propMeta(i).HasDefault
+                            def = propMeta(i).DefaultValue;
+                        else
+                            def = [];
+                        end
                     else
                         def = defaultInstance.(prop);
                     end
@@ -556,7 +571,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
                         parts{i} = p.serializePropertyValue('', value{i});
                     end
                     valstr = sprintf('{%s}', strjoin(parts, ', '));
-                        
+
                 otherwise
                     error(['don''t know this type: ' class(value)]);
             end
