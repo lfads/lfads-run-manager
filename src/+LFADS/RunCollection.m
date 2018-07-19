@@ -302,7 +302,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     mode = 'all';
                     out_file = rc.fileShellScriptRunQueue;
                     doneFileStem = 'lfads.done';
-                    outFileSuffix = 'lfads.out';
+                    outFileSuffix = '';
 
                 case 'posteriorMeanOnly'
                     mode = 'posteriorMeanOnly';

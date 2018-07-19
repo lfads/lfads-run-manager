@@ -551,19 +551,42 @@ classdef RunParams < matlab.mixin.CustomDisplay
             %    which property
             %  value : Matlab built in type
 
+            threshDots = 6;
             switch class(value)
                 case {'uint8', 'int8', 'uint16', 'int16', 'uint32', 'int32', 'uint64', 'int64'}
-                    valstr  = sprintf('%i', value);
-                case {'logical'}
-                    if value
-                        valstr = 'true';
+                    if isscalar(value)
+                        valstr  = sprintf('%i', value);
+                    elseif numel(value) < threshDots
+                        valstr = mat2str(value);
                     else
-                        valstr = 'false';
+                        valstr = '[...]';
                     end
+                    
+                case {'logical'}
+                    if isscalar(value)
+                        if value
+                            valstr = 'true';
+                        else
+                            valstr = 'false';
+                        end
+                    elseif numel(value) < threshDots
+                        valstr = mat2str(value);
+                    else
+                        valstr = '[...]';
+                    end
+                    
                 case {'double','single'}
-                    valstr = sprintf('%g', value);
+                    if isscalar(value)
+                        valstr = sprintf('%g', value);
+                    elseif numel(value) < threshDots
+                        valstr = mat2str(value);
+                    else
+                        valstr = '[...]';
+                    end
+                    
                 case {'char'}
                     valstr = value;
+                    
                 case {'cell'}
                     assert(isempty(value) || isvector(value), 'Cell value for property %s must be vector');
                     parts = cell(numel(value), 1);

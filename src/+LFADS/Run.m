@@ -985,8 +985,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     end
                 end
             else
-                seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
-                r.assertParamsOkayForSequenceData(seqData);
+%                 seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
+%                 r.assertParamsOkayForSequenceData(seqData);
+                seqData = [];
             end
 
             % check which files need to be symlinked from pathCommonData
@@ -1024,24 +1025,24 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     LFADS.Utils.makeSymLink(origName, linkName, false);
                 end
             end
-            
+
             % do any custom additional processing needed
             r.generateExtraLFADSInputFiles(seqData, regenerate, maskGenerate);
         end
 
         function v = generateExtraLFADSInputsByDataset(r, seqData, regenerate, maskDatasetsGenerate) %#ok<INUSD>
             % override this method to generate extra fields in the LFADS input h5 files (e.g. for modified versions of LFADS)
-            % seqData will have all dataset. 
+            % seqData will have all dataset.
             % You should generate the values as nDatasets x 1 cells of values, where the i'th element will be saved into the
             % h5 file for the ith dataset
             % e.g. v.extra_field_in_each_dataset_h5 = cell(nDatasets, 1);
             v = struct([]);
         end
-        
+
         function generateExtraLFADSInputFiles(r, seqData, regenerate, maskGenerate) %#ok<INUSD>
             % override this moethods to generate any additional LFADS input files
-            % this will be called at the end of makeLFADSInput() c
-            
+            % this will be called at the end of makeLFADSInput()ï¿½c
+
         end
 
         function f = writeShellScriptLFADSTrain(r, varargin)
