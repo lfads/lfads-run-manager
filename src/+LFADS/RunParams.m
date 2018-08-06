@@ -66,6 +66,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
              groupTitle = 'Posterior sampling';
              propList = {'posterior_mean_kind', 'num_samples_posterior'};
              groups(12) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+             
+             groupTitle = 'TensorFlow Debugging'
+             propList = {'c_tf_debug_cli', 'c_tf_debug_tensorboard', 'c_tf_debug_tensorboard_hostport', ...
+                'c_tf_debug_dump_root', 'c_debug_verbose', 'c_debug_reduce_timesteps_to', ...
+                'c_debug_print_each_step'};
+            groups(13) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
              propsPrinted = arrayfun(@(grp) grp.PropertyList', groups, 'UniformOutput', false);
              propsPrinted = cat(1, propsPrinted{:});
@@ -180,6 +186,15 @@ classdef RunParams < matlab.mixin.CustomDisplay
         % These properties DO NOT affect the param_HASH or the data_HASH
         posterior_mean_kind char = 'posterior_sample_and_average'; % or 'posterior_push_mean'
         num_samples_posterior = 512; % number of samples when using posterior_sample_and_average
+        
+        % Debugging (not included in hash)
+        c_tf_debug_cli logical = false;
+        c_tf_debug_tensorboard logical = false;
+        c_tf_debug_tensorboard_hostport char = 'localhost:6064'
+        c_tf_debug_dump_root = ''
+        c_debug_verbose = false
+        c_debug_reduce_timesteps_to = []
+        c_debug_print_each_step = false
     end
 
     % Retired properties that should be kept around for hash value purposes
@@ -388,7 +403,10 @@ classdef RunParams < matlab.mixin.CustomDisplay
             % this provides a list of all properties in the class that
             % should not affect the resulting param_HASH, regardless of
             % their values.
-            list = {'version', 'num_samples_posterior', 'posterior_mean_kind'};
+            list = {'version', 'num_samples_posterior', 'posterior_mean_kind', ...
+            'c_tf_debug_cli', 'c_tf_debug_tensorboard', 'c_tf_debug_tensorboard_hostport', ...
+            'c_tf_debug_dump_root', 'c_debug_verbose', 'c_debug_reduce_timesteps_to', ...
+            'c_debug_print_each_step'};
         end
 
         function hash = generateHash(p)
@@ -642,6 +660,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 clear fieldstr
                 thisField = f{nf};
                 thisVal = p.(thisField);
+                
+                % skip empty values
+                if isempty(thisVal)
+                    continue;
+                end
 
                 % modify specific param values here based on other
                 % properties
@@ -650,11 +673,6 @@ classdef RunParams < matlab.mixin.CustomDisplay
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
                 end
-
-%                 if ismember(thisField, {'c_in_factors_dim'}) && ...
-%                         p.setInFactorsMatchDataForSingleDataset && run.nDatasets == 1
-%                     thisVal = zeros(1, 'like', thisVal); % to auto scale
-%                 end
 
                 % argument formatted differently for each class
                 switch class(thisVal)
