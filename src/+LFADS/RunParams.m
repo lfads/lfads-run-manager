@@ -33,7 +33,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
              groups(4) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
              groupTitle = 'Overfitting';
-             propList = {'c_temporal_spike_jitter_width', 'c_keep_prob', 'c_l2_gen_scale', 'c_l2_con_scale', 'c_co_mean_corr_scale'};
+             propList = {'c_temporal_spike_jitter_width', 'c_keep_prob', 'c_l2_gen_scale', 'c_l2_con_scale', 'c_co_mean_corr_scale', 'c_l2_readin_scale', 'c_l2_readout_scale'};
              groups(5) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
              groupTitle = 'Underfitting';
@@ -126,6 +126,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_l2_gen_scale double = 500; % L2 regularization cost for the generator only.
         c_l2_con_scale double = 500; % L2 regularization cost for the controller only.
         c_co_mean_corr_scale double = 0 % Cost of correlation (thru time)in the means of controller output
+        c_l2_readin_scale = 500; % L2 regularization cost for the two stage readin matrices
+        c_l2_readout_scale = 500; % L2 regularization cost for the two stage readout matrices
 
         % Underfitting:
         c_kl_ic_weight double = 1; % Strength of KL weight on initial conditions KL penalty
