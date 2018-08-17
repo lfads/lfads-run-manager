@@ -1464,7 +1464,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             LFADS.Utils.chmod('ug+rx', f);
         end
 
-        function pms = loadPosteriorMeans(r, varargin)
+        function [pms, valid] = loadPosteriorMeans(r, varargin)
             % pmData = loadPosteriorMeans(r, reload)
             % After the posterior mean shell script has been run, this will load the posterior mean samples from disk
             % and convert them into :ref:`LFADS_PosteriorMeans` instances. These will also be cached in r.posteriorMeans
@@ -1479,11 +1479,17 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % Returns
             % --------
             % pmData : string
-            %   nDatasets cell of :ref:`LFADS_PosteriorMeans` data loaded from disk
+            %   nDatasets cell of :ref:`LFADS_PosteriorMeans` data loaded
+            %   from disk
+            % valid : logical array
+            %   nDatasets logical array, true if posterior means files were
+            %   loaded successfully, false if pmData(.) is a placeholder
+            
 
             p = inputParser();
             p.addOptional('reload', false, @(x) isscalar(x) && islogical(x));
             p.addParameter('posterior_mean_kind', r.params.posterior_mean_kind, @ischar);
+            p.addParameter('datasetIdx', [], @isvector);
             p.parse(varargin{:});
 
             reload = p.Results.reload;
@@ -1527,19 +1533,27 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 otherwise
                     error('Unknown posterior_mean_kind "%s"', r.params.posterior_mean_kind);
             end
+            
+            if isempty(p.Results.datasetIdx)
+                datasetMask = true(r.nDatasets, 1);
+            else
+                datasetMask = LFADS.Utils.vectorIndicesToMask(p.Results.datasetIdx, r.nDatasets);
+            end
 
+            valid = false(r.nDatasets, 1);
             prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
             for iDS = 1:r.nDatasets
+                if ~datasetMask(iDS), continue, end
                 prog.update(iDS);
                 if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
                     oldFile = strrep(trainList{iDS}, 'posterior_sample_and_average', 'posterior_sample');
                     if exist(fullfile(r.pathLFADSOutput, oldFile), 'file')
                         trainList{iDS} = oldFile;
                     else
-    %                     warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
-    %                         iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
-                        pms = [];
-                        return;
+                        warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
+                            iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
+                        pms(iDS) = LFADS.PosteriorMeans();
+                        continue;
                     end
                 end
                 if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
@@ -1547,10 +1561,10 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     if exist(fullfile(r.pathLFADSOutput, oldFile), 'file')
                         validList{iDS} = oldFile;
                     else
-    %                     warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
-    %                         iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
-                        pms = [];
-                        return;
+                        warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
+                            iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
+                        pms(iDS) = LFADS.PosteriorMeans();
+                        continue;
                     end
                 end
 
@@ -1576,11 +1590,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 time = time(1:size(pmData.rates, 2));
 
                 pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time, conditionIds, rawCounts, posterior_mean_kind); %#ok<AGROW>
+                valid(iDS) = true;
             end
             prog.finish();
 
             pms = LFADS.Utils.makecol(pms);
-            r.posteriorMeans = pms;
+            
+            if all(datasetMask)
+                r.posteriorMeans = pms;
+            end
         end
 
         function tf = checkPosteriorMeansExist(r, verbose)
