@@ -1552,7 +1552,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     else
                         warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
                             iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
-                        pms(iDS) = LFADS.PosteriorMeans();
+                        pms(iDS) = LFADS.PosteriorMeans(); %#ok<AGROW>
                         continue;
                     end
                 end
@@ -1563,7 +1563,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     else
                         warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
                             iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
-                        pms(iDS) = LFADS.PosteriorMeans();
+                        pms(iDS) = LFADS.PosteriorMeans(); %#ok<AGROW>
                         continue;
                     end
                 end
