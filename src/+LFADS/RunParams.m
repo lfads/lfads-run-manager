@@ -67,7 +67,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
              propList = {'posterior_mean_kind', 'num_samples_posterior'};
              groups(12) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
              
-             groupTitle = 'TensorFlow Debugging'
+             groupTitle = 'TensorFlow Debugging';
              propList = {'c_tf_debug_cli', 'c_tf_debug_tensorboard', 'c_tf_debug_tensorboard_hostport', ...
                 'c_tf_debug_dump_root', 'c_debug_verbose', 'c_debug_reduce_timesteps_to', ...
                 'c_debug_print_each_step'};
