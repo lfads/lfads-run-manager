@@ -132,10 +132,10 @@ classdef RunParams < matlab.mixin.CustomDisplay
         % Underfitting:
         c_kl_ic_weight double = 1; % Strength of KL weight on initial conditions KL penalty
         c_kl_co_weight double = 1; % Strength of KL weight on controller output KL penalty
-        c_kl_start_step uint16 = 0; % Start increasing KL weight after this many steps
-        c_kl_increase_steps uint16 = 900; % Number of steps over which the kl costs increase
-        c_l2_start_step uint16 = 0; % Start increasing L2 weight after this many steps
-        c_l2_increase_steps uint16 = 900; % Number of steps over which the l2 costs increase
+        c_kl_start_step uint32 = 0; % Start increasing KL weight after this many steps
+        c_kl_increase_steps uint32 = 900; % Number of steps over which the kl costs increase
+        c_l2_start_step uint32 = 0; % Start increasing L2 weight after this many steps
+        c_l2_increase_steps uint32 = 900; % Number of steps over which the l2 costs increase
         scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a stitching Run
 
         % External inputs`
@@ -429,7 +429,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
             length = 6;
             ignore = p.getListPropertiesNotAffectingHash();
             data = p.getPropertyValueSubset('ignoreProperties', ignore, 'onlyDifferentFromDefault', true);
-            hash = LFADS.Utils.DataHash(data, struct('Format', 'base64'));
+            
+            % we include AutoDownsizeIntegers=true to allow for graceful
+            % expansion of integer types (some used to be 16 bit that are
+            % now 32 bit)
+            hash = LFADS.Utils.DataHash(data, struct('Format', 'base64', 'AutoDownsizeIntegers', true));
             hash = strrep(strrep(hash, '/', '_'), '+', '-'); % https://tools.ietf.org/html/rfc3548#page-6
             if numel(hash) > length
                 hash = hash(1:length);
@@ -457,7 +461,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             length = 6;
             propsIgnore = p.getListPropertiesNotAffectingInputDataHash();
             data = p.getPropertyValueSubset('ignoreProperties', propsIgnore, 'onlyDifferentFromDefault', true);
-            hash = LFADS.Utils.DataHash(data, struct('Format', 'base64'));
+            hash = LFADS.Utils.DataHash(data, struct('Format', 'base64', 'AutoDownsizeIntegers', true));
             hash = strrep(strrep(hash, '/', '_'), '+', '-'); % https://tools.ietf.org/html/rfc3548#page-6
             if numel(hash) > length
                 hash = hash(1:length);
