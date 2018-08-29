@@ -1068,7 +1068,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             p = inputParser();
             p.addOptional('cuda_visible_devices', [], @isscalar);
-            p.addOptional('display', '', @(x) isnumeric(x) && mod(x,1)==0);
+            p.addOptional('display', [], @(x) isempty(x) || (isnumeric(x) && mod(x,1)==0)); % empty or integer
             p.addParameter('useTmuxSession', false, @islogical);
             p.addParameter('keepSessionAlive', true, @islogical);
             p.addParameter('header', '#!/bin/bash', @ischar);
