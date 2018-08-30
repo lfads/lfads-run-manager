@@ -14,8 +14,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
     %    be for post hoc runs only
 
    methods(Access = protected)
-       function groups = getPropertyGroups(obj)
-          if isscalar(obj)
+       function groups = generateStandardPropertyGroups(obj) %#ok<MANU>
+             % this is separate to allow subclasses to override this method
              groupTitle = 'Computed hashes';
              propList = {'paramHash', 'paramHashString', 'dataHash', 'dataHashString'};
              groups(1) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
@@ -71,11 +71,16 @@ classdef RunParams < matlab.mixin.CustomDisplay
              propList = {'c_tf_debug_cli', 'c_tf_debug_tensorboard', 'c_tf_debug_tensorboard_hostport', ...
                 'c_tf_debug_dump_root', 'c_debug_verbose', 'c_debug_reduce_timesteps_to', ...
                 'c_debug_print_each_step'};
-            groups(13) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-
+             groups(13) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+       end
+       
+       function groups = getPropertyGroups(obj)
+          if isscalar(obj)
+             groups = obj.generateStandardPropertyGroups();
+             
              propsPrinted = arrayfun(@(grp) grp.PropertyList', groups, 'UniformOutput', false);
              propsPrinted = cat(1, propsPrinted{:});
-
+             
              customProps = obj.listNonTransientProperties('ignoreProperties', propsPrinted, ...
                 'onlyRootClassProperties', false, ...
                 'ignoreHidden', true);
@@ -83,7 +88,6 @@ classdef RunParams < matlab.mixin.CustomDisplay
              groupTitle = sprintf('%s Specific Properties', class(obj));
              customGroup = matlab.mixin.util.PropertyGroup(customProps,groupTitle);
              groups = [customGroup, groups];
-
           else
              % Nonscalar case: call superclass method
              groups = getPropertyGroups@matlab.mixin.CustomDisplay(obj);

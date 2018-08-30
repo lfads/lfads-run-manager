@@ -10,11 +10,12 @@ function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
 % optimize the ridge hyperparameter
     
     p = inputParser();
-    p.addParameter('lambdas',  logspace(-5, 0, 15), @isvector);
+    p.addParameter('lambdas', logspace(-5, 2, 15), @isvector);
     p.addParameter('KFold', 10, @isscalar);
     p.addParameter('normalizeEach', false, @isscalar); % zscore each column individually
     p.addParameter('plotFitAllLambdas', false, @islogical);
     p.addParameter('plotWeightsEachLambda', false, @islogical);
+    p.addParameter('plotTradeoff', false, @islogical);
     
     p.parse(varargin{:});
     
@@ -100,13 +101,23 @@ function [W, b, lambda, mse] = ridge_cv(Y, X, varargin)
             wnorm(iL) = norm(w);
         end
         hold off;
-        
+    end
+    
+    if p.Results.plotTradeoff
+        if ~exist('wnorm', 'var')
+            wnorm = nanvec(nL);
+            for iL = 1:nL
+                w = fit_single(Y, X, lambdas(iL));
+                wnorm(iL) = norm(w, 'fro');
+            end
+        end
+        % plot cv mse and weight norm vs. lambda on top of each other
         figure(3);
         clf;
-        ax = plotyy(log10(lambdas), wnorm, log10(lambdas), mse);
+        ax = plotyy(log10(lambdas), wnorm, log10(lambdas), log(mse));
         xlabel('Log(10) lambda');
         ylabel(ax(1), 'weights norm');
-        ylabel(ax(2), 'cv mse');
+        ylabel(ax(2), 'log cv mse');
     end
     
     %% Fit whole dataset with single lambda
