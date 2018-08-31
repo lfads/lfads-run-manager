@@ -37,7 +37,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
              groups(5) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
              groupTitle = 'Underfitting';
-             propList = {'c_kl_ic_weight', 'c_kl_co_weight', 'c_kl_start_step', 'c_kl_increase_steps', 'c_l2_start_step', 'c_l2_increase_steps', 'scaleIncreaseStepsWithDatasets'};
+             propList = {'c_kl_ic_weight', 'c_kl_co_weight', 'c_kl_start_step', 'c_kl_increase_steps', 'c_l2_start_step', 'c_l2_increase_steps', 'scaleIncreaseStepsWithDatasets', 'scaleStartStepWithDatasets'};
              groups(6) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
 
              groupTitle = 'External inputs';
@@ -139,6 +139,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
         c_l2_start_step uint32 = 0; % Start increasing L2 weight after this many steps
         c_l2_increase_steps uint32 = 900; % Number of steps over which the l2 costs increase
         scaleIncreaseStepsWithDatasets logical = true; % If true, c_kl_increase_steps and c_l2_increase_steps will be multiplied by the number of datasets in a stitching Run
+        scaleStartStepWithDatasets logical = true; % If true, c_kl_start_step and c_l2_start_step will be multiplied by the number of datasets in a stitching Run
 
         % External inputs`
         c_ext_input_dim uint16 = 0; % Number of external inputs
@@ -633,7 +634,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
             % Generates a string of all the command line options to
             % pass directly into run_lfads.py. Also takes care of scaling
             % c_kl_increase_steps and c_l2_increase_steps by the number of
-            % datasets in a Run when scaleIncreaseStepsWithDatasets == true
+            % datasets in a Run when scaleIncreaseStepsWithDatasets == true, 
+            % and the same for scaleStartStepWithDatasets
             %
             % Args:
             %   run (LFADS.Run) : run instance for which these options will
@@ -678,6 +680,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 % properties
                 if ismember(thisField, {'c_kl_increase_steps', 'c_l2_increase_steps'}) && ...
                         p.scaleIncreaseStepsWithDatasets
+                    % scale thisVal by nDatasets
+                    thisVal = thisVal * run.nDatasets;
+                end
+                
+                if ismember(thisField, {'c_kl_start_step', 'c_l2_start_step'}) && ...
+                        p.scaleStartStepWithDatasets
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
                 end

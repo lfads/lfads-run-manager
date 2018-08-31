@@ -817,7 +817,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             nTrials = cellfun(@numel, seqData);
             nRequired = r.params.c_batch_size * (1+r.params.trainToTestRatio);
 
-            idxTooFew = find(nTrials <= nRequired); % lfads code uses a > rather than >=, so we must do the same
+            idxTooFew = find(nTrials < nRequired); % lfads code uses a > rather than >=, so we must do the same
 
             assert(isempty(idxTooFew), 'Issue with Run %s: %d trials are required for c_batch_size=%d and trainToTestRatio=%d. Datasets %s have too few trials', ...
                 r.name, nRequired, r.params.c_batch_size, r.params.trainToTestRatio, vec2str(idxTooFew));
