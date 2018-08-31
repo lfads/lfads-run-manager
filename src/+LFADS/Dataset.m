@@ -94,6 +94,10 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
         indexInCollection
         % my index in the collection
     end
+    
+    properties(Hidden, SetAccess=protected)
+        addedToCollection = false;
+    end
 
     methods
         function ds = Dataset(collection, relPath)
@@ -109,7 +113,10 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
             [~, ds.name] = fileparts(relPath);
             ds.name = strrep(ds.name, ',', '_');
             ds.relPath = relPath;
-            collection.addDataset(ds);
+            if ~ds.addedToCollection
+                collection.addDataset(ds);
+                ds.addedToCollection = true;
+            end
         end
 
         function p = get.path(ds)
