@@ -103,7 +103,7 @@ Then you can simply run `python run_lfadsqueue.py`, a script which was automatic
 As they finish, you can load and visualize the results easily in Matlab. Here we plot the inferred, single-trial firing rates of the first neuron:
 
 ```matlab
-run = rc.runs('single_dataset001', 1);
+run = rc.findRuns('single_dataset001', 1);
 pm = run.loadPosteriorMeans();
 rates1 = squeeze(pm.rates(1, :, :)); % time x trials
 ...
