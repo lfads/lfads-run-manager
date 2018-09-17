@@ -30,7 +30,7 @@ markdown_extensions:
   - smarty
   - toc(permalink=true)
 
-pages:
+nav:
   - LFADS Run Manager:
     - Overview: index.md
     - Installation: install.md
@@ -50,5 +50,3 @@ pages:
 
 
 copyright: 'Copyright &copy; 2017 &mdash; <a href="http://djoshea.com">Daniel J. O&#39;Shea</a>'
-
-google_analytics_code: 'UA-322693-7'
