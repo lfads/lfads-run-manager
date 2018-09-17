@@ -1,10 +1,11 @@
 # LFADS Run Manager for Matlab Documentation
 
-LFADS Run Manager is a set of tools, written in Matlab with some accompanying Python code, that help organize, train, and analyze LFADS models using the [Python+Tensorflow LFADS code](https://github.com/tensorflow/models/tree/master/research/lfads). LFADS, or [Latent Factor Analysis via Dynamical Systems](https://www.biorxiv.org/content/early/2017/06/20/152884), is a deep learning method to infer latent dynamics from single-trial neural spiking data. LFADS uses a nonlinear dynamical system (a recurrent neural network) to infer the dynamics underlying observed population activity and to extract ‘de-noised’ single-trial firing rates from neural spiking data.
+LFADS, or [Latent Factor Analysis via Dynamical Systems](https://www.nature.com/articles/s41592-018-0109-9), is a deep learning method to infer latent dynamics from single-trial neural spiking data. LFADS uses a nonlinear dynamical system (a recurrent neural network) to infer the dynamics underlying observed population activity and to extract ‘denoised’ single-trial firing rates from neural spiking data. Read the [LFADS manuscript](https://www.nature.com/articles/s41592-018-0109-9), published at Nature Methods, or the [LFADS pre-print](https://www.biorxiv.org/content/early/2017/06/20/152884) for more details.
 
-LFADS Run Manager was authored by [Daniel O'Shea](http://djoshea.com) with contributions from [Chethan Pandarinath](http://snel.gatech.edu/), [David Sussillo](https://research.google.com/pubs/DavidSussillo.html), and Reza Keshtkaran.
+LFADS Run Manager is a set of tools, written in Matlab with some accompanying Python code, that help organize, train, and analyze LFADS models. It accompanies the actual [Python+Tensorflow LFADS code](https://github.com/tensorflow/models/tree/master/research/lfads) which you will also need. We recommend using the Run Manager to organize your LFADS runs and to facilitate generation of the appropriate scripts to train your models and loading of the resulting model predictions for further analysis.
 
-Read the [LFADS pre-print](https://www.biorxiv.org/content/early/2017/06/20/152884) for more details.
+LFADS Run Manager was authored by [Daniel J O'Shea](http://djoshea.com) ([@djoshea](https://twitter.com/djoshea)) with contributions from [Chethan Pandarinath](http://snel.gatech.edu/) ([@chethan](https://twitter.com/chethan)), [David Sussillo](https://research.google.com/pubs/DavidSussillo.html) ([@SussilloDavid](https://twitter.com/sussillodavid)), and Reza Keshtkaran.
+
 
 LFADS Run Manager helps you to:
 
