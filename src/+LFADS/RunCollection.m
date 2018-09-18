@@ -315,7 +315,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
                     error('Unknown mode. Valid values include all and posterior');
             end
 
-            rc.writeTensorboardShellScript();
+            rc.writeTensorboardShellScript('virtualenv', p.Results.virtualenv);
 
             if isempty(p.Results.display)
                 display = LFADS.Utils.getDisplay();
@@ -658,7 +658,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %     Command which can luanch TensorBoard from command line
 
             ip = inputParser();
-            ip.addOptional('port', [], @(x) isscalar(x) || isempty(x));
+            ip.addParameter('port', [], @(x) isscalar(x) || isempty(x));
             ip.addParameter('useTmuxSession', false, @islogical);
             ip.addParameter('tmuxName', rc.name, @ischar);
             ip.parse(varargin{:});
@@ -694,10 +694,22 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             %   file : string
             %     Path to the shell script, will match `.fileShellScriptTensorboard`
 
+            p = inputParser();
+            p.addParameter('header', '#!/bin/bash', @ischar);
+            p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
+            p.KeepUnmatched = true;
+            p.parse(varargin{:});
+            
             f = rc.fileShellScriptTensorboard;
             fid = fopen(f, 'w');
-            fprintf(fid, '#!/bin/bash\n');
-            fprintf(fid, '%s "$@"\n', rc.getTensorboardCommand(varargin{:}));
+            fprintf(fid, '%s\n', p.Results.header);
+            
+            if ~isempty(p.Results.virtualenv)
+                fprintf(fid, 'source activate %s\n', p.Results.virtualenv);
+            end
+            
+            fprintf(fid, '%s "$@"\n', rc.getTensorboardCommand(p.Unmatched));
+            fprintf(fid, '\n');
             fclose(fid);
             LFADS.Utils.chmod('uga+rx', f);
         end
