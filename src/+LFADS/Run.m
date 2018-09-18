@@ -198,7 +198,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %   sequence formatted data. A struct array where each elemnt corresponds to a specific trial.
 
             out = r.generateCountsForDataset(dataset, mode, varargin{:});
-
+            
             assert(isstruct(out) && isscalar(out) && isfield(out, 'counts'));
             counts = out.counts;
 
@@ -819,9 +819,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             idxTooFew = find(nTrials < nRequired); % lfads code uses a > rather than >=, so we must do the same
 
-            assert(isempty(idxTooFew), 'Issue with Run %s: %d trials are required for c_batch_size=%d and trainToTestRatio=%d. Datasets %s have too few trials', ...
+            if ~isempty(idxTooFew)
+                warning('Issue with Run %s: %d trials are needed for c_batch_size=%d and trainToTestRatio=%d or else batches will use sampling with replacement. Datasets %s have too few trials', ...
                 r.name, nRequired, r.params.c_batch_size, r.params.trainToTestRatio, vec2str(idxTooFew));
-
+            end
+            
             function str = vec2str(vec)
                 % returns a string representation of a vector
 
