@@ -433,7 +433,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
         end
         
         function list = getListPropertiesScaleWithNumDatasets(p)
-            list = {'c_kl_increase_steps', 'c_l2_increase_steps'};
+            if p.scaleIncreaseStepsWithDatasets
+                list = {'c_kl_increase_steps', 'c_l2_increase_steps'};
+            else
+                list = {};
+            end
         end
 
         function hash = generateHash(p)
@@ -702,14 +706,12 @@ classdef RunParams < matlab.mixin.CustomDisplay
 
                 % modify specific param values here based on other
                 % properties
-                if ismember(thisField, propsScaleWithDatasets) && ...
-                        p.scaleIncreaseStepsWithDatasets
+                if ismember(thisField, propsScaleWithDatasets)
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
                 end
                 
-                if ismember(thisField, propsScaleWithDatasets) && ...
-                        p.scaleStartStepWithDatasets
+                if ismember(thisField, propsScaleWithDatasets)
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
                 end
