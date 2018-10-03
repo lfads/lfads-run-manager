@@ -431,6 +431,10 @@ classdef RunParams < matlab.mixin.CustomDisplay
             'c_tf_debug_dump_root', 'c_debug_verbose', 'c_debug_reduce_timesteps_to', ...
             'c_debug_print_each_step'};
         end
+        
+        function list = getListPropertiesScaleWithNumDatasets(p)
+            list = {'c_kl_increase_steps', 'c_l2_increase_steps'};
+        end
 
         function hash = generateHash(p)
             % Generate a short hash of this RunParams non-transient
@@ -681,6 +685,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
                 end
             end
             f = f(keepFields);
+            
+            propsScaleWithDatasets = p.getListPropertiesScaleWithNumDatasets();
 
             % build the output string
             str = '';
@@ -696,13 +702,13 @@ classdef RunParams < matlab.mixin.CustomDisplay
 
                 % modify specific param values here based on other
                 % properties
-                if ismember(thisField, {'c_kl_increase_steps', 'c_l2_increase_steps'}) && ...
+                if ismember(thisField, propsScaleWithDatasets) && ...
                         p.scaleIncreaseStepsWithDatasets
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
                 end
                 
-                if ismember(thisField, {'c_kl_start_step', 'c_l2_start_step'}) && ...
+                if ismember(thisField, propsScaleWithDatasets) && ...
                         p.scaleStartStepWithDatasets
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
