@@ -26,10 +26,10 @@ function export_spikes(outfile, ytrain, ytest, varargin)
 
     %% permute to deal with matlab v python (column-major v row-major)
     ndim = numel(size(ytrain));
-    ytrain = permute(ytrain,[ndim:-1:1]);
+    ytrain = permute(ytrain, ndim:-1:1);
 
     ndim = numel(size(ytest));
-    ytest = permute(ytest,[ndim:-1:1]);
+    ytest = permute(ytest, ndim:-1:1);
     
     outfile = LFADS.Utils.GetFullPath(outfile);
 
@@ -59,7 +59,7 @@ function export_spikes(outfile, ytrain, ytest, varargin)
             else
               %% permute to deal with matlab v python (column-major v row-major)
                 ndim = numel(size(data));
-                data = permute(data,[ndim:-1:1]);
+                data = permute(data, ndim:-1:1);
                 sz = size(data);
             end
             

@@ -74,6 +74,24 @@ classdef RunParams < matlab.mixin.CustomDisplay
              groups(13) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
        end
        
+       function groups = mergePropertyGroups(obj, groupsOld, groupsNew) %#ok<INUSL>
+            % for each group in groupsNew
+            %   if found in groupsOld, add properties to end of corresponding property lists
+            %   if not found, add to beginning of property groups
+   
+            oldTitles = {groupsOld.Title};
+            
+            alreadyExist = false(numel(groupsNew), 1);
+            for iN = 1:numel(groupsNew)
+                [alreadyExist(iN), idx] = ismember(groupsNew(iN).Title, oldTitles);
+                if alreadyExist(iN)
+                    groupsOld(idx).PropertyList = cat(2, groupsOld(idx).PropertyList, groupsNew(iN).PropertyList);
+                end 
+            end
+            
+            groups = [groupsNew(~alreadyExist), groupsOld];
+       end
+       
        function groups = getPropertyGroups(obj)
           if isscalar(obj)
              groups = obj.generateStandardPropertyGroups();

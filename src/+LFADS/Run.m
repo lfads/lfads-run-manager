@@ -1135,7 +1135,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 trainString = LFADS.Utils.tmuxify_string(trainString, r.sessionNameTrain, 'keepSessionAlive', p.Results.keepSessionAlive);
             end
 
-            fprintf(fid, '%s\n', p.Results.header);
+            fprintf(fid, '%s\n\n', p.Results.header);
 
             if ~isempty(p.Results.virtualenv)
                 fprintf(fid, 'source activate %s\n', p.Results.virtualenv);
@@ -1379,7 +1379,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             p.addParameter('path_run_lfads_py', '$(which run_lfads.py)', @ischar);
             p.addOptional('cuda_visible_devices', [], @isscalar);
-            p.addParameter('header', '#!/bin/bash\n', @ischar);
+            p.addParameter('header', '#!/bin/bash', @ischar);
             p.addParameter('prependPathToRunLFADS', false, @islogical); % prepend an export path to run_lfads.py
             p.addParameter('virtualenv', '', @ischar); % prepend source activate environment name
             p.KeepUnmatched = true;
@@ -1403,7 +1403,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 pmString = LFADS.Utils.tmuxify_string(pmString, r.sessionNamePosteriorMean, 'keepSessionAlive', p.Results.keepSessionAlive);
             end
 
-            fprintf(fid, '%s\n', p.Results.header);
+            fprintf(fid, '%s\n\n', p.Results.header);
 
             if ~isempty(p.Results.virtualenv)
                 fprintf(fid, 'source activate %s\n', p.Results.virtualenv);
@@ -1446,7 +1446,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             p = inputParser();
             p.addParameter('path_run_lfads_py', '$(which run_lfads.py)', @ischar);
-            p.addParameter('header', '#!/bin/bash\n', @ischar);
+            p.addParameter('header', '#!/bin/bash', @ischar);
             p.KeepUnmatched = true;
             p.parse(varargin{:});
 
@@ -1457,13 +1457,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 'path_run_lfads_py', p.Results.path_run_lfads_py, ...
                 p.Unmatched);
 
-            fprintf(fid, '%s\n', p.Results.header);
+            fprintf(fid, '%s\n\n', p.Results.header);
             checkLFADSFoundString = LFADS.Run.generateCheckRunLFADSPyFoundString(p.Results.path_run_lfads_py);
             fprintf(fid, '\n%s\n', checkLFADSFoundString);
 
             fprintf(fid, '%s\n', outputString);
             fclose(fid);
             LFADS.Utils.chmod('ug+rx', f);
+        end
+        
+        function className = getPosteriorMeansClassName(r) %#ok<MANU>
+            % allows for overriding by subclasses that want to use their
+            % own PosteriorMeans class, but not override the entirety of
+            % loadPosteriorMeans
+            className = 'LFADS.PosteriorMeans';
         end
 
         function [pms, valid] = loadPosteriorMeans(r, varargin)
@@ -1500,6 +1507,18 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 pms = LFADS.Utils.makecol(r.posteriorMeans);
                 return;
             end
+            
+            % allow for custom PosteriorMeans constructors
+            className = r.getPosteriorMeansClassName();
+            if ischar(className)
+                pmConstructorFn = str2func(className);
+            elseif isa(className, 'function_handle')
+                % okay as is
+                pmConstructorFn = className;
+            else
+                error('Unknown posterior means class name, must be string or function_handle to constructor');
+            end
+
 
             info = r.loadInputInfo();
             % check hashes actually match
@@ -1580,18 +1599,19 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 else
                     rawCounts = [];
                 end
-
-                pmData = LFADS.Utils.loadPosteriorMeans(fullfile(r.pathLFADSOutput, validList{iDS}), ....
-                    fullfile(r.pathLFADSOutput, trainList{iDS}), ...
-                    info(iDS).validInds, info(iDS).trainInds);
-
+                
                 dt_pm = r.params.spikeBinMs;
                 dt_y = info(iDS).seq_binSizeMs;
                 rebin = dt_pm / dt_y;
                 time = info(iDS).seq_timeVector(1:rebin:end);
-                time = time(1:size(pmData.rates, 2));
-
-                pms(iDS) = LFADS.PosteriorMeans(pmData, r.params, time, conditionIds, rawCounts, posterior_mean_kind); %#ok<AGROW>
+                
+                % call the LFADS.PosteriorMeans constructor (or whatever
+                % class has been specified above)
+                pms(iDS) = pmConstructorFn(...
+                    fullfile(r.pathLFADSOutput, validList{iDS}), ...
+                    fullfile(r.pathLFADSOutput, trainList{iDS}), ...
+                    info(iDS).validInds, info(iDS).trainInds, ...
+                    r, time, conditionIds, rawCounts, posterior_mean_kind); %#ok<AGROW>
                 valid(iDS) = true;
             end
             prog.finish();
@@ -1666,8 +1686,24 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             r.sequenceData = seqs;
         end
+        
+        function class = getModelTrainedParamsClassName(r) %#ok<MANU>
+            % override to use custom ModelTrainedParams class in subclasses
+            class = 'LFADS.ModelTrainedParams';
+        end
 
         function mtp = loadModelTrainedParams(r, varargin)
+            % allow for custom PosteriorMeans constructors
+            className = r.getModelTrainedParamsClassName();
+            if ischar(className)
+                mtpConstructorFn = str2func(className);
+            elseif isa(className, 'function_handle')
+                % okay as is
+                mtpConstructorFn = className;
+            else
+                error('Unknown model trained params class name, must be string or function_handle to constructor');
+            end
+            
             fname = r.fileModelParams;
             if exist(fname, 'file') <= 1
                 %warning('model_params file not found. Ensure that runCommandLFADSWriteModelParams has been run');
@@ -1675,7 +1711,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 return;
             end
 
-            r.modelTrainedParams = LFADS.ModelTrainedParams(fname, r.datasetNames, varargin{:});
+            r.modelTrainedParams = mtpConstructorFn(fname, r.datasetNames, varargin{:});
             mtp = r.modelTrainedParams;
         end
 

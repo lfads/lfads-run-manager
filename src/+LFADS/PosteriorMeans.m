@@ -37,16 +37,18 @@ classdef PosteriorMeans
     end
     
     methods
-        function pm = PosteriorMeans(pms, params, time, conditionIds, rawCounts, kind)
-            % pm = PosteriorMeans(pms, params, seq)
-            % Construct instance by copying struct fields 
+        function pm = PosteriorMeans(validFile, trainFile, validInds, trainInds, run, time, conditionIds, rawCounts, kind)
+            % pm = PosteriorMeans(validFileList, trainFileList, validInds, trainInds, run, time, conditionIds, rawCounts, kind)
+            % Construct instance by loading the posterior means files
             %
             % Args:
-            %   pms (struct): Posterior mean struct loaded from disk
-            %   params (LFADS.RunParams): Run parameters 
+            %   run (LFADS.Run): run
             %   time (vector): time vector for all timeseries
             
-            if nargin > 0
+            if nargin >= 5
+                % defer to utility to do the h5 loading and trial splicing
+                pms = LFADS.Utils.loadPosteriorMeans(validFile, trainFile, validInds, trainInds);
+                
                 if isfield(pms, 'controller_outputs')
                     pm.controller_outputs = pms.controller_outputs;
                 else
@@ -61,29 +63,26 @@ classdef PosteriorMeans
                     if isfield( pms, v )
                         pm.( v ) = pms. ( v );
                     else
-                        warning( sprintf( 'PosteriorMeans: couldn''t find variable %s', ...
-                                          v ) );
+                        warning('PosteriorMeans: couldn''t find variable %s', v);
                         pm.( v ) = [];
                     end
-
                 end
                 
                 % convert rates into spikes / sec
-                pm.rates = pms.rates * 1000 / params.spikeBinMs;
+                pm.rates = pms.rates * 1000 / run.params.spikeBinMs;
                 % store the times
-                pm.time = time;
                 
-            end
-            if nargin > 1
-                pm.params = params;
-            end
-            if nargin > 3
-                pm.conditionIds = conditionIds;
-            end
-            if nargin > 4
-                pm.rawCounts = rawCounts;
+                time = time(1:size(pm.rates, 2));
+                pm.time = time;
+                pm.params = run.params;
             end
             if nargin > 5
+                pm.conditionIds = conditionIds;
+            end
+            if nargin > 6
+                pm.rawCounts = rawCounts;
+            end
+            if nargin > 7
                 pm.kind = kind;
             end
         end

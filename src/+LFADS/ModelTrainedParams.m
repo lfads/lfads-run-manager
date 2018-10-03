@@ -102,19 +102,26 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
             mtp.dataset_names = dataset_names;
             
             function val = read(key)
-                if ismember(key, keys)
-                    val = h5read(fname, ['/' key]);
+                key0 = [key ':0'];
+                if ismember(key0, keys)
+                    val = h5read(fname, ['/' key0]);
                 else
                     if verbose
-                        fprintf('Key %s not found\n', key);
+                        fprintf('Key %s not found\n', key0);
                     end
                     val = [];
                 end
                 
-                if verbose && ismember(key, readList)
-                    fprintf('Key %s read twice\n', key);
+                %% permute to deal with matlab v python (column-major v row-major)
+                ndim = numel(size(val));
+                if ndim > 1
+                    val = permute(val, ndim:-1:1);
                 end
-                readList = union(readList, key);
+                
+                if verbose && ismember(key0, readList)
+                    fprintf('Key %s read twice\n', key0);
+                end
+                readList = union(readList, key0);
             end
             
             function valCell = readByDataset(key)
@@ -129,67 +136,67 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
             end
             
             % feeling grateful for regular expressions =)
-            mtp.x_to_infac_W = readByDataset('LFADS_x_2_infac_%s.h5_W:0');
-            mtp.x_to_infac_b = readByDataset('LFADS_x_2_infac_%s.h5_b:0');
-            mtp.factors_to_logrates_W = readByDataset('LFADS_glm_fac_2_logrates_%s.h5_W:0');
-            mtp.factors_to_logrates_b = readByDataset('LFADS_glm_fac_2_logrates_%s.h5_b:0');
+            mtp.x_to_infac_W = readByDataset('LFADS_x_2_infac_%s.h5_W');
+            mtp.x_to_infac_b = readByDataset('LFADS_x_2_infac_%s.h5_b');
+            mtp.factors_to_logrates_W = readByDataset('LFADS_glm_fac_2_logrates_%s.h5_W');
+            mtp.factors_to_logrates_b = readByDataset('LFADS_glm_fac_2_logrates_%s.h5_b');
             
-            mtp.ic_enc_fwd_t0 = read('LFADS_ic_enc_fwd_ic_enc_t0_fwd:0');
-            mtp.ic_enc_fwd_gru_xh_to_gates_ru_W = read('LFADS_ic_enc_fwd_GRU_Gates_xh_2_ru_W:0');
-            mtp.ic_enc_fwd_gru_xh_to_gates_ru_b = read('LFADS_ic_enc_fwd_GRU_Gates_xh_2_ru_b:0');
-            mtp.ic_enc_fwd_gru_xrh_to_c_W = read('LFADS_ic_enc_fwd_GRU_Candidate_xrh_2_c_W:0');
-            mtp.ic_enc_fwd_gru_xrh_to_c_b = read('LFADS_ic_enc_fwd_GRU_Candidate_xrh_2_c_b:0');
+            mtp.ic_enc_fwd_t0 = read('LFADS_ic_enc_fwd_ic_enc_t0_fwd');
+            mtp.ic_enc_fwd_gru_xh_to_gates_ru_W = read('LFADS_ic_enc_fwd_GRU_Gates_xh_2_ru_W');
+            mtp.ic_enc_fwd_gru_xh_to_gates_ru_b = read('LFADS_ic_enc_fwd_GRU_Gates_xh_2_ru_b');
+            mtp.ic_enc_fwd_gru_xrh_to_c_W = read('LFADS_ic_enc_fwd_GRU_Candidate_xrh_2_c_W');
+            mtp.ic_enc_fwd_gru_xrh_to_c_b = read('LFADS_ic_enc_fwd_GRU_Candidate_xrh_2_c_b');
             
-            mtp.ic_enc_rev_t0 = read('LFADS_ic_enc_rev_ic_enc_t0_rev:0');
-            mtp.ic_enc_rev_gru_xh_to_gates_ru_W = read('LFADS_ic_enc_rev_GRU_Gates_xh_2_ru_W:0');
-            mtp.ic_enc_rev_gru_xh_to_gates_ru_b = read('LFADS_ic_enc_rev_GRU_Gates_xh_2_ru_b:0');
-            mtp.ic_enc_rev_gru_xrh_to_c_W = read('LFADS_ic_enc_rev_GRU_Candidate_xrh_2_c_W:0');
-            mtp.ic_enc_rev_gru_xrh_to_c_b = read('LFADS_ic_enc_rev_GRU_Candidate_xrh_2_c_b:0');
+            mtp.ic_enc_rev_t0 = read('LFADS_ic_enc_rev_ic_enc_t0_rev');
+            mtp.ic_enc_rev_gru_xh_to_gates_ru_W = read('LFADS_ic_enc_rev_GRU_Gates_xh_2_ru_W');
+            mtp.ic_enc_rev_gru_xh_to_gates_ru_b = read('LFADS_ic_enc_rev_GRU_Gates_xh_2_ru_b');
+            mtp.ic_enc_rev_gru_xrh_to_c_W = read('LFADS_ic_enc_rev_GRU_Candidate_xrh_2_c_W');
+            mtp.ic_enc_rev_gru_xrh_to_c_b = read('LFADS_ic_enc_rev_GRU_Candidate_xrh_2_c_b');
             
-            mtp.prior_g0_mean = read('LFADS_z_prior_g0_mean:0');
-            mtp.prior_g0_logvar = read('LFADS_z_prior_g0_logvar:0');
-            mtp.ic_enc_to_posterior_g0_mean_W = read('LFADS_z_ic_enc_2_post_g0_mean_W:0');
-            mtp.ic_enc_to_posterior_g0_mean_b = read('LFADS_z_ic_enc_2_post_g0_mean_b:0');
-            mtp.ic_enc_to_posterior_g0_logvar_W = read('LFADS_z_ic_enc_2_post_g0_logvar_W:0');
-            mtp.ic_enc_to_posterior_g0_logvar_b = read('LFADS_z_ic_enc_2_post_g0_logvar_b:0');
-            mtp.g0_to_gen_ic_W = read('LFADS_gen_g0_2_gen_ic_W:0');
-            mtp.g0_to_gen_ic_b = read('LFADS_gen_g0_2_gen_ic_b:0');
+            mtp.prior_g0_mean = read('LFADS_z_prior_g0_mean');
+            mtp.prior_g0_logvar = read('LFADS_z_prior_g0_logvar');
+            mtp.ic_enc_to_posterior_g0_mean_W = read('LFADS_z_ic_enc_2_post_g0_mean_W');
+            mtp.ic_enc_to_posterior_g0_mean_b = read('LFADS_z_ic_enc_2_post_g0_mean_b');
+            mtp.ic_enc_to_posterior_g0_logvar_W = read('LFADS_z_ic_enc_2_post_g0_logvar_W');
+            mtp.ic_enc_to_posterior_g0_logvar_b = read('LFADS_z_ic_enc_2_post_g0_logvar_b');
+            mtp.g0_to_gen_ic_W = read('LFADS_gen_g0_2_gen_ic_W');
+            mtp.g0_to_gen_ic_b = read('LFADS_gen_g0_2_gen_ic_b');
             
-            mtp.ci_enc_fwd_t0 = read('LFADS_ci_enc_fwd_ci_enc_t0_fwd:0');
-            mtp.ci_enc_fwd_gru_xh_to_ru_W =  read('LFADS_ci_enc_fwd_GRU_Gates_xh_2_ru_W:0');
-            mtp.ci_enc_fwd_gru_xh_to_ru_b = read('LFADS_ci_enc_fwd_GRU_Gates_xh_2_ru_b:0');
-            mtp.ci_enc_fwd_gru_xrh_to_c_W = read('LFADS_ci_enc_fwd_GRU_Candidate_xrh_2_c_W:0');
-            mtp.ci_enc_fwd_gru_xrh_to_c_b = read('LFADS_ci_enc_fwd_GRU_Candidate_xrh_2_c_b:0');
+            mtp.ci_enc_fwd_t0 = read('LFADS_ci_enc_fwd_ci_enc_t0_fwd');
+            mtp.ci_enc_fwd_gru_xh_to_ru_W =  read('LFADS_ci_enc_fwd_GRU_Gates_xh_2_ru_W');
+            mtp.ci_enc_fwd_gru_xh_to_ru_b = read('LFADS_ci_enc_fwd_GRU_Gates_xh_2_ru_b');
+            mtp.ci_enc_fwd_gru_xrh_to_c_W = read('LFADS_ci_enc_fwd_GRU_Candidate_xrh_2_c_W');
+            mtp.ci_enc_fwd_gru_xrh_to_c_b = read('LFADS_ci_enc_fwd_GRU_Candidate_xrh_2_c_b');
             
-            mtp.ci_enc_rev_t0 = read('LFADS_ci_enc_rev_ci_enc_t0_rev:0');
-            mtp.ci_enc_rev_gru_xh_to_ru_W = read('LFADS_ci_enc_rev_GRU_Gates_xh_2_ru_W:0');
-            mtp.ci_enc_rev_gru_xh_to_ru_b = read('LFADS_ci_enc_rev_GRU_Gates_xh_2_ru_b:0');
-            mtp.ci_enc_rev_gru_xrh_to_c_W = read('LFADS_ci_enc_rev_GRU_Candidate_xrh_2_c_W:0');
-            mtp.ci_enc_rev_gru_xrh_to_c_b = read('LFADS_ci_enc_rev_GRU_Candidate_xrh_2_c_b:0');
+            mtp.ci_enc_rev_t0 = read('LFADS_ci_enc_rev_ci_enc_t0_rev');
+            mtp.ci_enc_rev_gru_xh_to_ru_W = read('LFADS_ci_enc_rev_GRU_Gates_xh_2_ru_W');
+            mtp.ci_enc_rev_gru_xh_to_ru_b = read('LFADS_ci_enc_rev_GRU_Gates_xh_2_ru_b');
+            mtp.ci_enc_rev_gru_xrh_to_c_W = read('LFADS_ci_enc_rev_GRU_Candidate_xrh_2_c_W');
+            mtp.ci_enc_rev_gru_xrh_to_c_b = read('LFADS_ci_enc_rev_GRU_Candidate_xrh_2_c_b');
             
-            mtp.prior_ar1_logevars = read('LFADS_z_u_prior_ar1_logevars:0');
-            mtp.prior_ar1_logatau = read('LFADS_z_u_prior_ar1_logatau:0');
-            mtp.con_gengru_x_to_ru_W = read('LFADS_con_GenGRU_Gates_x_2_ru_W:0');
-            mtp.con_gengru_h_to_ru_W = read('LFADS_con_GenGRU_Gates_h_2_ru_W:0');
-            mtp.con_gengru_h_to_ru_b = read('LFADS_con_GenGRU_Gates_h_2_ru_b:0');
-            mtp.con_gengru_x_to_c_W = read('LFADS_con_GenGRU_Candidate_x_2_c_W:0');
-            mtp.con_gengru_rh_to_c_W = read('LFADS_con_GenGRU_Candidate_rh_2_c_W:0');
-            mtp.con_gengru_rh_to_c_b = read('LFADS_con_GenGRU_Candidate_rh_2_c_b:0');
+            mtp.prior_ar1_logevars = read('LFADS_z_u_prior_ar1_logevars');
+            mtp.prior_ar1_logatau = read('LFADS_z_u_prior_ar1_logatau');
+            mtp.con_gengru_x_to_ru_W = read('LFADS_con_GenGRU_Gates_x_2_ru_W');
+            mtp.con_gengru_h_to_ru_W = read('LFADS_con_GenGRU_Gates_h_2_ru_W');
+            mtp.con_gengru_h_to_ru_b = read('LFADS_con_GenGRU_Gates_h_2_ru_b');
+            mtp.con_gengru_x_to_c_W = read('LFADS_con_GenGRU_Candidate_x_2_c_W');
+            mtp.con_gengru_rh_to_c_W = read('LFADS_con_GenGRU_Candidate_rh_2_c_W');
+            mtp.con_gengru_rh_to_c_b = read('LFADS_con_GenGRU_Candidate_rh_2_c_b');
             
-            mtp.con_co = read('LFADS_con_c0:0');
-            mtp.con_to_posterior_co_mean_W = read('LFADS_con_con_to_post_co_mean_W:0');
-            mtp.con_to_posterior_co_mean_b = read('LFADS_con_con_to_post_co_mean_b:0');
-            mtp.con_to_posterior_co_logvar_W = read('LFADS_con_con_to_post_co_logvar_W:0');
-            mtp.con_to_posterior_co_logvar_b = read('LFADS_con_con_to_post_co_logvar_b:0');
+            mtp.con_co = read('LFADS_con_c0');
+            mtp.con_to_posterior_co_mean_W = read('LFADS_con_con_to_post_co_mean_W');
+            mtp.con_to_posterior_co_mean_b = read('LFADS_con_con_to_post_co_mean_b');
+            mtp.con_to_posterior_co_logvar_W = read('LFADS_con_con_to_post_co_logvar_W');
+            mtp.con_to_posterior_co_logvar_b = read('LFADS_con_con_to_post_co_logvar_b');
             
-            mtp.gen_gengru_x_to_ru_W = read('LFADS_gen_GenGRU_Gates_x_2_ru_W:0');
-            mtp.gen_gengru_h_to_ru_W = read('LFADS_gen_GenGRU_Gates_h_2_ru_W:0');
-            mtp.gen_gengru_h_to_ru_b = read('LFADS_gen_GenGRU_Gates_h_2_ru_b:0');
-            mtp.gen_gengru_x_to_c_W = read('LFADS_gen_GenGRU_Candidate_x_2_c_W:0');
-            mtp.gen_gengru_rh_to_c_W = read('LFADS_gen_GenGRU_Candidate_rh_2_c_W:0');
-            mtp.gen_gengru_rh_to_c_b = read('LFADS_gen_GenGRU_Candidate_rh_2_c_b:0');
+            mtp.gen_gengru_x_to_ru_W = read('LFADS_gen_GenGRU_Gates_x_2_ru_W');
+            mtp.gen_gengru_h_to_ru_W = read('LFADS_gen_GenGRU_Gates_h_2_ru_W');
+            mtp.gen_gengru_h_to_ru_b = read('LFADS_gen_GenGRU_Gates_h_2_ru_b');
+            mtp.gen_gengru_x_to_c_W = read('LFADS_gen_GenGRU_Candidate_x_2_c_W');
+            mtp.gen_gengru_rh_to_c_W = read('LFADS_gen_GenGRU_Candidate_rh_2_c_W');
+            mtp.gen_gengru_rh_to_c_b = read('LFADS_gen_GenGRU_Candidate_rh_2_c_b');
             
-            mtp.gen_to_factors_W = read('LFADS_gen_gen_2_fac_W:0');
+            mtp.gen_to_factors_W = read('LFADS_gen_gen_2_fac_W');
             
             if verbose
                 unread = setdiff(keys, readList);
@@ -210,82 +217,106 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
         end
         
         function mat = get.factors_to_logrates_W_concatenated(mtp)
-            mat = cat(1, mtp.factors_to_logrates_W{:});
+            mat = cat(2, mtp.factors_to_logrates_W{:});
         end
         
         function mat = get.factors_to_logrates_b_concatenated(mtp)
-            mat = cat(1, mtp.factors_to_logrates_b{:});
+            mat = cat(2, mtp.factors_to_logrates_b{:});
         end
     end
     
     methods(Access = protected)
-        function groups = getPropertyGroups(obj)
-            if isscalar(obj)
-                k = 1;
-                groupTitle = 'Basic info';
-                propList = {'num_datasets', 'dataset_names', 'num_channels_all_datasets'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Read-in from spikes to input factors';
-                propList = {'x_to_infac_W', 'x_to_infac_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Initial condition encoder (forward)';
-                propList = {'ic_enc_fwd_t0', 'ic_enc_fwd_gru_xh_to_gates_ru_W', 'ic_enc_fwd_gru_xh_to_gates_ru_b', 'ic_enc_fwd_gru_xrh_to_c_W', 'ic_enc_fwd_gru_xrh_to_c_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Initial condition encoder (reverse)';
-                propList = {'ic_enc_rev_t0', 'ic_enc_rev_gru_xh_to_gates_ru_W', 'ic_enc_rev_gru_xh_to_gates_ru_b', 'ic_enc_rev_gru_xrh_to_c_W', 'ic_enc_rev_gru_xrh_to_c_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Initial condition g0';
-                propList = {'prior_g0_mean', 'prior_g0_logvar', 'ic_enc_to_posterior_g0_mean_W', 'ic_enc_to_posterior_g0_mean_b', 'ic_enc_to_posterior_g0_logvar_W', 'ic_enc_to_posterior_g0_logvar_b', 'g0_to_gen_ic_W', 'g0_to_gen_ic_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Controller encoder (forward)';
-                propList = {'ci_enc_fwd_t0', 'ci_enc_fwd_gru_xh_to_ru_W', 'ci_enc_fwd_gru_xh_to_ru_b', 'ci_enc_fwd_gru_xrh_to_c_W', 'ci_enc_fwd_gru_xrh_to_c_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Controller encoder (reverse)';
-                propList = {'ci_enc_rev_t0', 'ci_enc_rev_gru_xh_to_ru_W', 'ci_enc_rev_gru_xh_to_ru_b', 'ci_enc_rev_gru_xrh_to_c_W', 'ci_enc_rev_gru_xrh_to_c_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Controlller RNN';
-                propList = {'con_gengru_x_to_ru_W', 'con_gengru_h_to_ru_W', 'con_gengru_h_to_ru_b', 'con_gengru_x_to_c_W', 'con_gengru_rh_to_c_W', 'con_gengru_rh_to_c_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Controller output co';
-                propList = {'prior_ar1_logevars', 'prior_ar1_logatau', 'con_co', 'con_to_posterior_co_mean_W', 'con_to_posterior_co_mean_b', 'con_to_posterior_co_logvar_W', 'con_to_posterior_co_logvar_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Generator RNN';
-                propList = {'gen_gengru_x_to_ru_W', 'gen_gengru_h_to_ru_W', 'gen_gengru_h_to_ru_b', 'gen_gengru_x_to_c_W', 'gen_gengru_rh_to_c_W', 'gen_gengru_rh_to_c_b'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Generator output and readout';
-                propList = {'gen_to_factors_W', 'factors_to_logrates_W', 'factors_to_logrates_b'}
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-                
-                groupTitle = 'Imputing rates of neurons across stitched datasets'
-                propList = {'factors_to_logrates_W_concatenated', 'factors_to_logrates_b_concatenated'};
-                groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
-                k = k+1;
-            else
-                % Nonscalar case: call superclass method
-                groups = getPropertyGroups@matlab.mixin.CustomDisplay(obj);
+       function groups = generateStandardPropertyGroups(obj) %#ok<MANU>
+            % this is separate to allow subclasses to override this method
+            k = 1;
+            
+            groupTitle = 'Basic info';
+            propList = {'num_datasets', 'dataset_names', 'num_channels_all_datasets'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Read-in from spikes to input factors';
+            propList = {'x_to_infac_W', 'x_to_infac_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Initial condition encoder (forward)';
+            propList = {'ic_enc_fwd_t0', 'ic_enc_fwd_gru_xh_to_gates_ru_W', 'ic_enc_fwd_gru_xh_to_gates_ru_b', 'ic_enc_fwd_gru_xrh_to_c_W', 'ic_enc_fwd_gru_xrh_to_c_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Initial condition encoder (reverse)';
+            propList = {'ic_enc_rev_t0', 'ic_enc_rev_gru_xh_to_gates_ru_W', 'ic_enc_rev_gru_xh_to_gates_ru_b', 'ic_enc_rev_gru_xrh_to_c_W', 'ic_enc_rev_gru_xrh_to_c_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Initial condition g0';
+            propList = {'prior_g0_mean', 'prior_g0_logvar', 'ic_enc_to_posterior_g0_mean_W', 'ic_enc_to_posterior_g0_mean_b', 'ic_enc_to_posterior_g0_logvar_W', 'ic_enc_to_posterior_g0_logvar_b', 'g0_to_gen_ic_W', 'g0_to_gen_ic_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Controller encoder (forward)';
+            propList = {'ci_enc_fwd_t0', 'ci_enc_fwd_gru_xh_to_ru_W', 'ci_enc_fwd_gru_xh_to_ru_b', 'ci_enc_fwd_gru_xrh_to_c_W', 'ci_enc_fwd_gru_xrh_to_c_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Controller encoder (reverse)';
+            propList = {'ci_enc_rev_t0', 'ci_enc_rev_gru_xh_to_ru_W', 'ci_enc_rev_gru_xh_to_ru_b', 'ci_enc_rev_gru_xrh_to_c_W', 'ci_enc_rev_gru_xrh_to_c_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Controlller RNN';
+            propList = {'con_gengru_x_to_ru_W', 'con_gengru_h_to_ru_W', 'con_gengru_h_to_ru_b', 'con_gengru_x_to_c_W', 'con_gengru_rh_to_c_W', 'con_gengru_rh_to_c_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Controller output co';
+            propList = {'prior_ar1_logevars', 'prior_ar1_logatau', 'con_co', 'con_to_posterior_co_mean_W', 'con_to_posterior_co_mean_b', 'con_to_posterior_co_logvar_W', 'con_to_posterior_co_logvar_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Generator RNN';
+            propList = {'gen_gengru_x_to_ru_W', 'gen_gengru_h_to_ru_W', 'gen_gengru_h_to_ru_b', 'gen_gengru_x_to_c_W', 'gen_gengru_rh_to_c_W', 'gen_gengru_rh_to_c_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Generator output and readout';
+            propList = {'gen_to_factors_W', 'factors_to_logrates_W', 'factors_to_logrates_b'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            k = k+1;
+
+            groupTitle = 'Imputing rates of neurons across stitched datasets';
+            propList = {'factors_to_logrates_W_concatenated', 'factors_to_logrates_b_concatenated'};
+            groups(k) = matlab.mixin.util.PropertyGroup(propList,groupTitle);
+            %k = k+1;
+       end
+       
+       function groups = mergePropertyGroups(obj, groupsOld, groupsNew) %#ok<INUSL>
+            % for each group in groupsNew
+            %   if found in groupsOld, add properties to end of corresponding property lists
+            %   if not found, add to beginning of property groups
+   
+            oldTitles = {groupsOld.Title};
+            
+            alreadyExist = false(numel(groupsNew), 1);
+            for iN = 1:numel(groupsNew)
+                [alreadyExist(iN), idx] = ismember(groupsNew(iN).Title, oldTitles);
+                if alreadyExist(iN)
+                    groupsOld(idx).PropertyList = cat(2, groupsOld(idx).PropertyList, groupsNew(iN).PropertyList);
+                end 
             end
-        end
+            
+            groups = [groupsNew(~alreadyExist), groupsOld];
+       end
+       
+       function groups = getPropertyGroups(obj)
+          if isscalar(obj)
+             groups = obj.generateStandardPropertyGroups();
+          else
+             % Nonscalar case: call superclass method
+             groups = getPropertyGroups@matlab.mixin.CustomDisplay(obj);
+          end
+       end    
     end
     
     methods
@@ -299,12 +330,13 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
             end
             
             props = mtp.listAllProperties();
+            perDatasetProps = mtp.listPerDatasetProperties();
             for iP = 1:numel(props)
                 prop = props{iP};
                 value = mtp.(prop);
                 
                 switch prop
-                    case {'x_to_infac_W', 'x_to_infac_b', 'factors_to_logrates_W', 'factors_to_logrates_b'}
+                    case perDatasetProps
                         if ~isempty(value)
                             % these are per dataset values and must be nested and saved per dataset
                             for iD = 1:mtp.num_datasets
@@ -327,6 +359,10 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
                         h5write(filename, ['/' prop], value);
                 end
             end
+        end
+        
+        function props = listPerDatasetProperties(mtp) %#ok<MANU>
+            props = {'x_to_infac_W', 'x_to_infac_b', 'factors_to_logrates_W', 'factors_to_logrates_b'};
         end
         
         function props = listAllProperties(mtp)
