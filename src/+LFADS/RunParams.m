@@ -710,11 +710,6 @@ classdef RunParams < matlab.mixin.CustomDisplay
                     % scale thisVal by nDatasets
                     thisVal = thisVal * run.nDatasets;
                 end
-                
-                if ismember(thisField, propsScaleWithDatasets)
-                    % scale thisVal by nDatasets
-                    thisVal = thisVal * run.nDatasets;
-                end
 
                 % argument formatted differently for each class
                 switch class(thisVal)
