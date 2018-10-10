@@ -185,7 +185,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             %       observed inputs.
             %
             % Parameters
-            % ------------
+            % ------------r
             % dataset : :ref:`LFADS_Dataset`
             %   The :ref:`LFADS_Dataset` instance from which data were loaded
             % mode (string) : typically 'export' indicating sequence struct
@@ -878,8 +878,20 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     if ~exist(fname, 'file')
                         maskGenerate(iDS) = true;
                     end
+                    
+                    % and test for symlink
+                    fname = fullfile(r.pathLFADSInput, fnames{iDS});
+                    if ~exist(fname, 'file')
+                        maskGenerate(iDS) = true;
+                    end
 
                     fname = fullfile(r.pathCommonData, inputInfoNames{iDS});
+                    if ~exist(fname, 'file')
+                        maskGenerate(iDS) = true;
+                    end
+                    
+                    % and test for symlink
+                    fname = fullfile(r.pathLFADSInput, inputInfoNames{iDS});
                     if ~exist(fname, 'file')
                         maskGenerate(iDS) = true;
                     end
@@ -959,7 +971,9 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
                 % save input info file for each dataset generated
                 inputInfoNames = r.lfadsInputInfoFileNames;
+                prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Writing LFADS inputInfo.mat files');
                 for iDS = 1:r.nDatasets
+                    prog.update(iDS);
                     paramInputDataHash = r.params.generateInputDataHash(); %#ok<*NASGU>
                     if maskGenerate(iDS)
                         trainInds = trainIndsCell{iDS};
@@ -986,7 +1000,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                             extra = union(extra, 'truth');
                         end
                         if isfield(seqData{iDS}, 'externalInputs')
-                            externalInputs = seqData{iDS}.externalInputs;
+                            externalInputs = cat(3, seqData{iDS}.externalInputs); % nExtInputs x nTime x nChannels
                             extra = union(extra, 'externalInputs');
                         end
 
@@ -994,7 +1008,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                         save(fname, 'trainInds', 'validInds', 'paramInputDataHash', 'seq_timeVector', 'seq_binSizeMs', 'conditionId', 'counts', extra{:});
                     end
                 end
-            else
+                prog.finish();
+            else 
 %                 seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
 %                 r.assertParamsOkayForSequenceData(seqData);
                 seqData = [];
@@ -1746,6 +1761,31 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             r.fitLog = LFADS.FitLog(fname, r.name);
             fitLog = r.fitLog;
+        end
+        
+        function exportResultsToH5(r, exportPath)
+            if nargin < 2
+                exportPath = fullfile(r.path, 'export');
+            end
+            if ~exist(exportPath, 'dir')
+                mkdir(exportPath);
+            end
+            
+            fprintf('Exporting to %s\n', exportPath);
+            
+            mtp = r.loadModelTrainedParams();
+            mtp.exportToHDF5(fullfile(exportPath, 'modelTrainedParams.h5'));
+            
+            prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Exporting Posterior Means');
+            for iDS = 1:r.nDatasets
+                prog.update(iDS);
+                dsname = r.datasetNames{iDS};
+                fname = fullfile(exportPath, sprintf('posteriorMeans_%s.h5', dsname));
+                
+                pm = r.loadPosteriorMeans('datasetIdx', iDS);
+                pm.exportToHDF5(fname);
+            end
+            prog.finish();
         end
     end
 
