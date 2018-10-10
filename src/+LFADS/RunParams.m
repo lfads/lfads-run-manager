@@ -317,10 +317,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
             % always exclude these fields
             alwaysIgnore = {'version', 'name'};
 
-            props = cell(numel(meta.PropertyList), 1);
-            mask = false(numel(meta.PropertyList), 1);
-            for i = 1:numel(meta.PropertyList)
-                prop = meta.PropertyList(i);
+            propertyList = meta.PropertyList;
+            props = cell(numel(propertyList), 1);
+            mask = false(numel(propertyList), 1);
+            for i = 1:numel(propertyList)
+                prop = propertyList(i);
                 name = prop.Name; %#ok<*PROPLC>
                 props{i} = name;
                 if ismember(name, parser.Results.ignoreProperties)
@@ -337,7 +338,7 @@ classdef RunParams < matlab.mixin.CustomDisplay
             end
 
             props = props(mask);
-            propMeta = meta.PropertyList(mask);
+            propMeta = propertyList(mask);
         end
 
         function out = getPropertyValueSubset(p, varargin)

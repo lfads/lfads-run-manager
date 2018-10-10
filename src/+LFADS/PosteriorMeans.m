@@ -49,7 +49,7 @@ classdef PosteriorMeans
             p.addParameter('time', [], @isvector);
             p.addParameter('conditionIds', [], @isvector)
             p.addParameter('rawCounts', [], @isnumeric);
-            p.addParameter('externalInputs', [], @isnumeric);
+            p.addParameter('externalInputs', [], @(x) isnumeric(x) || islogical(x));
             p.addParameter('kind', 'posterior_sample_and_average', @ischar);
             p.parse(varargin{:});
             
@@ -186,6 +186,9 @@ classdef PosteriorMeans
                 value = pm.(props{iP});
                 if isempty(value)
                     continue;
+                end
+                if islogical(value)
+                    value = uint8(value);
                 end
                 if ~isnumeric(value), continue, end
                 value = LFADS.Utils.reverseDims(value); % reorder dims since python expects row major
