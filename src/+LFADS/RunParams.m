@@ -461,9 +461,8 @@ classdef RunParams < matlab.mixin.CustomDisplay
             %parser.KeepUnmatched = true;
             %parser.parse(varargin{:});
 
+            data = p.generateStructForHash();
             length = 6;
-            ignore = p.getListPropertiesNotAffectingHash();
-            data = p.getPropertyValueSubset('ignoreProperties', ignore, 'onlyDifferentFromDefault', true);
             
             % we include AutoDownsizeIntegers=true to allow for graceful
             % expansion of integer types (some used to be 16 bit that are
@@ -473,6 +472,11 @@ classdef RunParams < matlab.mixin.CustomDisplay
             if numel(hash) > length
                 hash = hash(1:length);
             end
+        end
+        
+        function data = generateStructForHash(p)
+            ignore = p.getListPropertiesNotAffectingHash();
+            data = p.getPropertyValueSubset('ignoreProperties', ignore, 'onlyDifferentFromDefault', true);
         end
 
         function hash = generateInputDataHash(p)
@@ -494,13 +498,17 @@ classdef RunParams < matlab.mixin.CustomDisplay
             %parser.parse(varargin{:});
 
             length = 6;
-            propsIgnore = p.getListPropertiesNotAffectingInputDataHash();
-            data = p.getPropertyValueSubset('ignoreProperties', propsIgnore, 'onlyDifferentFromDefault', true);
+            data = p.generateStructForInputDataHash();
             hash = LFADS.Utils.DataHash(data, struct('Format', 'base64', 'AutoDownsizeIntegers', true));
             hash = strrep(strrep(hash, '/', '_'), '+', '-'); % https://tools.ietf.org/html/rfc3548#page-6
             if numel(hash) > length
                 hash = hash(1:length);
             end
+        end
+        
+        function data = generateStructForInputDataHash(p)
+            propsIgnore = p.getListPropertiesNotAffectingInputDataHash();
+            data = p.getPropertyValueSubset('ignoreProperties', propsIgnore, 'onlyDifferentFromDefault', true);
         end
 
         function str = generateHashName(p)
@@ -783,5 +791,13 @@ classdef RunParams < matlab.mixin.CustomDisplay
           end
        end
     end
-
+    
+    methods(Static)
+        function diff = diffTwoParams(p1, p2)
+            d1 = p1.generateStructForHash();
+            d2 = p2.generateStructForHash();
+            
+            
+        end
+    end
 end

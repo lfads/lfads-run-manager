@@ -24,6 +24,7 @@ classdef PosteriorMeans
         
         conditionIds % nTrials x 1 vector of condition ids
         rawCounts % nNeurons x T x nTrials array of raw spike counts
+        externalInputs % nExtInputs x T x nTrials array of external inputs
     end
     
     properties(Dependent)
@@ -37,54 +38,62 @@ classdef PosteriorMeans
     end
     
     methods
-        function pm = PosteriorMeans(validFile, trainFile, validInds, trainInds, run, time, conditionIds, rawCounts, kind)
+        function pm = PosteriorMeans(validFile, trainFile, validInds, trainInds, run, varargin)
             % pm = PosteriorMeans(validFileList, trainFileList, validInds, trainInds, run, time, conditionIds, rawCounts, kind)
             % Construct instance by loading the posterior means files
             %
             % Args:
             %   run (LFADS.Run): run
             %   time (vector): time vector for all timeseries
+            p = inputParser();
+            p.addParameter('time', [], @isvector);
+            p.addParameter('conditionIds', [], @isvector)
+            p.addParameter('rawCounts', [], @isnumeric);
+            p.addParameter('externalInputs', [], @isnumeric);
+            p.addParameter('kind', 'posterior_sample_and_average', @ischar);
+            p.parse(varargin{:});
             
-            if nargin >= 5
-                % defer to utility to do the h5 loading and trial splicing
-                pms = LFADS.Utils.loadPosteriorMeans(validFile, trainFile, validInds, trainInds);
-                
-                if isfield(pms, 'controller_outputs')
-                    pm.controller_outputs = pms.controller_outputs;
+            if nargin == 0
+                return;
+            end
+            
+            % defer to utility to do the h5 loading and trial splicing
+            pms = LFADS.Utils.loadPosteriorMeans(validFile, trainFile, validInds, trainInds);
+
+            if isfield(pms, 'controller_outputs')
+                pm.controller_outputs = pms.controller_outputs;
+            else
+                pm.controller_outputs = [];
+            end
+            vars_to_transfer = { 'factors', 'post_g0_mean', 'post_g0_logvar', ...
+                                'generator_ics', 'generator_states', 'costs', ...
+                                'nll_bound_vaes', 'nll_bound_iwaes', 'validInds', ...
+                               'trainInds' };
+            for nv = 1:numel( vars_to_transfer )
+                v = vars_to_transfer{ nv };
+                if isfield( pms, v )
+                    pm.( v ) = pms. ( v );
                 else
-                    pm.controller_outputs = [];
+                    warning('PosteriorMeans: couldn''t find variable %s', v);
+                    pm.( v ) = [];
                 end
-                vars_to_transfer = { 'factors', 'post_g0_mean', 'post_g0_logvar', ...
-                                    'generator_ics', 'generator_states', 'costs', ...
-                                    'nll_bound_vaes', 'nll_bound_iwaes', 'validInds', ...
-                                   'trainInds' };
-                for nv = 1:numel( vars_to_transfer )
-                    v = vars_to_transfer{ nv };
-                    if isfield( pms, v )
-                        pm.( v ) = pms. ( v );
-                    else
-                        warning('PosteriorMeans: couldn''t find variable %s', v);
-                        pm.( v ) = [];
-                    end
-                end
+            end
+
+            % convert rates into spikes / sec
+            pm.rates = pms.rates * 1000 / run.params.spikeBinMs;
+            % store the times
+
+            if isempty(p.Results.time)
+                pm.time = (1:size(pm.rates, 2)) * run.params.spikeBinMs;
+            else
+                pm.time = p.Results.time(1:size(pm.rates, 2));
+            end
+            pm.params = run.params;
                 
-                % convert rates into spikes / sec
-                pm.rates = pms.rates * 1000 / run.params.spikeBinMs;
-                % store the times
-                
-                time = time(1:size(pm.rates, 2));
-                pm.time = time;
-                pm.params = run.params;
-            end
-            if nargin > 5
-                pm.conditionIds = conditionIds;
-            end
-            if nargin > 6
-                pm.rawCounts = rawCounts;
-            end
-            if nargin > 7
-                pm.kind = kind;
-            end
+            pm.conditionIds = p.Results.conditionIds;
+            pm.rawCounts = p.Results.rawCounts;
+            pm.externalInputs = p.Results.externalInputs;
+            pm.kind = p.Results.kind;
         end
     end
     
@@ -175,7 +184,11 @@ classdef PosteriorMeans
             props = pm.listAllProperties();
             for iP = 1:numel(props)
                 value = pm.(props{iP});
+                if isempty(value)
+                    continue;
+                end
                 if ~isnumeric(value), continue, end
+                value = LFADS.Utils.reverseDims(value); % reorder dims since python expects row major
                 h5create(filename, ['/' props{iP}], size(value), 'DataType', class(value));
                 h5write(filename, ['/' props{iP}], value);
             end

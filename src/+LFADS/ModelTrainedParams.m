@@ -335,12 +335,13 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
                 prop = props{iP};
                 value = mtp.(prop);
                 
+                if isempty(value), continue; end
                 switch prop
                     case perDatasetProps
                         if ~isempty(value)
                             % these are per dataset values and must be nested and saved per dataset
                             for iD = 1:mtp.num_datasets
-                                subvalue = value{iD};
+                                subvalue = LFADS.Utils.reverseDims(value{iD});
                                 fld = ['/' prop '/' mtp.dataset_names{iD}];
                                 h5create(filename, fld, size(subvalue), 'DataType', class(subvalue));
                                 h5write(filename, fld, subvalue);
@@ -355,6 +356,7 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
                         if ~isnumeric(value)
                             warning('Skipping non-numeric property %s', prop);
                         end
+                        value = LFADS.Utils.reverseDims(value);
                         h5create(filename, ['/' prop], size(value), 'DataType', class(value));
                         h5write(filename, ['/' prop], value);
                 end

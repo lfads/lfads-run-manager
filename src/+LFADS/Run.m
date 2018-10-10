@@ -669,20 +669,28 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             end
         end
 
-        function out = loadInputInfo(r)
+        function out = loadInputInfo(r, varargin)
             % loads fields saved into inputInfo.mat which are essentially
             % cached things needed for post-processing, e.g. training vs.
             % validation trial inds, posterior mean time vectors
             %
             % Returns:
             %   out (nDatasets x 1 struct array)
-
-            fnames = cellfun(@(x) fullfile(r.pathLFADSInput, x), r.lfadsInputInfoFileNames, 'UniformOutput', false);
+            
+            p = inputParser();
+            p.addParameter('datasetIdx', 1:r.nDatasets, @isvector);
+            p.parse(varargin{:});
+            datasetIdx = LFADS.Utils.vectorMaskToIndices(p.Results.datasetIdx);
+            
+            fnames = cellfun(@(x) fullfile(r.pathLFADSInput, x), r.lfadsInputInfoFileNames(datasetIdx), 'UniformOutput', false);
             for iDS = 1:numel(fnames)
                 out(iDS) = load(fnames{iDS}); %#ok<AGROW>
             end
             out = out';
-            r.inputInfo = out;
+            
+            if isequal(datasetIdx, (1:r.nDatasets)')
+                r.inputInfo = out;
+            end
         end
 
         function seqCell = loadSequenceData(r, reload, mode)
@@ -1498,13 +1506,15 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             p = inputParser();
             p.addOptional('reload', false, @(x) isscalar(x) && islogical(x));
             p.addParameter('posterior_mean_kind', r.params.posterior_mean_kind, @ischar);
-            p.addParameter('datasetIdx', [], @isvector);
+            p.addParameter('datasetIdx', 1:r.nDatasets, @isvector); % only load a subset of the datasets' posterior means when stitching to save memory
             p.parse(varargin{:});
+            datasetIdx = LFADS.Utils.vectorMaskToIndices(p.Results.datasetIdx);
 
             reload = p.Results.reload;
 
             if ~isempty(r.posteriorMeans) && all([r.posteriorMeans.isValid]) && ~reload
                 pms = LFADS.Utils.makecol(r.posteriorMeans);
+                pms = pms(datasetIdx);
                 return;
             end
             
@@ -1519,13 +1529,12 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 error('Unknown posterior means class name, must be string or function_handle to constructor');
             end
 
-
-            info = r.loadInputInfo();
+            info = r.loadInputInfo('datasetIdx', datasetIdx);
             % check hashes actually match
             thisHash = r.params.generateInputDataHash();
-            for iDS = 1:r.nDatasets
-                if ~isequal(info(iDS).paramInputDataHash, thisHash)
-                    warning('Input data param hash saved for run %d in %s does not match', iDS, r.lfadsInputInfoFileNames{1});
+            for iiDS = 1:numel(datasetIdx)
+                if ~isequal(info(iiDS).paramInputDataHash, thisHash)
+                    warning('Input data param hash saved for run %d in %s does not match', datasetIdx(iiDS), r.lfadsInputInfoFileNames{datasetIdx(iiDS)});
                 end
             end
 
@@ -1533,14 +1542,14 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             % cached field pm_timeVector is prsent in info, we don't need
             % them
             if ~isfield(info, 'seq_timeVector') || ~isfield(info, 'seq_binSizeMs')
-                seq = r.loadSequenceData();
-                for iDS = 1:r.nDatasets
-                    if isfield(seq{iDS}, 'binWidthMs')
-                        info(iDS).seq_binSizeMs = seq{iDS}(1).binWidthMs;
+                seq = r.loadSequenceData('datasetIdx', datasetIdx);
+                for iiDS = 1:numel(datasetIdx)
+                    if isfield(seq{iiDS}, 'binWidthMs')
+                        info(iiDS).seq_binSizeMs = seq{iiDS}(1).binWidthMs;
                     else
-                        info(iDS).seq_binSizeMs = seq{iDS}(1).params.dtMS;
+                        info(iiDS).seq_binSizeMs = seq{iiDS}(1).params.dtMS;
                     end
-                    info(iDS).seq_timeVector = seq{iDS}(1).y_time;
+                    info(iiDS).seq_timeVector = seq{iiDS}(1).y_time;
                 end
             end
 
@@ -1554,71 +1563,72 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 otherwise
                     error('Unknown posterior_mean_kind "%s"', r.params.posterior_mean_kind);
             end
+            trainList = trainList(datasetIdx);
+            validList = validList(datasetIdx);
             
-            if isempty(p.Results.datasetIdx)
-                datasetMask = true(r.nDatasets, 1);
-            else
-                datasetMask = LFADS.Utils.vectorIndicesToMask(p.Results.datasetIdx, r.nDatasets);
-            end
-
-            valid = false(r.nDatasets, 1);
-            prog = LFADS.Utils.ProgressBar(r.nDatasets, 'Loading posterior means for each dataset');
-            for iDS = 1:r.nDatasets
-                if ~datasetMask(iDS), continue, end
-                prog.update(iDS);
-                if ~exist(fullfile(r.pathLFADSOutput, trainList{iDS}), 'file')
-                    oldFile = strrep(trainList{iDS}, 'posterior_sample_and_average', 'posterior_sample');
+            valid = false(numel(datasetIdx), 1);
+            prog = LFADS.Utils.ProgressBar(numel(datasetIdx), 'Loading posterior means for each dataset');
+            for iiDS = 1:numel(datasetIdx)
+                prog.update(iiDS);
+                if ~exist(fullfile(r.pathLFADSOutput, trainList{iiDS}), 'file')
+                    oldFile = strrep(trainList{iiDS}, 'posterior_sample_and_average', 'posterior_sample');
                     if exist(fullfile(r.pathLFADSOutput, oldFile), 'file')
-                        trainList{iDS} = oldFile;
+                        trainList{iiDS} = oldFile;
                     else
                         warning('LFADS Posterior Mean train file not found for dataset %d: %s', ...
-                            iDS, fullfile(r.pathLFADSOutput, trainList{iDS}));
-                        pms(iDS) = LFADS.PosteriorMeans(); %#ok<AGROW>
+                            iiDS, fullfile(r.pathLFADSOutput, trainList{iiDS}));
+                        pms(iiDS) = pmConstructorFn(); %#ok<AGROW>
                         continue;
                     end
                 end
-                if ~exist(fullfile(r.pathLFADSOutput, validList{iDS}), 'file')
-                    oldFile = strrep(validList{iDS}, 'posterior_sample_and_average', 'posterior_sample');
+                if ~exist(fullfile(r.pathLFADSOutput, validList{iiDS}), 'file')
+                    oldFile = strrep(validList{iiDS}, 'posterior_sample_and_average', 'posterior_sample');
                     if exist(fullfile(r.pathLFADSOutput, oldFile), 'file')
-                        validList{iDS} = oldFile;
+                        validList{iiDS} = oldFile;
                     else
                         warning('LFADS Posterior Mean valid file not found for dataset %d: %s', ...
-                            iDS, fullfile(r.pathLFADSOutput, validList{iDS}));
-                        pms(iDS) = LFADS.PosteriorMeans(); %#ok<AGROW>
+                            datasetIdx(iiDS), fullfile(r.pathLFADSOutput, validList{iiDS}));
+                        pms(iiDS) = pmConstructorFn(); %#ok<AGROW>
                         continue;
                     end
                 end
 
                 if isfield(info, 'conditionId')
-                    conditionIds = info(iDS).conditionId;
+                    conditionIds = info(iiDS).conditionId;
                 else
                     conditionIds = [];
                 end
                 if isfield(info, 'counts')
-                    rawCounts = info(iDS).counts;
+                    rawCounts = info(iiDS).counts;
                 else
                     rawCounts = [];
                 end
+                if isfield(info, 'externalInputs')
+                    externalInputs = info(iiDS).externalInputs;
+                else
+                    externalInputs = [];
+                end
                 
                 dt_pm = r.params.spikeBinMs;
-                dt_y = info(iDS).seq_binSizeMs;
+                dt_y = info(iiDS).seq_binSizeMs;
                 rebin = dt_pm / dt_y;
-                time = info(iDS).seq_timeVector(1:rebin:end);
+                time = info(iiDS).seq_timeVector(1:rebin:end);
                 
                 % call the LFADS.PosteriorMeans constructor (or whatever
                 % class has been specified above)
-                pms(iDS) = pmConstructorFn(...
-                    fullfile(r.pathLFADSOutput, validList{iDS}), ...
-                    fullfile(r.pathLFADSOutput, trainList{iDS}), ...
-                    info(iDS).validInds, info(iDS).trainInds, ...
-                    r, time, conditionIds, rawCounts, posterior_mean_kind); %#ok<AGROW>
-                valid(iDS) = true;
+                pms(iiDS) = pmConstructorFn(...
+                    fullfile(r.pathLFADSOutput, validList{iiDS}), ...
+                    fullfile(r.pathLFADSOutput, trainList{iiDS}), ...
+                    info(iiDS).validInds, info(iiDS).trainInds, ...
+                    r, 'time', time, 'conditionIds', conditionIds, 'rawCounts', rawCounts, ...
+                    'externalInputs', externalInputs, 'kind', posterior_mean_kind); %#ok<AGROW>
+                valid(iiDS) = true;
             end
             prog.finish();
 
             pms = LFADS.Utils.makecol(pms);
             
-            if all(datasetMask)
+            if isequal(datasetIdx, (1:r.nDatasets)')
                 r.posteriorMeans = pms;
             end
         end
