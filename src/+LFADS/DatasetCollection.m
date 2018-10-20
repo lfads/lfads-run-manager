@@ -17,6 +17,7 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
     properties(Dependent)
         nDatasets % Number of datasets in this collection
         datasetNames % nDatasets x 1 cellstr of dataset names
+        infoLoaded
     end
 
     methods
@@ -69,6 +70,40 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
             % Flush all datasets from this collection
             dc.datasets = [];
         end
+        
+        function [datasets, idx] = findDataset(dc, datasetSearch)
+            [tf, idx] = dc.ismemberDataset(datasetSearch);
+            assert(all(tf), 'Some dataset names could not be found in this DatasetCollection');
+            datasets = dc.datasets(idx);
+        end
+        
+        function [tf, idx] = ismemberDataset(dc, datasetSearch)
+            % Args:
+            %   datasetSearch : array of LFADS.Dataset, string names, or indices into .runSpecs
+            %
+            % Returns:
+            %   tf : logical
+            %     does each runSpec exist within .runSpecs
+            %   idx : indices
+            %     which index in .runSpecs
+            %
+
+            if ischar(datasetSearch)
+                datasetSearch = {datasetSearch};
+            end
+            if iscellstr(datasetSearch)
+                [tf, idx] = ismember(datasetSearch, {dc.datasets.name});
+
+            elseif isa(runSpecSearch, 'LFADS.Dataset')
+                [tf, idx] = ismember(datasetSearch, dc.datasets);
+
+            else
+                % assume is selection
+                idx = datasetSearch;
+                tf = true(size(idx));
+            end
+            idx = LFADS.Utils.makecol(idx(:));
+        end
 
         function n = get.nDatasets(dc)
             n = numel(dc.datasets);
@@ -76,6 +111,10 @@ classdef DatasetCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.
 
         function names = get.datasetNames(dc)
             names = {dc.datasets.name}';
+        end
+        
+        function tf = get.infoLoaded(dc)
+            tf = all([dc.datasets.infoLoaded]);
         end
 
         function reloadInfo(dc)

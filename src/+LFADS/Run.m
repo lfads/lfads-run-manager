@@ -112,6 +112,8 @@ classdef Run < handle & matlab.mixin.CustomDisplay
     end
 
     properties(Dependent)
+        nChannelsTotal % Total number of neurons across all datasets
+        
         nDatasets % Number of datasets used by this run
         datasetNames % nDatasets x 1 cell array of names
         datasetCollection % Dataset collection used by this run (and all runs in the same RunCollection)
@@ -471,7 +473,11 @@ classdef Run < handle & matlab.mixin.CustomDisplay
         function f = get.fileLFADSOutput(r)
             f = fullfile(r.path, 'lfads.out');
         end
-
+        
+        function n = get.nChannelsTotal(r)
+            n = sum([r.datasets.nChannels]);
+        end
+        
         function n = get.nDatasets(r)
             n = numel(r.datasets);
         end
@@ -902,7 +908,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             if any(maskGenerate)
                 %regenerate = false;
-                seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
+                seqData = r.loadSequenceData(); % this will set r.sequenceData
                 r.assertParamsOkayForSequenceData(seqData);
 
                 % no need to regenerate if alignment and export use the
@@ -1576,7 +1582,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 case 'posterior_push_mean'
                     [trainList, validList] = r.getLFADSPosteriorPushMeanFiles();
                 otherwise
-                    error('Unknown posterior_mean_kind "%s"', r.params.posterior_mean_kind);
+                    error('Unknown posterior_mean_kind "%s"', posterior_mean_kind);
             end
             trainList = trainList(datasetIdx);
             validList = validList(datasetIdx);
@@ -1636,7 +1642,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                     fullfile(r.pathLFADSOutput, trainList{iiDS}), ...
                     info(iiDS).validInds, info(iiDS).trainInds, ...
                     r, 'time', time, 'conditionIds', conditionIds, 'rawCounts', rawCounts, ...
-                    'externalInputs', externalInputs, 'kind', posterior_mean_kind); %#ok<AGROW>
+                    'externalInputs', externalInputs, 'kind', posterior_mean_kind, 'datasetIndex', datasetIdx(iiDS)); %#ok<AGROW>
                 valid(iiDS) = true;
             end
             prog.finish();
@@ -1736,7 +1742,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
                 return;
             end
 
-            r.modelTrainedParams = mtpConstructorFn(fname, r.datasetNames, varargin{:});
+            r.modelTrainedParams = mtpConstructorFn(fname, r.datasetNames, 'run', r, varargin{:});
             mtp = r.modelTrainedParams;
         end
 
@@ -1763,6 +1769,23 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             fitLog = r.fitLog;
         end
         
+        function exportModelTrainedParamsToH5(r, filename)
+            if nargin < 2
+                exportPath = fullfile(r.path, 'export');
+                if ~exist(exportPath, 'dir')
+                    mkdir(exportPath);
+                end
+                filename = fullfile(exportPath, 'modelTrainedParams.h5');
+            end
+            mtp = r.loadModelTrainedParams();
+            fprintf('Exporting model trained params to %s\n', filename);
+            if exist(filename, 'file')
+                delete(filename);
+            end
+            mtp.exportToHDF5(filename);
+        end
+            
+
         function exportResultsToH5(r, exportPath)
             if nargin < 2
                 exportPath = fullfile(r.path, 'export');
