@@ -14,8 +14,8 @@ classdef PosteriorMeans
         
         generator_ics % nGeneratorUnits x nTrials` generator initial conditions
         generator_states % nGeneratorUnits x T x nTrials 
-        rates % nNeurons x T x nTrials        
-        costs % nTrials x 1
+        rates % nNeurons x T x nTrials (this in spikes/sec!)  
+        costs % nTrials x 1 
         nll_bound_vaes % nTrials x 1
         nll_bound_iwaes % nTrials x 1
         validInds % list of validation trial indices
@@ -23,11 +23,16 @@ classdef PosteriorMeans
         params % :ref:`LFADS_RunParams` instance
         
         conditionIds % nTrials x 1 vector of condition ids
-        rawCounts % nNeurons x T x nTrials array of raw spike counts
+        rawCounts % nNeurons x T x nTrials array of raw spike counts (this is in spikes/bin!)
         externalInputs % nExtInputs x T x nTrials array of external inputs
+        
+        datasetIndexByTrial % nTrials x 1 vector indicating which dataset this corresponds to
     end
     
     properties(Dependent)
+        binWidthMs
+        scaleFactorCountsToRates
+        
         isValid % contains valid, loaded data, false means empty
         nControllerOutputs
         nGeneratorUnits % number of units in the generator RNN
@@ -46,6 +51,7 @@ classdef PosteriorMeans
             %   run (LFADS.Run): run
             %   time (vector): time vector for all timeseries
             p = inputParser();
+            p.addParameter('datasetIndex', NaN, @(x) isempty(x) || isscalar(x));
             p.addParameter('time', [], @isvector);
             p.addParameter('conditionIds', [], @isvector)
             p.addParameter('rawCounts', [], @isnumeric);
@@ -94,6 +100,8 @@ classdef PosteriorMeans
             pm.rawCounts = p.Results.rawCounts;
             pm.externalInputs = p.Results.externalInputs;
             pm.kind = p.Results.kind;
+            
+            pm.datasetIndexByTrial = repmat(p.Results.datasetIndex, pm.nTrials, 1);
         end
     end
     
@@ -124,6 +132,14 @@ classdef PosteriorMeans
         
         function n = get.nTrials(pm)
             n = size(pm.factors, 3);
+        end
+        
+        function dt = get.binWidthMs(pm)
+            dt = pm.time(2) - pm.time(1);
+        end
+        
+        function gain = get.scaleFactorCountsToRates(pm)
+            gain = 1000 / pm.binWidthMs;
         end
     end
     
@@ -197,7 +213,10 @@ classdef PosteriorMeans
             end
         end
         
-        function props = listAllProperties(pm)
+        function props = listAllProperties(pm, includeDependent)
+            if nargin < 2
+                includeDependent = true;
+            end
             meta = metaclass(pm);
             
             props = cell(numel(meta.PropertyList), 1);
@@ -207,12 +226,41 @@ classdef PosteriorMeans
                 name = prop.Name;
                 props{i} = name;
                 
-                if ~prop.Constant && ~prop.Hidden
+                if ~prop.Constant && ~prop.Hidden && (~prop.Dependent || includeDependent)
                     mask(i) = true;
                 end
             end
             
             props = props(mask);
         end
-    end    
+    end
+    
+    methods
+        function pmcat = concatenateOverTrials(pms)
+            constructorFn = str2func(class(pms(1)));
+            pmcat = constructorFn();
+            
+            props = pms(1).listAllProperties(false);
+            
+            % find one PM with at least 2 trials so we can figure out
+            % dimensions
+            idxUse = NaN;
+            for iPM = 1:numel(pms)
+                if pms(iPM).nTrials > 1
+                    idxUse = iPM;
+                    break;
+                end
+            end
+            assert(~isnan(idxUse), 'No PosteriorMeans have at least 2 trials');
+            pmTest = pms(idxUse);
+                        
+            for iP = 1:numel(props)
+                prop = props{iP};
+                
+                dim = find(size(pmTest.(prop)) == pmTest.nTrials, 1, 'last');
+                pmcat.(prop) = cat(dim, pms.(prop));
+            end
+        end
+        
+    end
 end

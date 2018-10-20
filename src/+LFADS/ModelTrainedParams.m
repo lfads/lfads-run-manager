@@ -80,6 +80,9 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
         num_datasets
         num_channels_all_datasets
         
+        num_channels_by_dataset
+        dataset_idx_concatenated
+        
         % Readout matrices concatenated over datasets, for imputing rates of neurons not recorded in the other sessions
         factors_to_logrates_W_concatenated % readout alignment weights; num_datasets x 1 cell of c_factors_dim x nNeurons
         factors_to_logrates_b_concatenated % readout alignment biases; num_datasets x 1 cell of 1 x nNeurons
@@ -89,6 +92,7 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
         function mtp = ModelTrainedParams(fname, dataset_names,varargin)
             p = inputParser();
             p.addParameter('verbose', false, @islogical);
+            p.addParameter('run', [], @(x) isa(x, 'LFADS.Run'));
             p.parse(varargin{:});
             verbose = p.Results.verbose;
             
@@ -213,7 +217,18 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
         end
         
         function n = get.num_channels_all_datasets(mtp)
-            n = sum(cellfun(@(x) size(x, 1), mtp.factors_to_logrates_W));
+            n = sum(mtp.num_channels_by_dataset);
+        end
+        
+        function idx = get.dataset_idx_concatenated(mtp)
+            idx = arrayfun(@(ind, n) repmat(ind, n, 1), ...
+                (1:mtp.num_datasets)', ...
+                mtp.num_channels_by_dataset, 'UniformOutput', false);
+            idx = cat(1, idx{:});
+        end
+
+        function v = get.num_channels_by_dataset(mtp)
+            v = cellfun(@(x) size(x, 2), mtp.factors_to_logrates_W);
         end
         
         function mat = get.factors_to_logrates_W_concatenated(mtp)
@@ -223,6 +238,8 @@ classdef ModelTrainedParams < matlab.mixin.CustomDisplay
         function mat = get.factors_to_logrates_b_concatenated(mtp)
             mat = cat(2, mtp.factors_to_logrates_b{:});
         end
+        
+        
     end
     
     methods(Access = protected)
