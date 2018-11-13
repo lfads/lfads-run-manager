@@ -652,8 +652,9 @@ classdef RunParams < matlab.mixin.CustomDisplay
                         valstr = '[...]';
                     end
                     
-                case {'char'}
-                    valstr = value;
+                case {'char', 'string'}
+                    if isstring(value), assert(isscalar(value), 'String arrays not valid here'); end
+                    valstr = char(value);
                     
                 case {'cell'}
                     assert(isempty(value) || isvector(value), 'Cell value for property %s must be vector');
@@ -738,8 +739,9 @@ classdef RunParams < matlab.mixin.CustomDisplay
                         end
                     case {'double','single'}
                         fieldstr = sprintf('%f', thisVal);
-                    case {'char'}
-                        fieldstr = thisVal;
+                    case {'char', 'string'}
+                        if isstring(thisVal), assert(isscalar(thisVal), 'String arrays not valid here'); end
+                        fieldstr = char(thisVal);
                     otherwise
                         error(['don''t know this type: ' class(thisVal)]);
                 end

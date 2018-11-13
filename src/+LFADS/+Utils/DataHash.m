@@ -315,6 +315,13 @@ function Hash = DataHash(Data, Opt)
         if isnumeric(Data) && autoDownsizeIntegers
             Data = handleDownsizeInteger(Data);
         end
+        if isstring(Data)
+            if isscalar(Data)
+                Data = char(Data);
+            else
+                Data = cellstr(Data);
+            end
+        end
         Engine.update([uint8(class(Data)), ...
                       typecast(uint64([ndims(Data), size(Data)]), 'uint8')]);
 
@@ -344,7 +351,7 @@ function Hash = DataHash(Data, Opt)
            end
         elseif islogical(Data)               % TYPECAST cannot handle LOGICAL
            Engine.update(typecast(uint8(Data(:)), 'uint8'));
-        elseif ischar(Data)                  % TYPECAST cannot handle CHAR
+        elseif ischar(Data)       % TYPECAST cannot handle CHAR
            Engine.update(typecast(uint16(Data(:)), 'uint8'));
         elseif isa(Data, 'function_handle')
            Engine = CoreHash(ConvertFuncHandle(Data), Engine);
