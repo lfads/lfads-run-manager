@@ -57,7 +57,7 @@ Optional parameters include:
 This will generate a Python script `run_lfads.py`, which for our example can be launched via:
 
 ```bash
-python ~/lorenz_example/runs/exampleSingleRun/run_lfadsqueue.py
+python ~/lorenz_example/runs/exampleSingleSession/run_lfadsqueue.py
 ```
 
 !!! note "Run Manager `src` folder should be added to your `PYTHONPATH`"
@@ -98,10 +98,10 @@ A few notes on how the system works:
 The `run_lfadsqueue.py` script will periodically output updates about how the runs are proceeding:
 
 ```bash
-(tensorflow) ➜  exampleRun python run_lfadsqueue.py
+(tensorflow) ➜  python run_lfadsqueue.py
 Warning: tmux sessions will be nested inside the current session
 Queue: Launching TensorBoard on port 42561 in tmux session exampleRun_tensorboard_port42561
-bash /home/djoshea/lorenz_example/runs/exampleRun/launch_tensorboard.sh --port=42561
+bash /home/djoshea/lorenz_example/runs/exampleSingleSession/launch_tensorboard.sh --port=42561
 Queue: Initializing with 2 GPUs and 12 CPUs, max 4 simultaneous tasks
 Task lfads_param_Qr2PeG__single_dataset001: launching on gpu 0
 Task lfads_param_Qr2PeG__single_dataset001: started in tmux session lfads_param_Qr2PeG__single_dataset001 on GPU 0 with PID 19498
@@ -124,7 +124,7 @@ As the tasks run, the task queue will print out messages related to decreasing t
 Note that TensorBoard has automatically been launched on an available port, here on `42561`. You can also directly attach to the tmux sessions whose names are indicated in the script as "Tasks", which can be listed using `tmux list-sessions`.
 
 ```bash
-➜  exampleRun tmux list-sessions
+(tensorflow) ➜ tmux list-sessions
 matlab: 4 windows (created Tue Oct  3 21:51:49 2017) [201x114] (attached)
 exampleRun_tensorboard_port42561: 1 windows (created Fri Oct  6 14:43:16 2017) [201x113]
 lfads_param_Qr2PeG__all: 1 windows (created Fri Oct  6 14:43:17 2017) [201x113]
@@ -162,7 +162,7 @@ Here, you should specify options that will be written into the shell script, the
 
 This will generate an `lfads_train.sh` in the corresponding run's folder. For the first run in our example, this is at
 ```
-~/lorenz_example/runs/exampleRun/param_Qr2PeG/single_dataset001/lfads_train.sh
+~/lorenz_example/runs/exampleSingleSession/param_Qr2PeG/single_dataset001/lfads_train.sh
 ```
 
 The script essentially launches Python to run `run_lfads.py` with the specific parameters you've indicated in `RunParams` and pointing at the corresponding datasets, which were saved earlier when we called `rc.prepareForLFADS`.
