@@ -28,7 +28,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.superfences
   - smarty
-  - toc(permalink=true)
+  - toc:
+      permalink: true
 
 nav:
   - LFADS Run Manager:
