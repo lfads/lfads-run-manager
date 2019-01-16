@@ -2,7 +2,7 @@
 
 
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="no-js">
   <head>
     
@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.4">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.2.0">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.572ca0f0.css">
       
         <link rel="stylesheet" href="../assets/stylesheets/application-palette.22915126.css">
       
@@ -55,7 +55,7 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="../assets/javascripts/modernizr.8c900955.js"></script>
     
     
       
@@ -65,6 +65,7 @@
       
     
     <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
     
     
   </head>
@@ -102,7 +103,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#running-lfads" tabindex="1" class="md-skip">
+      <a href="#running-lfads" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -755,7 +756,7 @@
 <dd>If true, automatically appends the path to <code class="codehilite">lfadsqueue.py</code> to the <code class="codehilite">PYTHONPATH</code> inside the generated script. Defaults to <code class="codehilite">false</code> to avoid confusion.</dd>
 </dl>
 <p>This will generate a Python script <code class="codehilite">run_lfads.py</code>, which for our example can be launched via:</p>
-<div class="codehilite"><pre><span></span>python ~/lorenz_example/runs/exampleSingleRun/run_lfadsqueue.py
+<div class="codehilite"><pre><span></span>python ~/lorenz_example/runs/exampleSingleSession/run_lfadsqueue.py
 </pre></div>
 
 <div class="admonition note">
@@ -790,10 +791,10 @@
 <li>If you <code class="codehilite">Ctrl-C</code> the <code class="codehilite">run_lfadsqueue.py</code> script itself, the already launched runs will continue running. If you want to abort them, you can <code class="codehilite">pkill python</code> although this will kill all python processes you&rsquo;ve created. In either case, you should be able to relaunch the <code class="codehilite">run_lfadsqueue.py</code> script and have it pick up where it left off as well.</li>
 </ul>
 <p>The <code class="codehilite">run_lfadsqueue.py</code> script will periodically output updates about how the runs are proceeding:</p>
-<div class="codehilite"><pre><span></span><span class="o">(</span>tensorflow<span class="o">)</span> ➜  exampleRun python run_lfadsqueue.py
+<div class="codehilite"><pre><span></span><span class="o">(</span>tensorflow<span class="o">)</span> ➜  python run_lfadsqueue.py
 Warning: tmux sessions will be nested inside the current session
 Queue: Launching TensorBoard on port <span class="m">42561</span> in tmux session exampleRun_tensorboard_port42561
-bash /home/djoshea/lorenz_example/runs/exampleRun/launch_tensorboard.sh --port<span class="o">=</span><span class="m">42561</span>
+bash /home/djoshea/lorenz_example/runs/exampleSingleSession/launch_tensorboard.sh --port<span class="o">=</span><span class="m">42561</span>
 Queue: Initializing with <span class="m">2</span> GPUs and <span class="m">12</span> CPUs, max <span class="m">4</span> simultaneous tasks
 Task lfads_param_Qr2PeG__single_dataset001: launching on gpu <span class="m">0</span>
 Task lfads_param_Qr2PeG__single_dataset001: started in tmux session lfads_param_Qr2PeG__single_dataset001 on GPU <span class="m">0</span> with PID <span class="m">19498</span>
@@ -813,7 +814,7 @@ Task lfads_param_Qr2PeG__single_dataset001:      Decreasing learning rate to <sp
 
 <p>As the tasks run, the task queue will print out messages related to decreasing the learning rate, which is one way to measure ongonig progress towards the termination criterion (when the learning rate hits <code class="codehilite">c_learning_rate_stop</code>). When a task fails or completes, the queue will print out a running tally.</p>
 <p>Note that TensorBoard has automatically been launched on an available port, here on <code class="codehilite">42561</code>. You can also directly attach to the tmux sessions whose names are indicated in the script as &ldquo;Tasks&rdquo;, which can be listed using <code class="codehilite">tmux list-sessions</code>.</p>
-<div class="codehilite"><pre><span></span>➜  exampleRun tmux list-sessions
+<div class="codehilite"><pre><span></span><span class="o">(</span>tensorflow<span class="o">)</span> ➜ tmux list-sessions
 matlab: <span class="m">4</span> windows <span class="o">(</span>created Tue Oct  <span class="m">3</span> <span class="m">21</span>:51:49 <span class="m">2017</span><span class="o">)</span> <span class="o">[</span>201x114<span class="o">]</span> <span class="o">(</span>attached<span class="o">)</span>
 exampleRun_tensorboard_port42561: <span class="m">1</span> windows <span class="o">(</span>created Fri Oct  <span class="m">6</span> <span class="m">14</span>:43:16 <span class="m">2017</span><span class="o">)</span> <span class="o">[</span>201x113<span class="o">]</span>
 lfads_param_Qr2PeG__all: <span class="m">1</span> windows <span class="o">(</span>created Fri Oct  <span class="m">6</span> <span class="m">14</span>:43:17 <span class="m">2017</span><span class="o">)</span> <span class="o">[</span>201x113<span class="o">]</span>
@@ -844,7 +845,7 @@ Queue: <span class="m">0</span> skipped, <span class="m">4</span> finished, <spa
 <li><code class="codehilite">appendWriteModelParams</code> - <code class="codehilite">true</code> or <code class="codehilite">false</code> specifying whether to chain the posterior mean sampling operation after the training is finished. The default is <code class="codehilite">false</code>, but if you set this to <code class="codehilite">true</code>, you won&rsquo;t need to call <code class="codehilite">writeShellScriptWriteModelParams</code> below.</li>
 </ul>
 <p>This will generate an <code class="codehilite">lfads_train.sh</code> in the corresponding run&rsquo;s folder. For the first run in our example, this is at
-<div class="codehilite"><pre><span></span>~/lorenz_example/runs/exampleRun/param_Qr2PeG/single_dataset001/lfads_train.sh
+<div class="codehilite"><pre><span></span>~/lorenz_example/runs/exampleSingleSession/param_Qr2PeG/single_dataset001/lfads_train.sh
 </pre></div></p>
 <p>The script essentially launches Python to run <code class="codehilite">run_lfads.py</code> with the specific parameters you&rsquo;ve indicated in <code class="codehilite">RunParams</code> and pointing at the corresponding datasets, which were saved earlier when we called <code class="codehilite">rc.prepareForLFADS</code>.</p>
 <div class="codehilite"><pre><span></span><span class="ch">#!/bin/bash</span>
@@ -959,7 +960,7 @@ Queue: <span class="m">0</span> skipped, <span class="m">4</span> finished, <spa
       
     </div>
     
-      <script src="../assets/javascripts/application.583bbe55.js"></script>
+      <script src="../assets/javascripts/application.b41f3d20.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
