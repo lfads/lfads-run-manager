@@ -67,7 +67,7 @@ function datasets = generateDemoDatasets(datasetPath, varargin)
         nTrC = nTrialsCByDataset(iDS);
         nCh = nChannelsByDataset(iDS);
 
-        W = sort((rand(s, nCh, D)+1) .* sign(randn(s, nCh, D)), 1); % N x 3
+        W = sortrows((rand(s, nCh, D)+1) .* sign(randn(s, nCh, D)), 1); % N x 3
         b = log(meanFr / 1000) * ones(nCh, 1); % N x 1
 
         trialIdx = 1;
