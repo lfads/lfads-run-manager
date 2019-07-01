@@ -169,6 +169,7 @@ c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim
                     c_l2_start_step: 0
                 c_l2_increase_steps: 900
      scaleIncreaseStepsWithDatasets: 1
+         scaleStartStepWithDatasets: 1
 
    External inputs
                     c_ext_input_dim: 0
@@ -209,6 +210,8 @@ c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim
                   c_do_train_readin: 1
                  useAlignmentMatrix: 0
     useSingleDatasetAlignmentMatrix: 0
+                  alignmentApproach: 'regressGlobalPCs'
+                 alignmentExtraArgs: {}
 
    Posterior sampling
                 posterior_mean_kind: 'posterior_sample_and_average'

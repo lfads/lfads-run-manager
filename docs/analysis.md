@@ -1,4 +1,6 @@
-# Loading and Analyzing LFADS Posterior Means
+# Loading and Analyzing LFADS Results
+
+  This documentation applies to LFADS models that have finished training, allowing you to load the results back into Matlab for further analysis.
 
 ## Reusing the `drive_script`
 

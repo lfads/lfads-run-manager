@@ -85,6 +85,9 @@ You can then kick everything off by running `python run_lfadsqueue.py` at the co
     rc.writeShellScriptRunQueue('virtualenv', 'tensorflow');
     ```
 
+!!! tip "No module named `lfadsqueue` exception"
+    If you run into an issue related to the module `lfadsqueue` not being found, be sure that you've added `lfads-run-manager/src` to your `PYTHONPATH` as described in the [installation instructions](install//#install-lfads).
+
 A few notes on how the system works:
 
 * Output from Python will be `tee`'d into `lfads.out`, so you can check the output during or afterwards either there or in the `tmux` session.
