@@ -21,11 +21,13 @@ To use the run manager, you will need to author a few functions that perform spe
 
 ## Quick example
 
-We'll walkthrough this example in more detail in this documentation, but to give you an idea of how the run manager works, here's the Matlab code you'd use to launch a couple of runs.
+We'll walkthrough this example in more detail in this documentation, but to give you an idea of how the run manager works, here's the Matlab code you'd use to launch a couple of runs. Please note that you must follow the [installation instructions](install.md) first to follow along with this, and a more detailed walkthrough is available in [Setting up a single-session run](single-session.md).
 
 ```matlab
-% Identify the datasets you'll be using
-% Here we'll add one at ~/lorenz_example/datasets/dataset001.mat
+% Identify the datasets you'll be using (this will generate demo datasets)
+LFADS.Utils.generateDemoDatasets('~/lorenz_example/datasets', 'nDatasets', 3);
+
+% Add one that lives in ~/lorenz_example/datasets/dataset001.mat
 dc = LorenzExperiment.DatasetCollection('~/lorenz_example/datasets');
 dc.name = 'lorenz_example';
 ds = LorenzExperiment.Dataset(dc, 'dataset001.mat'); % adds this dataset to the collection
@@ -65,41 +67,54 @@ You've now setup a 1x 4 grid of LFADS runs, spanning 4 different hyperparameter 
 ```matlab
 >> rc
 
-LorenzExperiment.RunCollection "exampleRun" (16 runs total)
+rc =
+
+LorenzExperiment.RunCollection "example" (4 runs total)
   Dataset Collection "lorenz_example" (1 datasets) in ~/lorenz_example/datasets
-  Path: ~/lorenz_example/runs/exampleRun
+  Path: ~/lorenz_example/runs/example
 
   4 parameter settings
-    [1 param_7I6XSW data_cgrfui] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=2 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-    [2 param_O4V73g data_2_zdvC] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=4 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-    [3 param_ngqEhM data_GeiefE] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=6 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
-    [4 param_Qr2PeG data_RE1kuL] LorenzExperiment.RunParams useAlignmentMatrix=true c_factors_dim=8 c_ic_enc_dim=64 c_gen_dim=64 c_co_dim=0 c_batch_size=150 c_learning_rate_stop=0.001
+  [1 param_Z1-4Ne data_cq1HAe] LorenzExperiment.RunParams "" c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim=64 c_factors_dim=2
+  [2 param_UEvXAB data_QcdNGf] LorenzExperiment.RunParams "" c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim=64 c_factors_dim=4
+  [3 param_m8Dk5i data_y3K_k3] LorenzExperiment.RunParams "" c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim=64 c_factors_dim=6
+  [4 param_YOs74u data_4MaTKO] LorenzExperiment.RunParams "" c_learning_rate_stop=0.001 c_batch_size=150 c_co_dim=0 c_ic_enc_dim=64 c_gen_dim=64 c_factors_dim=8
 
   1 run specifications
   [ 1] LorenzExperiment.RunSpec "single_dataset001" (1 datasets)
 
-                          name: 'exampleRun'
-                       comment: ''
-                      rootPath: '~/lorenz_example/runs'
-                       version: 20171107
-             datasetCollection: [1x1 LorenzExperiment.DatasetCollection]
-                          runs: [1x4 LorenzExperiment.Run]
-                        params: [4x1 LorenzExperiment.RunParams]
-                      runSpecs: [1x1 LorenzExperiment.RunSpec]
-                       nParams: 4
-                     nRunSpecs: 1
-                    nRunsTotal: 4
-                     nDatasets: 1
-                  datasetNames: {1x1 cell}
-                          path: '~/lorenz_example/runs/exampleRun'
-      pathsCommonDataForParams: {4x1 cell}
-                pathsForParams: {4x1 cell}
-    fileShellScriptTensorboard: '~/lorenz_example/runs/exampleRun/launch_tensorboard.sh'
-               fileSummaryText: '~/lorenz_example/runs/exampleRun/summary.txt'
-       fileShellScriptRunQueue: '~/lorenz_example/runs/exampleRun/run_lfadsqueue.py'
+                                        name: 'example'
+                                     comment: ''
+                                    rootPath: '~/lorenz_example/runs'
+                                     version: 20171107
+                           datasetCollection: [1×1 LorenzExperiment.DatasetCollection]
+                                        runs: [1×4 LorenzExperiment.Run]
+                                      params: [4×1 LorenzExperiment.RunParams]
+                                    runSpecs: [1×1 LorenzExperiment.RunSpec]
+                                     nParams: 4
+                                   nRunSpecs: 1
+                                  nRunsTotal: 4
+                                   nDatasets: 1
+                                datasetNames: {'dataset001'}
+                                    datasets: [1×1 LorenzExperiment.Dataset]
+                                        path: '~/lorenz_example/runs/example'
+                    pathsCommonDataForParams: {4×1 cell}
+                              pathsForParams: {4×1 cell}
+                  fileShellScriptTensorboard: '~/lorenz_example/runs/example/launch_tensorboard.sh'
+                             fileSummaryText: '~/lorenz_example/runs/example/summary.txt'
+                     fileShellScriptRunQueue: '~/lorenz_example/runs/example/run_lfadsqueue.py'
+    fileShellScriptRunQueuePosteriorMeanOnly: '~/lorenz_example/runs/example/run_lfadsqueue_posteriorMeanOnly.py'
 ```
 
-Then you can simply run `python run_lfadsqueue.py`, a script which was automatically generated to fire off all the LFADS jobs in parallel, load-balancing as many as your system can handle across available GPUs. Then wait a few hours/days...
+Then in your terminal, you can run:
+
+```bash
+python ~/lorenz_example/runs/example/run_lfadsqueue.py
+```
+
+This is a script which was automatically generated to fire off all the LFADS jobs in parallel, load-balancing as many as your system can handle across available GPUs. Then wait a few hours/days...
+
+!!! tip "No module named `lfadsqueue` exception"
+    If you run into an issue related to the module `lfadsqueue` not being found, be sure that you've added `lfads-run-manager/src` to your `PYTHONPATH` as described in the [installation instructions](install//#install-lfads).
 
 As they finish, you can load and visualize the results easily in Matlab. Here we plot the inferred, single-trial firing rates of the first neuron:
 

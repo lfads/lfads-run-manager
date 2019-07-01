@@ -13,7 +13,7 @@ You'll need to install TensorFlow to run LFADS. Please note that LFADS will run 
     The simplest way to get up and running is to install [Anaconda](https://www.anaconda.com/download/) and then to install Tensorflow in its own conda environment (here named `tensorflow`) using:
 
     ```bash
-    conda create --name tensorflow python=2.7 tensorflow-gpu
+    conda create --name tensorflow python=2.7 tensorflow-gpu h5py matplotlib
     ```
 
     This approach was suggested by Harveen Singh [here](https://towardsdatascience.com/tensorflow-gpu-installation-made-easy-use-conda-instead-of-pip-52e5249374bc) and should take care of installing the compatible version of the NVIDIA dependencies, including the CUDA toolkit and cuDNN.
@@ -65,7 +65,7 @@ Ensure that typing `which run_lfads.py` at your terminal prompt shows the path t
 LFADS depends on the Python libraries `h5py` and `matplotlib` being installed as well:
 
 ```bash
-pip install h5py matplotlib
+conda install h5py matplotlib
 ```
 
 ## Install tmux

@@ -224,6 +224,7 @@ Next, we'll run the principal components regression that generates the alignment
 To visualize how well these initial alignment matrices are working, we can compare the common global PCs from all datasets against the projection of each dataset through the read-in matrices. That is, we can plot the regression target (global PCs) against the best possible reconstruction from each dataset.
 
 ```matlab
+run = rc.findRuns('all', 1); % search for run spec "all" with 1st parameter setting
 run.doMultisessionAlignment();
 ```
 
