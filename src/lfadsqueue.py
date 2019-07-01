@@ -252,7 +252,15 @@ def touch_file(outfile):
 
 def get_list_tmux_sessions():
     with mutex:
-        return subprocess.check_output(shlex.split("tmux list-sessions -F '#{session_name}'")).splitlines()
+        try:
+            cmd = shlex.split("tmux list-sessions -F '#{session_name}'")
+            out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            return out.splitlines()
+        except subprocess.CalledProcessError as exc:
+            if "error connecting to" in exc.output or "no server running" in exc.output:
+                return []
+            else:
+                raise(exc)
 
 def check_tmux_session_exists(session):
     return session in get_list_tmux_sessions()
