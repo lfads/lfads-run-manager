@@ -104,6 +104,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
         sequenceData cell % nDatasets cell array of sequence struct data
         posteriorMeans % nDatasets array of :ref:`LFADS_PosteriorMeans` when loaded
+        fitLog % :ref:`LFADS.FitLog` instance containing Tensorflow training info, when loaded
 
         inputInfo % parameters used to train model
 
