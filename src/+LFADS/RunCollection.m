@@ -735,7 +735,7 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
         end
 
         function f = writeSummaryText(rc)
-            % Generates a text file sumamrizing the details of the RunSpecs and RunParams
+            % Generates a text file sumamrizing the adetails of the RunSpecs and RunParams
             % within this run collection.
             %
             % Returns:
@@ -783,6 +783,20 @@ classdef RunCollection < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copy
             for i = 1:rc.nRunsTotal
                 prog.update(i);
                 rc.runs(i).loadPosteriorMeans(reload);
+            end
+            prog.finish();
+        end
+        
+        function exportResultsToH5(rc, exportPath)
+            if nargin < 2
+                exportPath = fullfile(rc.path, 'posterior_means_export');
+                LFADS.Utils.mkdirRecursive(exportPath);
+            end
+            prog = LFADS.Utils.ProgressBar(rc.nRunsTotal, 'Exporting posterior means as HDF5');
+            for i = 1:rc.nRunsTotal
+                prog.update(i);
+                exportRunPath = fullfile(exportPath, rc.runs(i).name);
+                rc.runs(i).exportResultsToH5(exportRunPath);
             end
             prog.finish();
         end

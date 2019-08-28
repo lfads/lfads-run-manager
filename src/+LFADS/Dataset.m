@@ -19,14 +19,15 @@ classdef Dataset < handle & matlab.mixin.CustomDisplay & matlab.mixin.Copyable
 %             data = in.(fld);
         end
 
-        function loadInfo(ds)
+        function loadInfo(ds, reload)
             % Load this Dataset's metadata if not already loaded
             % Override this method directly if you wish to manually load
             % metadata without calling `loadData` first. If you need to
             % load the data in order to determine the metadata, then
             % override loadInfoFromData` below and extract the metadata.
-
-            if ds.infoLoaded, return; end
+    
+            if nargin < 2, reload = false; end
+            if ds.infoLoaded && ~reload, return; end
             data = ds.loadData();
             ds.loadInfoFromData(data);
             ds.infoLoaded = true;
