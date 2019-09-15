@@ -908,7 +908,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
 
             if any(maskGenerate)
                 %regenerate = false;
-                seqData = r.loadSequenceData(); % this will set r.sequenceData
+                seqData = r.loadSequenceData(regenerate); % this will set r.sequenceData
                 r.assertParamsOkayForSequenceData(seqData);
 
                 % no need to regenerate if alignment and export use the
@@ -1536,6 +1536,7 @@ classdef Run < handle & matlab.mixin.CustomDisplay
             if ~isempty(r.posteriorMeans) && all([r.posteriorMeans.isValid]) && ~reload
                 pms = LFADS.Utils.makecol(r.posteriorMeans);
                 pms = pms(datasetIdx);
+                valid = true(size(pms));
                 return;
             end
             
