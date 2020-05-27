@@ -24,7 +24,7 @@ The advantage of including your dataset-specific hyperparameters in your `RunPar
 
 ## LFADS.Run
 
-A `Run` encapsulates an actual LFADS model that will be trained using Python+Tensorflow. An `Run` is defined by the combination of an `RunSpec` instance (which specifies the datasets included) and an `RunParams` instance (which specifies the hyperparameters). Each `Run` will be associated with a run of the Python+Tensorflow code that defines and trains the LFADS model.
+A `Run` encapsulates an actual LFADS model that will be trained using Python+Tensorflow. A `Run` is defined by the combination of a `RunSpec` instance (which specifies the datasets included) and a `RunParams` instance (which specifies the hyperparameters). Each `Run` will be associated with a run of the Python+Tensorflow code that defines and trains the LFADS model.
 
 ## LFADS.RunCollection
 
