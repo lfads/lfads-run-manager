@@ -41,7 +41,7 @@ classdef Multiplier < handle
         % this method does the actual multiplication. The first argument always refers
         % to the instance variable itself, enabling you to refer to properties and other
         % methods in that instance. Otherwise, the code acts like a normal Matlab function
-        function out = mutliply(obj, in)
+        function out = multiply(obj, in)
             out = in * obj.gain;
         end
     end
