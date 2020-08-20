@@ -41,7 +41,7 @@ classdef Multiplier < handle
         % this method does the actual multiplication. The first argument always refers
         % to the instance variable itself, enabling you to refer to properties and other
         % methods in that instance. Otherwise, the code acts like a normal Matlab function
-        function out = mutliply(obj, in)
+        function out = multiply(obj, in)
             out = in * obj.gain;
         end
     end
@@ -64,7 +64,7 @@ With this definition complete, we can then use the class at the command line as 
 20
 ```
 
-Here, note that `myMult` is a Matlab variable which holds an instance of the class `Mutliplier`. We then assign a value to the property `gain` of this instance, and then call the method `multiply`.
+Here, note that `myMult` is a Matlab variable which holds an instance of the class `Multiplier`. We then assign a value to the property `gain` of this instance, and then call the method `multiply`.
 
 ## Matlab Packages
 
