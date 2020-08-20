@@ -1,6 +1,6 @@
 # Matlab language features used
 
-The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well developed object oriented programming functionality. The run manager code also makes use of packages, which helps you organize your code so that names don't collide in the Matlab path. If you are familiar with these aspects of Matlab programming, skip ahead to [Key Concepts](concepts.md).
+The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well-developed object-oriented programming functionality. The run manager code also makes use of packages, which helps you organize your code so that names don't collide in the Matlab path. If you are familiar with these aspects of Matlab programming, skip ahead to [Key Concepts](concepts.md).
 
 ## Matlab Classes
 
