@@ -1,6 +1,6 @@
 # Matlab language features used
 
-The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well developed object oriented programming functionality. The run manager code also makes use of packages, which helps you organize your code so that names don't collide in the Matlab path. If you are familiar with these aspects of Matlab programming, skip ahead to [Key Concepts](concepts.md).
+The run manager code is written in and will be executed within Matlab. The code is organized around Matlab classes, which are part of Matlab's very well-developed object-oriented programming functionality. The run manager code also makes use of packages, which helps you organize your code so that names don't collide in the Matlab path. If you are familiar with these aspects of Matlab programming, skip ahead to [Key Concepts](concepts.md).
 
 ## Matlab Classes
 
@@ -41,7 +41,7 @@ classdef Multiplier < handle
         % this method does the actual multiplication. The first argument always refers
         % to the instance variable itself, enabling you to refer to properties and other
         % methods in that instance. Otherwise, the code acts like a normal Matlab function
-        function out = mutliply(obj, in)
+        function out = multiply(obj, in)
             out = in * obj.gain;
         end
     end
@@ -64,7 +64,7 @@ With this definition complete, we can then use the class at the command line as 
 20
 ```
 
-Here, note that `myMult` is a Matlab variable which holds an instance of the class `Mutliplier`. We then assign a value to the property `gain` of this instance, and then call the method `multiply`.
+Here, note that `myMult` is a Matlab variable which holds an instance of the class `Multiplier`. We then assign a value to the property `gain` of this instance, and then call the method `multiply`.
 
 ## Matlab Packages
 
